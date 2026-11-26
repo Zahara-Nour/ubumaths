@@ -188,14 +188,18 @@
 	let isLoadingStudents = $state(false);
 
 	/**
-	 * Loading state while fetching classes
+	 * Les classes ont déjà été demandées au serveur depuis l'ouverture de la page.
+	 *
+	 * Volontairement PAS un `$state`, et jamais remis à faux : `loadClasses()` est appelée par un
+	 * `$effect`, qui relance tout ce qu'il lit. Un drapeau réactif remis à faux après un échec, ou un
+	 * cache resté vide (prof sans classe), faisait repartir la demande en boucle (E83).
 	 */
-	let isLoadingClasses = $state(false);
+	let classesRequested = false;
 
 	/**
-	 * Loading state while fetching periods
+	 * Les périodes ont déjà été demandées au serveur depuis l'ouverture de la page (même règle, E83)
 	 */
-	let isLoadingPeriods = $state(false);
+	let periodsRequested = false;
 
 	// ============================================================================
 	// VIP CARD MODAL STATE
@@ -227,10 +231,10 @@
 		}
 
 		// STEP 2: Cache miss - fetch from API
-		if (isLoadingClasses) return; // Prevent duplicate requests
+		if (classesRequested) return; // Un seul essai par ouverture de la page (E83)
 
 		console.log('[TeacherDashboard] ⚠️  Cache MISS: Fetching from API...');
-		isLoadingClasses = true;
+		classesRequested = true;
 
 		try {
 			const response = await fetch('/api/teacher/classes', {
@@ -251,8 +255,6 @@
 		} catch (err) {
 			console.error('[TeacherDashboard] ❌ Failed to load classes:', err);
 			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
-		} finally {
-			isLoadingClasses = false;
 		}
 	}
 
@@ -307,10 +309,10 @@
 		}
 
 		// STEP 2: Cache miss - fetch from API
-		if (isLoadingPeriods) return; // Prevent duplicate requests
+		if (periodsRequested) return; // Un seul essai par ouverture de la page (E83)
 
 		console.log('[TeacherDashboard] ⚠️  Cache MISS: Fetching periods from API...');
-		isLoadingPeriods = true;
+		periodsRequested = true;
 
 		try {
 			const response = await fetch('/api/teacher/periods', {
@@ -331,8 +333,6 @@
 		} catch (err) {
 			console.error('[TeacherDashboard] ❌ Failed to load periods:', err);
 			toaster.error('Erreur lors du chargement des périodes');
-		} finally {
-			isLoadingPeriods = false;
 		}
 	}
 

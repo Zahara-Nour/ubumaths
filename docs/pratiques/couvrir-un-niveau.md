@@ -375,7 +375,8 @@ Variation **ajoutée à la fin** ou **corrigée** (signalée en en-tête) : acce
 absentes du fichier mais présentes en prod : refus ; autre champ différent de la prod (niveaux,
 délai, `shared`…), `checkTemplate` rouge : refus, rien n'est écrit. Sortie :
 `supabase/migrations/<horodatage>_questions_<lot>_contenu.sql` (un seul bloc, tout ou rien ;
-garde = contenu exact relevé ; modèle absent → rien ; rollback gardé en commentaire) et sa
+garde = contenu exact relevé ; modèle absent → sauté et nommé par un notice « <id> absent, saute »
+dans la sortie de `db:migrate`, attendu en local, jamais en prod ; rollback gardé en commentaire) et sa
 fixture `tests/integration/fixtures/contenu-publie/`, rejouée par
 `tests/integration/migrations-contenu-publie.test.ts` (la CI ciblée ne lance que lui). Règles :
 `scripts/lib/migration-contenu.ts`.

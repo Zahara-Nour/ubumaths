@@ -544,7 +544,7 @@ describe('accès : une version se lit exactement quand son exercice se lit', () 
 			['un visiteur anonyme', visiteur]
 		] as const;
 
-	it('exercice privé : lisent l’auteur et l’élève qui a la fiche, personne d’autre', async () => {
+	it('exercice privé : lisent l’auteur, l’élève qui a la fiche et l’élève affecté, personne d’autre', async () => {
 		const lus: Record<string, number[]> = {};
 		for (const [nom, client] of acteurs()) {
 			lus[nom] = await versionsLues(client, exoPrive);
@@ -555,9 +555,9 @@ describe('accès : une version se lit exactement quand son exercice se lit', () 
 			'l’auteur': [1, 2],
 			'un élève de la classe qui a la fiche': [1, 2],
 			'un élève d’une autre classe': [],
-			// L'élève affecté sans fiche lit l'exercice par le serveur (API), pas par la RLS :
-			// la version suit l'exercice, elle n'ouvre rien de plus
-			'un élève à qui l’exercice est affecté sans fiche': [],
+			// L'élève affecté sans fiche lit l'exercice (E78, 20261126091954) : la version suit
+			// l'exercice, elle n'ouvre rien de plus
+			'un élève à qui l’exercice est affecté sans fiche': [1, 2],
 			'un visiteur anonyme': []
 		});
 	});

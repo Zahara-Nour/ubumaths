@@ -266,6 +266,12 @@ export interface EvalModifiers {
 	unit?: string;
 	/** `;hms` : durée écrite en heures, minutes, secondes (`135[min]` → 2 h 15 min) */
 	hms?: boolean;
+	/** `;dN` : AU MOINS N décimales écrites, sans arrondir (`1.5;d2` → 1,50 ; `3.755;d2` → 3,755) */
+	minDecimals?: number;
+	/** `;aN` : arrondi à N décimales, N décimales écrites (`3.704;a2` → 3,70) */
+	roundDecimals?: number;
+	/** `;pN` : arrondi à N chiffres significatifs, tous écrits (`0.0996;p2` → 0,10) */
+	significantDigits?: number;
 }
 
 /**

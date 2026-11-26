@@ -18,7 +18,7 @@
 	import { lore } from '#lib/config/lore.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
-	import { Inbox, BookOpen, Code, FileText, ClipboardCheck } from '@lucide/svelte';
+	import { Inbox, Code, FileText, ClipboardCheck } from '@lucide/svelte';
 	import WorkInboxSection from '#lib/components/student-inbox/WorkInboxSection.svelte';
 	import type { PageData } from './$types';
 
@@ -91,11 +91,7 @@
 					<h2 class="text-xl font-semibold text-foreground">Rien d'assigné pour le moment</h2>
 					<p class="mt-2 text-sm text-muted-foreground">Profitez-en pour vous entraîner !</p>
 					<div class="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-						<Button href="/dashboard/student/exercises" variant="default">
-							<BookOpen class="mr-2 h-4 w-4" />
-							Pratique de {lore.learning.exercise}s
-						</Button>
-						<Button href="/python-exercises" variant="outline">
+						<Button href="/python-exercises" variant="default">
 							<Code class="mr-2 h-4 w-4" />
 							{lore.learning.exercise}s Python
 						</Button>

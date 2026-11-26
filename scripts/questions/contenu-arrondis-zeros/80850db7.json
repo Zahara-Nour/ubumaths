@@ -1,0 +1,287 @@
+{
+	"id": "80850db7-d658-4789-b273-bb73635e245d",
+	"title": "Ajustement affine après un changement de variable",
+	"description": "Droite donnée par la calculatrice après z = 1/y, t = x² ou z = log(y) : estimer y ; droite de Mayer calculée par les deux points moyens",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 120,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(100/(a*x0+b))/100;a2}}"
+				}
+			],
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, on a posé $z=\\dfrac{1}{y}$. La calculatrice donne l'ajustement affine $z={{a}}x+{{b}}$.\n\nEstime $y$ pour $x={{x0}}$. Donne la valeur arrondie au centième.\n\n$y\\approx?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.02|0.04|0.05"
+				},
+				{
+					"name": "b",
+					"expression": "0.1|0.2|0.3"
+				},
+				{
+					"name": "x0",
+					"expression": "10..20"
+				}
+			],
+			"conditions": ["abs(100/(a*x0+b)-floor(100/(a*x0+b))-0.5) > 0.05"],
+			"correction": {
+				"steps": [
+					"Pour $x={{x0}}$ : $z={{a}}\\times{{x0}}+{{b}}={{eval:a*x0+b;d}}$.",
+					"Comme $z=\\dfrac{1}{y}$, $y=\\dfrac{1}{z}=\\dfrac{1}{ {{eval:a*x0+b;d}} }\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100/(a*x0+b))/100;a2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x0^2+b;d}}"
+				}
+			],
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, on a posé $t=x^2$. La calculatrice donne l'ajustement affine $y={{a}}t+{{b}}$.\n\nEstime $y$ pour $x={{x0}}$.\n\n$y\\approx?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|1.5|2.5"
+				},
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "x0",
+					"expression": "8..12"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $x={{x0}}$ : $t={{x0}}^2={{eval:x0^2}}$.",
+					"$y\\approx{{a}}\\times{{eval:x0^2}}+{{b}}=\\textcolor{{{color:primary.0}}}{{{eval:a*x0^2+b;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:0.5*x0+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:10^(0.5*x0+b)}}"
+				}
+			],
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, on a posé $z=\\log(y)$. La calculatrice donne l'ajustement affine $z=0{,}5x+{{b}}$.\n\nEstime $z$ puis $y$ pour $x={{x0}}$.\n\n$z\\approx?$\n\n$y\\approx?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "0.5|1|1.5"
+				},
+				{
+					"name": "x0",
+					"expression": "1..7"
+				}
+			],
+			"conditions": ["mod(x0+2*b, 2) < 0.5"],
+			"correction": {
+				"steps": [
+					"Pour $x={{x0}}$ : $z=0{,}5\\times{{x0}}+{{b}}=\\textcolor{{{color:primary.0}}}{{{eval:0.5*x0+b}}}$.",
+					"Comme $z=\\log(y)$, $y=10^z=10^{ {{eval:0.5*x0+b}} }=\\textcolor{{{color:primary.0}}}{{{eval:10^(0.5*x0+b)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"statement": "On a effectué un changement de variable et obtenu la série $(x_i\\,;z_i)$ suivante.\n\n| $x_i$ | 1 | 2 | 3 | 4 | 5 | 6 |\n|---|---|---|---|---|---|---|\n| $z_i$ | ${{eval:m*1+p+1}}$ | ${{eval:m*2+p-1}}$ | ${{eval:m*3+p}}$ | ${{eval:m*4+p}}$ | ${{eval:m*5+p+1}}$ | ${{eval:m*6+p-1}}$ |\n\nLa droite de Mayer passe par le point moyen $G_1$ des trois premiers points et le point moyen $G_2$ des trois derniers. Son équation s'écrit $z=ax+b$. Donne $a$ et $b$.\n\n$a=?$\n\n$b=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..6"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"$G_1$ : $x=\\dfrac{1+2+3}{3}=2$ et $z=\\dfrac{{{eval:m*1+p+1}}+{{eval:m*2+p-1}}+{{eval:m*3+p}}}{3}={{eval:2*m+p}}$, donc $G_1(2\\,;{{eval:2*m+p}})$.",
+					"$G_2$ : $x=\\dfrac{4+5+6}{3}=5$ et $z=\\dfrac{{{eval:m*4+p}}+{{eval:m*5+p+1}}+{{eval:m*6+p-1}}}{3}={{eval:5*m+p}}$, donc $G_2(5\\,;{{eval:5*m+p}})$.",
+					"$a=\\dfrac{ {{eval:5*m+p}}-{{eval:2*m+p}} }{5-2}=\\dfrac{ {{eval:3*m}} }{3}=\\textcolor{{{color:primary.0}}}{{{m}}}$.",
+					"$G_1$ est sur la droite : ${{eval:2*m+p}}={{m}}\\times2+b$, donc $b=\\textcolor{{{color:primary.0}}}{{{p}}}$. La droite de Mayer a pour équation $z={{m}}x+{{p}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1,47"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0.04",
+				"b": "0.2",
+				"x0": "12"
+			},
+			"description": "a = 0,04, b = 0,2, x0 = 12 : 1/0,68 ≈ 1,47",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,68"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "0.04",
+				"b": "0.2",
+				"x0": "12"
+			},
+			"description": "Erreur : z au lieu de y (0,68)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "0.04",
+				"b": "0.2",
+				"x0": "12"
+			},
+			"description": "Erreur : arrondi au dixième",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["154"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1.5",
+				"b": "4",
+				"x0": "10"
+			},
+			"description": "a = 1,5, b = 4, x0 = 10 : 154",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1.5",
+				"b": "4",
+				"x0": "10"
+			},
+			"description": "Erreur : t oublié (1,5 × 10 + 4 = 19)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3", "1000"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "1",
+				"x0": "4"
+			},
+			"description": "b = 1, x0 = 4 : z = 3, y = 1 000",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3", "3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "1",
+				"x0": "4"
+			},
+			"description": "Erreur : y = z",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3", "30"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "1",
+				"x0": "4"
+			},
+			"description": "Erreur : y = 10z (30)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2", "100"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "0.5",
+				"x0": "3"
+			},
+			"description": "b = 0,5, x0 = 3 : z = 2, y = 100",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"description": "m = 3, p = 2 : a = 3, b = 2",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"description": "Erreur : a et b inversés",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3", "8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"description": "Erreur : b lu à G1 (8)",
+			"variationIndex": 3
+		}
+	]
+}

@@ -1,0 +1,566 @@
+{
+	"id": "10a51999-6d45-41fb-80db-03b70dfeecb8",
+	"title": "Arrondir un nombre décimal",
+	"description": "Arrondir à l'unité, au dixième, au centième, au millième, dont une retenue (2,996 → 3,00) (pièges : tronquer au lieu d'arrondir, garder trop de chiffres, oublier la retenue)",
+	"grades": ["2"],
+	"level": 11,
+	"delay": 40,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					},
+					"expectedAnswer": "{{eval:a+h}}"
+				}
+			],
+			"statement": "Arrondis ${{eval:(1000*a+f)/1000;d}}$ à l'unité.\n\n${{eval:(1000*a+f)/1000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..99"
+				},
+				{
+					"name": "f",
+					"expression": "1..999"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(f/500)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(f/100)"
+				}
+			],
+			"conditions": ["f != 500"],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des unités : ${{a}}$. On regarde le chiffre **suivant**, celui des dixièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des unités, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des unités, et on supprime les chiffres suivants.}}",
+					"${{eval:(1000*a+f)/1000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:a+h}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					},
+					"expectedAnswer": "{{eval:(10*a+t+h)/10;d}}"
+				}
+			],
+			"statement": "Arrondis ${{eval:(10000*a+1000*t+g)/10000;d}}$ au dixième.\n\n${{eval:(10000*a+1000*t+g)/10000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..49"
+				},
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "g",
+					"expression": "1..999"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(g/500)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(g/100)"
+				}
+			],
+			"conditions": ["t + h >= 1", "t + h <= 9", "g != 500"],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des dixièmes : ${{t}}$. On regarde le chiffre **suivant**, celui des centièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des dixièmes, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des dixièmes, et on supprime les chiffres suivants.}}",
+					"${{eval:(10000*a+1000*t+g)/10000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:(10*a+t+h)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:(100*a+10*dd+cc+h)/100;d}}"
+				}
+			],
+			"statement": "Arrondis ${{eval:(100000*a+10000*dd+1000*cc+g)/100000;d}}$ au centième.\n\n${{eval:(100000*a+10000*dd+1000*cc+g)/100000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "dd",
+					"expression": "0..9"
+				},
+				{
+					"name": "cc",
+					"expression": "0..9"
+				},
+				{
+					"name": "g",
+					"expression": "1..999"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(g/500)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(g/100)"
+				}
+			],
+			"conditions": ["cc + h >= 1", "cc + h <= 9", "g != 500"],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des centièmes : ${{cc}}$. On regarde le chiffre **suivant**, celui des millièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des centièmes, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des centièmes, et on supprime les chiffres suivants.}}",
+					"${{eval:(100000*a+10000*dd+1000*cc+g)/100000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:(100*a+10*dd+cc+h)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					},
+					"expectedAnswer": "{{eval:(1000*a+100*dd+10*cc+mm+h)/1000;d}}"
+				}
+			],
+			"statement": "Arrondis ${{eval:(100000*a+10000*dd+1000*cc+100*mm+g)/100000;d}}$ au millième.\n\n${{eval:(100000*a+10000*dd+1000*cc+100*mm+g)/100000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "dd",
+					"expression": "0..9"
+				},
+				{
+					"name": "cc",
+					"expression": "0..9"
+				},
+				{
+					"name": "mm",
+					"expression": "0..9"
+				},
+				{
+					"name": "g",
+					"expression": "1..99"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(g/50)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(g/10)"
+				}
+			],
+			"conditions": ["mm + h >= 1", "mm + h <= 9", "g != 50"],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des millièmes : ${{mm}}$. On regarde le chiffre **suivant**, celui des dix-millièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des millièmes, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des millièmes, et on supprime les chiffres suivants.}}",
+					"${{eval:(100000*a+10000*dd+1000*cc+100*mm+g)/100000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:(1000*a+100*dd+10*cc+mm+h)/1000;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:a+1}}"
+				}
+			],
+			"statement": "Arrondis ${{eval:(1000*a+990+m)/1000;d}}$ au centième.\n\n${{eval:(1000*a+990+m)/1000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..19"
+				},
+				{
+					"name": "m",
+					"expression": "5..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des centièmes : $9$. On regarde le chiffre **suivant**, celui des millièmes : ${{m}}\\geqslant 5$, on **augmente de 1** le chiffre des centièmes.",
+					"Mais $9+1=10$ : il y a une **retenue**. ${{eval:a}}{,}99$ devient ${{eval:a+1}}{,}00$, comme quand on ajoute $0{,}01$ à ${{eval:a}}{,}99$.",
+					"${{eval:(1000*a+990+m)/1000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:a+1}}{,}00}$, que l'on peut aussi écrire ${{eval:a+1}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "12",
+				"f": "718",
+				"h": "1",
+				"s": "7"
+			},
+			"description": "12,718 à l'unité : 13",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "12",
+				"f": "718",
+				"h": "1",
+				"s": "7"
+			},
+			"description": "Erreur : troncature 12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "45",
+				"f": "302",
+				"h": "0",
+				"s": "3"
+			},
+			"description": "45,302 à l'unité : 45",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["46"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "45",
+				"f": "302",
+				"h": "0",
+				"s": "3"
+			},
+			"description": "Erreur : arrondi au-dessus 46",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3{,}1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"g": "415",
+				"h": "0",
+				"s": "4",
+				"t": "1"
+			},
+			"description": "3,1415 au dixième : 3,1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7{,}3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"g": "681",
+				"h": "1",
+				"s": "6",
+				"t": "2"
+			},
+			"description": "7,2681 au dixième : 7,3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7{,}2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"g": "681",
+				"h": "1",
+				"s": "6",
+				"t": "2"
+			},
+			"description": "Erreur : troncature 7,2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7{,}27"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			},
+			"variables": {
+				"a": "7",
+				"g": "681",
+				"h": "1",
+				"s": "6",
+				"t": "2"
+			},
+			"description": "Trop de chiffres : 7,27 (arrondi au centième)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3{,}14"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"g": "159",
+				"h": "0",
+				"s": "1",
+				"cc": "4",
+				"dd": "1"
+			},
+			"description": "3,14159 au centième : 3,14",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2{,}72"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"g": "828",
+				"h": "1",
+				"s": "8",
+				"cc": "1",
+				"dd": "7"
+			},
+			"description": "2,71828 au centième : 2,72",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2{,}71"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"g": "828",
+				"h": "1",
+				"s": "8",
+				"cc": "1",
+				"dd": "7"
+			},
+			"description": "Erreur : troncature 2,71",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2{,}7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"g": "828",
+				"h": "1",
+				"s": "8",
+				"cc": "1",
+				"dd": "7"
+			},
+			"description": "Erreur : au dixième 2,7",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2.72"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"g": "828",
+				"h": "1",
+				"s": "8",
+				"cc": "1",
+				"dd": "7"
+			},
+			"description": "Point décimal 2.72",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1{,}414"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"g": "21",
+				"h": "0",
+				"s": "2",
+				"cc": "1",
+				"dd": "4",
+				"mm": "4"
+			},
+			"description": "1,41421 au millième : 1,414",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0{,}577"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0",
+				"g": "21",
+				"h": "0",
+				"s": "2",
+				"cc": "7",
+				"dd": "5",
+				"mm": "7"
+			},
+			"description": "0,57721 au millième : 0,577",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1{,}732"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"g": "5",
+				"h": "0",
+				"s": "0",
+				"cc": "3",
+				"dd": "7",
+				"mm": "2"
+			},
+			"description": "1,73205 au millième : 1,732",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1{,}733"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"g": "68",
+				"h": "1",
+				"s": "6",
+				"cc": "3",
+				"dd": "7",
+				"mm": "2"
+			},
+			"description": "1,73268 au millième : 1,733",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1{,}732"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"g": "68",
+				"h": "1",
+				"s": "6",
+				"cc": "3",
+				"dd": "7",
+				"mm": "2"
+			},
+			"description": "Erreur : troncature 1,732",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3{,}00"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"description": "2,996 au centième : 3,00",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["rounding"]
+			},
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"description": "2,996 au centième : 3 en forme à améliorer (zéros des centièmes manquants)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2{,}90"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"description": "Erreur : retenue oubliée 2,90",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2{,}99"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"description": "Erreur : troncature 2,99",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2{,}100"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"description": "Erreur : 2,100",
+			"variationIndex": 4
+		}
+	]
+}

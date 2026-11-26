@@ -28,11 +28,10 @@ function pageBody(content: unknown) {
 	return { recipientIds: [TEACHER], subject: 'Question', content, isGroupMessage: false };
 }
 
-function call(body: unknown) {
-	const rpcSpy = vi.fn(async (_name: string, _args: Record<string, unknown>) => ({
-		data: MESSAGE,
-		error: null
-	}));
+type RpcResult = { data: string | null; error: { message: string; code?: string } | null };
+
+function call(body: unknown, result: RpcResult = { data: MESSAGE, error: null }) {
+	const rpcSpy = vi.fn(async (_name: string, _args: Record<string, unknown>) => result);
 	const promise = POST({
 		request: new Request('http://localhost/api/messages/send', {
 			method: 'POST',
@@ -160,5 +159,64 @@ describe('POST /api/messages/send', () => {
 			message: 'Message trop lourd : allégez la mise en forme ou retirez une image'
 		});
 		expect(rpcSpy).not.toHaveBeenCalled();
+	});
+
+	// Écarts V132 et V133 : les refus de la base arrivaient à l'élève en anglais, en 500
+	describe('refus de la base : en français, jamais le message technique', () => {
+		const CLASS = '55555555-5555-4555-8555-555555555555';
+
+		it('destinataire non permis : 403', async () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			const { promise } = call(pageBody(doc('Bonjour')), {
+				data: null,
+				error: {
+					message: 'You do not have permission to send messages to one or more recipients'
+				}
+			});
+			expect(await refusal(promise)).toEqual({
+				status: 403,
+				message: 'Vous ne pouvez pas écrire à ce destinataire.'
+			});
+		});
+
+		it('envoi au nom d’un autre (42501) : 403', async () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			const { promise } = call(pageBody(doc('Bonjour')), {
+				data: null,
+				error: { message: 'unauthorized: sender mismatch', code: '42501' }
+			});
+			expect((await refusal(promise)).status).toBe(403);
+		});
+
+		it('classe sans élève actif (P0002) : 400, dit pourquoi', async () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			const { promise, rpcSpy } = call(
+				{ subject: 'Contrôle', content: doc('Lundi'), isGroupMessage: true, classId: CLASS },
+				{ data: null, error: { message: 'no active student in this class', code: 'P0002' } }
+			);
+			const refus = await refusal(promise);
+			expect(refus.status).toBe(400);
+			expect(refus.message).toContain('aucun');
+			expect(rpcSpy).toHaveBeenCalledWith(
+				'send_private_message',
+				expect.objectContaining({
+					p_is_group_message: true,
+					p_class_id: CLASS,
+					p_recipient_ids: []
+				})
+			);
+		});
+
+		it('autre erreur : 500, sans le message de la base', async () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			const { promise } = call(pageBody(doc('Bonjour')), {
+				data: null,
+				error: { message: 'null value in column "sender_name"', code: '23502' }
+			});
+			expect(await refusal(promise)).toEqual({
+				status: 500,
+				message: "Erreur lors de l'envoi du message"
+			});
+		});
 	});
 });

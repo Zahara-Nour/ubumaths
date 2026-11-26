@@ -34,7 +34,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; recherche du catalogue Automaths le 2026-11-18 ; « Ma série » du catalogue le 2026-11-19 ; ligne des niveaux et des variations des tuiles le 2026-11-26 ; texte à trous (``trous) le 2026-11-14 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, bissectrice le 2026-11-06, cercle circonscrit le 2026-11-02, cercle de centre donné le 2026-11-08, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03, angle à mesurer (`mesure AOB`) le 2026-11-03, rapporteur déjà posé le 2026-11-04, triangle par un côté et deux angles ou deux côtés et l'angle compris (côté d'angle) le 2026-11-03, triangle rectangle (équerre, quadrillage) le 2026-11-08, segment de longueur donnée à la règle graduée le 2026-11-08, segment à mesurer (`mesure AB`) le 2026-11-12, carré et rectangle cotés sur papier uni le 2026-11-09 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03, somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; droite à représenter (``line, `representer:`) le 2026-11-03, réponse incomplète bloquée le 2026-11-03 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, solide à geste (`tracer: vecteur`) le 2026-11-03, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?`: cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne`sign-table`) le 2026-11-03 ; tableau de variations à compléter (valeur et flèche d'une ligne `variation:`, chantier `variations-a-completer`) le 2026-11-08 ; `series-trace.ts` le 2026-11-11 ; fin de question dans la copie d'un contrôle (`submission.ts`) le 2026-11-11 ; bloc associer le 2026-11-14, courbe dans un élément le 2026-11-14 ; programme tortue (carte, corrigé) le 2026-11-14, nombre maximal de blocs (`blocs:`) le 2026-11-15, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; durée trop courte dans le panier et l'éditeur de série le 2026-11-14, durée observée le 2026-11-15 ; programme de calcul (``calcul, PR 5a) le 2026-11-14, son corrigé (PR 5b) le 2026-11-14, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; robot à produire (``robot, `produire: oui`) le 2026-11-15, sa carte et son corrigé (PR 1b) le 2026-11-15 ; graine de série d'un lien (`memes-nombres`) le 2026-11-19 ; avertissement « N questions différentes » du panier le 2026-11-21 ; choix des variations dans l'éditeur de série le 2026-11-21 ; limite cachée d'un tableau de variations (juge des infinis, erreurs prévues, QCM) le 2026-11-23 ; labyrinthe (`labyrinthe) le 2026-11-24.
+> Vérifié contre le code le 2026-10-11 ; recherche du catalogue Automaths le 2026-11-18, refaite le 2026-11-26 ; « Ma série » du catalogue le 2026-11-19 ; ligne des niveaux et des variations des tuiles le 2026-11-26 ; texte à trous (``trous) le 2026-11-14 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, bissectrice le 2026-11-06, cercle circonscrit le 2026-11-02, cercle de centre donné le 2026-11-08, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03, angle à mesurer (`mesure AOB`) le 2026-11-03, rapporteur déjà posé le 2026-11-04, triangle par un côté et deux angles ou deux côtés et l'angle compris (côté d'angle) le 2026-11-03, triangle rectangle (équerre, quadrillage) le 2026-11-08, segment de longueur donnée à la règle graduée le 2026-11-08, segment à mesurer (`mesure AB`) le 2026-11-12, carré et rectangle cotés sur papier uni le 2026-11-09 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03, somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; droite à représenter (``line, `representer:`) le 2026-11-03, réponse incomplète bloquée le 2026-11-03 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, solide à geste (`tracer: vecteur`) le 2026-11-03, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?`: cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne`sign-table`) le 2026-11-03 ; tableau de variations à compléter (valeur et flèche d'une ligne `variation:`, chantier `variations-a-completer`) le 2026-11-08 ; `series-trace.ts` le 2026-11-11 ; fin de question dans la copie d'un contrôle (`submission.ts`) le 2026-11-11 ; bloc associer le 2026-11-14, courbe dans un élément le 2026-11-14 ; programme tortue (carte, corrigé) le 2026-11-14, nombre maximal de blocs (`blocs:`) le 2026-11-15, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; durée trop courte dans le panier et l'éditeur de série le 2026-11-14, durée observée le 2026-11-15 ; programme de calcul (``calcul, PR 5a) le 2026-11-14, son corrigé (PR 5b) le 2026-11-14, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; robot à produire (``robot, `produire: oui`) le 2026-11-15, sa carte et son corrigé (PR 1b) le 2026-11-15 ; graine de série d'un lien (`memes-nombres`) le 2026-11-19 ; avertissement « N questions différentes » du panier le 2026-11-21 ; choix des variations dans l'éditeur de série le 2026-11-21 ; limite cachée d'un tableau de variations (juge des infinis, erreurs prévues, QCM) le 2026-11-23 ; labyrinthe (`labyrinthe) le 2026-11-24.
 
 ## À quoi ça sert
 
@@ -248,16 +248,26 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   inconnu → premier chapitre. Les points (`points` : non archivés, avec niveau, tous niveaux) et les
   ids des points de chaque modèle publié (`templatePoints`) arrivent avec la liste des modèles (+~6 %
   compressé). **Recherche**
-  (`src/lib/questions/catalogue-search.ts` : `searchCatalogue`, phase 0 du 2026-11-18) : champ en
-  haut, sans curseur automatique, « / » l'y met ; elle porte sur le titre, la description, les noms
-  de notion et de sous-notion (pas la branche : « calcul » ramenait « Nombres et calculs » entier)
-  et les intitulés des points du programme du modèle (`pointNames`, dérivés par le cache de `points` et
-  `templatePoints`) ; sans accents ni majuscules,
-  tous les mots, chacun au **début d'un mot** (« aire » ne trouve pas « linéaire ») ; dès 2 lettres,
-  200 ms après la frappe. Les résultats (filtrés par le niveau) remplacent la liste des notions,
-  groupés par sous-notion dans l'ordre de l'arbre (« Branche › Notion › sous-notion · n ») avec un
-  compteur ; les premiers groupes sont dépliés jusqu'à 60 cartes (`initiallyOpenGroups`), les
-  suivants repliés (aperçus calculés à l'ouverture). Aucun résultat avec un niveau → « Chercher
+  (`src/lib/questions/catalogue-search.ts` : `searchCatalogue`, phase 0 du 2026-11-18, refaite le
+  2026-11-26) : champ en haut, sans curseur automatique, « / » l'y met ; sans accents ni majuscules,
+  singulier et pluriel confondus (-s, -x, -aux/-al), tous les mots, chacun au **début d'un mot**
+  (« aire » ne trouve pas « linéaire ») ; dès 2 lettres, 200 ms après la frappe. Trois parts :
+  **raccourcis** « Aller à : » (3 au plus) vers la notion ou la sous-notion dont le nom contient les
+  mots (nom exact, puis plus court, puis plus fourni ; jamais une branche ni un nœud sans question
+  au niveau) : la recherche s'efface, la notion s'ouvre en vue « Notions » et la page descend à la
+  sous-notion (`initialRubricId` de `CatalogueNotionSections`) ; **bons résultats** : titre,
+  description, nom de la sous-notion et énoncé de chaque variation (`shared` compris) sans
+  variables `{{…}}`, blocs (figures, choix des QCM), formules ni code (`plainMarkdownText`),
+  groupés par sous-notion, le groupe qui a le plus de **titres** d'abord, puis la somme des
+  pertinences (3 si tous les mots sont dans le titre, 2 avec la description, 1 sinon) ; titres
+  d'abord dans un groupe ; à égalité, ordre de l'arbre ; « Non classés » en dernier ; groupe replié **« Aussi dans les
+  corrigés et le programme »** (`others`) : mots trouvés seulement avec la correction écrite
+  (étapes, retours) ou les intitulés des points du programme (`pointNames`, dérivés par le cache de
+  `points` et `templatePoints`). Ni la consigne, ni le coup de pouce, ni les noms de notion et de
+  branche (« calcul » ramenait « Nombres et calculs » entier). Les résultats (filtrés par le niveau)
+  remplacent la liste des notions (« Branche › Notion › sous-notion · n ») avec un compteur ; les
+  premiers groupes sont dépliés jusqu'à 60 cartes (`initiallyOpenGroups`), les suivants repliés
+  (aperçus calculés à l'ouverture). Aucun résultat avec un niveau → « Chercher
   dans tous les niveaux ». Croix ou Échap → retour à la notion. La recherche est dans l'adresse
   (`?q=…`) et retenue avec elle. La tuile ne montre plus l'ancien sous-domaine. Le panier et les
   séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés qu'à l'approche de
@@ -1315,7 +1325,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    ADR 0012) ou valeur numérique (`precision` : `decimal`, `significant`, `magnitude`,
    `tolerance`), grandeur, `angleModulo: '2pi'`. Arrondi : plus de chiffres que demandé mais bon
    arrondi → `bad_form` (contrainte `rounding`, non réglable, message « Arrondis au … ») ; moins de
-   décimales accepté si la valeur est exactement l'arrondi. Réponse comptée fausse sans autre
+   décimales, valeur exactement l'arrondi → juste en valeur, jugé à l'étape 5 (perfectible : la règle
+   est renversée le 2026-11-26, cf. **Zéros finaux** ci-dessous). Réponse comptée fausse sans autre
    message, dans une case de formule sans unité : si le parseur la refuse pour un nombre collé
    derrière un facteur (`(n+2)4^n`, `x2` ; règle du 2026-10-08, `mathAST/parser/number-after-factor.ts`),
    la carte le dit (`numberAfterFactorFeedback` : « Nombre « 4 » écrit après un facteur : écris le
@@ -1344,6 +1355,37 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    `acceptDecimal`, `angleModulo` → exceptions documentées dans `types.ts` ; sinon **mode exact** :
    `checkFormUnified` passe réponse et attendu dans le même pipeline de retouches cosmétiques
    (`cosmetic-transforms.ts`) puis les compare.
+
+**Zéros finaux** (`zeros`, décision de l'auteur du 2026-11-26) : un zéro final ne s'écrit que s'il
+dit quelque chose : arrondi, centimes, ou demandé par l'auteur. Le juge ne le signale donc pas
+sans regarder la case (`questions/meaningful-zeros.ts`, option `meaningfulTrailingZeros` de
+`cosmeticViolations`, qui ne juge alors plus que les zéros de tête) :
+
+- **arrondi à N décimales** (`precision: { type: 'decimal', digits: N }`) : la bonne écriture a
+  exactement N décimales. `3,0` au dixième de 3,04 est juste, sans violation `zeros`, quelle que
+  soit l'écriture de l'attendu et même en `zeros: 'strict'` ; `3` (valeur exactement l'arrondi) est
+  `unoptimal_form`, violation `rounding` en avertissement, message « Arrondi au dixième : écris le
+  chiffre des dixièmes, même si c'est 0. » (centième, millième ; au-delà « Arrondi à N décimales :
+  écris les N décimales, même les zéros. ») ; à l'unité (N = 0), rien ne change. Trop de chiffres
+  (`3,00`) ou arrondi non fait (`3,04`) : étape 3, inchangé ;
+- **arrondi à N chiffres significatifs** : ramené aux décimales que ces N chiffres font écrire
+  (3,04 à 2 chiffres → `3,0` juste, `3` perfectible, « Arrondi à 2 chiffres significatifs : écris
+  les 2 chiffres, même les zéros. ») ; aucune exigence quand le dernier chiffre gardé est dans la
+  partie entière (`1 200` pour 1 234 à 2 chiffres) ;
+- **bonne réponse montrée** par le message d'une valeur fausse (« La réponse arrondie à 1 décimales
+  est 3,0 », « … avec 2 chiffres significatifs est 3,0 ») : écrite avec les mêmes zéros utiles,
+  virgule française (`writtenRoundedValue`) ;
+- **grandeur en euros** (unité tapée `€`, `euro(s)`, `EUR`) : exactement deux décimales (`3,70 €`)
+  est juste, sans violation `zeros` ; `3,7 €` reste juste ; `3,700 €` suit la règle `zeros`. Avec
+  un arrondi au centième en plus, `3,7 €` est perfectible (règle de l'arrondi) ;
+- partout ailleurs (valeur exacte, `none`, `magnitude`, `tolerance`, autres unités : `3,70 m`), la
+  règle `zeros` ne change pas ; `zeros: 'off'` coupe tout sauf le message d'arrondi.
+
+Mêmes verdicts en ordre fixé (`validateSingleBlank`, étape 5 : `checkSimpleNumberForm` et partie
+numérique d'une grandeur) et en ordre libre (`matchedAnswerForm`, qui passe par les mêmes
+fonctions). Seules les écritures décimales simples sont lues : une notation scientifique
+(`3{,}0\times10^{2}`) garde la règle `zeros` d'avant. Une case sans `precision` dont l'attendu
+s'écrit `3{,}0` reste en mode exact : `3{,}0` y est perfectible (`zeros`).
 
 Contraintes réglables (`options.constraints`, `ConfigurableConstraintId`) : `spaces`, `products`,
 `brackets`, `zeros`, `form`, `nullTerms`, `factorOne`, `factorZero`, `signs`, `reducedFractions`,

@@ -19,7 +19,11 @@
  *    en-tête ; variation retirée ou déplacée → refusée (les réponses des élèves gardent l'indice
  *    de leur variation) ;
  *  - garde : le modèle doit porter EXACTEMENT le contenu relevé, sinon la migration échoue (jamais
- *    un passage muet) ; modèle absent (base locale) → rien ;
+ *    un passage muet) ; modèle absent → sauté, nommé par un `raise notice` (sortie de
+ *    `db:migrate`). Pas de garde « tous ou aucun » : la base locale n'a qu'une partie des publiés
+ *    (le 2026-11-26, 26 sur 28 pour `20261126095610`), elle ferait échouer `db:a-jour`. En prod,
+ *    les identifiants viennent du relevé : un absent est un modèle supprimé depuis, le notice le
+ *    montre (accentuation évitée, comme les `raise exception`) ;
  *  - un seul bloc `do` pour tous les modèles : tout ou rien ;
  *  - rollback en commentaire (`ROLLBACK:BEGIN` / `ROLLBACK:END`), gardé de même.
  * Limite : la comparaison se fait indice par indice, à l'identique. Une variation REMPLACÉE par une
@@ -322,6 +326,8 @@ function bloc(
 		                  and ${condition('', b)}) then
 			raise exception '${id8} : contenu final inattendu';
 		end if;
+	else
+		raise notice '${id8} absent, saute';
 	end if;`;
 	});
 	return `set local lock_timeout = '5s';
@@ -388,7 +394,8 @@ ${modeles.map(ligneDeModele).join('\n')}
 -- Source : ${entete.source}. Contenu relevé en prod le ${entete.date}.
 --
 -- Garde : chaque modèle doit porter EXACTEMENT le contenu relevé, sinon la migration échoue et
--- rien n'est modifié (un seul bloc : tout ou rien). Modèle absent (base locale) : rien.
+-- rien n'est modifié (un seul bloc : tout ou rien). Modèle absent (base locale) : sauté, nommé
+-- par un notice « <id> absent, saute » ; en prod, il ne devrait jamais paraître.
 -- Prouvée par tests/integration/migrations-contenu-publie.test.ts, qui rejoue CE fichier sur des
 -- copies portant les vrais identifiants et le contenu de la prod (fixture contenu-publie/).
 --

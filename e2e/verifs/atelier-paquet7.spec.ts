@@ -135,7 +135,7 @@ test(
 	}
 );
 
-test('#2641 — ÉCART : le modèle est dessiné au-dessus du champ, la ligne dit « sous le champ »', async ({
+test('#2641 — le modèle est dessiné au-dessus du champ (E65, tranché le 2026-11-24)', async ({
 	page
 }) => {
 	await openAtelier(page);
@@ -143,11 +143,9 @@ test('#2641 — ÉCART : le modèle est dessiné au-dessus du champ, la ligne di
 	await field.fill('g(t) = 3t');
 	await expect(modelLine(page)).toBeVisible();
 	const seen = await positions(page, field);
-	// Le symptôme : la ligne « Modèle : » finit avant le haut du champ (la place du
-	// modèle des commandes, depuis `decebfa925`)
+	// La ligne « Modèle : » finit avant le haut du champ (la place du modèle des commandes,
+	// depuis `decebfa925`) : David a gardé cette place, la ligne #2641 disait « sous le champ »
 	expect(seen.modelBottom, 'le modèle est au-dessus du champ').toBeLessThanOrEqual(
 		seen.fieldTop + 1
 	);
-	test.fail();
-	expect(seen.modelTop, 'le modèle est sous le champ').toBeGreaterThanOrEqual(seen.fieldBottom - 1);
 });

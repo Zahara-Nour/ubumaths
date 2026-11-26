@@ -4,11 +4,13 @@ import { expect, test, type Browser, type Locator, type Page } from '@playwright
 import { BLOCK_CATALOG } from '../../src/lib/block-catalog/index';
 import { OFFICIAL_PROGRAMMES } from '../../src/lib/programmes/official-programmes';
 import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { allowClipboard, readClipboard } from './helpers/atelier';
 import {
 	collectErrors,
 	expectNoHorizontalOverflow,
 	expectReadableFont,
 	gotoSettled,
+	isNavigationAbortNoise,
 	shoot,
 	shootThemes
 } from './helpers/pages';
@@ -310,15 +312,11 @@ test('#1687 — /aide-ecriture : Géométrie et Cercle trigonométrique, retours
 test('#1764/#1767 — /aide-ecriture/blocs : les cartes du catalogue, chaque fiche (réglages, Copier, rendus, erreurs, Essayer)', async ({
 	page,
 	browser,
-	context,
 	isMobile
 }, testInfo) => {
 	test.setTimeout(480_000);
 	await openAs(browser, TEACHER, page);
-	// Le presse-papiers n'est lisible que sous Chromium
-	const canReadClipboard =
-		testInfo.project.name !== 'iphone' && !testInfo.project.name.includes('safari');
-	if (canReadClipboard) await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+	await allowClipboard(page);
 	await page.goto('/aide-ecriture/blocs');
 	const hrefs = await page
 		.locator('main ul a')
@@ -355,12 +353,7 @@ test('#1764/#1767 — /aide-ecriture/blocs : les cartes du catalogue, chaque fic
 		const source = (await first.locator('pre').first().textContent()) ?? '';
 		await first.getByRole('button', { name: 'Copier' }).click();
 		await expect(first.getByRole('button', { name: /Copié/ })).toBeVisible();
-		if (canReadClipboard) {
-			expect(
-				await page.evaluate(() => navigator.clipboard.readText()),
-				`${href} : presse-papiers`
-			).toBe(source);
-		}
+		expect(await readClipboard(page), `${href} : presse-papiers`).toBe(source);
 		// Erreurs fréquentes : leur message est situé (ligne dite)
 		const mistakes = page
 			.locator('section', { has: page.getByRole('heading', { name: 'Erreurs fréquentes' }) })
@@ -799,7 +792,15 @@ test.describe('#1731 — présentation d’un carnet Python (/python-notebook/[i
 				description: `${bag.errors.length} erreurs de console sur /automaths`
 			});
 		} else {
-			expect(bag.errors, 'erreurs').toEqual([]);
+			const errors = bag.errors.filter((e) => !isNavigationAbortNoise(e, testInfo.project.name));
+			// Le bruit écarté reste lisible dans le rapport
+			if (errors.length < bag.errors.length) {
+				testInfo.annotations.push({
+					type: 'bruit de navigation écarté',
+					description: `${bag.errors.length - errors.length} erreur(s) de requête coupée`
+				});
+			}
+			expect(errors, 'erreurs').toEqual([]);
 		}
 	});
 });
@@ -973,3 +974,72 @@ test.describe(
 		});
 	}
 );
+
+// ============================================================================
+// E83 — tableau de bord du prof : un chargement qui échoue ne repart pas en boucle
+// ============================================================================
+
+test.describe('E83 — tableau de bord du prof : un seul essai de chargement par ouverture', () => {
+	/** Compte les appels à une API du tableau de bord et leur répond par `reponse` */
+	async function compter(
+		page: Page,
+		chemin: string,
+		reponse: 'coupure' | { status: number; json: unknown }
+	): Promise<{ appels: number }> {
+		const compte = { appels: 0 };
+		await page.route(`**${chemin}`, async (route) => {
+			compte.appels += 1;
+			if (reponse === 'coupure') await route.abort('failed');
+			else await route.fulfill({ status: reponse.status, json: reponse.json });
+		});
+		return compte;
+	}
+
+	test('E83 — les classes ne se chargent pas (réseau coupé) : un seul appel, un seul message', async ({
+		page,
+		browser
+	}) => {
+		const classes = await compter(page, '/api/teacher/classes', 'coupure');
+		await openAs(browser, TEACHER, page);
+		const message = page.getByText(/^Erreur lors du chargement des (?!périodes)/);
+		await expect(message.first()).toBeVisible();
+		// Le temps d'une boucle : avant le correctif, des dizaines d'appels en une seconde
+		await page.waitForTimeout(2000);
+		expect(classes.appels, 'appels à /api/teacher/classes').toBe(1);
+		expect(await message.count(), 'messages d’erreur affichés').toBe(1);
+	});
+
+	test('E83 — le serveur répond une erreur 500 pour les classes : un seul appel', async ({
+		page,
+		browser
+	}) => {
+		const classes = await compter(page, '/api/teacher/classes', {
+			status: 500,
+			json: { message: 'panne' }
+		});
+		await openAs(browser, TEACHER, page);
+		await expect(
+			page.getByText(/^Erreur lors du chargement des (?!périodes)/).first()
+		).toBeVisible();
+		await page.waitForTimeout(2000);
+		expect(classes.appels, 'appels à /api/teacher/classes').toBe(1);
+	});
+
+	test('E83 — un prof sans classe : la liste vide est demandée une seule fois, sans message d’erreur', async ({
+		page,
+		browser
+	}) => {
+		const classes = await compter(page, '/api/teacher/classes', {
+			status: 200,
+			json: { classes: [] }
+		});
+		await openAs(browser, TEACHER, page);
+		await expect.poll(() => classes.appels).toBeGreaterThan(0);
+		await page.waitForTimeout(2000);
+		expect(classes.appels, 'appels à /api/teacher/classes').toBe(1);
+		await expect(page.getByText(/^Erreur lors du chargement des/)).toHaveCount(0);
+	});
+
+	// Les périodes (`/api/teacher/periods`) ont le même correctif, sans vérification ici : le prof de
+	// la base locale n'a pas d'école, la demande ne part pas.
+});

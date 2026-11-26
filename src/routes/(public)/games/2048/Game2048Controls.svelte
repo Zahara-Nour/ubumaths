@@ -342,36 +342,42 @@
 	{@const isActiveTier = bombMode && activeBombTier === tier}
 	<div class="relative">
 		<Tooltip.Root>
+			<!-- Déclencheur rendu en <span> : un <button> dans le <button> de bits-ui n'est pas du HTML
+				valide (E80), et un bouton désactivé seul ne montrerait plus son info-bulle. -->
 			<Tooltip.Trigger>
-				{#if isActiveTier}
-					<button
-						onclick={onCancelBomb}
-						class="flex h-11 w-11 animate-pulse items-center justify-center rounded-xl border-2 border-red-500 bg-red-50 dark:bg-red-950/20"
-						aria-label="Annuler bombe"
-					>
-						❌
-					</button>
-				{:else}
-					<button
-						onclick={() => onUseBomb(tier)}
-						{disabled}
-						class={cn(
-							'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
-							disabled
-								? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
-								: hasCards
-									? 'border-orange-500 bg-orange-50 hover:border-orange-400 dark:bg-orange-950/20'
-									: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
-						)}
-						aria-label="Bombe \u2264 {tier}"
-					>
-						<img
-							src={powerImg(cardId)}
-							alt="Bombe \u2264 {tier}"
-							class="h-full w-full object-cover"
-						/>
-					</button>
-				{/if}
+				{#snippet child({ props })}
+					<span {...props} class="inline-flex">
+						{#if isActiveTier}
+							<button
+								onclick={onCancelBomb}
+								class="flex h-11 w-11 animate-pulse items-center justify-center rounded-xl border-2 border-red-500 bg-red-50 dark:bg-red-950/20"
+								aria-label="Annuler bombe"
+							>
+								❌
+							</button>
+						{:else}
+							<button
+								onclick={() => onUseBomb(tier)}
+								{disabled}
+								class={cn(
+									'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
+									disabled
+										? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
+										: hasCards
+											? 'border-orange-500 bg-orange-50 hover:border-orange-400 dark:bg-orange-950/20'
+											: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
+								)}
+								aria-label="Bombe \u2264 {tier}"
+							>
+								<img
+									src={powerImg(cardId)}
+									alt="Bombe \u2264 {tier}"
+									class="h-full w-full object-cover"
+								/>
+							</button>
+						{/if}
+					</span>
+				{/snippet}
 			</Tooltip.Trigger>
 			<Tooltip.Content>
 				<p class="max-w-48 text-sm">
@@ -401,23 +407,31 @@
 	<div class="relative">
 		<Tooltip.Root>
 			<Tooltip.Trigger>
-				<button
-					onclick={() => onUseMultiplier(factor)}
-					{disabled}
-					class={cn(
-						'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
-						scoreMultiplier > 1
-							? 'border-yellow-500 bg-yellow-100 dark:bg-yellow-950/30'
-							: disabled
-								? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
-								: hasCards
-									? 'border-yellow-500 bg-yellow-50 hover:border-yellow-400 dark:bg-yellow-950/20'
-									: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
-					)}
-					aria-label="Multiplicateur x{factor}"
-				>
-					<img src={powerImg(cardId)} alt="Multi x{factor}" class="h-full w-full object-cover" />
-				</button>
+				{#snippet child({ props })}
+					<span {...props} class="inline-flex">
+						<button
+							onclick={() => onUseMultiplier(factor)}
+							{disabled}
+							class={cn(
+								'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
+								scoreMultiplier > 1
+									? 'border-yellow-500 bg-yellow-100 dark:bg-yellow-950/30'
+									: disabled
+										? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
+										: hasCards
+											? 'border-yellow-500 bg-yellow-50 hover:border-yellow-400 dark:bg-yellow-950/20'
+											: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
+							)}
+							aria-label="Multiplicateur x{factor}"
+						>
+							<img
+								src={powerImg(cardId)}
+								alt="Multi x{factor}"
+								class="h-full w-full object-cover"
+							/>
+						</button>
+					</span>
+				{/snippet}
 			</Tooltip.Trigger>
 			<Tooltip.Content><p class="max-w-48 text-sm">{tooltip}</p></Tooltip.Content>
 		</Tooltip.Root>
@@ -446,21 +460,29 @@
 				<div class="relative">
 					<Tooltip.Root>
 						<Tooltip.Trigger>
-							<button
-								onclick={onUseUndo}
-								disabled={undoDisabled}
-								class={cn(
-									'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
-									undoDisabled
-										? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
-										: hasUndoCards
-											? 'border-green-500 bg-green-50 hover:border-green-400 dark:bg-green-950/20'
-											: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
-								)}
-								aria-label="Annuler le dernier coup"
-							>
-								<img src={powerImg('2048-undo')} alt="Retour" class="h-full w-full object-cover" />
-							</button>
+							{#snippet child({ props })}
+								<span {...props} class="inline-flex">
+									<button
+										onclick={onUseUndo}
+										disabled={undoDisabled}
+										class={cn(
+											'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
+											undoDisabled
+												? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
+												: hasUndoCards
+													? 'border-green-500 bg-green-50 hover:border-green-400 dark:bg-green-950/20'
+													: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
+										)}
+										aria-label="Annuler le dernier coup"
+									>
+										<img
+											src={powerImg('2048-undo')}
+											alt="Retour"
+											class="h-full w-full object-cover"
+										/>
+									</button>
+								</span>
+							{/snippet}
 						</Tooltip.Trigger>
 						<Tooltip.Content><p class="max-w-48 text-sm">{undoTooltip}</p></Tooltip.Content>
 					</Tooltip.Root>
@@ -501,27 +523,31 @@
 				<div class="relative">
 					<Tooltip.Root>
 						<Tooltip.Trigger>
-							<button
-								onclick={onUseFreezeSpawn}
-								disabled={freezeDisabled}
-								class={cn(
-									'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
-									freezeActive
-										? 'border-cyan-500 bg-cyan-100 dark:bg-cyan-950/30'
-										: freezeDisabled
-											? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
-											: hasFreezeCards
-												? 'border-cyan-500 bg-cyan-50 hover:border-cyan-400 dark:bg-cyan-950/20'
-												: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
-								)}
-								aria-label="Gel de Spawn"
-							>
-								<img
-									src={powerImg('2048-freeze-spawn')}
-									alt="Gel"
-									class="h-full w-full object-cover"
-								/>
-							</button>
+							{#snippet child({ props })}
+								<span {...props} class="inline-flex">
+									<button
+										onclick={onUseFreezeSpawn}
+										disabled={freezeDisabled}
+										class={cn(
+											'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
+											freezeActive
+												? 'border-cyan-500 bg-cyan-100 dark:bg-cyan-950/30'
+												: freezeDisabled
+													? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
+													: hasFreezeCards
+														? 'border-cyan-500 bg-cyan-50 hover:border-cyan-400 dark:bg-cyan-950/20'
+														: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
+										)}
+										aria-label="Gel de Spawn"
+									>
+										<img
+											src={powerImg('2048-freeze-spawn')}
+											alt="Gel"
+											class="h-full w-full object-cover"
+										/>
+									</button>
+								</span>
+							{/snippet}
 						</Tooltip.Trigger>
 						<Tooltip.Content><p class="max-w-48 text-sm">{freezeTooltip}</p></Tooltip.Content>
 					</Tooltip.Root>
@@ -558,35 +584,39 @@
 				<div class="relative">
 					<Tooltip.Root>
 						<Tooltip.Trigger>
-							{#if fusionMode}
-								<button
-									onclick={onCancelFusion}
-									class="flex h-11 w-11 animate-pulse items-center justify-center rounded-xl border-2 border-purple-500 bg-purple-50 dark:bg-purple-950/20"
-									aria-label="Annuler fusion"
-								>
-									❌
-								</button>
-							{:else}
-								<button
-									onclick={onUseFusion}
-									disabled={fusionDisabled}
-									class={cn(
-										'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
-										fusionDisabled
-											? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
-											: hasFusionCards
-												? 'border-purple-500 bg-purple-50 hover:border-purple-400 dark:bg-purple-950/20'
-												: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
-									)}
-									aria-label="Fusion Forcee"
-								>
-									<img
-										src={powerImg('2048-merge')}
-										alt="Fusion"
-										class="h-full w-full object-cover"
-									/>
-								</button>
-							{/if}
+							{#snippet child({ props })}
+								<span {...props} class="inline-flex">
+									{#if fusionMode}
+										<button
+											onclick={onCancelFusion}
+											class="flex h-11 w-11 animate-pulse items-center justify-center rounded-xl border-2 border-purple-500 bg-purple-50 dark:bg-purple-950/20"
+											aria-label="Annuler fusion"
+										>
+											❌
+										</button>
+									{:else}
+										<button
+											onclick={onUseFusion}
+											disabled={fusionDisabled}
+											class={cn(
+												'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
+												fusionDisabled
+													? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
+													: hasFusionCards
+														? 'border-purple-500 bg-purple-50 hover:border-purple-400 dark:bg-purple-950/20'
+														: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
+											)}
+											aria-label="Fusion Forcee"
+										>
+											<img
+												src={powerImg('2048-merge')}
+												alt="Fusion"
+												class="h-full w-full object-cover"
+											/>
+										</button>
+									{/if}
+								</span>
+							{/snippet}
 						</Tooltip.Trigger>
 						<Tooltip.Content>
 							<p class="max-w-48 text-sm">
@@ -607,35 +637,39 @@
 				<div class="relative">
 					<Tooltip.Root>
 						<Tooltip.Trigger>
-							{#if jokerMode}
-								<button
-									onclick={onCancelJoker}
-									class="flex h-11 w-11 animate-pulse items-center justify-center rounded-xl border-2 border-pink-500 bg-pink-50 dark:bg-pink-950/20"
-									aria-label="Annuler joker"
-								>
-									❌
-								</button>
-							{:else}
-								<button
-									onclick={onUseJoker}
-									disabled={jokerDisabled}
-									class={cn(
-										'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
-										jokerDisabled
-											? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
-											: hasJokerCards
-												? 'border-pink-500 bg-pink-50 hover:border-pink-400 dark:bg-pink-950/20'
-												: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
-									)}
-									aria-label="Joker"
-								>
-									<img
-										src={powerImg('2048-joker')}
-										alt="Joker"
-										class="h-full w-full object-cover"
-									/>
-								</button>
-							{/if}
+							{#snippet child({ props })}
+								<span {...props} class="inline-flex">
+									{#if jokerMode}
+										<button
+											onclick={onCancelJoker}
+											class="flex h-11 w-11 animate-pulse items-center justify-center rounded-xl border-2 border-pink-500 bg-pink-50 dark:bg-pink-950/20"
+											aria-label="Annuler joker"
+										>
+											❌
+										</button>
+									{:else}
+										<button
+											onclick={onUseJoker}
+											disabled={jokerDisabled}
+											class={cn(
+												'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
+												jokerDisabled
+													? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
+													: hasJokerCards
+														? 'border-pink-500 bg-pink-50 hover:border-pink-400 dark:bg-pink-950/20'
+														: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
+											)}
+											aria-label="Joker"
+										>
+											<img
+												src={powerImg('2048-joker')}
+												alt="Joker"
+												class="h-full w-full object-cover"
+											/>
+										</button>
+									{/if}
+								</span>
+							{/snippet}
 						</Tooltip.Trigger>
 						<Tooltip.Content>
 							<p class="max-w-48 text-sm">
@@ -656,27 +690,31 @@
 				<div class="relative">
 					<Tooltip.Root>
 						<Tooltip.Trigger>
-							<button
-								onclick={onUseVision}
-								disabled={visionDisabled}
-								class={cn(
-									'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
-									visionActive
-										? 'border-indigo-500 bg-indigo-100 dark:bg-indigo-950/30'
-										: visionDisabled
-											? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
-											: hasVisionCards
-												? 'border-indigo-500 bg-indigo-50 hover:border-indigo-400 dark:bg-indigo-950/20'
-												: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
-								)}
-								aria-label="Vision"
-							>
-								<img
-									src={powerImg('2048-vision')}
-									alt="Vision"
-									class="h-full w-full object-cover"
-								/>
-							</button>
+							{#snippet child({ props })}
+								<span {...props} class="inline-flex">
+									<button
+										onclick={onUseVision}
+										disabled={visionDisabled}
+										class={cn(
+											'flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border-2 transition-all',
+											visionActive
+												? 'border-indigo-500 bg-indigo-100 dark:bg-indigo-950/30'
+												: visionDisabled
+													? 'cursor-not-allowed border-muted bg-muted/30 opacity-50 grayscale'
+													: hasVisionCards
+														? 'border-indigo-500 bg-indigo-50 hover:border-indigo-400 dark:bg-indigo-950/20'
+														: 'border-amber-500 bg-amber-50 hover:border-amber-400 dark:bg-amber-950/20'
+										)}
+										aria-label="Vision"
+									>
+										<img
+											src={powerImg('2048-vision')}
+											alt="Vision"
+											class="h-full w-full object-cover"
+										/>
+									</button>
+								</span>
+							{/snippet}
 						</Tooltip.Trigger>
 						<Tooltip.Content><p class="max-w-48 text-sm">{visionTooltip}</p></Tooltip.Content>
 					</Tooltip.Root>

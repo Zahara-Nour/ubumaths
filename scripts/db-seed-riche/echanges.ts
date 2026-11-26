@@ -259,7 +259,7 @@ const BUGS: {
 		titre: 'Faute dans un énoncé',
 		description: 'Dans la question 4, il est écrit « les nombre » au lieu de « les nombres ».',
 		etat: 'resolved',
-		page: '/dashboard/student/exercises'
+		page: '/dashboard/student/work'
 	},
 	{
 		categorie: 'ux',
@@ -327,7 +327,7 @@ const BUGS: {
 		description:
 			'J’ai répondu 0,5 et la correction attendait 1/2 : ma réponse a été comptée fausse.',
 		etat: 'pending',
-		page: '/dashboard/student/exercises'
+		page: '/dashboard/student/work'
 	}
 ];
 

@@ -1,0 +1,3259 @@
+{
+	"migration": "supabase/migrations/20261126131910_questions_idees_6e_proportionnalite_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "52bf3fb9-a815-4a94-9425-f524278fbbc1",
+			"title": "Calculer la longueur réelle",
+			"fichier": "52bf3fb9.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dm]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dam]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["9~\\unit{dm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "0"
+						},
+						"description": "v0 : 9 cm (1 cm pour 10 cm) → 9 dm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v1 : 9 cm (1 cm pour 1 m) → 9 m",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "1"
+						},
+						"description": "v2 : 90 cm (1 cm pour 1 m) → 90 m",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9~\\unit{dam}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v3 : 9 cm (1 cm pour 10 m) → 9 dam",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "3",
+							"b2": "1"
+						},
+						"description": "v4 : 30 cm (1 cm pour 1 km) → 30 km",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["90~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v5 : 9 cm (1 cm pour 10 km) → 90 km",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["900~\\unit{cm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "unité équivalente acceptée (900 cm)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9~\\unit{cm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "division au lieu de multiplication",
+						"variationIndex": 1
+					}
+				],
+				"description": null
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dm]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dam]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"statement": "Voici l'échelle d'un plan : le segment ci-dessous mesure $1$ cm sur le plan et représente ${{ech}}$ m dans la réalité.\n\n```figure\nfenetre: -0.5 ; 1.5 ; -0.4 ; 0.6\ntaille: petite\ndescription: Échelle graphique : un segment de 1 cm marqué {{ech}} m.\n---\nA = point(0, 0, visible=faux)\nB = point(1, 0, visible=faux)\nsegment(A, B, epaisseur=3)\nA1 = point(0, -0.1, visible=faux)\nA2 = point(0, 0.1, visible=faux)\nsegment(A1, A2, epaisseur=3)\nB1 = point(1, -0.1, visible=faux)\nB2 = point(1, 0.1, visible=faux)\nsegment(B1, B2, epaisseur=3)\ntexte(0.5, 0.35, \"{{ech}} m\")\n```\n\nSur ce plan, {{if:o==0|une salle de classe|{{if:o==1|un gymnase|{{if:o==2|une cour de récréation|un terrain de football}}}}}} rectangulaire mesure ${{pl}}$ cm de long et ${{pw}}$ cm de large. Calcule ses dimensions réelles.\n\nLongueur réelle : $?$\n\nLargeur réelle : $?$",
+						"variables": [
+							{
+								"name": "o",
+								"expression": "0..3"
+							},
+							{
+								"name": "ech",
+								"expression": "eval:2*(1-min(abs(o-0),1))+2*(1-min(abs(o-1),1))+4*(1-min(abs(o-2),1))+5*(1-min(abs(o-3),1))"
+							},
+							{
+								"name": "xl",
+								"expression": "{{eval:35*(1-min(abs(o-0),1))+150*(1-min(abs(o-1),1))+80*(1-min(abs(o-2),1))+180*(1-min(abs(o-3),1))}}..{{eval:50*(1-min(abs(o-0),1))+220*(1-min(abs(o-1),1))+120*(1-min(abs(o-2),1))+240*(1-min(abs(o-3),1))}}"
+							},
+							{
+								"name": "xw",
+								"expression": "{{eval:25*(1-min(abs(o-0),1))+90*(1-min(abs(o-1),1))+50*(1-min(abs(o-2),1))+100*(1-min(abs(o-3),1))}}..{{eval:34*(1-min(abs(o-0),1))+130*(1-min(abs(o-1),1))+70*(1-min(abs(o-2),1))+140*(1-min(abs(o-3),1))}}"
+							},
+							{
+								"name": "pl",
+								"expression": "eval:xl/10;d"
+							},
+							{
+								"name": "pw",
+								"expression": "eval:xw/10;d"
+							},
+							{
+								"name": "rl",
+								"expression": "eval:ech*xl/10;d"
+							},
+							{
+								"name": "rw",
+								"expression": "eval:ech*xw/10;d"
+							}
+						],
+						"conditions": ["10*xw<=8*xl"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{rl}}\\unit{m}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:xl/(10*ech);d}}\\unit{m}",
+										"message": "La longueur réelle est plus grande que sur le plan : chaque centimètre du plan représente ${{ech}}$ m.",
+										"label": "Division au lieu de multiplication"
+									},
+									{
+										"answer": "{{rl}}\\unit{cm}",
+										"message": "Vérifie l'unité : sur le plan, $1$ cm représente ${{ech}}$ m, pas ${{ech}}$ cm.",
+										"label": "Mauvaise unité"
+									},
+									{
+										"answer": "{{rw}}\\unit{m}",
+										"message": "Tu as donné la largeur : la longueur est le plus grand côté du rectangle.",
+										"label": "Longueur et largeur échangées"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{rw}}\\unit{m}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:xw/(10*ech);d}}\\unit{m}",
+										"message": "La largeur réelle est plus grande que sur le plan : chaque centimètre du plan représente ${{ech}}$ m.",
+										"label": "Division au lieu de multiplication"
+									},
+									{
+										"answer": "{{rw}}\\unit{cm}",
+										"message": "Vérifie l'unité : sur le plan, $1$ cm représente ${{ech}}$ m, pas ${{ech}}$ cm.",
+										"label": "Mauvaise unité"
+									},
+									{
+										"answer": "{{rl}}\\unit{m}",
+										"message": "Tu as donné la longueur : la largeur est le plus petit côté du rectangle.",
+										"label": "Longueur et largeur échangées"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Échelle.** Sur le plan, $1$ cm représente ${{ech}}$ m dans la réalité : chaque longueur du plan, en centimètres, est multipliée par ${{ech}}$ pour obtenir la longueur réelle, en mètres.",
+								"$${{pl}} \\times {{ech}} = \\textcolor{{{color:primary.0}}}{{{rl}}~\\text{m}} \\qquad {{pw}} \\times {{ech}} = \\textcolor{{{color:primary.0}}}{{{rw}}~\\text{m}}$$",
+								"Dans la réalité, le rectangle mesure ${{rl}}$ m de long et ${{rw}}$ m de large."
+							]
+						},
+						"hint": "Chaque centimètre du plan représente ${{ech}}$ m dans la réalité : combien de mètres représentent ${{pl}}$ cm ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["9~\\unit{dm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "0"
+						},
+						"description": "v0 : 9 cm (1 cm pour 10 cm) → 9 dm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v1 : 9 cm (1 cm pour 1 m) → 9 m",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "1"
+						},
+						"description": "v2 : 90 cm (1 cm pour 1 m) → 90 m",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9~\\unit{dam}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v3 : 9 cm (1 cm pour 10 m) → 9 dam",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "3",
+							"b2": "1"
+						},
+						"description": "v4 : 30 cm (1 cm pour 1 km) → 30 km",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["90~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v5 : 9 cm (1 cm pour 10 km) → 90 km",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["900~\\unit{cm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "unité équivalente acceptée (900 cm)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9~\\unit{cm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "division au lieu de multiplication",
+						"variationIndex": 1
+					},
+					{
+						"description": "F3 réel : 4,3 cm × 3,1 cm (1 cm pour 2 m) → 8,6 m × 6,2 m",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["8{,}6~\\unit{m}", "6{,}2~\\unit{m}"]
+					},
+					{
+						"description": "F3 réel : en centimètres (860 cm, 620 cm)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["860~\\unit{cm}", "620~\\unit{cm}"]
+					},
+					{
+						"description": "F3 réel : sans unité",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["8{,}6", "6{,}2"]
+					},
+					{
+						"description": "F3 réel : longueur divisée (2,15 m)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "La longueur réelle est plus grande que sur le plan : chaque centimètre du plan représente $2$ m."
+						},
+						"answers": ["2{,}15~\\unit{m}", "6{,}2~\\unit{m}"]
+					},
+					{
+						"description": "F3 réel : largeur divisée (1,55 m)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "La largeur réelle est plus grande que sur le plan : chaque centimètre du plan représente $2$ m."
+						},
+						"answers": ["8{,}6~\\unit{m}", "1{,}55~\\unit{m}"]
+					},
+					{
+						"description": "F3 réel : longueur en cm (8,6 cm)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Vérifie l'unité : sur le plan, $1$ cm représente $2$ m, pas $2$ cm."
+						},
+						"answers": ["8{,}6~\\unit{cm}", "6{,}2~\\unit{m}"]
+					},
+					{
+						"description": "F3 réel : largeur en cm (6,2 cm)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Vérifie l'unité : sur le plan, $1$ cm représente $2$ m, pas $2$ cm."
+						},
+						"answers": ["8{,}6~\\unit{m}", "6{,}2~\\unit{cm}"]
+					},
+					{
+						"description": "F3 réel : largeur à la place de la longueur",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné la largeur : la longueur est le plus grand côté du rectangle."
+						},
+						"answers": ["6{,}2~\\unit{m}", "6{,}2~\\unit{m}"]
+					},
+					{
+						"description": "F3 réel : longueur à la place de la largeur",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"ech": "2",
+							"xl": "43",
+							"xw": "31",
+							"pl": "4.3",
+							"pw": "3.1",
+							"rl": "8.6",
+							"rw": "6.2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné la longueur : la largeur est le plus petit côté du rectangle."
+						},
+						"answers": ["8{,}6~\\unit{m}", "8{,}6~\\unit{m}"]
+					},
+					{
+						"description": "F3 réel : football 21,3 cm × 12,8 cm (1 cm pour 5 m)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "3",
+							"ech": "5",
+							"xl": "213",
+							"xw": "128",
+							"pl": "21.3",
+							"pw": "12.8",
+							"rl": "106.5",
+							"rw": "64"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["106{,}5~\\unit{m}", "64~\\unit{m}"]
+					}
+				],
+				"description": null
+			},
+			"changements": {
+				"ajoutees": [7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "5e4e5e9d-68df-43b4-ac6f-08c4ffd37325",
+			"title": "Calculer la longueur sur une carte",
+			"fichier": "5e4e5e9d.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{eval:c;[cm]}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{eval:c;[m]}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v0 : 90 dm (1 cm pour 10 cm) → 90 cm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v1 : 90 dm (1 cm pour 1 m) → 9 cm",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v2 : 90 m (1 cm pour 1 m) → 90 cm",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v3 : 90 m (1 cm pour 10 m) → 9 cm",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v4 : 40 km (1 cm pour 1 km) → 40 cm",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v5 : 40 km (1 cm pour 10 km) → 4 cm",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["0{,}9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "conversion oubliée (90 dm → 0,9)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9\\,000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "multiplication au lieu de division",
+						"variationIndex": 2
+					}
+				],
+				"description": null
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{eval:c;[cm]}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{eval:c;[m]}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"statement": "Voici l'échelle d'un plan : le segment ci-dessous mesure $1$ cm sur le plan et représente ${{ech}}$ m dans la réalité.\n\n```figure\nfenetre: -0.5 ; 1.5 ; -0.4 ; 0.6\ntaille: petite\ndescription: Échelle graphique : un segment de 1 cm marqué {{ech}} m.\n---\nA = point(0, 0, visible=faux)\nB = point(1, 0, visible=faux)\nsegment(A, B, epaisseur=3)\nA1 = point(0, -0.1, visible=faux)\nA2 = point(0, 0.1, visible=faux)\nsegment(A1, A2, epaisseur=3)\nB1 = point(1, -0.1, visible=faux)\nB2 = point(1, 0.1, visible=faux)\nsegment(B1, B2, epaisseur=3)\ntexte(0.5, 0.35, \"{{ech}} m\")\n```\n\n{{if:o==0|Un gymnase|{{if:o==1|Une cour de récréation|{{if:o==2|Un terrain de football|Un parking}}}}}} rectangulaire mesure ${{rl}}$ m de long et ${{rw}}$ m de large. Calcule ses dimensions sur le plan, en centimètres.\n\nLongueur sur le plan : $?$ cm.\n\nLargeur sur le plan : $?$ cm.",
+						"variables": [
+							{
+								"name": "o",
+								"expression": "0..3"
+							},
+							{
+								"name": "ech",
+								"expression": "eval:2*(1-min(abs(o-0),1))+4*(1-min(abs(o-1),1))+5*(1-min(abs(o-2),1))+4*(1-min(abs(o-3),1))"
+							},
+							{
+								"name": "kl",
+								"expression": "{{eval:15*(1-min(abs(o-0),1))+8*(1-min(abs(o-1),1))+18*(1-min(abs(o-2),1))+10*(1-min(abs(o-3),1))}}..{{eval:22*(1-min(abs(o-0),1))+12*(1-min(abs(o-1),1))+24*(1-min(abs(o-2),1))+15*(1-min(abs(o-3),1))}}"
+							},
+							{
+								"name": "kw",
+								"expression": "{{eval:9*(1-min(abs(o-0),1))+5*(1-min(abs(o-1),1))+10*(1-min(abs(o-2),1))+5*(1-min(abs(o-3),1))}}..{{eval:13*(1-min(abs(o-0),1))+7*(1-min(abs(o-1),1))+14*(1-min(abs(o-2),1))+8*(1-min(abs(o-3),1))}}"
+							},
+							{
+								"name": "rl",
+								"expression": "eval:ech*kl"
+							},
+							{
+								"name": "rw",
+								"expression": "eval:ech*kw"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{kl}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:ech*rl}}",
+										"message": "Sur le plan, la longueur est plus petite que dans la réalité : chaque centimètre du plan représente ${{ech}}$ m.",
+										"label": "Multiplication au lieu de division"
+									},
+									{
+										"answer": "{{eval:100*kl}}",
+										"message": "Tu as converti ${{rl}}$ m en centimètres : l'échelle compare des centimètres du plan à des mètres réels, compte les paquets de ${{ech}}$ m.",
+										"label": "Longueur réelle convertie en centimètres"
+									},
+									{
+										"answer": "{{kw}}",
+										"message": "Tu as donné la largeur : la longueur est le plus grand côté du rectangle.",
+										"label": "Longueur et largeur échangées"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{kw}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:ech*rw}}",
+										"message": "Sur le plan, la largeur est plus petite que dans la réalité : chaque centimètre du plan représente ${{ech}}$ m.",
+										"label": "Multiplication au lieu de division"
+									},
+									{
+										"answer": "{{eval:100*kw}}",
+										"message": "Tu as converti ${{rw}}$ m en centimètres : l'échelle compare des centimètres du plan à des mètres réels, compte les paquets de ${{ech}}$ m.",
+										"label": "Largeur réelle convertie en centimètres"
+									},
+									{
+										"answer": "{{kl}}",
+										"message": "Tu as donné la longueur : la largeur est le plus petit côté du rectangle.",
+										"label": "Longueur et largeur échangées"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Échelle.** Sur le plan, $1$ cm représente ${{ech}}$ m dans la réalité : on cherche combien de fois ${{ech}}$ m il y a dans chaque dimension réelle.",
+								"$${{rl}} \\div {{ech}} = \\textcolor{{{color:primary.0}}}{{{kl}}} \\qquad {{rw}} \\div {{ech}} = \\textcolor{{{color:primary.0}}}{{{kw}}}$$",
+								"Sur le plan, le rectangle mesure ${{kl}}$ cm de long et ${{kw}}$ cm de large."
+							]
+						},
+						"hint": "Chaque centimètre du plan représente ${{ech}}$ m : combien de fois ${{ech}}$ m y a-t-il dans ${{rl}}$ m ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v0 : 90 dm (1 cm pour 10 cm) → 90 cm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v1 : 90 dm (1 cm pour 1 m) → 9 cm",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v2 : 90 m (1 cm pour 1 m) → 90 cm",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v3 : 90 m (1 cm pour 10 m) → 9 cm",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v4 : 40 km (1 cm pour 1 km) → 40 cm",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v5 : 40 km (1 cm pour 10 km) → 4 cm",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["0{,}9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "conversion oubliée (90 dm → 0,9)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9\\,000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "multiplication au lieu de division",
+						"variationIndex": 2
+					},
+					{
+						"description": "F3 plan : 44 m × 24 m (1 cm pour 4 m) → 11 cm × 6 cm",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"ech": "4",
+							"kl": "11",
+							"kw": "6",
+							"rl": "44",
+							"rw": "24"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["11", "6"]
+					},
+					{
+						"description": "F3 plan : longueur multipliée (176)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"ech": "4",
+							"kl": "11",
+							"kw": "6",
+							"rl": "44",
+							"rw": "24"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Sur le plan, la longueur est plus petite que dans la réalité : chaque centimètre du plan représente $4$ m."
+						},
+						"answers": ["176", "6"]
+					},
+					{
+						"description": "F3 plan : largeur multipliée (96)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"ech": "4",
+							"kl": "11",
+							"kw": "6",
+							"rl": "44",
+							"rw": "24"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Sur le plan, la largeur est plus petite que dans la réalité : chaque centimètre du plan représente $4$ m."
+						},
+						"answers": ["11", "96"]
+					},
+					{
+						"description": "F3 plan : longueur convertie (1 100)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"ech": "4",
+							"kl": "11",
+							"kw": "6",
+							"rl": "44",
+							"rw": "24"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as converti $44$ m en centimètres : l'échelle compare des centimètres du plan à des mètres réels, compte les paquets de $4$ m."
+						},
+						"answers": ["1100", "6"]
+					},
+					{
+						"description": "F3 plan : largeur à la place de la longueur",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"ech": "4",
+							"kl": "11",
+							"kw": "6",
+							"rl": "44",
+							"rw": "24"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné la largeur : la longueur est le plus grand côté du rectangle."
+						},
+						"answers": ["6", "6"]
+					},
+					{
+						"description": "F3 plan : longueur à la place de la largeur",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"ech": "4",
+							"kl": "11",
+							"kw": "6",
+							"rl": "44",
+							"rw": "24"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné la longueur : la largeur est le plus petit côté du rectangle."
+						},
+						"answers": ["11", "11"]
+					},
+					{
+						"description": "F3 plan : football 110 m × 60 m (1 cm pour 5 m) → 22 cm × 12 cm",
+						"variationIndex": 6,
+						"variables": {
+							"o": "2",
+							"ech": "5",
+							"kl": "22",
+							"kw": "12",
+							"rl": "110",
+							"rw": "60"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["22", "12"]
+					}
+				],
+				"description": null
+			},
+			"changements": {
+				"ajoutees": [7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "7981dab0-c1f9-4e87-961f-91be61e698dc",
+			"title": "Repérer double, moitié, quadruple, quart et tiers",
+			"fichier": "7981dab0.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Quel mot manque ?\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est } \\ldots \\text{ de } {{if:r<2|{{n}}|{{eval:r*n}}}}$$\n\n```choix\n- le double\n- le quadruple\n- la moitié\n- le tiers\n- le quart\n- le triple\n```",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "0..4"
+							},
+							{
+								"name": "n",
+								"expression": "3..25"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+								"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 4}}}}}}}}$$",
+								"${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}}}}$ de ${{if:r<2|{{n}}|{{eval:r*n}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:r<2|{{n}}|{{eval:r*n}}}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est {{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}} de } ?$$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "0..4"
+							},
+							{
+								"name": "n",
+								"expression": "3..25"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+								"{{if:r==0|Le nombre cherché est $2$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==1|Le nombre cherché est $4$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==2|Le nombre cherché est $2$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==3|Le nombre cherché est $3$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|Le nombre cherché est $4$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.}}}}}}}}",
+								"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 4}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "12 est le tiers de 36",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "Erreur : le triple (sens inversé)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "12",
+							"r": "0"
+						},
+						"description": "24 est le double de 12",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "12",
+							"r": "0"
+						},
+						"description": "Erreur : la moitié (sens inversé)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["36"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "12 est le tiers de 36",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "Erreur : 4 (12 ÷ 3)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "10",
+							"r": "1"
+						},
+						"description": "40 est le quadruple de 10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["160"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"r": "1"
+						},
+						"description": "Erreur : 160 (40 × 4)",
+						"variationIndex": 1
+					}
+				],
+				"description": "Nommer la relation entre deux nombres (12 est le tiers de 36) ou retrouver le nombre (12 est le tiers de 36 : 12 × 3)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Quel mot manque ?\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est } \\ldots \\text{ de } {{if:r<2|{{n}}|{{eval:r*n}}}}$$\n\n```choix\n- le double\n- le quadruple\n- la moitié\n- le tiers\n- le quart\n- le triple\n```",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "0..4"
+							},
+							{
+								"name": "n",
+								"expression": "3..25"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+								"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 4}}}}}}}}$$",
+								"${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}}}}$ de ${{if:r<2|{{n}}|{{eval:r*n}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:r<2|{{n}}|{{eval:r*n}}}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est {{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}} de } ?$$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "0..4"
+							},
+							{
+								"name": "n",
+								"expression": "3..25"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+								"{{if:r==0|Le nombre cherché est $2$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==1|Le nombre cherché est $4$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==2|Le nombre cherché est $2$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==3|Le nombre cherché est $3$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|Le nombre cherché est $4$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.}}}}}}}}",
+								"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 4}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"statement": "Complète.\n\n$$\\text{Le {{if:f==3|tiers|quart}} de } {{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}} \\text{ est } ?$$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "3|4"
+							},
+							{
+								"name": "z",
+								"expression": "1|2"
+							},
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "N",
+								"expression": "eval:f*a*10^z"
+							},
+							{
+								"name": "R",
+								"expression": "eval:a*10^z"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{R}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:N/2}}",
+										"message": "Tu as calculé la moitié : le {{if:f==3|tiers|quart}}, c'est diviser par ${{f}}$.",
+										"label": "Moitié au lieu du {{if:f==3|tiers|quart}}"
+									},
+									{
+										"answer": "{{eval:N*f}}",
+										"message": "Le {{if:f==3|tiers|quart}} est plus petit que le nombre de départ : on divise par ${{f}}$, on ne multiplie pas.",
+										"label": "Multiplication au lieu de division"
+									},
+									{
+										"answer": "{{eval:R/10}}",
+										"message": "Il manque un zéro : le nombre de départ, c'est ${{eval:f*a}}$ {{if:z==1|dizaines|centaines}}, et son {{if:f==3|tiers|quart}} est un nombre de {{if:z==1|dizaines|centaines}}.",
+										"label": "Zéro oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Le tiers, le quart.** Le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+								"${{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}}$, c'est ${{eval:f*a}}$ {{if:z==1|dizaines|centaines}} : ${{eval:f*a}} \\div {{f}} = {{a}}$, donc le {{if:f==3|tiers|quart}} est ${{a}}$ {{if:z==1|dizaines|centaines}}.",
+								"$${{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}} \\div {{f}} = \\textcolor{{{color:primary.0}}}{{{R}}}$$"
+							]
+						},
+						"hint": "Le {{if:f==3|tiers|quart}}, c'est diviser par ${{f}}$. Pense à ${{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}}$ comme à ${{eval:f*a}}$ {{if:z==1|dizaines|centaines}}."
+					},
+					{
+						"statement": "Complète. Donne le résultat en écriture décimale.\n\n$$\\text{Le {{if:f==3|tiers|quart}} de } {{X}} \\text{ est } ?$$",
+						"variables": [
+							{
+								"name": "g",
+								"expression": "0..2"
+							},
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "9..39"
+							},
+							{
+								"name": "s",
+								"expression": "eval:floor(g/2)"
+							},
+							{
+								"name": "f",
+								"expression": "eval:3+min(g,1)"
+							},
+							{
+								"name": "X",
+								"expression": "eval:((1-s)*f*(100*a+b)/100+s*n);d"
+							},
+							{
+								"name": "R",
+								"expression": "eval:(1-s)*(100*a+b)/100+s*n/4;d"
+							}
+						],
+						"conditions": ["mod(n,4)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{R}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:((1-s)*f*(100*a+b)/100+s*n)/2;d}}",
+										"message": "Tu as calculé la moitié : le {{if:f==3|tiers|quart}}, c'est diviser par ${{f}}$.",
+										"label": "Moitié au lieu du {{if:f==3|tiers|quart}}"
+									},
+									{
+										"answer": "{{eval:((1-s)*f*(100*a+b)/100+s*n)*f;d}}",
+										"message": "Le {{if:f==3|tiers|quart}} est plus petit que le nombre de départ : on divise par ${{f}}$, on ne multiplie pas.",
+										"label": "Multiplication au lieu de division"
+									},
+									{
+										"answer": "{{eval:(1-s)*(10*a+b)/10+s*(floor(n/4)+mod(n,4)/10);d}}",
+										"message": "{{if:s==1|Le reste de la division n'est pas la partie décimale : continue la division après la virgule.|Il manque un zéro au quotient : quand un chiffre ne contient pas ${{f}}$, on écrit $0$ au quotient.}}",
+										"label": "Reste lu comme une partie décimale, ou zéro oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Le tiers, le quart.** Le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+								"{{if:s==1|On pose la division ${{n}} \\div 4$ et on la continue après la virgule : ${{n}} = 4 \\times {{eval:floor(n/4)}} + {{eval:mod(n,4)}}$, puis ${{eval:mod(n,4)}} \\div 4 = {{eval:mod(n,4)/4;d}}$.|${{X}} = {{eval:f*a}} + {{eval:f*b/100;d}}$ : le {{if:f==3|tiers|quart}} de ${{eval:f*a}}$ est ${{a}}$, celui de ${{eval:f*b/100;d}}$ est ${{eval:b/100;d}}$.}}",
+								"$${{X}} \\div {{f}} = \\textcolor{{{color:primary.0}}}{{{R}}}$$"
+							]
+						},
+						"hint": "{{if:s==1|Pose la division ${{n}} \\div 4$ : quand il reste quelque chose, continue après la virgule.|Pose la division ${{X}} \\div {{f}}$ : quand un chiffre ne contient pas ${{f}}$, écris $0$ au quotient.}}"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "12 est le tiers de 36",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "Erreur : le triple (sens inversé)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "12",
+							"r": "0"
+						},
+						"description": "24 est le double de 12",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "12",
+							"r": "0"
+						},
+						"description": "Erreur : la moitié (sens inversé)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["36"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "12 est le tiers de 36",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "12",
+							"r": "3"
+						},
+						"description": "Erreur : 4 (12 ÷ 3)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "10",
+							"r": "1"
+						},
+						"description": "40 est le quadruple de 10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["160"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"r": "1"
+						},
+						"description": "Erreur : 160 (40 × 4)",
+						"variationIndex": 1
+					},
+					{
+						"description": "F2 entiers : le tiers de 2 100 = 700",
+						"variationIndex": 2,
+						"variables": {
+							"f": "3",
+							"z": "2",
+							"a": "7",
+							"N": "2100",
+							"R": "700"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["700"]
+					},
+					{
+						"description": "F2 entiers : moitié (1 050)",
+						"variationIndex": 2,
+						"variables": {
+							"f": "3",
+							"z": "2",
+							"a": "7",
+							"N": "2100",
+							"R": "700"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as calculé la moitié : le tiers, c'est diviser par $3$."
+						},
+						"answers": ["1050"]
+					},
+					{
+						"description": "F2 entiers : multiplié (6 300)",
+						"variationIndex": 2,
+						"variables": {
+							"f": "3",
+							"z": "2",
+							"a": "7",
+							"N": "2100",
+							"R": "700"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le tiers est plus petit que le nombre de départ : on divise par $3$, on ne multiplie pas."
+						},
+						"answers": ["6300"]
+					},
+					{
+						"description": "F2 entiers : zéro oublié (70)",
+						"variationIndex": 2,
+						"variables": {
+							"f": "3",
+							"z": "2",
+							"a": "7",
+							"N": "2100",
+							"R": "700"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Il manque un zéro : le nombre de départ, c'est $21$ centaines, et son tiers est un nombre de centaines."
+						},
+						"answers": ["70"]
+					},
+					{
+						"description": "F2 entiers : le quart de 360 = 90",
+						"variationIndex": 2,
+						"variables": {
+							"f": "4",
+							"z": "1",
+							"a": "9",
+							"N": "360",
+							"R": "90"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["90"]
+					},
+					{
+						"description": "F2 entiers : quart, zéro oublié (9)",
+						"variationIndex": 2,
+						"variables": {
+							"f": "4",
+							"z": "1",
+							"a": "9",
+							"N": "360",
+							"R": "90"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Il manque un zéro : le nombre de départ, c'est $36$ dizaines, et son quart est un nombre de dizaines."
+						},
+						"answers": ["9"]
+					},
+					{
+						"description": "F2 décimaux : le tiers de 12,09 = 4,03",
+						"variationIndex": 3,
+						"variables": {
+							"g": "0",
+							"a": "4",
+							"b": "3",
+							"n": "9",
+							"s": "0",
+							"f": "3",
+							"X": "12.09",
+							"R": "4.03"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["4{,}03"]
+					},
+					{
+						"description": "F2 décimaux : zéro oublié (4,3)",
+						"variationIndex": 3,
+						"variables": {
+							"g": "0",
+							"a": "4",
+							"b": "3",
+							"n": "9",
+							"s": "0",
+							"f": "3",
+							"X": "12.09",
+							"R": "4.03"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Il manque un zéro au quotient : quand un chiffre ne contient pas $3$, on écrit $0$ au quotient."
+						},
+						"answers": ["4{,}3"]
+					},
+					{
+						"description": "F2 décimaux : moitié (6,045)",
+						"variationIndex": 3,
+						"variables": {
+							"g": "0",
+							"a": "4",
+							"b": "3",
+							"n": "9",
+							"s": "0",
+							"f": "3",
+							"X": "12.09",
+							"R": "4.03"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as calculé la moitié : le tiers, c'est diviser par $3$."
+						},
+						"answers": ["6{,}045"]
+					},
+					{
+						"description": "F2 décimaux : multiplié (36,27)",
+						"variationIndex": 3,
+						"variables": {
+							"g": "0",
+							"a": "4",
+							"b": "3",
+							"n": "9",
+							"s": "0",
+							"f": "3",
+							"X": "12.09",
+							"R": "4.03"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le tiers est plus petit que le nombre de départ : on divise par $3$, on ne multiplie pas."
+						},
+						"answers": ["36{,}27"]
+					},
+					{
+						"description": "F2 décimaux : le quart de 20,16 = 5,04",
+						"variationIndex": 3,
+						"variables": {
+							"g": "1",
+							"a": "5",
+							"b": "4",
+							"n": "9",
+							"s": "0",
+							"f": "4",
+							"X": "20.16",
+							"R": "5.04"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["5{,}04"]
+					},
+					{
+						"description": "F2 décimaux : le quart de 9 = 2,25",
+						"variationIndex": 3,
+						"variables": {
+							"g": "2",
+							"a": "4",
+							"b": "3",
+							"n": "9",
+							"s": "1",
+							"f": "4",
+							"X": "9",
+							"R": "2.25"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2{,}25"]
+					},
+					{
+						"description": "F2 décimaux : reste lu comme décimale (2,1)",
+						"variationIndex": 3,
+						"variables": {
+							"g": "2",
+							"a": "4",
+							"b": "3",
+							"n": "9",
+							"s": "1",
+							"f": "4",
+							"X": "9",
+							"R": "2.25"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le reste de la division n'est pas la partie décimale : continue la division après la virgule."
+						},
+						"answers": ["2{,}1"]
+					}
+				],
+				"description": "Nommer la relation entre deux nombres (12 est le tiers de 36) ou retrouver le nombre (12 est le tiers de 36 : 12 × 3)"
+			},
+			"changements": {
+				"ajoutees": [3, 4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "e0ccaf84-14b4-4422-8dc0-f5da48c87c42",
+			"title": "Résoudre un petit exercice de proportionnalité",
+			"fichier": "e0ccaf84.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(a*b*c)[€]}}"
+							}
+						],
+						"statement": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}$ shawarmas ?\n\n${{eval:c*b}}$ shawarmas coûtent $?$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b}}$ shawarmas, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}$ shawarmas à ${{eval:a*b}}\\,€$, donc le prix de ${{eval:c*b}}$ shawarmas est ${{eval:a*b}}\\,€\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b*c}}"
+							}
+						],
+						"statement": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de shawarmas avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ shawarmas pour ${{eval:a*b*c}}\\,€$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b*a}}\\,€$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,€$ pour ${{b}}$ shawarmas, donc je peux acheter ${{b}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ shawarmas."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(a*b*c)[€]}}"
+							}
+						],
+						"statement": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}\\,\\text{kg}$ de tomates ?\n\n${{eval:c*b}}\\,\\text{kg}$ de tomates coûtent $?$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b}}\\,\\text{kg}$ de tomates, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}\\,\\text{kg}$  à ${{eval:a*b}}\\,€$, donc le prix de ${{eval:c*b}}\\,\\text{kg}$ de tomates est ${{eval:a*b}}\\,€\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(b*c)[kg]}}"
+							}
+						],
+						"statement": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de tomates avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ de tomates pour ${{eval:c*b*a}}\\,€$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b*a}}\\,€$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,€$ pour ${{b}}\\,\\text{kg}$ de tomates, donc je peux acheter ${{b}}\\,\\text{kg}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ de tomates."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(a*b*c)[L]}}"
+							}
+						],
+						"statement": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. Combien de litres d'eau s'échappent en ${{eval:c*b}}\\,\\text{h}$ ?\n\nIl s'échappe $?$ d'eau en ${{eval:c*b}}\\,\\text{h}$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b}}\\,\\text{h}$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}\\,\\text{h}$ pour ${{eval:a*b}}\\,\\text{L}$, donc il s'échappe  ${{eval:a*b}}\\,\\text{L}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ d'eau en ${{eval:c*b}}\\,\\text{h}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(b*c)[h]}}"
+							}
+						],
+						"statement": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. En combien de temps s'échappe-t-il ${{eval:c*b*a}}\\,\\text{L}$ d'eau ?\n\nIl s'échappe ${{eval:c*b*a}}\\,\\text{L}$ d'eau en $?$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b*a}}\\,\\text{L}$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,\\text{L}$ en ${{b}}\\,\\text{h}$, donc il faut ${{b}}\\,\\text{h} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ pour perdre ${{eval:a*b*c}}\\,\\text{L}$ d'eau."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["30\\,€"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v0 euros",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["30"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v0 sans unité",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10\\,€"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v0 faux",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v1 nombre",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["30\\,€"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v2 euros",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["12\\,\\mathrm{kg}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v3 kg",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30\\,\\mathrm{L}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v4 L",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["12\\,\\mathrm{h}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v5 h",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["30\\,\\mathrm{h}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v5 faux",
+						"variationIndex": 5
+					}
+				],
+				"description": "petits nombres"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(a*b*c)[€]}}"
+							}
+						],
+						"statement": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}$ shawarmas ?\n\n${{eval:c*b}}$ shawarmas coûtent $?$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b}}$ shawarmas, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}$ shawarmas à ${{eval:a*b}}\\,€$, donc le prix de ${{eval:c*b}}$ shawarmas est ${{eval:a*b}}\\,€\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b*c}}"
+							}
+						],
+						"statement": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de shawarmas avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ shawarmas pour ${{eval:a*b*c}}\\,€$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b*a}}\\,€$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,€$ pour ${{b}}$ shawarmas, donc je peux acheter ${{b}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ shawarmas."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(a*b*c)[€]}}"
+							}
+						],
+						"statement": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}\\,\\text{kg}$ de tomates ?\n\n${{eval:c*b}}\\,\\text{kg}$ de tomates coûtent $?$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b}}\\,\\text{kg}$ de tomates, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}\\,\\text{kg}$  à ${{eval:a*b}}\\,€$, donc le prix de ${{eval:c*b}}\\,\\text{kg}$ de tomates est ${{eval:a*b}}\\,€\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(b*c)[kg]}}"
+							}
+						],
+						"statement": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de tomates avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ de tomates pour ${{eval:c*b*a}}\\,€$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b*a}}\\,€$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,€$ pour ${{b}}\\,\\text{kg}$ de tomates, donc je peux acheter ${{b}}\\,\\text{kg}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ de tomates."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(a*b*c)[L]}}"
+							}
+						],
+						"statement": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. Combien de litres d'eau s'échappent en ${{eval:c*b}}\\,\\text{h}$ ?\n\nIl s'échappe $?$ d'eau en ${{eval:c*b}}\\,\\text{h}$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b}}\\,\\text{h}$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}\\,\\text{h}$ pour ${{eval:a*b}}\\,\\text{L}$, donc il s'échappe  ${{eval:a*b}}\\,\\text{L}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ d'eau en ${{eval:c*b}}\\,\\text{h}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(b*c)[h]}}"
+							}
+						],
+						"statement": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. En combien de temps s'échappe-t-il ${{eval:c*b*a}}\\,\\text{L}$ d'eau ?\n\nIl s'échappe ${{eval:c*b*a}}\\,\\text{L}$ d'eau en $?$.",
+						"correction": {
+							"steps": [
+								"${{eval:c*b*a}}\\,\\text{L}$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,\\text{L}$ en ${{b}}\\,\\text{h}$, donc il faut ${{b}}\\,\\text{h} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ pour perdre ${{eval:a*b*c}}\\,\\text{L}$ d'eau."
+							]
+						}
+					},
+					{
+						"statement": "${{x}}\\,\\text{kg}$ de cerises coûtent ${{eval:(t*u/10)[€]}}$. Combien coûtent ${{y}}\\,\\text{kg}$ de cerises ?\n\n${{y}}\\,\\text{kg}$ de cerises coûtent $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "5..30"
+							},
+							{
+								"name": "u",
+								"expression": "2..9"
+							},
+							{
+								"name": "k",
+								"expression": "2..5"
+							},
+							{
+								"name": "x",
+								"expression": "eval:t/10;d"
+							},
+							{
+								"name": "y",
+								"expression": "eval:t*k/10;d"
+							}
+						],
+						"conditions": [
+							"mod(t,10)!=0",
+							"10*t*u+10*t*(k-1)!=t*t*u*k",
+							"100*t*u*k!=t*t*u*k",
+							"10*t*u+10*t*(k-1)!=100*t*u*k"
+						],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(t*u*k/10)[€]}}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:((t*u+t*(k-1))/10)[€]}}",
+										"message": "Le prix n'augmente pas de l'écart des masses : cherche par combien la masse est multipliée.",
+										"label": "Écart des masses ajouté au prix"
+									},
+									{
+										"answer": "{{eval:(t*u*k)[€]}}",
+										"message": "Vérifie la place de la virgule dans ton produit.",
+										"label": "Virgule mal placée"
+									},
+									{
+										"answer": "{{eval:(t*t*u*k/100)[€]}}",
+										"message": "On ne multiplie pas le prix par la nouvelle masse : cherche combien de fois ${{x}}$ kg il y a dans ${{y}}$ kg.",
+										"label": "Prix multiplié par la masse"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{y}}\\,\\text{kg}$ de cerises, c'est $\\textcolor{{{color:primary.0}}}{{{k}}\\text{ fois}}$ plus que ${{x}}\\,\\text{kg}$, car ${{x}} \\times {{k}} = {{y}}$. Le prix est donc lui aussi multiplié par ${{k}}$ : ${{eval:(t*u/10)[€]}} \\textcolor{{{color:primary.0}}}{\\times {{k}}} = \\textcolor{{{color:primary.0}}}{{{eval:(t*u*k/10)[€]}}}$."
+							]
+						},
+						"hint": "Par combien faut-il multiplier ${{x}}$ kg pour obtenir ${{y}}$ kg ? Fais de même avec le prix."
+					},
+					{
+						"statement": "${{G}}\\,\\text{kg}$ de pommes coûtent ${{eval:(h*k/10)[€]}}$. Combien {{if:s==1|coûte|coûtent}} ${{s}}\\,\\text{kg}$ de pommes ?\n\n${{s}}\\,\\text{kg}$ de pommes {{if:s==1|coûte|coûtent}} $?$.",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "1..6"
+							},
+							{
+								"name": "k",
+								"expression": "2..5"
+							},
+							{
+								"name": "h",
+								"expression": "11..99"
+							},
+							{
+								"name": "G",
+								"expression": "eval:s*k"
+							}
+						],
+						"conditions": ["mod(h,10)!=0", "h*k>10*s*(k-1)"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(h/10)[€]}}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(h*k*k/10)[€]}}",
+										"message": "Ici la masse diminue : ${{s}}$ kg, c'est moins que ${{G}}$ kg, donc le prix est plus petit.",
+										"label": "Multiplication au lieu de division"
+									},
+									{
+										"answer": "{{eval:((h*k-10*s*(k-1))/10)[€]}}",
+										"message": "Le prix ne baisse pas de l'écart des masses : cherche par combien la masse est divisée.",
+										"label": "Écart des masses retranché au prix"
+									},
+									{
+										"answer": "{{eval:(h)[€]}}",
+										"message": "Vérifie la place de la virgule dans ta division.",
+										"label": "Virgule mal placée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{s}}\\,\\text{kg}$ de pommes, c'est $\\textcolor{{{color:primary.0}}}{{{k}}\\text{ fois}}$ moins que ${{G}}\\,\\text{kg}$, car ${{G}} \\div {{k}} = {{s}}$. Le prix est donc lui aussi divisé par ${{k}}$ : ${{eval:(h*k/10)[€]}} \\textcolor{{{color:primary.0}}}{\\div {{k}}} = \\textcolor{{{color:primary.0}}}{{{eval:(h/10)[€]}}}$."
+							]
+						},
+						"hint": "Par combien faut-il diviser ${{G}}$ kg pour obtenir ${{s}}$ kg ? Fais de même avec le prix."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["30\\,€"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v0 euros",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["30"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v0 sans unité",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10\\,€"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v0 faux",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v1 nombre",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["30\\,€"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v2 euros",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["12\\,\\mathrm{kg}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v3 kg",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30\\,\\mathrm{L}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v4 L",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["12\\,\\mathrm{h}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v5 h",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["30\\,\\mathrm{h}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2.5",
+							"b": "4",
+							"c": "3"
+						},
+						"description": "v5 faux",
+						"variationIndex": 5
+					},
+					{
+						"description": "F1 masses : 1,2 kg à 7,2 €, 3,6 kg → 21,6 €",
+						"variationIndex": 6,
+						"variables": {
+							"t": "12",
+							"u": "6",
+							"k": "3",
+							"x": "1.2",
+							"y": "3.6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["21{,}6\\,€"]
+					},
+					{
+						"description": "F1 masses : 21,60 € accepté",
+						"variationIndex": 6,
+						"variables": {
+							"t": "12",
+							"u": "6",
+							"k": "3",
+							"x": "1.2",
+							"y": "3.6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["21{,}60\\,€"]
+					},
+					{
+						"description": "F1 masses : sans unité",
+						"variationIndex": 6,
+						"variables": {
+							"t": "12",
+							"u": "6",
+							"k": "3",
+							"x": "1.2",
+							"y": "3.6"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["21{,}6"]
+					},
+					{
+						"description": "F1 masses : écart ajouté (9,6 €)",
+						"variationIndex": 6,
+						"variables": {
+							"t": "12",
+							"u": "6",
+							"k": "3",
+							"x": "1.2",
+							"y": "3.6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le prix n'augmente pas de l'écart des masses : cherche par combien la masse est multipliée."
+						},
+						"answers": ["9{,}6\\,€"]
+					},
+					{
+						"description": "F1 masses : virgule (216 €)",
+						"variationIndex": 6,
+						"variables": {
+							"t": "12",
+							"u": "6",
+							"k": "3",
+							"x": "1.2",
+							"y": "3.6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Vérifie la place de la virgule dans ton produit."
+						},
+						"answers": ["216\\,€"]
+					},
+					{
+						"description": "F1 masses : prix × masse (25,92 €)",
+						"variationIndex": 6,
+						"variables": {
+							"t": "12",
+							"u": "6",
+							"k": "3",
+							"x": "1.2",
+							"y": "3.6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "On ne multiplie pas le prix par la nouvelle masse : cherche combien de fois $1.2$ kg il y a dans $3.6$ kg."
+						},
+						"answers": ["25{,}92\\,€"]
+					},
+					{
+						"description": "F1 diviser : 12 kg à 29,7 €, 4 kg → 9,9 €",
+						"variationIndex": 7,
+						"variables": {
+							"s": "4",
+							"k": "3",
+							"h": "99",
+							"G": "12"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["9{,}9\\,€"]
+					},
+					{
+						"description": "F1 diviser : 9,90 € accepté",
+						"variationIndex": 7,
+						"variables": {
+							"s": "4",
+							"k": "3",
+							"h": "99",
+							"G": "12"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["9{,}90\\,€"]
+					},
+					{
+						"description": "F1 diviser : multiplié (89,1 €)",
+						"variationIndex": 7,
+						"variables": {
+							"s": "4",
+							"k": "3",
+							"h": "99",
+							"G": "12"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ici la masse diminue : $4$ kg, c'est moins que $12$ kg, donc le prix est plus petit."
+						},
+						"answers": ["89{,}1\\,€"]
+					},
+					{
+						"description": "F1 diviser : écart retranché (21,7 €)",
+						"variationIndex": 7,
+						"variables": {
+							"s": "4",
+							"k": "3",
+							"h": "99",
+							"G": "12"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le prix ne baisse pas de l'écart des masses : cherche par combien la masse est divisée."
+						},
+						"answers": ["21{,}7\\,€"]
+					},
+					{
+						"description": "F1 diviser : virgule (99 €)",
+						"variationIndex": 7,
+						"variables": {
+							"s": "4",
+							"k": "3",
+							"h": "99",
+							"G": "12"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Vérifie la place de la virgule dans ta division."
+						},
+						"answers": ["99\\,€"]
+					},
+					{
+						"description": "F1 diviser : 1 kg à 2,4 € de 2 kg à 4,8 €",
+						"variationIndex": 7,
+						"variables": {
+							"s": "1",
+							"k": "2",
+							"h": "24",
+							"G": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2{,}4\\,€"]
+					}
+				],
+				"description": "petits nombres"
+			},
+			"changements": {
+				"ajoutees": [7, 8],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

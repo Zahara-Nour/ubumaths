@@ -1,0 +1,638 @@
+{
+	"id": "d2ad4df0-bbb6-4fa3-9d16-f55794249e65",
+	"rangement": {
+		"noeud": "Géométrie > Espace > coordonnées",
+		"point": "TSPE-332"
+	},
+	"title": "Espace : coordonnées d'un point dans un repère du cube",
+	"description": "Sur un cube nommé, coordonnées d'un sommet dans le repère (A ; AB, AD, AE) ou dans un repère d'une autre origine, puis du milieu d'une arête, du centre d'une face, d'un point au quart d'une arête (pièges : repère de A gardé, ordre des vecteurs, somme non divisée par 2)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un cube (face $ABCD$ en bas, $E$ au-dessus de $A$), les arêtes du repère sont marquées.\n\n```solide\nforme: cube 4\nsommets: A B C D E F G H\nmarquer: arete AB, arete AD, arete AE, sommet {{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}\n```\n\nDonne les coordonnées du sommet ${{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}$ dans le repère $(A\\,;\\,\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$.\n\n${{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:k==1|1|{{if:k==2|1|{{if:k==3|0|{{if:k==4|0|{{if:k==5|1|{{if:k==6|1|{{if:k==7|0|0}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:k==1|0|{{if:k==2|1|{{if:k==3|1|{{if:k==4|0|{{if:k==5|0|{{if:k==6|1|{{if:k==7|1|0}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{if:k==1|0|{{if:k==2|0|{{if:k==3|0|{{if:k==4|1|{{if:k==5|1|{{if:k==6|1|{{if:k==7|1|0}}}}}}}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{x}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						},
+						{
+							"answer": "{{z}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{z}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On va de $A$ à ${{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}$ le long des arêtes ; les faces du cube sont des carrés, chaque arête est égale à $\\overrightarrow{AB}$, $\\overrightarrow{AD}$ ou $\\overrightarrow{AE}$ : {{if:k==1|$\\overrightarrow{AB}=\\overrightarrow{AB}$|{{if:k==2|$\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{AD}$|{{if:k==3|$\\overrightarrow{AD}=\\overrightarrow{AD}$|{{if:k==4|$\\overrightarrow{AE}=\\overrightarrow{AE}$|{{if:k==5|$\\overrightarrow{AF}=\\overrightarrow{AB}+\\overrightarrow{AE}$|{{if:k==6|$\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$|{{if:k==7|$\\overrightarrow{AH}=\\overrightarrow{AD}+\\overrightarrow{AE}$|}}}}}}}}}}}}}}.",
+					"Les coefficients sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ {{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}({{x}}\\,;\\,{{y}}\\,;\\,{{z}}) }$."
+				]
+			},
+			"hint": "Va de l'origine du repère au point en suivant les arêtes, et écris ce chemin à l'aide des trois vecteurs du repère, dans leur ordre : les coefficients sont les coordonnées."
+		},
+		{
+			"statement": "$ABCDEFGH$ est un cube (face $ABCD$ en bas, $E$ au-dessus de $A$), les arêtes du repère sont marquées.\n\n```solide\nforme: cube 4\nsommets: A B C D E F G H\nmarquer: {{if:r==1|arete BC, arete AB, arete BF|{{if:r==2|arete EH, arete GH, arete DH|arete AE, arete EF, arete EH}}}}, sommet {{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}\n```\n\nDonne les coordonnées du sommet ${{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}$ dans le repère ${{if:r==1|(B\\,;\\,\\overrightarrow{BC},\\overrightarrow{BA},\\overrightarrow{BF})|{{if:r==2|(H\\,;\\,\\overrightarrow{HE},\\overrightarrow{HG},\\overrightarrow{HD})|(E\\,;\\,\\overrightarrow{EA},\\overrightarrow{EF},\\overrightarrow{EH})}}}}$.\n\n${{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "0..7"
+				},
+				{
+					"name": "o",
+					"expression": "{{if:r==1|1|{{if:r==2|7|4}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:8*r+k}}"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:c==8|0|{{if:c==9|0|{{if:c==10|1|{{if:c==11|1|{{if:c==12|0|{{if:c==13|0|{{if:c==14|1|{{if:c==15|1|{{if:c==16|1|{{if:c==17|1|{{if:c==18|0|{{if:c==19|0|{{if:c==20|1|{{if:c==21|1|{{if:c==22|0|{{if:c==23|0|{{if:c==24|1|{{if:c==25|1|{{if:c==26|1|{{if:c==27|1|{{if:c==28|0|{{if:c==29|0|{{if:c==30|0|{{if:c==31|0|0}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:c==8|1|{{if:c==9|0|{{if:c==10|0|{{if:c==11|1|{{if:c==12|1|{{if:c==13|0|{{if:c==14|0|{{if:c==15|1|{{if:c==16|0|{{if:c==17|1|{{if:c==18|1|{{if:c==19|0|{{if:c==20|0|{{if:c==21|1|{{if:c==22|1|{{if:c==23|0|{{if:c==24|0|{{if:c==25|1|{{if:c==26|1|{{if:c==27|0|{{if:c==28|0|{{if:c==29|1|{{if:c==30|1|{{if:c==31|0|0}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{if:c==8|0|{{if:c==9|0|{{if:c==10|0|{{if:c==11|0|{{if:c==12|1|{{if:c==13|1|{{if:c==14|1|{{if:c==15|1|{{if:c==16|1|{{if:c==17|1|{{if:c==18|1|{{if:c==19|1|{{if:c==20|0|{{if:c==21|0|{{if:c==22|0|{{if:c==23|0|{{if:c==24|0|{{if:c==25|0|{{if:c==26|1|{{if:c==27|1|{{if:c==28|0|{{if:c==29|0|{{if:c==30|1|{{if:c==31|1|0}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "xa",
+					"expression": "{{if:k==0|0|{{if:k==1|1|{{if:k==2|1|{{if:k==3|0|{{if:k==4|0|{{if:k==5|1|{{if:k==6|1|{{if:k==7|0|0}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "ya",
+					"expression": "{{if:k==0|0|{{if:k==1|0|{{if:k==2|1|{{if:k==3|1|{{if:k==4|0|{{if:k==5|0|{{if:k==6|1|{{if:k==7|1|0}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "za",
+					"expression": "{{if:k==0|0|{{if:k==1|0|{{if:k==2|0|{{if:k==3|0|{{if:k==4|1|{{if:k==5|1|{{if:k==6|1|{{if:k==7|1|0}}}}}}}}}}}}}}}}"
+				}
+			],
+			"conditions": ["k != o"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{xa}}",
+							"message": "Tu as lu les coordonnées dans le repère $(A\\,;\\,\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : pars de l'origine du repère donné, avec ses vecteurs.",
+							"label": "Lu dans le repère (A ; AB, AD, AE)"
+						},
+						{
+							"answer": "{{y}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{ya}}",
+							"message": "Tu as lu les coordonnées dans le repère $(A\\,;\\,\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : pars de l'origine du repère donné, avec ses vecteurs.",
+							"label": "Lu dans le repère (A ; AB, AD, AE)"
+						},
+						{
+							"answer": "{{x}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{z}}",
+					"expectedErrors": [
+						{
+							"answer": "{{za}}",
+							"message": "Tu as lu les coordonnées dans le repère $(A\\,;\\,\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : pars de l'origine du repère donné, avec ses vecteurs.",
+							"label": "Lu dans le repère (A ; AB, AD, AE)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'origine est ${{if:r==1|B|{{if:r==2|H|E}}}}$ : on va de ${{if:r==1|B|{{if:r==2|H|E}}}}$ à ${{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}$ le long des arêtes, et on écrit chaque arête avec les vecteurs du repère : {{if:c==8|$\\overrightarrow{BA}=\\overrightarrow{BA}$|{{if:c==10|$\\overrightarrow{BC}=\\overrightarrow{BC}$|{{if:c==11|$\\overrightarrow{BD}=\\overrightarrow{BC}+\\overrightarrow{BA}$|{{if:c==12|$\\overrightarrow{BE}=\\overrightarrow{BA}+\\overrightarrow{BF}$|{{if:c==13|$\\overrightarrow{BF}=\\overrightarrow{BF}$|{{if:c==14|$\\overrightarrow{BG}=\\overrightarrow{BC}+\\overrightarrow{BF}$|{{if:c==15|$\\overrightarrow{BH}=\\overrightarrow{BC}+\\overrightarrow{BA}+\\overrightarrow{BF}$|{{if:c==16|$\\overrightarrow{HA}=\\overrightarrow{HE}+\\overrightarrow{HD}$|{{if:c==17|$\\overrightarrow{HB}=\\overrightarrow{HE}+\\overrightarrow{HG}+\\overrightarrow{HD}$|{{if:c==18|$\\overrightarrow{HC}=\\overrightarrow{HG}+\\overrightarrow{HD}$|{{if:c==19|$\\overrightarrow{HD}=\\overrightarrow{HD}$|{{if:c==20|$\\overrightarrow{HE}=\\overrightarrow{HE}$|{{if:c==21|$\\overrightarrow{HF}=\\overrightarrow{HE}+\\overrightarrow{HG}$|{{if:c==22|$\\overrightarrow{HG}=\\overrightarrow{HG}$|{{if:c==24|$\\overrightarrow{EA}=\\overrightarrow{EA}$|{{if:c==25|$\\overrightarrow{EB}=\\overrightarrow{EA}+\\overrightarrow{EF}$|{{if:c==26|$\\overrightarrow{EC}=\\overrightarrow{EA}+\\overrightarrow{EF}+\\overrightarrow{EH}$|{{if:c==27|$\\overrightarrow{ED}=\\overrightarrow{EA}+\\overrightarrow{EH}$|{{if:c==29|$\\overrightarrow{EF}=\\overrightarrow{EF}$|{{if:c==30|$\\overrightarrow{EG}=\\overrightarrow{EF}+\\overrightarrow{EH}$|{{if:c==31|$\\overrightarrow{EH}=\\overrightarrow{EH}$|}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}.",
+					"Les coefficients, dans l'ordre des vecteurs du repère, sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ {{if:k==1|B|{{if:k==2|C|{{if:k==3|D|{{if:k==4|E|{{if:k==5|F|{{if:k==6|G|{{if:k==7|H|A}}}}}}}}}}}}}}({{x}}\\,;\\,{{y}}\\,;\\,{{z}}) }$."
+				]
+			},
+			"hint": "Va de l'origine du repère au point en suivant les arêtes, et écris ce chemin à l'aide des trois vecteurs du repère, dans leur ordre : les coefficients sont les coordonnées."
+		},
+		{
+			"statement": "$ABCDEFGH$ est un cube (face $ABCD$ en bas, $E$ au-dessus de $A$), les arêtes du repère sont marquées.\n\n```solide\nforme: cube 4\nsommets: A B C D E F G H\npoints: {{if:o==0|I milieu BF|{{if:o==1|I milieu CG|{{if:o==2|I milieu EH|{{if:o==3|I milieu FG|{{if:o==4|I milieu GH|{{if:o==5|I milieu DH|{{if:o==6|I milieu BC|{{if:o==7|I milieu EF|{{if:o==8|I centre EFGH|{{if:o==9|I centre BCGF|{{if:o==10|I centre DCGH|{{if:o==11|I centre ABFE|{{if:o==12|I centre ADHE|I centre ABCD}}}}}}}}}}}}}}}}}}}}}}}}}}\nmarquer: arete AB, arete AD, arete AE\n```\n\n{{if:o==0|$I$ est le milieu de l'arête $[BF]$|{{if:o==1|$I$ est le milieu de l'arête $[CG]$|{{if:o==2|$I$ est le milieu de l'arête $[EH]$|{{if:o==3|$I$ est le milieu de l'arête $[FG]$|{{if:o==4|$I$ est le milieu de l'arête $[GH]$|{{if:o==5|$I$ est le milieu de l'arête $[DH]$|{{if:o==6|$I$ est le milieu de l'arête $[BC]$|{{if:o==7|$I$ est le milieu de l'arête $[EF]$|{{if:o==8|$I$ est le centre de la face $EFGH$|{{if:o==9|$I$ est le centre de la face $BCGF$|{{if:o==10|$I$ est le centre de la face $DCGH$|{{if:o==11|$I$ est le centre de la face $ABFE$|{{if:o==12|$I$ est le centre de la face $ADHE$|$I$ est le centre de la face $ABCD$}}}}}}}}}}}}}}}}}}}}}}}}}}. Donne les coordonnées de $I$ dans le repère $(A\\,;\\,\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$.\n\n$I(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..13"
+				},
+				{
+					"name": "hx",
+					"expression": "{{if:o==0|2|{{if:o==1|2|{{if:o==2|0|{{if:o==3|2|{{if:o==4|1|{{if:o==5|0|{{if:o==6|2|{{if:o==7|1|{{if:o==8|1|{{if:o==9|2|{{if:o==10|1|{{if:o==11|1|{{if:o==12|0|1}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{if:o==0|0|{{if:o==1|2|{{if:o==2|1|{{if:o==3|1|{{if:o==4|2|{{if:o==5|2|{{if:o==6|1|{{if:o==7|0|{{if:o==8|1|{{if:o==9|1|{{if:o==10|2|{{if:o==11|0|{{if:o==12|1|1}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "hz",
+					"expression": "{{if:o==0|1|{{if:o==1|1|{{if:o==2|2|{{if:o==3|2|{{if:o==4|2|{{if:o==5|1|{{if:o==6|0|{{if:o==7|2|{{if:o==8|2|{{if:o==9|1|{{if:o==10|1|{{if:o==11|1|{{if:o==12|1|0}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:hx/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{hx}}",
+							"message": "Le milieu a pour coordonnées les moyennes de celles des extrémités : n'oublie pas de diviser la somme par $2$.",
+							"label": "Somme non divisée par 2"
+						},
+						{
+							"answer": "{{eval:hy/2}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:hy/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{hy}}",
+							"message": "Le milieu a pour coordonnées les moyennes de celles des extrémités : n'oublie pas de diviser la somme par $2$.",
+							"label": "Somme non divisée par 2"
+						},
+						{
+							"answer": "{{eval:hx/2}}",
+							"message": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur.",
+							"label": "Deux coordonnées échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:hz/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{hz}}",
+							"message": "Le milieu a pour coordonnées les moyennes de celles des extrémités : n'oublie pas de diviser la somme par $2$.",
+							"label": "Somme non divisée par 2"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ce repère, $A(0\\,;\\,0\\,;\\,0)$, $B(1\\,;\\,0\\,;\\,0)$, $D(0\\,;\\,1\\,;\\,0)$, $E(0\\,;\\,0\\,;\\,1)$, et les autres sommets s'en déduisent ($G(1\\,;\\,1\\,;\\,1)$ par exemple).",
+					"{{if:o<8|$I$ est le milieu de {{if:o==0|$[BF]$|{{if:o==1|$[CG]$|{{if:o==2|$[EH]$|{{if:o==3|$[FG]$|{{if:o==4|$[GH]$|{{if:o==5|$[DH]$|{{if:o==6|$[BC]$|{{if:o==7|$[EF]$|{{if:o==8|$[EG]$|{{if:o==9|$[BG]$|{{if:o==10|$[DG]$|{{if:o==11|$[AF]$|{{if:o==12|$[AH]$|$[AC]$}}}}}}}}}}}}}}}}}}}}}}}}}}|Le centre d'une face est le milieu d'une de ses diagonales : $I$ est le milieu de {{if:o==0|$[BF]$|{{if:o==1|$[CG]$|{{if:o==2|$[EH]$|{{if:o==3|$[FG]$|{{if:o==4|$[GH]$|{{if:o==5|$[DH]$|{{if:o==6|$[BC]$|{{if:o==7|$[EF]$|{{if:o==8|$[EG]$|{{if:o==9|$[BG]$|{{if:o==10|$[DG]$|{{if:o==11|$[AF]$|{{if:o==12|$[AH]$|$[AC]$}}}}}}}}}}}}}}}}}}}}}}}}}}}} : ses coordonnées sont les moyennes de celles des extrémités.",
+					"$\\textcolor{{{color:primary.0}}}{ I\\left({{eval:hx/2}}\\,;\\,{{eval:hy/2}}\\,;\\,{{eval:hz/2}}\\right) }$."
+				]
+			},
+			"hint": "Écris les coordonnées des sommets dans ce repère, puis celles du milieu : $\\left(\\dfrac{x_1+x_2}{2}\\,;\\,\\dfrac{y_1+y_2}{2}\\,;\\,\\dfrac{z_1+z_2}{2}\\right)$. Le centre d'une face est le milieu d'une de ses diagonales."
+		},
+		{
+			"statement": "$ABCDEFGH$ est un cube (face $ABCD$ en bas, $E$ au-dessus de $A$), les arêtes du repère sont marquées.\n\n```solide\nforme: cube 4\nsommets: A B C D E F G H\npoints: {{if:o==0|I milieu AB, J milieu AI|{{if:o==1|I milieu BA, J milieu BI|{{if:o==2|I milieu EH, J milieu EI|{{if:o==3|I milieu HE, J milieu HI|{{if:o==4|I milieu BF, J milieu BI|{{if:o==5|I milieu FB, J milieu FI|{{if:o==6|I milieu CG, J milieu CI|{{if:o==7|I milieu GC, J milieu GI|{{if:o==8|I milieu DC, J milieu DI|I milieu HG, J milieu HI}}}}}}}}}}}}}}}}}}\nmarquer: arete AB, arete AD, arete AE\n```\n\n{{if:o==0|$I$ est le milieu de l'arête $[AB]$ et $J$ celui de $[AI]$|{{if:o==1|$I$ est le milieu de l'arête $[BA]$ et $J$ celui de $[BI]$|{{if:o==2|$I$ est le milieu de l'arête $[EH]$ et $J$ celui de $[EI]$|{{if:o==3|$I$ est le milieu de l'arête $[HE]$ et $J$ celui de $[HI]$|{{if:o==4|$I$ est le milieu de l'arête $[BF]$ et $J$ celui de $[BI]$|{{if:o==5|$I$ est le milieu de l'arête $[FB]$ et $J$ celui de $[FI]$|{{if:o==6|$I$ est le milieu de l'arête $[CG]$ et $J$ celui de $[CI]$|{{if:o==7|$I$ est le milieu de l'arête $[GC]$ et $J$ celui de $[GI]$|{{if:o==8|$I$ est le milieu de l'arête $[DC]$ et $J$ celui de $[DI]$|$I$ est le milieu de l'arête $[HG]$ et $J$ celui de $[HI]$}}}}}}}}}}}}}}}}}}. Donne les coordonnées de $J$ dans le repère $(A\\,;\\,\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$.\n\n$J(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..9"
+				},
+				{
+					"name": "jx",
+					"expression": "{{if:o==0|1|{{if:o==1|3|{{if:o==2|0|{{if:o==3|0|{{if:o==4|4|{{if:o==5|4|{{if:o==6|4|{{if:o==7|4|{{if:o==8|1|1}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "jy",
+					"expression": "{{if:o==0|0|{{if:o==1|0|{{if:o==2|1|{{if:o==3|3|{{if:o==4|0|{{if:o==5|0|{{if:o==6|4|{{if:o==7|4|{{if:o==8|4|4}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "jz",
+					"expression": "{{if:o==0|0|{{if:o==1|0|{{if:o==2|4|{{if:o==3|4|{{if:o==4|1|{{if:o==5|3|{{if:o==6|1|{{if:o==7|3|{{if:o==8|0|4}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{if:o==0|2|{{if:o==1|2|{{if:o==2|0|{{if:o==3|0|{{if:o==4|4|{{if:o==5|4|{{if:o==6|4|{{if:o==7|4|{{if:o==8|2|2}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{if:o==0|0|{{if:o==1|0|{{if:o==2|2|{{if:o==3|2|{{if:o==4|0|{{if:o==5|0|{{if:o==6|4|{{if:o==7|4|{{if:o==8|4|4}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{if:o==0|0|{{if:o==1|0|{{if:o==2|4|{{if:o==3|4|{{if:o==4|2|{{if:o==5|2|{{if:o==6|2|{{if:o==7|2|{{if:o==8|0|4}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "nx",
+					"expression": "{{if:o==0|3|{{if:o==1|1|{{if:o==2|0|{{if:o==3|0|{{if:o==4|4|{{if:o==5|4|{{if:o==6|4|{{if:o==7|4|{{if:o==8|3|3}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "ny",
+					"expression": "{{if:o==0|0|{{if:o==1|0|{{if:o==2|3|{{if:o==3|1|{{if:o==4|0|{{if:o==5|0|{{if:o==6|4|{{if:o==7|4|{{if:o==8|4|4}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "nz",
+					"expression": "{{if:o==0|0|{{if:o==1|0|{{if:o==2|4|{{if:o==3|4|{{if:o==4|3|{{if:o==5|1|{{if:o==6|3|{{if:o==7|1|{{if:o==8|0|4}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:jx/4}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mx/4}}",
+							"message": "Ce sont les coordonnées de $I$, milieu de l'arête : $J$ est le milieu de $\\left[ {{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}I \\right]$, au quart de l'arête.",
+							"label": "Milieu de l'arête"
+						},
+						{
+							"answer": "{{eval:nx/4}}",
+							"message": "$J$ est au quart de l'arête du côté de ${{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}$, pas de l'autre côté.",
+							"label": "Quart pris de l'autre côté"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:jy/4}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:my/4}}",
+							"message": "Ce sont les coordonnées de $I$, milieu de l'arête : $J$ est le milieu de $\\left[ {{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}I \\right]$, au quart de l'arête.",
+							"label": "Milieu de l'arête"
+						},
+						{
+							"answer": "{{eval:ny/4}}",
+							"message": "$J$ est au quart de l'arête du côté de ${{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}$, pas de l'autre côté.",
+							"label": "Quart pris de l'autre côté"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:jz/4}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mz/4}}",
+							"message": "Ce sont les coordonnées de $I$, milieu de l'arête : $J$ est le milieu de $\\left[ {{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}I \\right]$, au quart de l'arête.",
+							"label": "Milieu de l'arête"
+						},
+						{
+							"answer": "{{eval:nz/4}}",
+							"message": "$J$ est au quart de l'arête du côté de ${{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}$, pas de l'autre côté.",
+							"label": "Quart pris de l'autre côté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$I$ est le milieu de l'arête : $I\\left({{eval:mx/4}}\\,;\\,{{eval:my/4}}\\,;\\,{{eval:mz/4}}\\right)$ (moyennes des coordonnées des extrémités).",
+					"$J$ est le milieu de $[{{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}I]$ : on fait de nouveau la moyenne des coordonnées, $\\textcolor{{{color:primary.0}}}{ J\\left({{eval:jx/4}}\\,;\\,{{eval:jy/4}}\\,;\\,{{eval:jz/4}}\\right) }$."
+				]
+			},
+			"hint": "Calcule d'abord les coordonnées de $I$, milieu de l'arête, puis celles du milieu $J$ de $[{{if:o==0|A|{{if:o==1|B|{{if:o==2|E|{{if:o==3|H|{{if:o==4|B|{{if:o==5|F|{{if:o==6|C|{{if:o==7|G|{{if:o==8|D|H}}}}}}}}}}}}}}}}}}I]$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : G(1 ; 1 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"x": "1",
+				"y": "1",
+				"z": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "1", "1"]
+		},
+		{
+			"description": "v0 : D(0 ; 1 ; 0)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"x": "0",
+				"y": "1",
+				"z": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "1", "0"]
+		},
+		{
+			"description": "v0 : D, x et y échangés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"x": "0",
+				"y": "1",
+				"z": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les coordonnées suivent l'ordre des vecteurs du repère : la première est le coefficient du premier vecteur."
+			},
+			"answers": ["1", "0", "0"]
+		},
+		{
+			"description": "v1 : G dans (B ; BC, BA, BF) = (1 ; 0 ; 1)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"k": "6",
+				"o": "1",
+				"c": "14",
+				"x": "1",
+				"y": "0",
+				"z": "1",
+				"xa": "1",
+				"ya": "1",
+				"za": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "0", "1"]
+		},
+		{
+			"description": "v1 : G lu dans (A ; AB, AD, AE)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"k": "6",
+				"o": "1",
+				"c": "14",
+				"x": "1",
+				"y": "0",
+				"z": "1",
+				"xa": "1",
+				"ya": "1",
+				"za": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu les coordonnées dans le repère $(A\\,;\\,\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : pars de l'origine du repère donné, avec ses vecteurs."
+			},
+			"answers": ["1", "1", "1"]
+		},
+		{
+			"description": "v1 : A dans (H ; HE, HG, HD) = (1 ; 0 ; 1)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"k": "0",
+				"o": "7",
+				"c": "16",
+				"x": "1",
+				"y": "0",
+				"z": "1",
+				"xa": "0",
+				"ya": "0",
+				"za": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "0", "1"]
+		},
+		{
+			"description": "v1 : C dans (E ; EA, EF, EH) = (1 ; 1 ; 1)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"k": "2",
+				"o": "4",
+				"c": "26",
+				"x": "1",
+				"y": "1",
+				"z": "1",
+				"xa": "1",
+				"ya": "1",
+				"za": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "1", "1"]
+		},
+		{
+			"description": "v2 : milieu de [BF] (1 ; 0 ; 1/2)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"hx": "2",
+				"hy": "0",
+				"hz": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "0", "\\frac{1}{2}"]
+		},
+		{
+			"description": "v2 : milieu de [BF], décimal",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"hx": "2",
+				"hy": "0",
+				"hz": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "0", "0,5"]
+		},
+		{
+			"description": "v2 : somme non divisée par 2",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"hx": "2",
+				"hy": "0",
+				"hz": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le milieu a pour coordonnées les moyennes de celles des extrémités : n'oublie pas de diviser la somme par $2$."
+			},
+			"answers": ["1", "0", "1"]
+		},
+		{
+			"description": "v2 : centre de EFGH (1/2 ; 1/2 ; 1)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "8",
+				"hx": "1",
+				"hy": "1",
+				"hz": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{1}{2}", "1"]
+		},
+		{
+			"description": "v3 : quart de [AB] côté A (1/4 ; 0 ; 0)",
+			"variationIndex": 3,
+			"variables": {
+				"o": "0",
+				"jx": "1",
+				"jy": "0",
+				"jz": "0",
+				"mx": "2",
+				"my": "0",
+				"mz": "0",
+				"nx": "3",
+				"ny": "0",
+				"nz": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{4}", "0", "0"]
+		},
+		{
+			"description": "v3 : quart de [AB], décimal",
+			"variationIndex": 3,
+			"variables": {
+				"o": "0",
+				"jx": "1",
+				"jy": "0",
+				"jz": "0",
+				"mx": "2",
+				"my": "0",
+				"mz": "0",
+				"nx": "3",
+				"ny": "0",
+				"nz": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,25", "0", "0"]
+		},
+		{
+			"description": "v3 : milieu I donné",
+			"variationIndex": 3,
+			"variables": {
+				"o": "0",
+				"jx": "1",
+				"jy": "0",
+				"jz": "0",
+				"mx": "2",
+				"my": "0",
+				"mz": "0",
+				"nx": "3",
+				"ny": "0",
+				"nz": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les coordonnées de $I$, milieu de l'arête : $J$ est le milieu de $\\left[ AI \\right]$, au quart de l'arête."
+			},
+			"answers": ["\\frac{1}{2}", "0", "0"]
+		},
+		{
+			"description": "v3 : quart pris du côté de B",
+			"variationIndex": 3,
+			"variables": {
+				"o": "0",
+				"jx": "1",
+				"jy": "0",
+				"jz": "0",
+				"mx": "2",
+				"my": "0",
+				"mz": "0",
+				"nx": "3",
+				"ny": "0",
+				"nz": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$J$ est au quart de l'arête du côté de $A$, pas de l'autre côté."
+			},
+			"answers": ["\\frac{3}{4}", "0", "0"]
+		},
+		{
+			"description": "v3 : quart de [CG] côté C (1 ; 1 ; 1/4)",
+			"variationIndex": 3,
+			"variables": {
+				"o": "6",
+				"jx": "4",
+				"jy": "4",
+				"jz": "1",
+				"mx": "4",
+				"my": "4",
+				"mz": "2",
+				"nx": "4",
+				"ny": "4",
+				"nz": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "1", "\\frac{1}{4}"]
+		}
+	]
+}

@@ -7,7 +7,12 @@ import {
 	type TestInfo
 } from '@playwright/test';
 import { assertLocalServerEnv, login, sql } from './helpers/carnet';
-import { collectErrors, expectNoHorizontalOverflow, gotoSettled } from './helpers/pages';
+import {
+	collectErrors,
+	expectNoHorizontalOverflow,
+	gotoSettled,
+	isNavigationAbortNoise
+} from './helpers/pages';
 
 /**
  * Base locale remplie (`pnpm db:seed-riche`) — paquet 9 du tri
@@ -102,13 +107,14 @@ async function openSession(
 /** Erreurs de la page, sans le bruit des requêtes de fond coupées */
 function realErrors(session: Session): string[] {
 	// Écartés : le bruit de la journalisation limitée (429), les requêtes de fond coupées par la
-	// navigation (WebKit : « Load failed », Chromium : « Failed to fetch »), et les images documentées
+	// navigation (`isNavigationAbortNoise`, les trois moteurs), et les images documentées
 	// absentes (#3012 : `2048-bomb-3` absente en prod aussi, 4 cartes Mathémo sans image)
 	return session.errors.errors.filter(
 		(e) =>
 			!e.includes('/api/errors/log') &&
 			!e.includes('BugReportsConfigStore') &&
-			!/(TypeError: (Load failed|Failed to fetch)|status: 500, error: Load failed)/.test(e) &&
+			!/status: 500, error: Load failed/.test(e) &&
+			!isNavigationAbortNoise(e, test.info().project.name) &&
 			// WebKit : requête de fond coupée par la navigation, signalée comme « access control checks »
 			!/^exception : .*due to access control checks/.test(e) &&
 			// Serveur de dev : rechargement d'un module en cours de page
@@ -373,12 +379,8 @@ test.describe('#3012 — images du contenu, compte élève', () => {
 		const url = '/dashboard/student/exercises/0151950f-3d0b-4d0b-bc0b-30085f27e0f9';
 		const response = await go(session.page, url);
 		await session.page.waitForTimeout(1500);
-		// Symptôme constaté : la page de l'exercice assigné est introuvable pour l'élève (404)
-		// → ÉCART : `student_has_exercise_access` ne regarde que les fiches (`worksheet_exercises`),
-		// jamais `exercise_assignments` ; la RLS de `exercises` masque donc l'exercice assigné.
-		expect(response?.status(), 'statut de la page de l’exercice').toBe(404);
-		await expectText(session.page, 'Exercice non trouvé', 'symptôme');
-		test.fail(true, 'Un exercice assigné directement à l’élève est masqué par la RLS (404)');
+		// E78 (corrigé) : la page de l'exercice assigné répondait 404, la règle de lecture
+		// d'`exercises` ne regardait que les fiches, jamais `exercise_assignments`
 		expect(response?.status()).toBeLessThan(400);
 		const report = await imageReport(session.page, /exercise-images/);
 		expect(report.loaded.length, 'images de l’exercice').toBeGreaterThan(0);
@@ -422,12 +424,6 @@ test.describe('#3012 — images du contenu, compte élève', () => {
 			.annotations.some(
 				(a) => a.type === 'constat' && /games\/2048.*page d’erreur/.test(a.description ?? '')
 			);
-		if (erreurAuPremierChargement) {
-			test.fail(
-				true,
-				'ÉCART : /games/2048 tombe sur la page d’erreur (« Réessayer ») au premier chargement (erreur client appendChild)'
-			);
-		}
 		expect(erreurAuPremierChargement, 'page d’erreur au premier chargement de /games/2048').toBe(
 			false
 		);

@@ -12,7 +12,7 @@ modèles de probabilités de tous les niveaux en prod (MCP en lecture seule, 202
 | 3-034 | Simuler des expériences aléatoires indépendantes           | c7928fc7 « Simuler deux épreuves indépendantes » (3)         |
 | 3-035 | Stabilisation des fréquences, lien fréquence / probabilité | 1 modèle                                                     |
 
-Bornes ([cycle4.md](../systeme/programmes/bornes/cycle4.md)) : 3-033 en équiprobabilité, évènements
+Bornes ([cycle4.md](../../../systeme/programmes/bornes/cycle4.md)) : 3-033 en équiprobabilité, évènements
 « ou », « et », « ou exclusif » ; deux épreuves en **4e** (4-049 : deux pièces, pièce et dé, deux dés,
 tableau ou arbre) ; contraire en 4e (4-079). Probabilité conditionnelle (« sachant ») : Seconde.
 

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR du moteur écrite (relecture en cours)._
+_Mis à jour le 2026-11-26, chantier clos après #3186._
 
-- **État** : lot écrit et poussé (`docs/idees-6e-proportionnalite`). PR du moteur écrite et commitée, pas encore ouverte : `;dN`, `;aN`, `;pN`, euro à deux décimales, `round(x, n)`, zéros utiles au juge. Tests verts (42 172 dans mathAST, questions, ubumark, utils), `check:incremental` 0, garde de doc verte.
-- **Prochaine action** : relecture `code-reviewer` (Opus), puis ouvrir la PR et `pnpm pr:merger`. Ensuite, migration de contenu des 32 modèles à arrondi (`round(k*x)/k;d` → `;aN`, liste du 2026-11-26), puis reprise du lot : prix en grandeurs €, retouches validées, essai en base locale.
+- **État** : rubrique publiée : 5 modèles neufs (N1-N5) relus et validés par David (« je valide les modèles »), publiés par David, vérifiés au MCP (`published`, 6e) ; 4 publiés complétés de 6 variations et 06df72fd ouvert à la 6e (#3186, `db:migrate` le 2026-11-26) ; journal archivé.
+- **Prochaine action** : aucune.
 - **En attente de David** : rien.
-- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement.
-- **Worktree / branche** : lot `../ubumaths-wt-idees-6e-proportionnalite` (`docs/idees-6e-proportionnalite`) ; moteur `../ubumaths-wt-idees-6e-proportionnalite-moteur` (`feat/ecriture-nombres-arrondis`).
+- **Pièges en cours** : d'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé).
+- **Worktree / branche** : aucun.
 
 ## Journal
 
@@ -129,3 +129,32 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - Suite : les 32 modèles écrivent leur attendu `round(k*x)/k;d`, qui perd les zéros (« 0,3 » au
   centième). Une migration de contenu les passera à `;aN` après le merge (les modèles à l'unité ne
   changent pas).
+- #3170 mergée le 2026-11-26 (CI verte). Relecture Opus : aucun bug de correction ; corrigés avant
+  l'ouverture : avertissements des tirages rejetés, `;dN` signalé dans une case sans `precision`,
+  pas d'avertissement euro avec `;dN`.
+
+### 2026-11-26 : zéros des arrondis dans les modèles publiés (#3175)
+
+- 32 modèles à `precision` décimale relevés ; 27 touchés (5 à l'unité seulement ou sans `round…;d` : f7c15433, bf5dadf6, 245b4eb1, 5ec00b89, 10a51999). 126 écritures `;d` → `;aN`, valeur inchangée (le `round` reste), blocs `figure` exclus (60 coordonnées d'Al-Kashi).
+- 11 specs de 7 modèles assertaient l'ancienne règle (rouges en prod depuis #3170) : remises à la règle ; 10a51999 ajouté pour sa spec seule (28 modèles migrés).
+- `security-auditor` : aucun finding bloquant. Migration non jouée : deux autres migrations en attente.
+- Migration jouée en prod par David le 2026-11-26 (avec les deux autres en attente) ; vérifiée par MCP (aucun `round…;d` hors figures).
+
+### 2026-11-26 : reprise du lot (prix en €, retouches 3 à 5, essai local)
+
+- Prix en grandeurs en euros (`{{eval:(…)[€]}}`) : « 7,20 € », « 12 € » écrits par le moteur. Prix sans unité (cases « Prix (€) », calculs du corrigé) écrits de même (`prix_nu` : `;d2` sauf prix entier).
+- Retouche 1 (`zeros: off` de e0ccaf84) abandonnée : « 21,60 € » est juste depuis #3170 (spec ajoutée). `zeros: off` gardé sur N1 à N3 : leurs cases de prix sans unité sont des nombres pour le juge (« 8,50 » y serait perfectible).
+- Retouche 3 : N5 v2 gagne une situation incalculable, **la masse du père** (au lieu de la pointure : un adulte garde sa pointure, et le coup de pouce « quelque chose qui ne change pas ? » y mènerait à « la même »). Validé par David le 2026-11-26 (« je te suis »).
+- Retouche 4 : N5 v1, piège « valeur × nouvelle quantité » pour les prix et l'imprimante seulement ; ailleurs, la nouvelle quantité ajoutée (variable `z` : une grandeur `[€]` ne simplifie pas `min`/`abs`).
+- Retouche 5 : N4 relier, une série parmi cinq (éléphant, lettre, camion, récréation, vacances, marathon, crayon, cuillère…), une unité par sorte de grandeur dans chaque série.
+- Essai local : `create-questions --publier` en base locale (ids restaurés), variations des 4 publiés posées par PATCH local ; `pnpm voir` des aperçus N5 et N2 : rendu juste (« 13,30 € »), 0 erreur de console. Réponses justes et fausses jugées par les specs (même juge), pas rejouées à la main.
+- #3179 mergée le 2026-11-26. David valide « masse du père » (« je te suis »), puis lance `create-questions --publier` en prod : 5 brouillons (N1 3cfccd63, N2 057a1424, N3 33d2cad7, N4 376e7768, N5 5600e665), ids commités sur `feat/idees-6e-proportionnalite-rangement`.
+
+### 2026-11-26 : migrations de rangement, de contenu et F4
+
+- Relevé de la prod (MCP) : 06df72fd publié, grades {5}, rangé sur « caractérisation » (le nœud de 6-190), seul tag 5-087.
+- `migration-rangement.ts --dir …-neufs` : 5 rangés (6-191 ×2, 6-192, 6-189, 6-190). `migration-contenu.ts --dir …-publies` : 4 migrés (+1, +1, +2, +2 variations), 06df72fd inchangé.
+- F4 à la main (`20261126131952_…_06df72fd_6e.sql`) : `array_append` de `6`, tag 6-190, `updated_at` préservé, rollback gardé. Preuve rouge : migration vidée (rollback gardé) → 4 échecs et suite principale tombée ; fichier restauré d'une copie, 12 verts.
+- `security-auditor` : aucun bloquant ; ajout de l'assertion « trigger de date réactivé » qu'il suggérait. Question d'accès : personne ne gagne ni ne perd d'accès.
+- #3186 mergée le 2026-11-26 ; `db:migrate` : seules ses 3 migrations étaient en attente (`migration list --linked`). Preuve rouge des 2 générées : corps vidés → 8 échecs, tous sur elles. État de la prod vérifié par MCP après coup.
+- 2026-11-26 : David relit et valide les 5 neufs (« je valide les modèles ») ; `publier-lot.ts` simulé (5 passent), lancé par David avec `--publier` ; MCP : 5/5 `published`, niveau 6. Rubrique publiée, réservations levées, journal archivé.

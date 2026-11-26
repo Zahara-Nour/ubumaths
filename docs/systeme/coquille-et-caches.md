@@ -3,7 +3,7 @@ couvre:
   - src/routes/+layout.svelte
   - 'src/routes/(protected)/+layout.svelte'
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
-  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,ExerciseSkeleton,FlipCard,FontSelector,Wheel}.svelte'
+  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,FlipCard,FontSelector,Wheel}.svelte'
   - 'src/lib/components/{skeleton,modals}/**'
   - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack,input-capability,auth}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
@@ -256,7 +256,6 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 
 - `FlipCard` : carte à deux faces de même hauteur (grille CSS), face cachée `inert`. Utilisée par
   `FlashCard` et `/demo`.
-- `ExerciseSkeleton` : squelette de `student/exercises`.
 - `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` sont utilisés
   (layouts, marché) ; `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem` non.
 

@@ -10,7 +10,6 @@ import {
 	bulkAssignSchema,
 	singleAssignSchema,
 	assignmentQuerySchema,
-	studentExerciseFiltersSchema,
 	exportExercisesSchema,
 	viewExerciseSchema,
 	updateAssignmentSchema,
@@ -263,13 +262,18 @@ describe('exercise validation schemas', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept make_public only', () => {
-			const data = {
-				make_public: true
-			};
+		it('refuse « make_public » seul : ce n’est plus une cible', () => {
+			const result = bulkAssignSchema.safeParse({ make_public: true });
+			expect(result.success).toBe(false);
+		});
 
-			const result = bulkAssignSchema.safeParse(data);
+		it('retire « make_public » des données validées', () => {
+			const result = bulkAssignSchema.safeParse({
+				students: ['550e8400-e29b-41d4-a716-446655440000'],
+				make_public: true
+			});
 			expect(result.success).toBe(true);
+			if (result.success) expect(result.data).not.toHaveProperty('make_public');
 		});
 
 		it('should accept optional fields', () => {
@@ -348,13 +352,9 @@ describe('exercise validation schemas', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept public assignment', () => {
-			const data = {
-				assigned_to_type: 'public'
-			};
-
-			const result = singleAssignSchema.safeParse(data);
-			expect(result.success).toBe(true);
+		it('refuse une affectation « public »', () => {
+			const result = singleAssignSchema.safeParse({ assigned_to_type: 'public' });
+			expect(result.success).toBe(false);
 		});
 
 		it('should reject student assignment without student_id', () => {
@@ -419,35 +419,6 @@ describe('exercise validation schemas', () => {
 		it('should accept empty query', () => {
 			const result = assignmentQuerySchema.safeParse({});
 			expect(result.success).toBe(true);
-		});
-	});
-
-	describe('studentExerciseFiltersSchema', () => {
-		it('should accept valid filters', () => {
-			const data = {
-				completed: 'true',
-				assigned_only: 'false',
-				public: 'true',
-				has_deadline: 'false',
-				search: 'algebra'
-			};
-
-			const result = studentExerciseFiltersSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should transform string booleans', () => {
-			const data = {
-				completed: 'true',
-				assigned_only: 'false'
-			};
-
-			const result = studentExerciseFiltersSchema.safeParse(data);
-			expect(result.success).toBe(true);
-			if (result.success) {
-				expect(result.data.completed).toBe(true);
-				expect(result.data.assigned_only).toBe(false);
-			}
 		});
 	});
 

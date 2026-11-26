@@ -2,13 +2,39 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3167._
+_Mis à jour le 2026-11-26, après #3176._
 
-- **État** : PR A3 (« · 1 en QCM » sous la carte de Ma série) mergée (#3167), worktree retiré.
-- **Prochaine action** : PR B (recherche, branche `feat/automaths-recherche`), phase 0 validée.
-- **En attente de David** : rien.
-- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; `aria-disabled` → Playwright refuse le clic (`click({ force: true })`) ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
-- **Worktree / branche** : aucun pour l'instant.
+- **État** : PR B (recherche, #3172) et PR C (ordre des groupes, #3176) mergées ; worktrees retirés. Recherche livrée au prochain `deploy:prod` (sur demande de David).
+- **Prochaine action** : aucune PR prévue sur le chantier ; attendre la suite de David.
+- **En attente de David** : rien (dossier `ubumaths-wt-automaths-recherche` supprimé le 2026-11-26).
+- **Pièges en cours** : figure dans une variable (`{{if:k==1|```figure…}}`) → variables retirées AVANT les blocs ; mot mis au singulier par la recherche = mot entier ; capture WebKit d'une carte = miroir ; `garde-migrations-horodatage` rouge par hasard → `gh run rerun --failed`.
+- **Worktree / branche** : aucun.
+
+### 2026-11-26 — PR C mergée (#3176)
+
+- CI verte, mergée par `pnpm pr:merger`.
+
+### 2026-11-26 — PR C, ordre des groupes (décision de David : « je valide »)
+
+- Recos acceptées : groupes de résultats triés par nombre de TITRES, puis somme des pertinences, puis ordre de l'arbre. Les autres choix de la PR B sont gardés (ordre des raccourcis, vue « Notions » au raccourci, nom de notion retiré, intitulé « Aussi dans les corrigés et le programme »).
+- 2 tests (4 énoncés contre 1 titre, rouge avant ; départage par la somme). 40/40 ; `check:incremental` 0 erreur ; cliquet tenu.
+- Mesure (6e + inférieurs, 3 premiers groupes) : « triangle » → triangles · constructions · propriétés (propriétés était 1er) ; cercle, multiplication, fraction, angle droit inchangés.
+- Revue : aucune (≈ 5 lignes de tri, CLAUDE.md § Planning point 4). Doc : `questions.md`.
+
+### 2026-11-26 — PR B mergée (#3172)
+
+- CI verte, mergée par `pnpm pr:merger`.
+
+### 2026-11-26 — PR B recherche, réalisation
+
+- `catalogue-search.ts` : `searchCatalogue` rend `shortcuts` (raccourcis), `groups` (bons résultats) et `others` (« aussi »). Bons : titre, description, sous-notion, énoncés (`plainMarkdownText` : variables d'abord, puis blocs, formules, code, images). « Aussi » : étapes et retours de la correction, intitulés des points. Pluriels : `singular` (≥ 4 lettres).
+- Page : « Aller à : » (boutons « Notion › sous-notion · n ») → recherche effacée, vue « Notions », descente à la sous-notion (`CatalogueNotionSections` : `initialRubricId`). Groupe replié « Aussi dans les corrigés et le programme · n » en bas ; bons résultats vides → « Aucune question dans les titres et les énoncés ».
+- Choix non écrits en phase 0 (à dire à David) : pertinence d'un groupe = somme (3 titre, 2 + description, 1 ailleurs), titres d'abord dans un groupe ; raccourcis : nom exact, puis plus court, puis plus fourni ; raccourci = bascule en vue « Notions » même si le niveau a un programme ; nom de la NOTION retiré des bons résultats (raccourci à la place) ; intitulé du groupe replié.
+- Mesures (base locale, 6e + inférieurs, bons / aussi) : cercle 20/12 (raccourci Figures planes › cercle), triangle 53/18, multiplication 101/25, fraction 146/5, angle droit 24/20. Bug vu à l'écran puis corrigé : « Situer des objets sur une étagère » sortait pour « cercle » (figure dans une variable).
+- Tests : 35 unitaires (`catalogue-search.test.ts`, 17 rouges avant le code), 4 nouveaux sur la page (`catalogue-recherche`) ; 425 navigateur verts (`automaths/`, `components/questions/`) ; `check:incremental` 0 erreur ; cliquet tenu.
+- Vu : `pnpm voir --ordi --chrome` (« cercle », 6e + inférieurs) et iPhone (« multiplication ») : raccourcis, groupes, « Aussi » replié ; 0 erreur de console.
+- Doc : `questions.md`.
+- Revue `code-reviewer` (Sonnet). Corrigés : « tableaux » donnait « tableal » (-eaux → -eau avant -aux → -al) ; mot mis au singulier par la recherche cherché en mot entier (« mois » trouvait « moitié », « temps » « température ») ; sous-notion d'arrivée oubliée après le montage (un retour plus tard sur la notion y redescendait). Tests ajoutés (38 unitaires). Raccourci revu à l'écran : descente à « cercle » sous les pastilles, 0 erreur. Laissés : ordre des groupes par SOMME (un groupe de 4 énoncés passe devant 1 titre : à dire à David) ; double `buildCatalogue` (avertissement « Non classés » doublé en console) ; « a b » passe le seuil de 2 lettres ; bloc non refermé gardé.
 
 ### 2026-11-26 — PR A3 mergée (#3167) : « · 1 en QCM » sous la carte
 
