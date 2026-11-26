@@ -1,0 +1,572 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Espace > représentation paramétrique",
+		"point": "TSPE-365"
+	},
+	"title": "Espace : écrire une représentation paramétrique de droite",
+	"description": "Écrire la représentation paramétrique d'une droite donnée par un point et un vecteur directeur, par deux points, ou par un point et une droite parallèle (pièges : point et vecteur échangés, signes, point de la droite parallèle gardé)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$.\n\nÉcris la représentation paramétrique de la droite $d$ passant par $A$ et de vecteur directeur $\\vec{u}$, obtenue avec ce point et ce vecteur (paramètre $t\\in\\mathbb{R}$).\n\n$x=?$, $y=?$ et $z=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "t|t"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["u1 != 0 || u2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:ax!=0|{{ax}}}}{{if:u1==1|{{if:ax!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:ax!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:ax==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u1}}+({{ax}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-ax}}+({{u1}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{ax}}+({{eval:-u1}})t",
+							"message": "Le coefficient de $t$ est la coordonnée du vecteur directeur, avec son signe.",
+							"label": "Signe de la coordonnée du vecteur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:ay!=0|{{ay}}}}{{if:u2==1|{{if:ay!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:ay!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:ay==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u2}}+({{ay}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-ay}}+({{u2}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{ay}}+({{eval:-u2}})t",
+							"message": "Le coefficient de $t$ est la coordonnée du vecteur directeur, avec son signe.",
+							"label": "Signe de la coordonnée du vecteur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:az!=0|{{az}}}}{{if:u3==1|{{if:az!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:az!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:az==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u3}}+({{az}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-az}}+({{u3}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{az}}+({{eval:-u3}})t",
+							"message": "Le coefficient de $t$ est la coordonnée du vecteur directeur, avec son signe.",
+							"label": "Signe de la coordonnée du vecteur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un point $M(x\\,;\\,y\\,;\\,z)$ est sur $d$ quand $\\overrightarrow{AM}=t\\,\\vec{u}$ pour un réel $t$ : $x-x_A=at$, $y-y_A=bt$, $z-z_A=ct$.",
+					"Les coordonnées de $A$ donnent les termes constants, celles de $\\vec{u}$ les coefficients de $t$ : $\\textcolor{{{color:primary.0}}}{ \\begin{cases}x={{if:ax!=0|{{ax}}}}{{if:u1==1|{{if:ax!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:ax!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:ax==0|0}}}}\\\\y={{if:ay!=0|{{ay}}}}{{if:u2==1|{{if:ay!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:ay!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:ay==0|0}}}}\\\\z={{if:az!=0|{{az}}}}{{if:u3==1|{{if:az!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:az!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:az==0|0}}}}\\end{cases} }\\quad(t\\in\\mathbb{R})$."
+				]
+			},
+			"hint": "La droite passant par $A(x_A\\,;\\,y_A\\,;\\,z_A)$ de vecteur directeur $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ a pour représentation $x=x_A+at$, $y=y_A+bt$, $z=z_A+ct$."
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nÉcris la représentation paramétrique de la droite $(AB)$ obtenue avec le point $A$ et le vecteur directeur $\\overrightarrow{AB}$ (paramètre $t\\in\\mathbb{R}$).\n\n$x=?$, $y=?$ et $z=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "t|t"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "by",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bz",
+					"expression": "-5..5"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:bx-ax}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:by-ay}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:bz-az}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2) > 0", "abs(w3) > 0", "abs(w1)+abs(w3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:ax!=0|{{ax}}}}{{if:w1==1|{{if:ax!=0|+}}t}}{{if:w1==-1|-t}}{{if:w1>1|{{if:ax!=0|+}}{{w1}}t}}{{if:w1< -1|{{w1}}t}}{{if:w1==0|{{if:ax==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{w1}}+({{ax}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-ax}}+({{w1}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{ax}}+({{bx}})t",
+							"message": "Les coordonnées de $B$ ne sont pas celles d'un vecteur directeur : on prend $\\overrightarrow{AB}$, de coordonnées $x_B - x_A$, $y_B - y_A$, $z_B - z_A$.",
+							"label": "Coordonnées de B prises pour le vecteur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:ay!=0|{{ay}}}}{{if:w2==1|{{if:ay!=0|+}}t}}{{if:w2==-1|-t}}{{if:w2>1|{{if:ay!=0|+}}{{w2}}t}}{{if:w2< -1|{{w2}}t}}{{if:w2==0|{{if:ay==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{w2}}+({{ay}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-ay}}+({{w2}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{ay}}+({{by}})t",
+							"message": "Les coordonnées de $B$ ne sont pas celles d'un vecteur directeur : on prend $\\overrightarrow{AB}$, de coordonnées $x_B - x_A$, $y_B - y_A$, $z_B - z_A$.",
+							"label": "Coordonnées de B prises pour le vecteur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:az!=0|{{az}}}}{{if:w3==1|{{if:az!=0|+}}t}}{{if:w3==-1|-t}}{{if:w3>1|{{if:az!=0|+}}{{w3}}t}}{{if:w3< -1|{{w3}}t}}{{if:w3==0|{{if:az==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{w3}}+({{az}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-az}}+({{w3}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{az}}+({{bz}})t",
+							"message": "Les coordonnées de $B$ ne sont pas celles d'un vecteur directeur : on prend $\\overrightarrow{AB}$, de coordonnées $x_B - x_A$, $y_B - y_A$, $z_B - z_A$.",
+							"label": "Coordonnées de B prises pour le vecteur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}$ dirige $(AB)$ : $\\overrightarrow{AB}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$.",
+					"Avec le point $A$ : $\\textcolor{{{color:primary.0}}}{ \\begin{cases}x={{if:ax!=0|{{ax}}}}{{if:w1==1|{{if:ax!=0|+}}t}}{{if:w1==-1|-t}}{{if:w1>1|{{if:ax!=0|+}}{{w1}}t}}{{if:w1< -1|{{w1}}t}}{{if:w1==0|{{if:ax==0|0}}}}\\\\y={{if:ay!=0|{{ay}}}}{{if:w2==1|{{if:ay!=0|+}}t}}{{if:w2==-1|-t}}{{if:w2>1|{{if:ay!=0|+}}{{w2}}t}}{{if:w2< -1|{{w2}}t}}{{if:w2==0|{{if:ay==0|0}}}}\\\\z={{if:az!=0|{{az}}}}{{if:w3==1|{{if:az!=0|+}}t}}{{if:w3==-1|-t}}{{if:w3>1|{{if:az!=0|+}}{{w3}}t}}{{if:w3< -1|{{w3}}t}}{{if:w3==0|{{if:az==0|0}}}}\\end{cases} }\\quad(t\\in\\mathbb{R})$."
+				]
+			},
+			"hint": "Calcule d'abord les coordonnées de $\\overrightarrow{AB}$ : $x_B-x_A$, $y_B-y_A$, $z_B-z_A$. La droite passant par $A(x_A\\,;\\,y_A\\,;\\,z_A)$ de vecteur directeur $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ a pour représentation $x=x_A+at$, $y=y_A+bt$, $z=z_A+ct$."
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et la droite $d'$ de représentation paramétrique $$\\begin{cases}x={{if:qx!=0|{{qx}}}}{{if:u1==1|{{if:qx!=0|+}}s}}{{if:u1==-1|-s}}{{if:u1>1|{{if:qx!=0|+}}{{u1}}s}}{{if:u1< -1|{{u1}}s}}{{if:u1==0|{{if:qx==0|0}}}}\\\\y={{if:qy!=0|{{qy}}}}{{if:u2==1|{{if:qy!=0|+}}s}}{{if:u2==-1|-s}}{{if:u2>1|{{if:qy!=0|+}}{{u2}}s}}{{if:u2< -1|{{u2}}s}}{{if:u2==0|{{if:qy==0|0}}}}\\\\z={{if:qz!=0|{{qz}}}}{{if:u3==1|{{if:qz!=0|+}}s}}{{if:u3==-1|-s}}{{if:u3>1|{{if:qz!=0|+}}{{u3}}s}}{{if:u3< -1|{{u3}}s}}{{if:u3==0|{{if:qz==0|0}}}}\\end{cases}\\quad(s\\in\\mathbb{R})$$\n\nÉcris la représentation paramétrique de la droite $\\Delta$ passant par $A$ et parallèle à $d'$, obtenue avec le point $A$ et le vecteur directeur lu sur $d'$ (paramètre $t\\in\\mathbb{R}$).\n\n$x=?$, $y=?$ et $z=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "t|t"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "qx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "qy",
+					"expression": "-5..5"
+				},
+				{
+					"name": "qz",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["u1 != 0 || u2 != 0", "abs(ax-qx)+abs(ay-qy)+abs(az-qz) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:ax!=0|{{ax}}}}{{if:u1==1|{{if:ax!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:ax!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:ax==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u1}}+({{ax}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-ax}}+({{u1}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{qx}}+({{u1}})t",
+							"message": "C'est le point de $d'$ : la droite cherchée passe par $A$, le terme constant est donc $x_A$.",
+							"label": "Point de d′ gardé"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:ay!=0|{{ay}}}}{{if:u2==1|{{if:ay!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:ay!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:ay==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u2}}+({{ay}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-ay}}+({{u2}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{qy}}+({{u2}})t",
+							"message": "C'est le point de $d'$ : la droite cherchée passe par $A$, le terme constant est donc $x_A$.",
+							"label": "Point de d′ gardé"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:az!=0|{{az}}}}{{if:u3==1|{{if:az!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:az!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:az==0|0}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u3}}+({{az}})t",
+							"message": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$.",
+							"label": "Point et vecteur échangés"
+						},
+						{
+							"answer": "{{eval:-az}}+({{u3}})t",
+							"message": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$.",
+							"label": "Signe de la coordonnée du point"
+						},
+						{
+							"answer": "{{qz}}+({{u3}})t",
+							"message": "C'est le point de $d'$ : la droite cherchée passe par $A$, le terme constant est donc $x_A$.",
+							"label": "Point de d′ gardé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites parallèles ont les mêmes vecteurs directeurs : on lit les coefficients de $s$, $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ dirige $d'$, donc aussi $\\Delta$.",
+					"Avec le point $A$ : $\\textcolor{{{color:primary.0}}}{ \\begin{cases}x={{if:ax!=0|{{ax}}}}{{if:u1==1|{{if:ax!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:ax!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:ax==0|0}}}}\\\\y={{if:ay!=0|{{ay}}}}{{if:u2==1|{{if:ay!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:ay!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:ay==0|0}}}}\\\\z={{if:az!=0|{{az}}}}{{if:u3==1|{{if:az!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:az!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:az==0|0}}}}\\end{cases} }\\quad(t\\in\\mathbb{R})$."
+				]
+			},
+			"hint": "Une droite parallèle à $d'$ a le même vecteur directeur que $d'$ : lis-le sur sa représentation. La droite passant par $A(x_A\\,;\\,y_A\\,;\\,z_A)$ de vecteur directeur $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ a pour représentation $x=x_A+at$, $y=y_A+bt$, $z=z_A+ct$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2+3t, −1, −2t",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"az": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2+3t", "-1", "-2t"]
+		},
+		{
+			"description": "v0 : autres écritures",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"az": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3t+2", "-1", "-2t"]
+		},
+		{
+			"description": "v0 : point et vecteur échangés",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"az": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$."
+			},
+			"answers": ["3+2t", "-1", "-2t"]
+		},
+		{
+			"description": "v0 : signe de x_A",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"az": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$."
+			},
+			"answers": ["-2+3t", "-1", "-2t"]
+		},
+		{
+			"description": "v0 : signe de la coordonnée du vecteur",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"az": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient de $t$ est la coordonnée du vecteur directeur, avec son signe."
+			},
+			"answers": ["2+3t", "-1", "2t"]
+		},
+		{
+			"description": "v1 : 1+2t, −t, −2+4t",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-2",
+				"bx": "3",
+				"by": "-1",
+				"bz": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1+2t", "-t", "-2+4t"]
+		},
+		{
+			"description": "v1 : autres écritures",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-2",
+				"bx": "3",
+				"by": "-1",
+				"bz": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2t+1", "-t", "4t-2"]
+		},
+		{
+			"description": "v1 : coordonnées de B pour le vecteur",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-2",
+				"bx": "3",
+				"by": "-1",
+				"bz": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les coordonnées de $B$ ne sont pas celles d'un vecteur directeur : on prend $\\overrightarrow{AB}$, de coordonnées $x_B - x_A$, $y_B - y_A$, $z_B - z_A$."
+			},
+			"answers": ["1+3t", "-t", "-2+4t"]
+		},
+		{
+			"description": "v1 : rôles échangés",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-2",
+				"bx": "3",
+				"by": "-1",
+				"bz": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le point donne le terme constant et le vecteur le coefficient de $t$ : $x = x_A + a t$."
+			},
+			"answers": ["2+t", "-t", "-2+4t"]
+		},
+		{
+			"description": "v2 : −1+t, 2−2t, 3+3t",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "-1",
+				"ay": "2",
+				"az": "3",
+				"qx": "4",
+				"qy": "0",
+				"qz": "-1",
+				"u1": "1",
+				"u2": "-2",
+				"u3": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1+t", "2-2t", "3+3t"]
+		},
+		{
+			"description": "v2 : point de d′ gardé",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "-1",
+				"ay": "2",
+				"az": "3",
+				"qx": "4",
+				"qy": "0",
+				"qz": "-1",
+				"u1": "1",
+				"u2": "-2",
+				"u3": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le point de $d'$ : la droite cherchée passe par $A$, le terme constant est donc $x_A$."
+			},
+			"answers": ["4+t", "2-2t", "3+3t"]
+		},
+		{
+			"description": "v2 : signe de y_A",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "-1",
+				"ay": "2",
+				"az": "3",
+				"qx": "4",
+				"qy": "0",
+				"qz": "-1",
+				"u1": "1",
+				"u2": "-2",
+				"u3": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le terme constant est la coordonnée du point, avec son signe : $x = x_A + a t$."
+			},
+			"answers": ["-1+t", "-2-2t", "3+3t"]
+		}
+	]
+}

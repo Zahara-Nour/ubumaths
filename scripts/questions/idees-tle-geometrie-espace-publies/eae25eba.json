@@ -194,6 +194,166 @@
 					"$\\overrightarrow{AM}\\cdot\\vec{u}={{eval:(mx-ax)*u1+(my-ay)*u2+(mz-az)*u3}}$ et $\\|\\vec{u}\\|^2={{eval:u1^2+u2^2+u3^2}}$ ; la condition s'écrit $\\overrightarrow{AM}\\cdot\\vec{u}-t\\|\\vec{u}\\|^2=0$, donc $t=\\dfrac{\\overrightarrow{AM}\\cdot\\vec{u}}{\\|\\vec{u}\\|^2}=\\textcolor{{{color:primary.0}}}{ {{s}} }$."
 				]
 			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur la droite $(AB)$.\n\n$H(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ay",
+					"expression": "-4..4"
+				},
+				{
+					"name": "az",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:r*(1-sel)*u2}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:r*((sel-1)*u1+sel*u3)}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:-r*sel*u2}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+u1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+u2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+u3}}"
+				},
+				{
+					"name": "hx",
+					"expression": "{{eval:ax+s*u1}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{eval:ay+s*u2}}"
+				},
+				{
+					"name": "hz",
+					"expression": "{{eval:az+s*u3}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:hx+w1}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:hy+w2}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:hz+w3}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2)+abs(w3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hx}}",
+					"expectedErrors": [
+						{
+							"answer": "{{ax}}",
+							"message": "Ce sont les coordonnées de $A$ : le projeté $H$ est le point de $\\left( AB \\right)$ tel que $\\overrightarrow{MH}\\cdot\\overrightarrow{AB}=0$.",
+							"label": "A donné"
+						},
+						{
+							"answer": "{{s}}",
+							"message": "Tu as donné le paramètre $k$ de $H$ : ses coordonnées sont celles de $A+k\\,\\overrightarrow{AB}$.",
+							"label": "Paramètre donné"
+						},
+						{
+							"answer": "{{mx}}",
+							"message": "Ce sont les coordonnées de $M$ : on cherche son projeté $H$ sur $\\left( AB \\right)$.",
+							"label": "M donné"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{hy}}",
+					"expectedErrors": [
+						{
+							"answer": "{{ay}}",
+							"message": "Ce sont les coordonnées de $A$ : le projeté $H$ est le point de $\\left( AB \\right)$ tel que $\\overrightarrow{MH}\\cdot\\overrightarrow{AB}=0$.",
+							"label": "A donné"
+						},
+						{
+							"answer": "{{s}}",
+							"message": "Tu as donné le paramètre $k$ de $H$ : ses coordonnées sont celles de $A+k\\,\\overrightarrow{AB}$.",
+							"label": "Paramètre donné"
+						},
+						{
+							"answer": "{{my}}",
+							"message": "Ce sont les coordonnées de $M$ : on cherche son projeté $H$ sur $\\left( AB \\right)$.",
+							"label": "M donné"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{hz}}",
+					"expectedErrors": [
+						{
+							"answer": "{{az}}",
+							"message": "Ce sont les coordonnées de $A$ : le projeté $H$ est le point de $\\left( AB \\right)$ tel que $\\overrightarrow{MH}\\cdot\\overrightarrow{AB}=0$.",
+							"label": "A donné"
+						},
+						{
+							"answer": "{{s}}",
+							"message": "Tu as donné le paramètre $k$ de $H$ : ses coordonnées sont celles de $A+k\\,\\overrightarrow{AB}$.",
+							"label": "Paramètre donné"
+						},
+						{
+							"answer": "{{mz}}",
+							"message": "Ce sont les coordonnées de $M$ : on cherche son projeté $H$ sur $\\left( AB \\right)$.",
+							"label": "M donné"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ ; $H$ est sur $(AB)$ : $\\overrightarrow{AH}=k\\,\\overrightarrow{AB}$, et $\\overrightarrow{MH}\\cdot\\overrightarrow{AB}=0$.",
+					"La condition s'écrit $\\overrightarrow{AM}\\cdot\\overrightarrow{AB}-k\\,AB^2=0$ ; ici $\\overrightarrow{AM}\\cdot\\overrightarrow{AB}={{eval:(mx-ax)*u1+(my-ay)*u2+(mz-az)*u3}}$ et $AB^2={{eval:u1^2+u2^2+u3^2}}$, donc $k={{s}}$.",
+					"$H=A{{if:s==1|+|{{if:s==-1|-|{{s;+}}\\,}}}}\\overrightarrow{AB}$ : $\\textcolor{{{color:primary.0}}}{ H({{hx}}\\,;\\,{{hy}}\\,;\\,{{hz}}) }$."
+				]
+			},
+			"hint": "Écris $H=A+k\\,\\overrightarrow{AB}$, puis traduis $\\overrightarrow{MH}\\cdot\\overrightarrow{AB}=0$ : c'est une équation en $k$."
 		}
 	],
 	"testSpecs": [
@@ -329,6 +489,65 @@
 			},
 			"description": "v1 : t = -2",
 			"variationIndex": 1
+		},
+		{
+			"description": "H(3 ; 4 ; −3)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "2",
+				"r": "1",
+				"sel": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "4", "-3"]
+		},
+		{
+			"description": "A donné",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "2",
+				"r": "1",
+				"sel": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les coordonnées de $A$ : le projeté $H$ est le point de $\\left( AB \\right)$ tel que $\\overrightarrow{MH}\\cdot\\overrightarrow{AB}=0$."
+			},
+			"answers": ["1", "0", "-1"]
+		},
+		{
+			"description": "M donné",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "2",
+				"r": "1",
+				"sel": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les coordonnées de $M$ : on cherche son projeté $H$ sur $\\left( AB \\right)$."
+			},
+			"answers": ["5", "3", "-3"]
 		}
 	]
 }

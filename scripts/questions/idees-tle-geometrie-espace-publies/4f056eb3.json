@@ -101,6 +101,126 @@
 					"$\\overrightarrow{HM}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$, donc $MH=\\sqrt{{{eval:w1;()}}^2+{{eval:w2;()}}^2+{{eval:w3;()}}^2}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(w1^2+w2^2+w3^2)}} }$"
 				]
 			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:px!=0|{{px}}}}{{if:u1==1|{{if:px!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:px!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:px==0|0}}}}\\\\y={{if:py!=0|{{py}}}}{{if:u2==1|{{if:py!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:py!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:py==0|0}}}}\\\\z={{if:pz!=0|{{pz}}}}{{if:u3==1|{{if:pz!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:pz!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:pz==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nPour tout réel $t$, on note $M_t$ le point de $d$ de paramètre $t$. On admet que $AM_t^2={{ka}}t^2{{kb;+}}t{{kc;+}}$.\n\nDonne la valeur de $t$ pour laquelle $AM_t^2$ est minimal, puis la distance du point $A$ à la droite $d$ (valeur exacte).\n\n$t=?$ et distance : $?$",
+			"variables": [
+				{
+					"name": "px",
+					"expression": "-2..2"
+				},
+				{
+					"name": "py",
+					"expression": "-2..2"
+				},
+				{
+					"name": "pz",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "t0",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:r*(1-sel)*u2}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:r*((sel-1)*u1+sel*u3)}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:-r*sel*u2}}"
+				},
+				{
+					"name": "nu",
+					"expression": "{{eval:u1^2+u2^2+u3^2}}"
+				},
+				{
+					"name": "nw",
+					"expression": "{{eval:w1^2+w2^2+w3^2}}"
+				},
+				{
+					"name": "ka",
+					"expression": "{{eval:nu}}"
+				},
+				{
+					"name": "kb",
+					"expression": "{{eval:-2*t0*nu}}"
+				},
+				{
+					"name": "kc",
+					"expression": "{{eval:t0^2*nu+nw}}"
+				},
+				{
+					"name": "ax",
+					"expression": "{{eval:px+t0*u1+w1}}"
+				},
+				{
+					"name": "ay",
+					"expression": "{{eval:py+t0*u2+w2}}"
+				},
+				{
+					"name": "az",
+					"expression": "{{eval:pz+t0*u3+w3}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2)+abs(w3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-t0}}",
+							"message": "Le sommet d'un trinôme $a t^2 + b t + c$ est en $t=-\\dfrac{b}{2a}$ : vérifie le signe.",
+							"label": "Signe de −b/(2a)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:sqrt(nw)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{nw}}",
+							"message": "C'est le carré de la distance : prends sa racine carrée.",
+							"label": "Distance au carré"
+						},
+						{
+							"answer": "{{eval:sqrt(kc)}}",
+							"message": "Tu as calculé $AM_{0}$ (en $t = 0$) : la distance est la valeur minimale de $AM_{t}$, atteinte au sommet.",
+							"label": "AM en t = 0"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$AM_t^2$ est un trinôme en $t$ de coefficient ${{ka}}>0$ devant $t^2$ : il est minimal au sommet, en $t=-\\dfrac{b}{2a}=-\\dfrac{{{kb}}}{2\\times{{ka}}}=\\textcolor{{{color:primary.0}}}{ {{t0}} }$.",
+					"Le minimum vaut ${{ka}}\\times{{t0;()}}^2{{kb;+}}\\times{{t0;()}}{{kc;+}}={{nw}}$ : la distance de $A$ à $d$, plus petite distance $AM_t$, est sa racine carrée, $\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(nw)}} }$."
+				]
+			},
+			"hint": "La distance de $A$ à $d$ est la plus petite des distances $AM_t$ : cherche le minimum du trinôme $AM_t^2$, atteint à son sommet."
 		}
 	],
 	"testSpecs": [
@@ -160,6 +280,85 @@
 			},
 			"description": "v0 : MH² donné",
 			"variationIndex": 0
+		},
+		{
+			"description": "t = 1, distance √5",
+			"variationIndex": 1,
+			"variables": {
+				"px": "0",
+				"py": "1",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"t0": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "\\sqrt{5}"]
+		},
+		{
+			"description": "t = −1 (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"px": "0",
+				"py": "1",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"t0": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le sommet d'un trinôme $a t^2 + b t + c$ est en $t=-\\dfrac{b}{2a}$ : vérifie le signe."
+			},
+			"answers": ["-1", "\\sqrt{5}"]
+		},
+		{
+			"description": "distance au carré",
+			"variationIndex": 1,
+			"variables": {
+				"px": "0",
+				"py": "1",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"t0": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le carré de la distance : prends sa racine carrée."
+			},
+			"answers": ["1", "5"]
+		},
+		{
+			"description": "AM en t = 0",
+			"variationIndex": 1,
+			"variables": {
+				"px": "0",
+				"py": "1",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"t0": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $AM_{0}$ (en $t = 0$) : la distance est la valeur minimale de $AM_{t}$, atteinte au sommet."
+			},
+			"answers": ["1", "\\sqrt{11}"]
 		}
 	]
 }

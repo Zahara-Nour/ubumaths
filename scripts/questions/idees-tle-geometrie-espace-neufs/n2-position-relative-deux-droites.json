@@ -1,0 +1,925 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Espace > positions relatives et intersections",
+		"point": "TSPE-567"
+	},
+	"title": "Espace : position relative de deux droites en repère",
+	"description": "Deux droites données par des représentations paramétriques (ou par deux points) : sécantes, strictement parallèles, non coplanaires ou confondues, et le point d'intersection de deux droites sécantes (pièges : même paramètre pour les deux droites, non coplanaires prises pour parallèles)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les droites $d$ et $d'$ de représentations paramétriques $$\\begin{cases}x={{if:px!=0|{{px}}}}{{if:u1==1|{{if:px!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:px!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:px==0|0}}}}\\\\y={{if:py!=0|{{py}}}}{{if:u2==1|{{if:py!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:py!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:py==0|0}}}}\\\\z={{if:pz!=0|{{pz}}}}{{if:u3==1|{{if:pz!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:pz!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:pz==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$ et $$\\begin{cases}x={{if:qx!=0|{{qx}}}}{{if:w1==1|{{if:qx!=0|+}}s}}{{if:w1==-1|-s}}{{if:w1>1|{{if:qx!=0|+}}{{w1}}s}}{{if:w1< -1|{{w1}}s}}{{if:w1==0|{{if:qx==0|0}}}}\\\\y={{if:qy!=0|{{qy}}}}{{if:w2==1|{{if:qy!=0|+}}s}}{{if:w2==-1|-s}}{{if:w2>1|{{if:qy!=0|+}}{{w2}}s}}{{if:w2< -1|{{w2}}s}}{{if:w2==0|{{if:qy==0|0}}}}\\\\z={{if:qz!=0|{{qz}}}}{{if:w3==1|{{if:qz!=0|+}}s}}{{if:w3==-1|-s}}{{if:w3>1|{{if:qz!=0|+}}{{w3}}s}}{{if:w3< -1|{{w3}}s}}{{if:w3==0|{{if:qz==0|0}}}}\\end{cases}\\quad(s\\in\\mathbb{R})$$\n\nQuelle est la position relative des droites $d$ et $d'$ ?\n\n```choix\n- Les droites $d$ et $d'$ sont sécantes.\n- Les droites $d$ et $d'$ sont strictement parallèles.\n- Les droites $d$ et $d'$ sont non coplanaires.\n- Les droites $d$ et $d'$ sont confondues.\n```",
+			"variables": [
+				{
+					"name": "px",
+					"expression": "-3..3"
+				},
+				{
+					"name": "py",
+					"expression": "-3..3"
+				},
+				{
+					"name": "pz",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "a1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "sel",
+					"expression": "0..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "i0",
+					"expression": "{{eval:1-min(abs(sel-0),1)}}"
+				},
+				{
+					"name": "i1",
+					"expression": "{{eval:1-min(abs(sel-1),1)}}"
+				},
+				{
+					"name": "i2",
+					"expression": "{{eval:1-min(abs(sel-2),1)}}"
+				},
+				{
+					"name": "i3",
+					"expression": "{{eval:1-min(abs(sel-3),1)}}"
+				},
+				{
+					"name": "par",
+					"expression": "{{eval:i1+i3}}"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:par*r*u1+(1-par)*a1}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:par*r*u2+(1-par)*a2}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:par*r*u3+(1-par)*a3}}"
+				},
+				{
+					"name": "qx",
+					"expression": "{{eval:px+(i0+i3)*k*u1-i0*m*w1+(i1+i2)*b1}}"
+				},
+				{
+					"name": "qy",
+					"expression": "{{eval:py+(i0+i3)*k*u2-i0*m*w2+(i1+i2)*b2}}"
+				},
+				{
+					"name": "qz",
+					"expression": "{{eval:pz+(i0+i3)*k*u3-i0*m*w3+(i1+i2)*b3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:px+k*u1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:py+k*u2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:pz+k*u3}}"
+				}
+			],
+			"conditions": ["u1*(a2*b3-a3*b2)-u2*(a1*b3-a3*b1)+u3*(a1*b2-a2*b1) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{sel}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Vecteurs directeurs : $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ pour $d$ et $\\vec{w}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$ pour $d'$.",
+					"{{if:par==1|$\\vec{w}={{if:r==1||{{if:r==-1|-|{{r}}\\,}}}}\\vec{u}$ : les vecteurs sont colinéaires, les droites sont parallèles. On cherche si le point $Q({{qx}}\\,;\\,{{qy}}\\,;\\,{{qz}})$ de $d'$ est sur $d$.|Les coordonnées de $\\vec{u}$ et $\\vec{w}$ ne sont pas proportionnelles : les droites ne sont pas parallèles. $d$ et $d'$ ont un point commun quand le système $\\begin{cases}{{if:px!=0|{{px}}}}{{if:u1==1|{{if:px!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:px!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:px==0|0}}}}={{if:qx!=0|{{qx}}}}{{if:w1==1|{{if:qx!=0|+}}s}}{{if:w1==-1|-s}}{{if:w1>1|{{if:qx!=0|+}}{{w1}}s}}{{if:w1< -1|{{w1}}s}}{{if:w1==0|{{if:qx==0|0}}}}\\\\{{if:py!=0|{{py}}}}{{if:u2==1|{{if:py!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:py!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:py==0|0}}}}={{if:qy!=0|{{qy}}}}{{if:w2==1|{{if:qy!=0|+}}s}}{{if:w2==-1|-s}}{{if:w2>1|{{if:qy!=0|+}}{{w2}}s}}{{if:w2< -1|{{w2}}s}}{{if:w2==0|{{if:qy==0|0}}}}\\\\{{if:pz!=0|{{pz}}}}{{if:u3==1|{{if:pz!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:pz!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:pz==0|0}}}}={{if:qz!=0|{{qz}}}}{{if:w3==1|{{if:qz!=0|+}}s}}{{if:w3==-1|-s}}{{if:w3>1|{{if:qz!=0|+}}{{w3}}s}}{{if:w3< -1|{{w3}}s}}{{if:w3==0|{{if:qz==0|0}}}}\\end{cases}$ a une solution $(t\\,;\\,s)$.}}",
+					"{{if:sel==0|Le système a pour solution $t={{k}}$ et $s={{m}}$ : les droites sont $\\textcolor{{{color:primary.0}}}{\\text{sécantes}}$ en $I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}})$.|{{if:sel==1|$Q$ n'est pas sur $d$ (aucun $t$ ne vérifie les trois équations) : les droites sont $\\textcolor{{{color:primary.0}}}{\\text{strictement parallèles}}$.|{{if:sel==2|Le système n'a pas de solution : les deux premières équations donnent un couple $(t\\,;\\,s)$ qui ne vérifie pas la troisième. Les droites ne sont ni parallèles ni sécantes : elles sont $\\textcolor{{{color:primary.0}}}{\\text{non coplanaires}}$.|$Q$ est le point de $d$ de paramètre $t={{k}}$ : les droites sont $\\textcolor{{{color:primary.0}}}{\\text{confondues}}$.}}}}}}"
+				]
+			},
+			"hint": "Compare d'abord les vecteurs directeurs : colinéaires ou non ? Puis cherche un point commun en résolvant le système, avec un paramètre différent pour chaque droite."
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les droites sécantes $d$ et $d'$ de représentations paramétriques $$\\begin{cases}x={{if:px!=0|{{px}}}}{{if:u1==1|{{if:px!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:px!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:px==0|0}}}}\\\\y={{if:py!=0|{{py}}}}{{if:u2==1|{{if:py!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:py!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:py==0|0}}}}\\\\z={{if:pz!=0|{{pz}}}}{{if:u3==1|{{if:pz!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:pz!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:pz==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$ et $$\\begin{cases}x={{if:qx!=0|{{qx}}}}{{if:w1==1|{{if:qx!=0|+}}s}}{{if:w1==-1|-s}}{{if:w1>1|{{if:qx!=0|+}}{{w1}}s}}{{if:w1< -1|{{w1}}s}}{{if:w1==0|{{if:qx==0|0}}}}\\\\y={{if:qy!=0|{{qy}}}}{{if:w2==1|{{if:qy!=0|+}}s}}{{if:w2==-1|-s}}{{if:w2>1|{{if:qy!=0|+}}{{w2}}s}}{{if:w2< -1|{{w2}}s}}{{if:w2==0|{{if:qy==0|0}}}}\\\\z={{if:qz!=0|{{qz}}}}{{if:w3==1|{{if:qz!=0|+}}s}}{{if:w3==-1|-s}}{{if:w3>1|{{if:qz!=0|+}}{{w3}}s}}{{if:w3< -1|{{w3}}s}}{{if:w3==0|{{if:qz==0|0}}}}\\end{cases}\\quad(s\\in\\mathbb{R})$$\n\nDétermine les coordonnées de leur point d'intersection $I$.\n\n$I(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "px",
+					"expression": "-3..3"
+				},
+				{
+					"name": "py",
+					"expression": "-3..3"
+				},
+				{
+					"name": "pz",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "a1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "sel",
+					"expression": "0"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "i0",
+					"expression": "{{eval:1-min(abs(sel-0),1)}}"
+				},
+				{
+					"name": "i1",
+					"expression": "{{eval:1-min(abs(sel-1),1)}}"
+				},
+				{
+					"name": "i2",
+					"expression": "{{eval:1-min(abs(sel-2),1)}}"
+				},
+				{
+					"name": "i3",
+					"expression": "{{eval:1-min(abs(sel-3),1)}}"
+				},
+				{
+					"name": "par",
+					"expression": "{{eval:i1+i3}}"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:par*r*u1+(1-par)*a1}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:par*r*u2+(1-par)*a2}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:par*r*u3+(1-par)*a3}}"
+				},
+				{
+					"name": "qx",
+					"expression": "{{eval:px+(i0+i3)*k*u1-i0*m*w1+(i1+i2)*b1}}"
+				},
+				{
+					"name": "qy",
+					"expression": "{{eval:py+(i0+i3)*k*u2-i0*m*w2+(i1+i2)*b2}}"
+				},
+				{
+					"name": "qz",
+					"expression": "{{eval:pz+(i0+i3)*k*u3-i0*m*w3+(i1+i2)*b3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:px+k*u1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:py+k*u2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:pz+k*u3}}"
+				}
+			],
+			"conditions": ["u1*(a2*b3-a3*b2)-u2*(a1*b3-a3*b1)+u3*(a1*b2-a2*b1) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ix}}",
+					"expectedErrors": [
+						{
+							"answer": "{{qx}}",
+							"message": "C'est le point de $d'$ de paramètre $s = 0$ : il faut résoudre le système pour trouver $t$ et $s$.",
+							"label": "Point de d′ en s = 0"
+						},
+						{
+							"answer": "{{px}}",
+							"message": "C'est le point de $d$ de paramètre $t = 0$ : il faut résoudre le système pour trouver $t$ et $s$.",
+							"label": "Point de d en t = 0"
+						},
+						{
+							"answer": "{{eval:qx+k*w1}}",
+							"message": "Tu as pris pour $s$ la valeur trouvée pour $t$ : les deux droites ont chacune leur paramètre, résous le système pour trouver $s$.",
+							"label": "Même paramètre pour les deux droites"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{iy}}",
+					"expectedErrors": [
+						{
+							"answer": "{{qy}}",
+							"message": "C'est le point de $d'$ de paramètre $s = 0$ : il faut résoudre le système pour trouver $t$ et $s$.",
+							"label": "Point de d′ en s = 0"
+						},
+						{
+							"answer": "{{py}}",
+							"message": "C'est le point de $d$ de paramètre $t = 0$ : il faut résoudre le système pour trouver $t$ et $s$.",
+							"label": "Point de d en t = 0"
+						},
+						{
+							"answer": "{{eval:qy+k*w2}}",
+							"message": "Tu as pris pour $s$ la valeur trouvée pour $t$ : les deux droites ont chacune leur paramètre, résous le système pour trouver $s$.",
+							"label": "Même paramètre pour les deux droites"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{iz}}",
+					"expectedErrors": [
+						{
+							"answer": "{{qz}}",
+							"message": "C'est le point de $d'$ de paramètre $s = 0$ : il faut résoudre le système pour trouver $t$ et $s$.",
+							"label": "Point de d′ en s = 0"
+						},
+						{
+							"answer": "{{pz}}",
+							"message": "C'est le point de $d$ de paramètre $t = 0$ : il faut résoudre le système pour trouver $t$ et $s$.",
+							"label": "Point de d en t = 0"
+						},
+						{
+							"answer": "{{eval:qz+k*w3}}",
+							"message": "Tu as pris pour $s$ la valeur trouvée pour $t$ : les deux droites ont chacune leur paramètre, résous le système pour trouver $s$.",
+							"label": "Même paramètre pour les deux droites"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$I$ est sur les deux droites : on cherche $t$ et $s$ tels que $\\begin{cases}{{if:px!=0|{{px}}}}{{if:u1==1|{{if:px!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:px!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:px==0|0}}}}={{if:qx!=0|{{qx}}}}{{if:w1==1|{{if:qx!=0|+}}s}}{{if:w1==-1|-s}}{{if:w1>1|{{if:qx!=0|+}}{{w1}}s}}{{if:w1< -1|{{w1}}s}}{{if:w1==0|{{if:qx==0|0}}}}\\\\{{if:py!=0|{{py}}}}{{if:u2==1|{{if:py!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:py!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:py==0|0}}}}={{if:qy!=0|{{qy}}}}{{if:w2==1|{{if:qy!=0|+}}s}}{{if:w2==-1|-s}}{{if:w2>1|{{if:qy!=0|+}}{{w2}}s}}{{if:w2< -1|{{w2}}s}}{{if:w2==0|{{if:qy==0|0}}}}\\\\{{if:pz!=0|{{pz}}}}{{if:u3==1|{{if:pz!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:pz!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:pz==0|0}}}}={{if:qz!=0|{{qz}}}}{{if:w3==1|{{if:qz!=0|+}}s}}{{if:w3==-1|-s}}{{if:w3>1|{{if:qz!=0|+}}{{w3}}s}}{{if:w3< -1|{{w3}}s}}{{if:w3==0|{{if:qz==0|0}}}}\\end{cases}$",
+					"Deux équations donnent $t={{k}}$ et $s={{m}}$, et la troisième est vérifiée.",
+					"Avec $t={{k}}$ dans la représentation de $d$ : $\\textcolor{{{color:primary.0}}}{ I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}}) }$."
+				]
+			},
+			"hint": "Écris l'égalité des coordonnées d'un point de $d$ (paramètre $t$) et d'un point de $d'$ (paramètre $s$), résous le système de deux équations, puis vérifie la troisième."
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les points $A({{px}}\\,;\\,{{py}}\\,;\\,{{pz}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$, et la droite $d'$ de représentation paramétrique $$\\begin{cases}x={{if:qx!=0|{{qx}}}}{{if:w1==1|{{if:qx!=0|+}}s}}{{if:w1==-1|-s}}{{if:w1>1|{{if:qx!=0|+}}{{w1}}s}}{{if:w1< -1|{{w1}}s}}{{if:w1==0|{{if:qx==0|0}}}}\\\\y={{if:qy!=0|{{qy}}}}{{if:w2==1|{{if:qy!=0|+}}s}}{{if:w2==-1|-s}}{{if:w2>1|{{if:qy!=0|+}}{{w2}}s}}{{if:w2< -1|{{w2}}s}}{{if:w2==0|{{if:qy==0|0}}}}\\\\z={{if:qz!=0|{{qz}}}}{{if:w3==1|{{if:qz!=0|+}}s}}{{if:w3==-1|-s}}{{if:w3>1|{{if:qz!=0|+}}{{w3}}s}}{{if:w3< -1|{{w3}}s}}{{if:w3==0|{{if:qz==0|0}}}}\\end{cases}\\quad(s\\in\\mathbb{R})$$\n\nQuelle est la position relative des droites $(AB)$ et $d'$ ?\n\n```choix\n- Les droites $(AB)$ et $d'$ sont sécantes.\n- Les droites $(AB)$ et $d'$ sont strictement parallèles.\n- Les droites $(AB)$ et $d'$ sont non coplanaires.\n- Les droites $(AB)$ et $d'$ sont confondues.\n```",
+			"variables": [
+				{
+					"name": "px",
+					"expression": "-3..3"
+				},
+				{
+					"name": "py",
+					"expression": "-3..3"
+				},
+				{
+					"name": "pz",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "a1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "sel",
+					"expression": "0..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "i0",
+					"expression": "{{eval:1-min(abs(sel-0),1)}}"
+				},
+				{
+					"name": "i1",
+					"expression": "{{eval:1-min(abs(sel-1),1)}}"
+				},
+				{
+					"name": "i2",
+					"expression": "{{eval:1-min(abs(sel-2),1)}}"
+				},
+				{
+					"name": "i3",
+					"expression": "{{eval:1-min(abs(sel-3),1)}}"
+				},
+				{
+					"name": "par",
+					"expression": "{{eval:i1+i3}}"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:par*r*u1+(1-par)*a1}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:par*r*u2+(1-par)*a2}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:par*r*u3+(1-par)*a3}}"
+				},
+				{
+					"name": "qx",
+					"expression": "{{eval:px+(i0+i3)*k*u1-i0*m*w1+(i1+i2)*b1}}"
+				},
+				{
+					"name": "qy",
+					"expression": "{{eval:py+(i0+i3)*k*u2-i0*m*w2+(i1+i2)*b2}}"
+				},
+				{
+					"name": "qz",
+					"expression": "{{eval:pz+(i0+i3)*k*u3-i0*m*w3+(i1+i2)*b3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:px+k*u1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:py+k*u2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:pz+k*u3}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:px+u1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:py+u2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:pz+u3}}"
+				}
+			],
+			"conditions": ["u1*(a2*b3-a3*b2)-u2*(a1*b3-a3*b1)+u3*(a1*b2-a2*b1) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{sel}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}$ dirige $(AB)$, et $A$ en est un point : $(AB)$ a pour représentation $$\\begin{cases}x={{if:px!=0|{{px}}}}{{if:u1==1|{{if:px!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:px!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:px==0|0}}}}\\\\y={{if:py!=0|{{py}}}}{{if:u2==1|{{if:py!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:py!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:py==0|0}}}}\\\\z={{if:pz!=0|{{pz}}}}{{if:u3==1|{{if:pz!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:pz!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:pz==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$",
+					"Vecteurs directeurs : $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ pour $(AB)$ et $\\vec{w}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$ pour $d'$.",
+					"{{if:par==1|$\\vec{w}={{if:r==1||{{if:r==-1|-|{{r}}\\,}}}}\\vec{u}$ : les vecteurs sont colinéaires, les droites sont parallèles. On cherche si le point $Q({{qx}}\\,;\\,{{qy}}\\,;\\,{{qz}})$ de $d'$ est sur $(AB)$.|Les coordonnées de $\\vec{u}$ et $\\vec{w}$ ne sont pas proportionnelles : les droites ne sont pas parallèles. $(AB)$ et $d'$ ont un point commun quand le système $\\begin{cases}{{if:px!=0|{{px}}}}{{if:u1==1|{{if:px!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:px!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:px==0|0}}}}={{if:qx!=0|{{qx}}}}{{if:w1==1|{{if:qx!=0|+}}s}}{{if:w1==-1|-s}}{{if:w1>1|{{if:qx!=0|+}}{{w1}}s}}{{if:w1< -1|{{w1}}s}}{{if:w1==0|{{if:qx==0|0}}}}\\\\{{if:py!=0|{{py}}}}{{if:u2==1|{{if:py!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:py!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:py==0|0}}}}={{if:qy!=0|{{qy}}}}{{if:w2==1|{{if:qy!=0|+}}s}}{{if:w2==-1|-s}}{{if:w2>1|{{if:qy!=0|+}}{{w2}}s}}{{if:w2< -1|{{w2}}s}}{{if:w2==0|{{if:qy==0|0}}}}\\\\{{if:pz!=0|{{pz}}}}{{if:u3==1|{{if:pz!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:pz!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:pz==0|0}}}}={{if:qz!=0|{{qz}}}}{{if:w3==1|{{if:qz!=0|+}}s}}{{if:w3==-1|-s}}{{if:w3>1|{{if:qz!=0|+}}{{w3}}s}}{{if:w3< -1|{{w3}}s}}{{if:w3==0|{{if:qz==0|0}}}}\\end{cases}$ a une solution $(t\\,;\\,s)$.}}",
+					"{{if:sel==0|Le système a pour solution $t={{k}}$ et $s={{m}}$ : les droites sont $\\textcolor{{{color:primary.0}}}{\\text{sécantes}}$ en $I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}})$.|{{if:sel==1|$Q$ n'est pas sur $(AB)$ (aucun $t$ ne vérifie les trois équations) : les droites sont $\\textcolor{{{color:primary.0}}}{\\text{strictement parallèles}}$.|{{if:sel==2|Le système n'a pas de solution : les deux premières équations donnent un couple $(t\\,;\\,s)$ qui ne vérifie pas la troisième. Les droites ne sont ni parallèles ni sécantes : elles sont $\\textcolor{{{color:primary.0}}}{\\text{non coplanaires}}$.|$Q$ est le point de $(AB)$ de paramètre $t={{k}}$ : les droites sont $\\textcolor{{{color:primary.0}}}{\\text{confondues}}$.}}}}}}"
+				]
+			},
+			"hint": "Calcule $\\overrightarrow{AB}$ et écris une représentation paramétrique de $(AB)$. Compare d'abord les vecteurs directeurs : colinéaires ou non ? Puis cherche un point commun en résolvant le système, avec un paramètre différent pour chaque droite."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : sécantes",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "0",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v0 : sécantes prises pour non coplanaires",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "0",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v0 : strictement parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "1",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v0 : strictement parallèles prises pour confondues",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "1",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v0 : non coplanaires",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "2",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v0 : non coplanaires prises pour strictement parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "2",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v0 : non coplanaires prises pour sécantes",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "2",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v0 : confondues",
+			"variationIndex": 0,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "3",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v1 : I(2 ; 2 ; −2)",
+			"variationIndex": 1,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "0",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "2", "-2"]
+		},
+		{
+			"description": "v1 : point de d′ en s = 0",
+			"variationIndex": 1,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "0",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le point de $d'$ de paramètre $s = 0$ : il faut résoudre le système pour trouver $t$ et $s$."
+			},
+			"answers": ["3", "3", "0"]
+		},
+		{
+			"description": "v1 : point de d en t = 0",
+			"variationIndex": 1,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "0",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le point de $d$ de paramètre $t = 0$ : il faut résoudre le système pour trouver $t$ et $s$."
+			},
+			"answers": ["1", "0", "-1"]
+		},
+		{
+			"description": "v1 : s = t = 1 dans d′",
+			"variationIndex": 1,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "0",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris pour $s$ la valeur trouvée pour $t$ : les deux droites ont chacune leur paramètre, résous le système pour trouver $s$."
+			},
+			"answers": ["4", "4", "2"]
+		},
+		{
+			"description": "v2 : sécantes",
+			"variationIndex": 2,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "0",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v2 : confondues",
+			"variationIndex": 2,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "3",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v2 : confondues prises pour strictement parallèles",
+			"variationIndex": 2,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "3",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v2 : non coplanaires",
+			"variationIndex": 2,
+			"variables": {
+				"px": "1",
+				"py": "0",
+				"pz": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"a1": "1",
+				"a2": "1",
+				"a3": "2",
+				"b1": "1",
+				"b2": "0",
+				"b3": "1",
+				"sel": "2",
+				"k": "1",
+				"m": "-1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		}
+	]
+}

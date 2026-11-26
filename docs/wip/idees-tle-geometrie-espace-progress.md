@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, phase 0 validée (pas encore de PR)._
+_Mis à jour le 2026-11-26, lot écrit (pas encore de PR)._
 
-- **État** : relevé fait ([releve](idees-tle-geometrie-espace-releve.md) : 10 ✅, 13 🟡, 3 ❌) ; phase 0 **validée par David le 2026-11-26** (« je valide » dans la conversation : toutes les fiches oui, Q1 oui ; la page à cocher https://claude.ai/artifact/6Cx9jxScwsv78fkiAM9znZ est restée vide). 9 modèles publiés réservés dans le tableau de répartition (`c564645c5` sur `main`).
-- **Prochaine action** : écrire le gros lot, d'un coup ([fiches](idees-tle-geometrie-espace-fiches.md)) : N1-N3 en modèles neufs (`docs/wip/questions/idees-tle-geometrie-espace-neufs.py` → `scripts/questions/idees-tle-geometrie-espace-neufs/`), V1-V9 ajoutées **à la fin** des 9 modèles exportés de prod (`scripts/questions/idees-tle-geometrie-espace-publies/`) ; Q1 : noter les deux outils (case « représentation paramétrique » jugée « même droite », point au tiers d'une arête du `solide`) dans `docs/wip/outils-manquants.md`, dans la PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : `shared.blankDefaults` d'un modèle règle ses cases (2b240d8c : `vecteur` + `colineaire`) — lire `shared` avant de croire une case non réglée. Pas de Oui / Non : V3, V4, V5 en « coche les… ». Bloc `solide` : `points:` = `milieu`, `centre` seulement (quarts = milieu d'un milieu).
+- **État** : gros lot écrit et vert (specs, tirages, sonde des solides) : N1-N3 dans `scripts/questions/idees-tle-geometrie-espace-neufs/`, 11 variations (V1-V9) à la fin des 9 publiés ; migration de contenu générée (`20261126090344_…_publies_contenu.sql` + fixture) ; Q1 noté (lignes 64, 65 d'`outils-manquants.md`).
+- **Prochaine action** : jouer le lot en base locale (aperçu admin, `pnpm voir`), puis demander à David `create-questions --publier` des neufs (brouillons en prod), commiter les ids, générer la migration de rangement, `security-auditor`, PR.
+- **En attente de David** : rien pour l'instant (le `--publier` en prod viendra après l'essai local).
+- **Pièges en cours** : `shared.blankDefaults` d'un modèle règle ses cases (2b240d8c : `vecteur` + `colineaire` ; le schéma refuse de surcharger `answerKind`, la case choix de V5 n'en est pas gênée). aaa16821 n'a pas `cleanCoefficients` : équation écrite par `equation_propre()`. Un message d'erreur prévue s'écrit sous sa forme réécrite (`$x = x_A + a t$`, `$\left( AB \right)$`). Un fichier publié modifié → relancer `migration-contenu.ts` (nouvel horodatage, retirer l'ancienne).
 - **Worktree / branche** : `../ubumaths-wt-idees-tle-geometrie-espace`, `chore/idees-tle-geometrie-espace`.
 
 ---
@@ -35,3 +35,27 @@ autre plateforme (`TSG2-10` à `TSG2-50`, 26 exercices sans les anciennes versio
   V1-V9 (11 variations de d192da3e, d6938108, ac94a453, 33be404b, 2b240d8c, eae25eba, 4f056eb3,
   aaa16821, 31b49cdf), R (ce qui n'est pas repris), Q1 (deux outils à noter).
 - David : « je valide » (2026-11-26) → toutes les fiches oui, Q1 oui.
+
+## Lot écrit (2026-11-26)
+
+- Scripts : `docs/wip/questions/idees-tle-geometrie-espace-neufs.py` (N1-N3) et
+  `idees-tle-geometrie-espace-publies.py` (V1-V9, ajoutées à la fin de l'export de prod du
+  2026-11-26, commité à part). `create-questions` en simulation : 3 à créer, 9 « contenu
+  différent » ; `question:specs` vert sur les 12 fichiers ; `sonde-cubes` : 300 blocs, 0 problème.
+- Niveaux : N1 3, N2 3, N3 2 (relevé des sous-notions en prod le 2026-11-26).
+- **Écarts de détail aux fiches** (mécaniques, sans changer le fond validé) :
+  - N3 rangé sur « Géométrie > Espace > coordonnées » et non sur le nœud de 63669e60 : 63669e60
+    est sur « coplanarité et décomposition » (TSPE-338), et le point validé TSPE-332 est sur
+    « coordonnées » (règle du tag : point sur le nœud ou sa notion).
+  - N1 v1 : l'erreur « B − A pris pour A − B » donnerait $\overrightarrow{BA}$, qui dirige aussi
+    la droite : remplacée par « coordonnées de B prises pour le vecteur ».
+  - N3 : dans les repères (B ; BC, BA, BF), (H ; HE, HG, HD), (E ; EA, EF, EH), les coordonnées
+    des sommets valent toutes 0 ou 1 : pas d'erreur « 1 au lieu de −1 » (remplacée par « lu dans
+    le repère de A » et « ordre des coordonnées »).
+  - Cases choix (N2 v0 et v2, V3, V4, V5 v3) : le générateur refuse une erreur prévue dans une
+    case choix ; les erreurs typiques sont dans les specs.
+  - V3, V4, V5 v3 : les noms des points (ou vecteurs) proposés tournent (variable `pm`), sinon le
+    même nom serait toujours juste.
+  - V5 v2 : erreurs prévues « u donné », « v donné », « orthogonal à u seulement ».
+- Migration de contenu générée : `supabase/migrations/20261126090344_questions_idees_tle_geometrie_espace_publies_contenu.sql`
+  (9 modèles, +11 variations, 0 corrigée, options inchangées).

@@ -258,6 +258,164 @@
 					"$\\overrightarrow{BC}\\begin{pmatrix}{{eval:cx-bx}}\\\\{{eval:cy-by}}\\\\{{eval:cz-bz}}\\end{pmatrix}$, donc $\\textcolor{{{color:primary.0}}}{ D\\left({{eval:ax+cx-bx}}\\,;\\,{{eval:ay+cy-by}}\\,;\\,{{eval:az+cz-bz}}\\right) }$."
 				]
 			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$.\n\nDétermine les coordonnées du point $M$ tel que $\\overrightarrow{AM}={{kp}}\\,\\overrightarrow{AB}{{kq;+}}\\,\\overrightarrow{AC}$.\n\n$M(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ay",
+					"expression": "-4..4"
+				},
+				{
+					"name": "az",
+					"expression": "-4..4"
+				},
+				{
+					"name": "bx",
+					"expression": "-4..4"
+				},
+				{
+					"name": "by",
+					"expression": "-4..4"
+				},
+				{
+					"name": "bz",
+					"expression": "-4..4"
+				},
+				{
+					"name": "cx",
+					"expression": "-4..4"
+				},
+				{
+					"name": "cy",
+					"expression": "-4..4"
+				},
+				{
+					"name": "cz",
+					"expression": "-4..4"
+				},
+				{
+					"name": "kp",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "kq",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "vx",
+					"expression": "{{eval:bx-ax}}"
+				},
+				{
+					"name": "wx",
+					"expression": "{{eval:cx-ax}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:ax+kp*(bx-ax)+kq*(cx-ax)}}"
+				},
+				{
+					"name": "vy",
+					"expression": "{{eval:by-ay}}"
+				},
+				{
+					"name": "wy",
+					"expression": "{{eval:cy-ay}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:ay+kp*(by-ay)+kq*(cy-ay)}}"
+				},
+				{
+					"name": "vz",
+					"expression": "{{eval:bz-az}}"
+				},
+				{
+					"name": "wz",
+					"expression": "{{eval:cz-az}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:az+kp*(bz-az)+kq*(cz-az)}}"
+				}
+			],
+			"conditions": [
+				"abs(vy*wz-vz*wy)+abs(vz*wx-vx*wz)+abs(vx*wy-vy*wx) > 0",
+				"abs(mx)+abs(my)+abs(mz) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{mx}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mx-ax}}",
+							"message": "Ce sont les coordonnées de $\\overrightarrow{AM}$ : pour celles de $M$, ajoute celles de $A$.",
+							"label": "A pas ajouté (AM donné)"
+						},
+						{
+							"answer": "{{eval:kp*bx+kq*cx}}",
+							"message": "Les coefficients s'appliquent aux vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$, pas aux coordonnées des points $B$ et $C$.",
+							"label": "Calcul sur les points"
+						},
+						{
+							"answer": "{{eval:ax+kq*(bx-ax)+kp*(cx-ax)}}",
+							"message": "Le premier coefficient va avec $\\overrightarrow{AB}$, le second avec $\\overrightarrow{AC}$.",
+							"label": "Coefficients échangés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{my}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:my-ay}}",
+							"message": "Ce sont les coordonnées de $\\overrightarrow{AM}$ : pour celles de $M$, ajoute celles de $A$.",
+							"label": "A pas ajouté (AM donné)"
+						},
+						{
+							"answer": "{{eval:kp*by+kq*cy}}",
+							"message": "Les coefficients s'appliquent aux vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$, pas aux coordonnées des points $B$ et $C$.",
+							"label": "Calcul sur les points"
+						},
+						{
+							"answer": "{{eval:ay+kq*(by-ay)+kp*(cy-ay)}}",
+							"message": "Le premier coefficient va avec $\\overrightarrow{AB}$, le second avec $\\overrightarrow{AC}$.",
+							"label": "Coefficients échangés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{mz}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mz-az}}",
+							"message": "Ce sont les coordonnées de $\\overrightarrow{AM}$ : pour celles de $M$, ajoute celles de $A$.",
+							"label": "A pas ajouté (AM donné)"
+						},
+						{
+							"answer": "{{eval:kp*bz+kq*cz}}",
+							"message": "Les coefficients s'appliquent aux vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$, pas aux coordonnées des points $B$ et $C$.",
+							"label": "Calcul sur les points"
+						},
+						{
+							"answer": "{{eval:az+kq*(bz-az)+kp*(cz-az)}}",
+							"message": "Le premier coefficient va avec $\\overrightarrow{AB}$, le second avec $\\overrightarrow{AC}$.",
+							"label": "Coefficients échangés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{vx}}\\\\{{vy}}\\\\{{vz}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{wx}}\\\\{{wy}}\\\\{{wz}}\\end{pmatrix}$, donc $\\overrightarrow{AM}\\begin{pmatrix}{{eval:mx-ax}}\\\\{{eval:my-ay}}\\\\{{eval:mz-az}}\\end{pmatrix}$.",
+					"$x_M=x_A+{{eval:mx-ax;()}}$, de même pour $y_M$ et $z_M$ : $\\textcolor{{{color:primary.0}}}{ M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}}) }$."
+				]
+			},
+			"hint": "Calcule les coordonnées de $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$, puis celles de $\\overrightarrow{AM}$ ; les coordonnées de $M$ s'obtiennent en ajoutant celles de $A$."
 		}
 	],
 	"testSpecs": [
@@ -547,6 +705,93 @@
 			},
 			"description": "v4 : A + B - C",
 			"variationIndex": 4
+		},
+		{
+			"description": "M(3 ; 5 ; −1)",
+			"variationIndex": 5,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"bx": "2",
+				"by": "1",
+				"bz": "2",
+				"cx": "1",
+				"cy": "-1",
+				"cz": "3",
+				"kp": "2",
+				"kq": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "5", "-1"]
+		},
+		{
+			"description": "AM donné",
+			"variationIndex": 5,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"bx": "2",
+				"by": "1",
+				"bz": "2",
+				"cx": "1",
+				"cy": "-1",
+				"cz": "3",
+				"kp": "2",
+				"kq": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les coordonnées de $\\overrightarrow{AM}$ : pour celles de $M$, ajoute celles de $A$."
+			},
+			"answers": ["2", "5", "-3"]
+		},
+		{
+			"description": "2B − 3C",
+			"variationIndex": 5,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"bx": "2",
+				"by": "1",
+				"bz": "2",
+				"cx": "1",
+				"cy": "-1",
+				"cz": "3",
+				"kp": "2",
+				"kq": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les coefficients s'appliquent aux vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$, pas aux coordonnées des points $B$ et $C$."
+			},
+			"answers": ["1", "5", "-5"]
+		},
+		{
+			"description": "coefficients échangés",
+			"variationIndex": 5,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"bx": "2",
+				"by": "1",
+				"bz": "2",
+				"cx": "1",
+				"cy": "-1",
+				"cz": "3",
+				"kp": "2",
+				"kq": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier coefficient va avec $\\overrightarrow{AB}$, le second avec $\\overrightarrow{AC}$."
+			},
+			"answers": ["-2", "-5", "1"]
 		}
 	]
 }

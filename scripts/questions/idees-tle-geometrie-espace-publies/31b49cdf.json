@@ -74,6 +74,82 @@
 					"$H({{hx}}\\,;\\,{{hy}}\\,;\\,{{hz}})$ et $\\overrightarrow{MH}=t\\,\\vec{n}$ avec $t={{mk}}$, donc $MH=|t|\\times\\|\\vec{n}\\|={{eval:abs(k)}}\\times\\sqrt{{{eval:a^2+b^2+c^2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:abs(k)*sqrt(a^2+b^2+c^2)}} }$."
 				]
 			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et le point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$.\n\nCalcule la distance du point $M$ au plan $\\mathcal{P}$, arrondie au centième.\n\nDistance : $\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				},
+				{
+					"name": "mx",
+					"expression": "-6..6"
+				},
+				{
+					"name": "my",
+					"expression": "-6..6"
+				},
+				{
+					"name": "mz",
+					"expression": "-6..6"
+				},
+				{
+					"name": "sv",
+					"expression": "{{eval:a*mx+b*my+c*mz+d}}"
+				},
+				{
+					"name": "nn",
+					"expression": "{{eval:a^2+b^2+c^2}}"
+				}
+			],
+			"conditions": ["sv < 0 || sv > 0", "abs(sv) > 1"],
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:round(100*abs(sv)/sqrt(nn))/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*sv/sqrt(nn))/100;d}}",
+							"message": "Une distance est positive : la formule prend la valeur absolue du numérateur.",
+							"label": "Valeur absolue oubliée"
+						},
+						{
+							"answer": "{{eval:abs(sv)}}",
+							"message": "Divise par la norme du vecteur normal, $\\sqrt{a^2+b^2+c^2}$ : $\\dfrac{\\lvert ax_M+by_M+cz_M+d\\rvert}{\\sqrt{a^2+b^2+c^2}}$.",
+							"label": "Sans diviser par la norme"
+						},
+						{
+							"answer": "{{eval:round(100*abs(sv)/nn)/100;d}}",
+							"message": "Tu as divisé par $a^2 + b^2 + c^2$ : on divise par la norme $\\sqrt{a^2+b^2+c^2}$.",
+							"label": "Divisé par la norme au carré"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La distance de $M$ au plan d'équation $ax+by+cz+d=0$ est $\\dfrac{\\lvert ax_M+by_M+cz_M+d\\rvert}{\\sqrt{a^2+b^2+c^2}}$.",
+					"Ici : $\\dfrac{\\lvert {{a}}\\times{{mx;()}}+{{b;()}}\\times{{my;()}}+{{c;()}}\\times{{mz;()}}{{d;+}}\\rvert}{\\sqrt{ {{nn}} }}=\\dfrac{ {{eval:abs(sv)}} }{\\sqrt{ {{nn}} }}\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(100*abs(sv)/sqrt(nn))/100;d}} }$."
+				]
+			},
+			"hint": "Utilise la formule de la distance d'un point à un plan : valeur absolue de $ax_M+by_M+cz_M+d$, divisée par la norme du vecteur normal."
 		}
 	],
 	"testSpecs": [
@@ -145,6 +221,77 @@
 			},
 			"description": "v0 : |t| seul (2)",
 			"variationIndex": 0
+		},
+		{
+			"description": "≈ 1,87",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"mx": "1",
+				"my": "4",
+				"mz": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,87"]
+		},
+		{
+			"description": "valeur absolue oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"mx": "1",
+				"my": "4",
+				"mz": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une distance est positive : la formule prend la valeur absolue du numérateur."
+			},
+			"answers": ["-1,87"]
+		},
+		{
+			"description": "sans diviser par la norme",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"mx": "1",
+				"my": "4",
+				"mz": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Divise par la norme du vecteur normal, $\\sqrt{a^2+b^2+c^2}$ : $\\dfrac{\\lvert ax_M+by_M+cz_M+d\\rvert}{\\sqrt{a^2+b^2+c^2}}$."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "divisé par 14",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"mx": "1",
+				"my": "4",
+				"mz": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par $a^2 + b^2 + c^2$ : on divise par la norme $\\sqrt{a^2+b^2+c^2}$."
+			},
+			"answers": ["0,5"]
 		}
 	]
 }

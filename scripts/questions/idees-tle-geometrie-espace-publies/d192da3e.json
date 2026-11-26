@@ -317,6 +317,259 @@
 					"Une équation cartésienne : $\\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{dd}})=0$ (toute équation proportionnelle convient)."
 				]
 			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$, qui ne sont pas alignés.\n\nDonne une équation cartésienne du plan $(ABC)$.\n\n$(ABC)$ : $?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "q1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "q2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "q3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "c1",
+					"expression": "{{eval:p2*q3-p3*q2}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:p3*q1-p1*q3}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:p1*q2-p2*q1}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:c1/g}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:c2/g}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:c3/g}}"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(n1*ax+n2*ay+n3*az)}}"
+				},
+				{
+					"name": "dp",
+					"expression": "{{eval:-(p1*ax+p2*ay+p3*az)}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+p1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+p2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+p3}}"
+				},
+				{
+					"name": "cx",
+					"expression": "{{eval:ax+q1}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{eval:ay+q2}}"
+				},
+				{
+					"name": "cz",
+					"expression": "{{eval:az+q3}}"
+				}
+			],
+			"conditions": [
+				"abs(c1)+abs(c2)+abs(c3) > 0",
+				"abs(c1/g) <= 4",
+				"abs(c2/g) <= 4",
+				"abs(c3/g) <= 4"
+			],
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "{{n1}}x+({{n2}})y+({{n3}})z+({{dd}})=0",
+					"expectedErrors": [
+						{
+							"answer": "{{n1}}x+({{n2}})y+({{n3}})z=0",
+							"message": "Tu as oublié $d$ : le plan passe par $A$, on trouve $d$ en écrivant que les coordonnées de $A$ vérifient l'équation.",
+							"label": "d oublié"
+						},
+						{
+							"answer": "{{n1}}x+({{n2}})y+({{n3}})z+({{eval:-dd}})=0",
+							"message": "Vérifie le signe de $d$ : en remplaçant par les coordonnées de $A$, la somme doit valoir $0$.",
+							"label": "d de signe opposé"
+						},
+						{
+							"answer": "{{p1}}x+({{p2}})y+({{p3}})z+({{dp}})=0",
+							"message": "$\\overrightarrow{AB}$ est dans le plan, il n'est pas normal au plan : un vecteur normal est orthogonal à $\\overrightarrow{AB}$ et à $\\overrightarrow{AC}$.",
+							"label": "AB pris pour normal"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{q1}}\\\\{{q2}}\\\\{{q3}}\\end{pmatrix}$ dirigent le plan $(ABC)$.",
+					"Un vecteur normal $\\vec{n}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est orthogonal aux deux vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ : $\\vec{n}\\cdot\\overrightarrow{AB}=0$ et $\\vec{n}\\cdot\\overrightarrow{AC}=0$, soit ${{p1}}a+({{p2}})b+({{p3}})c=0$ et ${{q1}}a+({{q2}})b+({{q3}})c=0$.",
+					"En résolvant (une coordonnée fixée), on trouve par exemple $\\vec{n}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix}$ ; le plan a une équation ${{n1}}x+({{n2}})y+({{n3}})z+d=0$.",
+					"$A$ est dans le plan : ${{n1}}\\times{{ax;()}}+{{n2;()}}\\times{{ay;()}}+{{n3;()}}\\times{{az;()}}+d=0$, donc $d=\\textcolor{{{color:primary.0}}}{ {{dd}} }$ : une équation est ${{n1}}x+({{n2}})y+({{n3}})z+({{dd}})=0$ (toute équation proportionnelle convient)."
+				]
+			},
+			"hint": "Cherche un vecteur normal $\\vec{n}$ orthogonal à $\\overrightarrow{AB}$ et à $\\overrightarrow{AC}$ (deux produits scalaires nuls), puis trouve $d$ avec le point $A$."
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et les vecteurs non colinéaires $\\vec{u}\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{q1}}\\\\{{q2}}\\\\{{q3}}\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et dirigé par $\\vec{u}$ et $\\vec{v}$.\n\n$\\mathcal{P}$ : $?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c1",
+					"expression": "{{eval:p2*q3-p3*q2}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:p3*q1-p1*q3}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:p1*q2-p2*q1}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:c1/g}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:c2/g}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:c3/g}}"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(n1*ax+n2*ay+n3*az)}}"
+				},
+				{
+					"name": "dp",
+					"expression": "{{eval:-(p1*ax+p2*ay+p3*az)}}"
+				}
+			],
+			"conditions": [
+				"abs(c1)+abs(c2)+abs(c3) > 0",
+				"abs(c1/g) <= 4",
+				"abs(c2/g) <= 4",
+				"abs(c3/g) <= 4"
+			],
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "{{n1}}x+({{n2}})y+({{n3}})z+({{dd}})=0",
+					"expectedErrors": [
+						{
+							"answer": "{{n1}}x+({{n2}})y+({{n3}})z=0",
+							"message": "Tu as oublié $d$ : le plan passe par $A$, on trouve $d$ en écrivant que les coordonnées de $A$ vérifient l'équation.",
+							"label": "d oublié"
+						},
+						{
+							"answer": "{{n1}}x+({{n2}})y+({{n3}})z+({{eval:-dd}})=0",
+							"message": "Vérifie le signe de $d$ : en remplaçant par les coordonnées de $A$, la somme doit valoir $0$.",
+							"label": "d de signe opposé"
+						},
+						{
+							"answer": "{{p1}}x+({{p2}})y+({{p3}})z+({{dp}})=0",
+							"message": "$\\vec{u}$ dirige le plan, il n'est pas normal au plan : un vecteur normal est orthogonal à $\\vec{u}$ et à $\\vec{v}$.",
+							"label": "u pris pour normal"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un vecteur normal $\\vec{n}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est orthogonal aux deux vecteurs $\\vec{u}$ et $\\vec{v}$ : $\\vec{n}\\cdot\\vec{u}=0$ et $\\vec{n}\\cdot\\vec{v}=0$, soit ${{p1}}a+({{p2}})b+({{p3}})c=0$ et ${{q1}}a+({{q2}})b+({{q3}})c=0$.",
+					"En résolvant (une coordonnée fixée), on trouve par exemple $\\vec{n}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix}$ ; le plan a une équation ${{n1}}x+({{n2}})y+({{n3}})z+d=0$.",
+					"$A$ est dans le plan : ${{n1}}\\times{{ax;()}}+{{n2;()}}\\times{{ay;()}}+{{n3;()}}\\times{{az;()}}+d=0$, donc $d=\\textcolor{{{color:primary.0}}}{ {{dd}} }$ : une équation est ${{n1}}x+({{n2}})y+({{n3}})z+({{dd}})=0$ (toute équation proportionnelle convient)."
+				]
+			},
+			"hint": "Cherche un vecteur normal $\\vec{n}$ orthogonal à $\\vec{u}$ et à $\\vec{v}$ (deux produits scalaires nuls), puis trouve $d$ avec le point $A$."
 		}
 	],
 	"testSpecs": [
@@ -675,6 +928,182 @@
 			},
 			"description": "v5 : vecteur directeur pris pour normal (avec z)",
 			"variationIndex": 5
+		},
+		{
+			"description": "v6 : x − y + z + 2 = 0",
+			"variationIndex": 6,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x-y+z+2=0"]
+		},
+		{
+			"description": "v6 : multiple",
+			"variationIndex": 6,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x+2y-2z-4=0"]
+		},
+		{
+			"description": "v6 : d oublié",
+			"variationIndex": 6,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié $d$ : le plan passe par $A$, on trouve $d$ en écrivant que les coordonnées de $A$ vérifient l'équation."
+			},
+			"answers": ["x-y+z=0"]
+		},
+		{
+			"description": "v6 : signe de d",
+			"variationIndex": 6,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe de $d$ : en remplaçant par les coordonnées de $A$, la somme doit valoir $0$."
+			},
+			"answers": ["x-y+z-2=0"]
+		},
+		{
+			"description": "v6 : AB pris pour normal",
+			"variationIndex": 6,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\overrightarrow{AB}$ est dans le plan, il n'est pas normal au plan : un vecteur normal est orthogonal à $\\overrightarrow{AB}$ et à $\\overrightarrow{AC}$."
+			},
+			"answers": ["x+y-3=0"]
+		},
+		{
+			"description": "v7 : x − y + z + 2 = 0",
+			"variationIndex": 7,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x-y+z+2=0"]
+		},
+		{
+			"description": "v7 : membre de droite",
+			"variationIndex": 7,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x-y+z=-2"]
+		},
+		{
+			"description": "v7 : u pris pour normal",
+			"variationIndex": 7,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\vec{u}$ dirige le plan, il n'est pas normal au plan : un vecteur normal est orthogonal à $\\vec{u}$ et à $\\vec{v}$."
+			},
+			"answers": ["x+y-3=0"]
+		},
+		{
+			"description": "v7 : d oublié",
+			"variationIndex": 7,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié $d$ : le plan passe par $A$, on trouve $d$ en écrivant que les coordonnées de $A$ vérifient l'équation."
+			},
+			"answers": ["x-y+z=0"]
 		}
 	]
 }

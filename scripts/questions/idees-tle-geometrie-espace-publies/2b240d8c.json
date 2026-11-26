@@ -199,6 +199,237 @@
 					"En résolvant $\\vec{u}\\cdot\\vec{n}_1=0$, $\\vec{u}\\cdot\\vec{n}_2=0$, on trouve par exemple $\\textcolor{{{color:primary.0}}}{ \\vec{u}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix} }$ (vérification : ${{a1}}\\times{{n1;()}}+{{a2;()}}\\times{{n2;()}}+{{a3;()}}\\times{{n3;()}}=0$, de même avec $\\vec{n}_2$)."
 				]
 			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs non colinéaires $\\vec{u}\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{q1}}\\\\{{q2}}\\\\{{q3}}\\end{pmatrix}$.\n\nDonne un vecteur non nul orthogonal à la fois à $\\vec{u}$ et à $\\vec{v}$ : $?$",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c1",
+					"expression": "{{eval:p2*q3-p3*q2}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:p3*q1-p1*q3}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:p1*q2-p2*q1}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:c1/g}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:c2/g}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:c3/g}}"
+				},
+				{
+					"name": "o1",
+					"expression": "{{eval:p2}}"
+				},
+				{
+					"name": "o2",
+					"expression": "{{eval:-p1}}"
+				}
+			],
+			"conditions": [
+				"abs(c1)+abs(c2)+abs(c3) > 0",
+				"abs(c1/g) <= 6",
+				"abs(c2/g) <= 6",
+				"abs(c3/g) <= 6",
+				"abs(p1)+abs(p2) > 0",
+				"o1*q1+o2*q2 != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "({{n1}};{{n2}};{{n3}})",
+					"expectedErrors": [
+						{
+							"answer": "({{p1}};{{p2}};{{p3}})",
+							"message": "C'est un des vecteurs donnés : il n'est pas orthogonal à lui-même. Cherche $\\vec{n}$ tel que $\\vec{n}\\cdot\\vec{u}=0$ et $\\vec{n}\\cdot\\vec{v}=0$.",
+							"label": "Vecteur u donné"
+						},
+						{
+							"answer": "({{q1}};{{q2}};{{q3}})",
+							"message": "C'est un des vecteurs donnés : il n'est pas orthogonal à lui-même. Cherche $\\vec{n}$ tel que $\\vec{n}\\cdot\\vec{u}=0$ et $\\vec{n}\\cdot\\vec{v}=0$.",
+							"label": "Vecteur v donné"
+						},
+						{
+							"answer": "({{o1}};{{o2}};0)",
+							"message": "Ton vecteur est orthogonal à $\\vec{u}$, mais pas à $\\vec{v}$ : vérifie les deux produits scalaires.",
+							"label": "Orthogonal à u seulement"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche $\\vec{n}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ avec $\\vec{n}\\cdot\\vec{u}=0$ et $\\vec{n}\\cdot\\vec{v}=0$ : ${{p1}}a+({{p2}})b+({{p3}})c=0$ et ${{q1}}a+({{q2}})b+({{q3}})c=0$.",
+					"En fixant une coordonnée et en résolvant, on trouve par exemple $\\textcolor{{{color:primary.0}}}{ \\vec{n}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix} }$ (tout vecteur colinéaire non nul convient)."
+				]
+			},
+			"hint": "Écris les deux conditions $\\vec{n}\\cdot\\vec{u}=0$ et $\\vec{n}\\cdot\\vec{v}=0$ avec $\\vec{n}(a\\,;\\,b\\,;\\,c)$, fixe une des inconnues et résous le système."
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$, qui ne sont pas alignés.\n\nParmi les vecteurs suivants, lesquels sont normaux au plan $(ABC)$ ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\n- $\\vec{{{if:pm==0|n|{{if:pm==1|m|{{if:pm==2|r|w}}}}}}}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix}$\n- $\\vec{{{if:pm==0|m|{{if:pm==1|r|{{if:pm==2|w|n}}}}}}}\\begin{pmatrix}{{eval:-2*n1}}\\\\{{eval:-2*n2}}\\\\{{eval:-2*n3}}\\end{pmatrix}$\n- $\\vec{{{if:pm==0|r|{{if:pm==1|w|{{if:pm==2|n|m}}}}}}}\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$\n- $\\vec{{{if:pm==0|w|{{if:pm==1|n|{{if:pm==2|m|r}}}}}}}\\begin{pmatrix}{{o1}}\\\\{{o2}}\\\\0\\end{pmatrix}$\n```",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "q1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "q2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "q3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "c1",
+					"expression": "{{eval:p2*q3-p3*q2}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:p3*q1-p1*q3}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:p1*q2-p2*q1}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:c1/g}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:c2/g}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:c3/g}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+p1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+p2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+p3}}"
+				},
+				{
+					"name": "cx",
+					"expression": "{{eval:ax+q1}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{eval:ay+q2}}"
+				},
+				{
+					"name": "cz",
+					"expression": "{{eval:az+q3}}"
+				},
+				{
+					"name": "o1",
+					"expression": "{{eval:p2}}"
+				},
+				{
+					"name": "o2",
+					"expression": "{{eval:-p1}}"
+				},
+				{
+					"name": "pm",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [
+				"abs(c1)+abs(c2)+abs(c3) > 0",
+				"abs(c1/g) <= 4",
+				"abs(c2/g) <= 4",
+				"abs(c3/g) <= 4",
+				"abs(p1)+abs(p2) > 0",
+				"o1*q1+o2*q2 != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un vecteur est normal à $(ABC)$ quand il est orthogonal à $\\overrightarrow{AB}\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$ et à $\\overrightarrow{AC}\\begin{pmatrix}{{q1}}\\\\{{q2}}\\\\{{q3}}\\end{pmatrix}$, deux vecteurs non colinéaires du plan.",
+					"$\\vec{{{if:pm==0|n|{{if:pm==1|m|{{if:pm==2|r|w}}}}}}}\\cdot\\overrightarrow{AB}={{eval:(n1)*p1+(n2)*p2+(n3)*p3}}$ et $\\vec{{{if:pm==0|n|{{if:pm==1|m|{{if:pm==2|r|w}}}}}}}\\cdot\\overrightarrow{AC}={{eval:(n1)*q1+(n2)*q2+(n3)*q3}}$ : normal.",
+					"$\\vec{{{if:pm==0|m|{{if:pm==1|r|{{if:pm==2|w|n}}}}}}}\\cdot\\overrightarrow{AB}={{eval:(-2*n1)*p1+(-2*n2)*p2+(-2*n3)*p3}}$ et $\\vec{{{if:pm==0|m|{{if:pm==1|r|{{if:pm==2|w|n}}}}}}}\\cdot\\overrightarrow{AC}={{eval:(-2*n1)*q1+(-2*n2)*q2+(-2*n3)*q3}}$ : normal ($\\vec{{{if:pm==0|m|{{if:pm==1|r|{{if:pm==2|w|n}}}}}}}=-2\\,\\vec{{{if:pm==0|n|{{if:pm==1|m|{{if:pm==2|r|w}}}}}}}$).",
+					"$\\vec{{{if:pm==0|r|{{if:pm==1|w|{{if:pm==2|n|m}}}}}}}\\cdot\\overrightarrow{AB}={{eval:(p1)*p1+(p2)*p2+(p3)*p3}}$ et $\\vec{{{if:pm==0|r|{{if:pm==1|w|{{if:pm==2|n|m}}}}}}}\\cdot\\overrightarrow{AC}={{eval:(p1)*q1+(p2)*q2+(p3)*q3}}$ : pas normal (c'est $\\overrightarrow{AB}$, un vecteur du plan).",
+					"$\\vec{{{if:pm==0|w|{{if:pm==1|n|{{if:pm==2|m|r}}}}}}}\\cdot\\overrightarrow{AB}={{eval:(o1)*p1+(o2)*p2+(0)*p3}}$ et $\\vec{{{if:pm==0|w|{{if:pm==1|n|{{if:pm==2|m|r}}}}}}}\\cdot\\overrightarrow{AC}={{eval:(o1)*q1+(o2)*q2+(0)*q3}}$ : orthogonal à $\\overrightarrow{AB}$ seulement, pas normal.",
+					"Les vecteurs normaux : $\\textcolor{{{color:primary.0}}}{ \\vec{{{if:pm==0|n|{{if:pm==1|m|{{if:pm==2|r|w}}}}}}}\\text{ et }\\vec{{{if:pm==0|m|{{if:pm==1|r|{{if:pm==2|w|n}}}}}}} }$."
+				]
+			},
+			"hint": "Un vecteur normal au plan est orthogonal à deux vecteurs non colinéaires du plan, $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ : calcule les deux produits scalaires."
 		}
 	],
 	"testSpecs": [
@@ -331,6 +562,130 @@
 			},
 			"description": "v1 : vecteur normal de P (piège)",
 			"variationIndex": 1
+		},
+		{
+			"description": "v2 : (2 ; −2 ; 1)",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(2;-2;1)"]
+		},
+		{
+			"description": "v2 : multiple",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(-4;4;-2)"]
+		},
+		{
+			"description": "v2 : u donné",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un des vecteurs donnés : il n'est pas orthogonal à lui-même. Cherche $\\vec{n}$ tel que $\\vec{n}\\cdot\\vec{u}=0$ et $\\vec{n}\\cdot\\vec{v}=0$."
+			},
+			"answers": ["(1;1;0)"]
+		},
+		{
+			"description": "v2 : orthogonal à u seulement",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton vecteur est orthogonal à $\\vec{u}$, mais pas à $\\vec{v}$ : vérifie les deux produits scalaires."
+			},
+			"answers": ["(1;-1;0)"]
+		},
+		{
+			"description": "v3 : n et −2n",
+			"variationIndex": 3,
+			"variables": {
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "2",
+				"ax": "0",
+				"ay": "1",
+				"az": "-1",
+				"pm": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "v3 : −2n oublié (½ point)",
+			"variationIndex": 3,
+			"variables": {
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "2",
+				"ax": "0",
+				"ay": "1",
+				"az": "-1"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v3 : w orthogonal à AB coché",
+			"variationIndex": 3,
+			"variables": {
+				"p1": "1",
+				"p2": "1",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "2",
+				"ax": "0",
+				"ay": "1",
+				"az": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;3"]
 		}
 	]
 }
