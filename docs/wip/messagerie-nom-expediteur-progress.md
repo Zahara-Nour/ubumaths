@@ -6,11 +6,11 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3188._
+_Mis à jour le 2026-11-26, après #3188 et la migration jouée en prod._
 
-- **État** : #3188 mergée (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu » : clos au registre). **Rien n'est encore en prod** : la migration `20261126132310` n'est pas jouée et le code n'est pas déployé.
-- **Prochaine action** : aucune côté code. Après les deux gestes de David ci-dessous, vérifier en lecture seule que les fonctions de la prod portent `messagerie_nom_affiche`, puis lui proposer de refaire son essai (page « Écrire » du prof, « Répondre » depuis un fil côté élève, message à une classe).
-- **En attente de David** : (1) `pnpm db:migrate` depuis le dépôt principal (une seule migration en attente, vérifié le 2026-11-26 : `20261126132310`, additive) ; (2) `pnpm deploy:prod` quand il le veut (V133 et l'affichage sont du code d'application) ; (3) confirmer l'extension de sa décision d'accès : un élève ne voit pas non plus les autres destinataires d'un message envoyé à plusieurs élèves cochés un à un (il voit « et N autres destinataires »).
+- **État** : #3188 mergée (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu » : clos au registre). **Migration `20261126132310` jouée en prod par David le 2026-11-26**, vérifiée en lecture seule : les sept fonctions de la messagerie portent la nouvelle version (`messagerie_nom_affiche`, refus de la classe sans élève actif, destinataires masqués à l'élève), `search_path` et droits en place. **Le code n'est pas encore déployé** : les noms et le message à une classe marchent déjà en prod, « Répondre » et les libellés attendent la mise en prod.
+- **Prochaine action** : aucune côté code. Après `pnpm deploy:prod`, proposer à David de refaire son essai (page « Écrire » du prof, « Répondre » depuis un fil côté élève, message à une classe).
+- **En attente de David** : (1) `pnpm deploy:prod` quand il le veut (V133 et l'affichage sont du code d'application) ; (2) confirmer l'extension de sa décision d'accès : un élève ne voit pas non plus les autres destinataires d'un message envoyé à plusieurs élèves cochés un à un (il voit « et N autres destinataires »).
 - **Décisions d'accès de David (2026-11-26)** : le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit ceux du prof qui lui écrit ; un élève qui reçoit un message envoyé à sa classe ne voit pas l'identité des autres destinataires.
 - **Pièges en cours** : entre la migration et la mise en prod, l'ancien code tourne avec les nouvelles fonctions (compatible : mêmes signatures, noms en plus) ; `CREATE OR REPLACE` garde les droits mais pas le `search_path` ; le cliquet des types peut rougir sur un fichier non touché quand des fichiers de test s'ajoutent (vu sur la route du détail d'un échange du marché, typée à la main dans #3188) ; restes au registre : L128 à L135, V135, T37.
 - **Worktree / branche** : aucun (retirés au merge de #3188).
