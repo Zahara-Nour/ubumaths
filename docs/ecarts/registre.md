@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V135 · L135 · M59 · C44 · D45 · T37 · E84
+Derniers numéros : V135 · L135 · M60 · C44 · D45 · T37 · E84
 
 ## Écarts
 
@@ -346,3 +346,4 @@ Derniers numéros : V135 · L135 · M59 · C44 · D45 · T37 · E84
 - L134 · bug latent · messagerie · un destinataire en double dans l'envoi d'un message donne une erreur 500 (contrainte d'unicité de message_inbox, pas de contrôle d'unicité à la validation) · preuve : à la main · à faire (security-auditor de #3188)
 - L135 · bug latent · messagerie · la liste des destinataires d'un élève ne filtre pas un compte prof de test (get_allowed_recipients, branche élève) : il lirait son prénom et son nom · preuve : à la main · à faire (security-auditor de #3188)
 - V135 · bug visible · messagerie · un élève voit « Répondre » sur un message reçu de l'admin, alors que l'envoi sera refusé (« Vous ne pouvez pas écrire à ce destinataire ») · preuve : à la main · à faire (code-reviewer de #3188)
+- M60 · code mort · messagerie · tables et fonctions des modèles de message (message_templates et tables liées, get_templates_for_context, get_template_statistics) sans plus aucun code appelant depuis #3191, et restées ouvertes à l'écriture directe : (A) un prof approuve lui-même son modèle de classe, la règle d'écriture ne borne ni l'approbation ni la classe ; (B) un élève insère des lignes d'usage quelconques dans template_usage_stats ; (C) get_templates_for_context rend le modèle actif d'une classe dont l'appelant n'est pas membre ; relevé par l'audit de sécurité de #3191, antérieur à elle ; aucune donnée d'élève · preuve : à la main · tranché par David le 2026-11-26 : supprimer ces tables et fonctions dans un chantier à part, APRÈS la mise en prod de #3191 ; compter les lignes en prod (lecture seule) et le lui montrer avant d'écrire la migration
