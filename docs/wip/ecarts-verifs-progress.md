@@ -428,3 +428,21 @@ Cinq écarts tranchés par David le 2026-11-24 « pas de correctif » : la véri
 **Preuve** : les cinq vérifications rejouées sous `ordi-chrome`, `ordi-safari` et `iphone`, 15 passages verts (serveur de dev du worktree, port 5178).
 
 **Après le merge** : barrer E65, E71, E72, E74, E75 au registre depuis main (`pnpm ecarts rejouer --barrer`, sinon à la main : preuve « à la main »).
+
+## PR Z : E83, le chargement des classes du tableau de bord du prof ne repart plus en boucle (2026-11-26)
+
+**D'où il vient** : E39 creusé. `/automaths` ouverte seule en compte prof sous Safari : 0 erreur. Connexion puis départ immédiat vers `/automaths` : 107 erreurs sous Safari (0 sous Chrome), dont 104 pour 52 appels à `/api/teacher/classes` ; tableau de bord fini de charger avant de partir : 0. Aucun appel refusé : des requêtes coupées par le changement de page. E39 clos, la répétition inscrite comme E83.
+
+**Cause** : dans `TeacherDashboard.svelte`, `loadClasses()` et `loadPeriods()` sont appelées par un `$effect` et lisaient un drapeau `$state` (`isLoadingClasses`, `isLoadingPeriods`) remis à faux après l'échec : l'effet repartait aussitôt. Même boucle quand l'API rend une liste vide (prof sans classe), le cache restant vide.
+
+**Validé par David le 2026-11-26** : un seul essai par ouverture de la page, le message d'erreur une fois.
+
+**Correctif** : deux drapeaux non réactifs (`classesRequested`, `periodsRequested`), jamais remis à faux.
+
+**Preuves** (`e2e/verifs/pages-prof-admin.spec.ts`, bloc « E83 », trois vérifications : réseau coupé, erreur 500, prof sans classe) : rouges avant le correctif (134, 142 et 2290 appels en 2 s sous Chrome ; 137, 134 et 3091 sous Safari), vertes après sous `ordi-chrome`, `ordi-safari` et `iphone` (un appel, un message). `pnpm voir /dashboard --compte prof` : tableau de bord affiché, 0 erreur de console.
+
+**Pas vérifié à l'écran** : les périodes (même correctif) : le prof de la base locale n'a pas d'école, la demande ne part pas.
+
+**Revue** (`code-reviewer`) : rien de bloquant. Aucun appelant des invalidations du cache hors du store ; l'expiration du cache ne relançait déjà pas l'effet ; pas d'autre boucle vue dans le composant (lecture seule).
+
+**Après le merge** : barrer E83 au registre depuis main (preuve : le bloc « E83 » de la vérification).

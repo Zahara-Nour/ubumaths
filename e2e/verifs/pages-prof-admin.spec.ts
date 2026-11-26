@@ -973,3 +973,72 @@ test.describe(
 		});
 	}
 );
+
+// ============================================================================
+// E83 — tableau de bord du prof : un chargement qui échoue ne repart pas en boucle
+// ============================================================================
+
+test.describe('E83 — tableau de bord du prof : un seul essai de chargement par ouverture', () => {
+	/** Compte les appels à une API du tableau de bord et leur répond par `reponse` */
+	async function compter(
+		page: Page,
+		chemin: string,
+		reponse: 'coupure' | { status: number; json: unknown }
+	): Promise<{ appels: number }> {
+		const compte = { appels: 0 };
+		await page.route(`**${chemin}`, async (route) => {
+			compte.appels += 1;
+			if (reponse === 'coupure') await route.abort('failed');
+			else await route.fulfill({ status: reponse.status, json: reponse.json });
+		});
+		return compte;
+	}
+
+	test('E83 — les classes ne se chargent pas (réseau coupé) : un seul appel, un seul message', async ({
+		page,
+		browser
+	}) => {
+		const classes = await compter(page, '/api/teacher/classes', 'coupure');
+		await openAs(browser, TEACHER, page);
+		const message = page.getByText(/^Erreur lors du chargement des (?!périodes)/);
+		await expect(message.first()).toBeVisible();
+		// Le temps d'une boucle : avant le correctif, des dizaines d'appels en une seconde
+		await page.waitForTimeout(2000);
+		expect(classes.appels, 'appels à /api/teacher/classes').toBe(1);
+		expect(await message.count(), 'messages d’erreur affichés').toBe(1);
+	});
+
+	test('E83 — le serveur répond une erreur 500 pour les classes : un seul appel', async ({
+		page,
+		browser
+	}) => {
+		const classes = await compter(page, '/api/teacher/classes', {
+			status: 500,
+			json: { message: 'panne' }
+		});
+		await openAs(browser, TEACHER, page);
+		await expect(
+			page.getByText(/^Erreur lors du chargement des (?!périodes)/).first()
+		).toBeVisible();
+		await page.waitForTimeout(2000);
+		expect(classes.appels, 'appels à /api/teacher/classes').toBe(1);
+	});
+
+	test('E83 — un prof sans classe : la liste vide est demandée une seule fois, sans message d’erreur', async ({
+		page,
+		browser
+	}) => {
+		const classes = await compter(page, '/api/teacher/classes', {
+			status: 200,
+			json: { classes: [] }
+		});
+		await openAs(browser, TEACHER, page);
+		await expect.poll(() => classes.appels).toBeGreaterThan(0);
+		await page.waitForTimeout(2000);
+		expect(classes.appels, 'appels à /api/teacher/classes').toBe(1);
+		await expect(page.getByText(/^Erreur lors du chargement des/)).toHaveCount(0);
+	});
+
+	// Les périodes (`/api/teacher/periods`) ont le même correctif, sans vérification ici : le prof de
+	// la base locale n'a pas d'école, la demande ne part pas.
+});
