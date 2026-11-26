@@ -99,13 +99,14 @@ describe('orderIndependent : forme d’une grandeur appariée', () => {
 		expect(validateAnswer(answers, instanceOf(true), answers).isCorrect).toBe(true);
 	});
 
-	it('au centième : 1,14 m et 2,5 m dans le désordre → correct, sans violation', () => {
+	// Au centième, 2,50 s'écrit avec ses deux décimales (règle des zéros, 2026-11-26)
+	it('au centième : 1,14 m et 2,50 m dans le désordre → correct, sans violation', () => {
 		const instance = instanceOf(true);
 		instance.blanks = [meters('2.5\\unit{m}'), meters('1.136\\unit{m}')].map((blank) => ({
 			...blank,
 			precision: { type: 'decimal', digits: 2 } as const
 		}));
-		const answers = ['1{,}14\\unit{m}', '2{,}5\\unit{m}'];
+		const answers = ['1{,}14\\unit{m}', '2{,}50\\unit{m}'];
 		const result = validateAnswer(answers, instance, answers);
 		expect(result.isCorrect).toBe(true);
 		expect(result.constraintViolations ?? []).toEqual([]);

@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-continuite-combinatoire-neufs/.
 
 Phase 0 validée par David le 2026-11-25 (« je valide » : toutes les fiches oui, Q1 oui ; fiches
-docs/wip/idees-tle-continuite-combinatoire-fiches.md) :
+docs/archive/wip/idees-tle-continuite-combinatoire/idees-tle-continuite-combinatoire-fiches.md) :
 - N1 fonction définie par morceaux, continuité en a (TSPE-425) ;
 - N2 théorème des valeurs intermédiaires sur une équation donnée (TSPE-430) ;
 - N4 limite de f(uₙ) quand uₙ converge et f est continue (TSPE-427, Q1 : oui) ;

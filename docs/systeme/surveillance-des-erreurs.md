@@ -440,30 +440,9 @@ Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les p
 
 ## Écarts connus
 
-Constatés le 2026-10-13, non corrigés.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Notification critique** : `system_event_type: 'assessment_graded'` faute de valeur
-  adaptée (commentaire dans le code).
-- **Zod manquant** : la page `/dashboard/admin/errors` passe les filtres de l'adresse sans
-  validation ; l'action `resolve` de `/dashboard/admin/errors/[id]` lit `notes` sans borne ;
-  `/dashboard/admin/bug-reports` passe `status`, `category`, `severity` tels quels.
-- **Configuration** : le commentaire de `bugReportsConfigStore.load` dit « seuls les admins
-  peuvent charger la config » ; faux, `GET /api/bug-reports/config` ne demande qu'un compte
-  et la table est lisible par tous. La détection de gel tourne et envoie ses erreurs
-  même si `freeze_detection_enabled` vaut `false` : le drapeau ne coupe que la proposition et
-  l'envoi automatique d'un signalement.
-- **Web Vitals jamais dans le contexte de gel** : `reportWebVital` de `freezeDetection.ts`
-  dit être appelée par `errorMonitoring.ts`, qui ne l'importe pas. `webVitals` reste vide
-  dans les signalements.
-- **Doc admin** : la recherche (`?q=`) s'affiche mais ne cherche rien (aucune fonction
-  de recherche depuis le 2026-10-13) ; `CATEGORY_CONFIG` nomme des dossiers
-  (`features`, `architecture`, `guides`…) qui n'existent plus dans `docs/`. Lecture
-  de `docs/` sur le disque au moment de la requête : non vérifié que ces fichiers sont
-  présents dans le déploiement Vercel.
-- **OpenAPI** : 11 chemins sur environ 380 routes, dont 4 qui n'existent plus en tant que
-  route (`/api/messages`, `/api/questions`, `/api/notifications`, `/api/rewards/award`).
-- **Commentaire périmé** : l'en-tête de `healthStats.ts` dit que `server_cache`,
-  `background_job_runs` et les vues `admin_*` manquent dans `database.ts` ; elles y sont.
-- **`/api/latex/compile` répond 500 à une entrée invalide** : le `throw error(400, …)` de la
-  validation (et l'erreur d'un texlive.net en panne) est rattrapé par le `catch` global, qui
-  relance un 500 « Compilation failed: Unknown error » (`HttpError` n'étend pas `Error`).
+### Points non vérifiés
+
+- Doc admin : lecture de `docs/` sur le disque au moment de la requête ; non vérifié que ces
+  fichiers sont présents dans le déploiement Vercel.

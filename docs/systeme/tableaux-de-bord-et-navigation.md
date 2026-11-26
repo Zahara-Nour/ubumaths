@@ -177,15 +177,8 @@ performance et erreurs, contenu et activité, tâches de fond. Chargée à l'ouv
 
 ## Écarts connus
 
-- **Requête sans affichage** : l'accueil élève charge encore les exercices récents
-  (`recentExercises`) ; leur bloc est en commentaire dans `StudentDashboard.svelte`, donc une
-  requête pour rien à chaque accueil élève. Celle des succès du Démineur, fausse en plus (elle
-  visait `game_achievements`), est retirée avec son bloc en commentaire (2026-11-22) : les succès
-  se voient sur Démineur › Mes succès.
-- `RewardsBlock` reçoit `riddlesSolved` sans s'en servir, depuis le retrait de son ancienne tuile
-  (2025-12-08).
-- **Commentaires d'en-tête périmés** : `TeacherDashboard.svelte` annonce `data.teacherClasses`
-  (les classes viennent de `teacherCache`) ; `StudentDashboard.svelte` décrit des données
-  « futures ».
-- **Deux barres latérales** : `src/lib/components/Sidebar.svelte`, rendue par le layout racine, a
-  sa propre fonction `isActive`, hors de cette doc.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Deux barres latérales : `src/lib/components/Sidebar.svelte`, rendue par le layout racine, a sa propre fonction `isActive`, qui n'est pas décrite dans cette doc.

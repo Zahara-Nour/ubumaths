@@ -2,13 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3156._
+_Mis à jour le 2026-11-26, migrations générées, PR à ouvrir._
 
-- **État** : #3156 mergée (fichiers du lot, § « Lot » ci-dessous) : N1 et N2 dans `scripts/questions/idees-3e-probabilites-neufs/`, V1 à V3 ajoutées à la fin des trois modèles exportés de prod dans `scripts/questions/idees-3e-probabilites-publies/`. Rien n'est encore en prod.
-- **Prochaine action** : quand David a lancé le `--publier`, nouveau worktree sur `origin/main` ; commiter les ids écrits en tête des deux fichiers neufs ; PR des migrations générées : rangement (`migration-rangement.ts --dir …-neufs`, champ `rangement` déjà écrit) et contenu des trois publiés (`migration-contenu.ts --dir …-publies`), `security-auditor`, puis `db:migrate` (4 conditions de `CLAUDE.md`). Ensuite relecture dans `/dev/modeles` (brouillons : `?point=3-033` ; publiés : série de relecture).
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-3e-probabilites-neufs --publier` (brouillons en prod, depuis le dépôt principal).
-- **Pièges en cours** : les fichiers `…-publies` repartent de l'export de prod du 2026-11-26 ; `migration-contenu.ts` refuse si un modèle a changé en prod entre-temps. La base locale garde 5 brouillons d'essai (N1, N2, et trois copies « (essai local) »).
-- **Worktree / branche** : aucun (retiré par `pr:merger`) ; le prochain : `../ubumaths-wt-idees-3e-probabilites-migrations`.
+- **État** : migrations `20261126090110_…_neufs_rangement_tags` (N1, N2 → « événements », 3-033) et `20261126090116_…_publies_contenu` (+1, +4, +1 variations) générées et commitées sur la branche. Tests d'intégration verts, rouges sans les écritures ; règles du tag vérifiées en prod (MCP).
+- **Prochaine action** : PR, CI, merge ; `db:migrate` (4 conditions, `migration list --linked` d'abord). Ensuite relecture dans `/dev/modeles` (`?point=3-033`, série pour les publiés).
+- **En attente de David** : rien.
+- **Pièges en cours** : les gardes des migrations refusent si un modèle a changé en prod depuis le relevé du 2026-11-26. La base locale garde 5 brouillons d'essai.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites-migrations` · `feat/idees-3e-probabilites-migrations`.
+
+## Migrations (2026-11-26)
+
+- Rangement : 2 modèles neufs sur « Probabilités > Expériences aléatoires > événements », tag
+  3-033 (point posé sur cette sous-notion, vérifié en prod ; modèles sans nœud ni tag).
+- Contenu : 247fddd1 (+ variation 5), b28ed4fa (+ variations 5 à 8), e73b947f (+ variation 5).
+- Condition (2) de `db:migrate` : écritures neutralisées dans une copie du SQL → 4 tests rouges
+  (2 par fichier), puis SQL d'origine remis (empreintes identiques) → verts.
 
 ## Lot (2026-11-26)
 

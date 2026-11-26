@@ -98,6 +98,10 @@ vaut 1/8 d'octet ; aucun sous-multiple (`mo` n'est pas une unité). `Ko`, l'écr
 élèves, est accepté pour le `ko` (2026-10-18) ; la réponse garde l'écriture tapée. Liste complète :
 `src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une unité.
 
+Euro dans un `{{eval:…}}` (2026-11-26) : un prix à une décimale s'écrit avec deux (`(37/10)[€]` →
+3,70 €), un prix entier reste entier (12 €) ; un réglage `;aN`, `;pN`, `;dN` l'emporte. Détail et
+autres arrondis : [ubumark.md](../systeme/ubumark.md) (« Décimales et arrondis »).
+
 ### Opérateurs
 
 | Écriture            | Sens     | Affichage                        |

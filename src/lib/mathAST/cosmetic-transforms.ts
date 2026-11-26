@@ -99,7 +99,14 @@ const ZERO_DELIMITER = String.raw`(^|(?<!\\)[+\-*/=({]|(?<![\\{\d]),)`;
  * - Trailing decimal zeros: 1.0 → 1, 1.20 → 1.2
  */
 export function removeZeros(latex: string): string {
-	// Strip LaTeX thin spaces for analysis, we'll work on the raw string
+	return removeTrailingDecimalZeros(removeLeadingZeros(latex));
+}
+
+/**
+ * Zéros de tête seuls (01 → 1, 0\,565 → 565) : ceux qu'on retire même quand les
+ * zéros finaux disent quelque chose (arrondi demandé, centimes).
+ */
+export function removeLeadingZeros(latex: string): string {
 	let result = latex;
 
 	// Replace leading zeros in integer parts: 01 → 1, 007 → 7
@@ -114,6 +121,13 @@ export function removeZeros(latex: string): string {
 	// A zero at a position where leading zeros are valid (start or after operator),
 	// followed by \, and then digits, is a superfluous leading zero with grouping.
 	result = result.replace(new RegExp(`${ZERO_DELIMITER}0+(?:\\\\,\\s?)+(\\d)`, 'g'), '$1$2');
+
+	return result;
+}
+
+/** Zéros de fin d'une partie décimale (1,20 → 1,2 ; 1,0 → 1) */
+function removeTrailingDecimalZeros(latex: string): string {
+	let result = latex;
 
 	// Zéros de fin d'une partie décimale : 1.0 → 1, 1.20 → 1.2, 1{,}0 → 1, 1,20 → 1,2.
 	// La partie décimale est lue EN ENTIER, groupes à l'espace fine compris
@@ -511,6 +525,12 @@ export interface CheckFormOptions {
 	 * longueur ou produit). Absent : défaut du parseur (produit).
 	 */
 	capitalPairs?: CapitalPairs;
+	/**
+	 * Les zéros finaux de la partie décimale disent quelque chose (arrondi demandé,
+	 * centimes : cf. `questions/meaningful-zeros`) : `zeros` ne juge plus que les
+	 * zéros de tête. Lu par `cosmeticViolations` seulement. Absent : rien ne change.
+	 */
+	meaningfulTrailingZeros?: boolean;
 }
 
 /**
@@ -1331,7 +1351,11 @@ export function cosmeticViolations(
 	// === Phase string (pre-AST) ===
 
 	const answerNoZeros = removeZeros(answerLatex);
-	if (answerNoZeros !== answerLatex && (constraints['zeros'] ?? 'warn') !== 'off') {
+	// Zéros finaux utiles (arrondi, centimes) : seuls les zéros de tête sont superflus
+	const superfluousZerosRemoved = options.meaningfulTrailingZeros
+		? removeLeadingZeros(answerLatex)
+		: answerNoZeros;
+	if (superfluousZerosRemoved !== answerLatex && (constraints['zeros'] ?? 'warn') !== 'off') {
 		const severity = (constraints['zeros'] ?? 'warn') as 'strict' | 'warn';
 		violations.push({ id: 'zeros', severity });
 	}

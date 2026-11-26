@@ -396,16 +396,18 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse (cache par expression et
+  valeurs) : mesuré le 2026-10-15 avec des valeurs arrondies au pas, 0,4 à 2,5 ms par cran sur
+  les fonctions courantes, 22 ms sur une fraction de degré 3 multipliée par e⁻ˣ et ln x.
+
+### Points non vérifiés
+
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
-- Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne
-  rend que la famille de tan, le pôle 3 vient du seul balayage — perdu au dézoom.
-- Une limite lente que le moteur symbolique ne sait pas calculer reste invisible : le numérique
-  seul exige une convergence en moins de 137 299.
-- Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse : mesuré le 2026-10-15 avec
-  des valeurs arrondies au pas, 0,4 à 2,5 ms par cran sur les fonctions courantes, 22 ms sur une
-  fraction de degré 3 multipliée par e⁻ˣ et ln x.
-- Nuages de points : pas de forme de point distincte par place (décision Q1a, reportée).
 
 ---
 

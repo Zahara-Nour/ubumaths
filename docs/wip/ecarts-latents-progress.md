@@ -8,4 +8,4 @@ _Mis à jour le 2026-11-01, avant la PR._
 
 ## Journal
 
-- Ecarts visés : L17, L18, L19, L23 de `docs/wip/ecarts-a-trier.md`.
+- Ecarts visés : L17, L18, L19, L23 de `docs/archive/wip/ecarts-a-trier.md`.

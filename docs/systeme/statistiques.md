@@ -297,14 +297,19 @@ exacts, jamais les arrondis affichés). Variance de population : 2026-09-16.
 
 ## Écarts connus
 
-- **Trois ajustements affines** (`fitAffine`, `bivariateFit`, `decimalFit`) : la formule des
-  moindres carrés est écrite trois fois ; `fitAffine` rend R², `bivariateFit` rend r.
-- Graduations et fréquences (`formatRounded`, `formatTick`, pourcentages) arrondissent encore
-  en flottant : valeurs positives ou de grille, sans demi négatif à départager.
-- `exponentialProbability` et `normalProbability` prennent des `number`, leurs moments des
-  `Fraction` : l'appelant convertit.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
 - La binomiale n'a pas d'échantillonneur propre : la scène la tire comme loi finie, avec les
   probabilités exactes de `binomialDistribution`.
+
+### Points non vérifiés
+
+- **Trois ajustements affines** (`fitAffine`, `bivariateFit`, `decimalFit`) : la formule des
+  moindres carrés est écrite trois fois ; `fitAffine` rend R², `bivariateFit` rend r.
+- `exponentialProbability` et `normalProbability` prennent des `number`, leurs moments des
+  `Fraction` : l'appelant convertit.
 - `atMost` et `findThreshold` ne servent qu'à l'intérieur du module (`binomial.ts`, `geometric.ts`),
   bien qu'exportés ; `MAX_COMPUTED_VALUE` n'est plus exporté.
 

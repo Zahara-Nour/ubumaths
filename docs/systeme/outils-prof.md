@@ -376,6 +376,10 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 1. **Tableur V4** : retiré le 2026-10-24 (§ 3) ; ses deux écarts (accès du prof, alias sans
    fonction) sont sans objet.
 2. **Table `spreadsheets`** : supprimée le 2026-10-25 (§ 3).

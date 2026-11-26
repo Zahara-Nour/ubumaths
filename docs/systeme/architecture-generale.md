@@ -180,3 +180,5 @@ commandes : [commandes.md](../pratiques/commandes.md).
 - Autres décisions d'architecture : [docs/adr/](../adr/).
 
 ## Écarts connus
+
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

@@ -424,7 +424,7 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
 - Les routes JSON de la zone valident leurs entrées par Zod (`safeParse`, puis 400 avec le premier
   message). Les schémas des écrans admin sont dans `validation/admin.ts`, ceux des écoles dans
   `validation/schools.ts` et `validation/school-config.ts`, ceux des créneaux dans
-  `validation/classes.ts`. Exceptions : voir Écarts connus.
+  `validation/classes.ts`. Exceptions : voir Écarts connus, qui renvoie au registre.
 
 ## Comment étendre
 
@@ -511,23 +511,10 @@ courriel de bienvenue, `add-to-class` et `remove-from-class`.
 
 ## Écarts connus
 
-Constatés le 2026-10-13, **non corrigés**.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Code mort retiré le 2026-10-13** : fonctions, schémas, widget, action `update_profile` et
-  routes `api/students/[id]/warnings` et `api/admin/pending-users`, sans appelant. Reste
-  `restoreOptionsSchema`, utilisé seulement via `validateRestoreOptions`.
-- **Doublons** : `api/classes` et `api/teacher/classes` rendent les mêmes classes.
-- **Commentaires faux ou périmés** :
-  - `dashboard/teacher/classes/+page.server.ts` dit que `day_of_week` est borné à 0-4 ; le schéma
-    accepte 0-6.
-  - L'en-tête de `PATCH api/admin/users/[id]` liste `email` parmi les champs modifiables ; le schéma
-    ne l'accepte pas.
-  - `class-composition-source` annonce « les élèves des AUTRES années scolaires de la même école »,
-    puis dit que la portée franchit les écoles ; le code ne filtre pas sur l'école.
-  - `send-welcome-email` et la page `welcome-email` disent vérifier que le prof « enseigne » à
-    l'élève ; `verifyTeacherStudent` vérifie seulement les rôles.
-  - `dashboard/admin/users/+page.server.ts` dit que le prof ne voit que les comptes en attente
-    « à cause de la RLS » ; en mono-prof, il voit tous les élèves. À revérifier.
-- **`/api/classes/[classId]/students`** valide `classId` avec `getClassGidouillesSchema` (le schéma
-  d'une autre route).
-- **`bulk_create` des écoles** force `uai: ''` : un import en masse n'enregistre jamais d'UAI.
+### À savoir (voulu)
+
+- `restoreOptionsSchema` n'est utilisé que via `validateRestoreOptions` (schéma encapsulé par sa fonction).
+- **`bulk_create` des écoles** force `uai: ''` : un import en masse n'enregistre jamais d'UAI. Le
+  collage tableur n'a pas de colonne UAI, l'UAI se règle à l'unité (formulaire simple, Annuaire).
