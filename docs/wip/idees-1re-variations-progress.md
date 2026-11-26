@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot écrit (aucune PR)._
+_Mis à jour le 2026-11-26, migrations commitées, PR pas encore ouverte._
 
-- **État** : phase 0 validée (« je valide », 2026-11-26) ; lot écrit et vert : 3 neufs (`scripts/questions/idees-1re-variations-neufs/`, sans id) et V1 ajoutée à 2b382069 (`…-publies/`) ; joué en base locale, rendu vu dans l'aperçu admin.
-- **Prochaine action** : quand David a lancé `create-questions --publier` en prod, commiter les ids, puis générer les migrations (`migration-rangement.ts` et `migration-contenu.ts --dir …`), `security-auditor`, ouvrir la PR.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-1re-variations-neufs --publier` depuis ce worktree (brouillons en prod).
+- **État** : 3 brouillons créés en prod par David (80c43412, 8f08fca1, 61c4a8ed, ids commités) ; migrations générées (rangement `20261126072904`, contenu de 2b382069 `20261126072928`), tests d'intégration des fixtures verts ; `security-auditor` lancé sur les deux migrations, branche pas encore poussée depuis.
+- **Prochaine action** : lire le verdict de `security-auditor` (le relancer sur les deux migrations s'il est perdu), pousser, ouvrir la PR ; CI verte → `pnpm pr:merger`, puis `migration list --linked` (seules les deux du lot en attente) et `db:migrate` ; puis relecture dans `/dev/modeles?noeud=` (brouillons) et série de relecture pour 2b382069.
+- **En attente de David** : rien avant le merge ; ensuite, sa relecture dans `/dev/modeles`.
 - **Pièges en cours** : choix + tableau à compléter dans une même variation = réponse du choix perdue ; flèche cachée près de `||` refusée (outils-manquants 59 et 63) ; pas d'erreur prévue dans une case de tableau ; ids locaux à retirer après un `--publier` local.
 - **Worktree / branche** : `../ubumaths-wt-idees-1re-variations`, `feat/idees-1re-variations`.
 
@@ -48,3 +48,12 @@ _Mis à jour le 2026-11-26, lot écrit (aucune PR)._
   par variation) ; `create-questions` en simulation vert ; neufs créés en base locale (ids retirés
   ensuite) ; aperçu admin (Chrome, lien du tailnet) : tableau avec double barre sans limites,
   bornes sans valeur, cases à compléter, rendu correct.
+
+### 2026-11-26 — brouillons en prod, migrations
+
+- David a créé les 3 brouillons en prod ; ids commités. Fusion de `main` : conflit dans
+  `outils-manquants.md` (une autre session a pris le n° 62) → mon entrée devient la 63.
+- `migration-rangement.ts` : 3 modèles rangés (nœud « Fonctions > Dérivation > variations et
+  extremums », 1SPE-283 / 1SPE-401). `migration-contenu.ts` : 2b382069 +1 variation et ses specs.
+- Tests d'intégration `migrations-rangement-tags` et `migrations-contenu-publie` verts ;
+  `garde-niveaux-tags` vert ; `types:cliquet` tenu.
