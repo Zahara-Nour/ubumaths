@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3175 (migration jouée en prod)._
+_Mis à jour le 2026-11-26, lot repris (prix en €, retouches 3 à 5), avant la PR des fichiers._
 
-- **État** : #3175 en prod : 28 modèles publiés à arrondi écrivent les zéros de l'arrondi (`;aN`), specs remises à la règle de #3170. Réservations « zéros des arrondis » retirées du tableau de répartition. Lot écrit et poussé sur `docs/idees-6e-proportionnalite`, prix encore écrits en texte (`7,2\,€`).
-- **Prochaine action** : reprise du lot : worktree mis à jour (`git merge origin/main`), prix en grandeurs €, `zeros: off` des N1 à N3 et de e0ccaf84 à retirer s'il ne sert plus, retouches validées 3 à 5, essai en base locale.
-- **En attente de David** : rien.
-- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement. `round(x)` garde l'arrondi historique des moitiés négatives (−2,5 → −2), `round(x, 0)` donne −3. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé).
+- **État** : lot complet sur `docs/idees-6e-proportionnalite` : 10 modèles, 177 specs vertes, prix en grandeurs € (« 4,50 € »), retouches 3 à 5 faites. Essai en base locale : 5 neufs créés en brouillon, variations des 4 publiés posées en local, aperçus rendus sans erreur.
+- **Prochaine action** : PR des fichiers (contenu, revue aucune), CI verte, merge ; puis David lance `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier` (prod), je commite les ids ; migrations de rangement + contenu (e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d) + F4 à la main.
+- **En attente de David** : N5 v2, « masse du père » à la place de « pointure du père » (un adulte garde sa pointure : « on ne peut pas » y serait discutable) : à confirmer à la relecture.
+- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d y portent déjà les variations ajoutées (PATCH local).
 - **Worktree / branche** : lot `../ubumaths-wt-idees-6e-proportionnalite` (`docs/idees-6e-proportionnalite`).
 
 ## Journal
@@ -139,3 +139,12 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - 11 specs de 7 modèles assertaient l'ancienne règle (rouges en prod depuis #3170) : remises à la règle ; 10a51999 ajouté pour sa spec seule (28 modèles migrés).
 - `security-auditor` : aucun finding bloquant. Migration non jouée : deux autres migrations en attente.
 - Migration jouée en prod par David le 2026-11-26 (avec les deux autres en attente) ; vérifiée par MCP (aucun `round…;d` hors figures).
+
+### 2026-11-26 : reprise du lot (prix en €, retouches 3 à 5, essai local)
+
+- Prix en grandeurs en euros (`{{eval:(…)[€]}}`) : « 7,20 € », « 12 € » écrits par le moteur. Prix sans unité (cases « Prix (€) », calculs du corrigé) écrits de même (`prix_nu` : `;d2` sauf prix entier).
+- Retouche 1 (`zeros: off` de e0ccaf84) abandonnée : « 21,60 € » est juste depuis #3170 (spec ajoutée). `zeros: off` gardé sur N1 à N3 : leurs cases de prix sans unité sont des nombres pour le juge (« 8,50 » y serait perfectible).
+- Retouche 3 : N5 v2 gagne une situation incalculable, **la masse du père** (au lieu de la pointure : un adulte garde sa pointure, et le coup de pouce « quelque chose qui ne change pas ? » y mènerait à « la même »). À confirmer par David.
+- Retouche 4 : N5 v1, piège « valeur × nouvelle quantité » pour les prix et l'imprimante seulement ; ailleurs, la nouvelle quantité ajoutée (variable `z` : une grandeur `[€]` ne simplifie pas `min`/`abs`).
+- Retouche 5 : N4 relier, une série parmi cinq (éléphant, lettre, camion, récréation, vacances, marathon, crayon, cuillère…), une unité par sorte de grandeur dans chaque série.
+- Essai local : `create-questions --publier` en base locale (ids restaurés), variations des 4 publiés posées par PATCH local ; `pnpm voir` des aperçus N5 et N2 : rendu juste (« 13,30 € »), 0 erreur de console. Réponses justes et fausses jugées par les specs (même juge), pas rejouées à la main.
