@@ -10,6 +10,7 @@ import {
 	expectNoHorizontalOverflow,
 	expectReadableFont,
 	gotoSettled,
+	isNavigationAbortNoise,
 	shoot,
 	shootThemes
 } from './helpers/pages';
@@ -791,7 +792,8 @@ test.describe('#1731 — présentation d’un carnet Python (/python-notebook/[i
 				description: `${bag.errors.length} erreurs de console sur /automaths`
 			});
 		} else {
-			expect(bag.errors, 'erreurs').toEqual([]);
+			const errors = bag.errors.filter((e) => !isNavigationAbortNoise(e, testInfo.project.name));
+			expect(errors, 'erreurs').toEqual([]);
 		}
 	});
 });

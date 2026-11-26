@@ -7,7 +7,12 @@ import {
 	type TestInfo
 } from '@playwright/test';
 import { assertLocalServerEnv, login, sql } from './helpers/carnet';
-import { collectErrors, expectNoHorizontalOverflow, gotoSettled } from './helpers/pages';
+import {
+	collectErrors,
+	expectNoHorizontalOverflow,
+	gotoSettled,
+	isNavigationAbortNoise
+} from './helpers/pages';
 
 /**
  * Base locale remplie (`pnpm db:seed-riche`) — paquet 9 du tri
@@ -102,13 +107,14 @@ async function openSession(
 /** Erreurs de la page, sans le bruit des requêtes de fond coupées */
 function realErrors(session: Session): string[] {
 	// Écartés : le bruit de la journalisation limitée (429), les requêtes de fond coupées par la
-	// navigation (WebKit : « Load failed », Chromium : « Failed to fetch »), et les images documentées
+	// navigation (`isNavigationAbortNoise`, les trois moteurs), et les images documentées
 	// absentes (#3012 : `2048-bomb-3` absente en prod aussi, 4 cartes Mathémo sans image)
 	return session.errors.errors.filter(
 		(e) =>
 			!e.includes('/api/errors/log') &&
 			!e.includes('BugReportsConfigStore') &&
-			!/(TypeError: (Load failed|Failed to fetch)|status: 500, error: Load failed)/.test(e) &&
+			!/status: 500, error: Load failed/.test(e) &&
+			!isNavigationAbortNoise(e, test.info().project.name) &&
 			// WebKit : requête de fond coupée par la navigation, signalée comme « access control checks »
 			!/^exception : .*due to access control checks/.test(e) &&
 			// Serveur de dev : rechargement d'un module en cours de page
