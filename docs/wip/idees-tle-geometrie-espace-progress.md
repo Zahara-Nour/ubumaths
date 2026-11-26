@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot écrit (pas encore de PR)._
+_Mis à jour le 2026-11-26, lot écrit et joué en base locale (pas encore de PR)._
 
-- **État** : gros lot écrit et vert (specs, tirages, sonde des solides) : N1-N3 dans `scripts/questions/idees-tle-geometrie-espace-neufs/`, 11 variations (V1-V9) à la fin des 9 publiés ; migration de contenu générée (`20261126090344_…_publies_contenu.sql` + fixture) ; Q1 noté (lignes 64, 65 d'`outils-manquants.md`).
-- **Prochaine action** : jouer le lot en base locale (aperçu admin, `pnpm voir`), puis demander à David `create-questions --publier` des neufs (brouillons en prod), commiter les ids, générer la migration de rangement, `security-auditor`, PR.
-- **En attente de David** : rien pour l'instant (le `--publier` en prod viendra après l'essai local).
-- **Pièges en cours** : `shared.blankDefaults` d'un modèle règle ses cases (2b240d8c : `vecteur` + `colineaire` ; le schéma refuse de surcharger `answerKind`, la case choix de V5 n'en est pas gênée). aaa16821 n'a pas `cleanCoefficients` : équation écrite par `equation_propre()`. Un message d'erreur prévue s'écrit sous sa forme réécrite (`$x = x_A + a t$`, `$\left( AB \right)$`). Un fichier publié modifié → relancer `migration-contenu.ts` (nouvel horodatage, retirer l'ancienne).
+- **État** : gros lot vert (specs, tirages, sonde des solides) et joué en base locale (aperçu admin, `pnpm voir`, iPhone) : N1-N3 dans `scripts/questions/idees-tle-geometrie-espace-neufs/`, 11 variations (V1-V9) à la fin des 9 publiés ; migration de contenu `20261126092502_…_publies_contenu.sql` + fixture ; Q1 noté (lignes 64, 65 d'`outils-manquants.md`).
+- **Prochaine action** : après le `--publier` de David, commiter les ids des 3 neufs, `migration-rangement.ts --dir …-neufs`, tests d'intégration `migrations-rangement-tags` et `migrations-contenu-publie`, `garde-niveaux-tags`, `security-auditor`, PR.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-geometrie-espace-neufs --publier` depuis le worktree (3 brouillons en prod).
+- **Pièges en cours** : `shared.blankDefaults` de 2b240d8c (`vecteur` + `colineaire`) : le schéma refuse de surcharger `answerKind`, la case choix de V5 n'en est pas gênée. aaa16821 sans `cleanCoefficients` : équation par `equation_propre()`. Message d'erreur prévue sous sa forme réécrite (`$x = x_A + a t$`, `$\left( AB \right)$`). Fichier publié modifié → relancer `migration-contenu.ts` (retirer l'ancienne). Base locale : 3 neufs et 9 copies « [essai local] » laissés en brouillon.
 - **Worktree / branche** : `../ubumaths-wt-idees-tle-geometrie-espace`, `chore/idees-tle-geometrie-espace`.
 
 ---
@@ -57,5 +57,9 @@ autre plateforme (`TSG2-10` à `TSG2-50`, 26 exercices sans les anciennes versio
   - V3, V4, V5 v3 : les noms des points (ou vecteurs) proposés tournent (variable `pm`), sinon le
     même nom serait toujours juste.
   - V5 v2 : erreurs prévues « u donné », « v donné », « orthogonal à u seulement ».
-- Migration de contenu générée : `supabase/migrations/20261126090344_questions_idees_tle_geometrie_espace_publies_contenu.sql`
-  (9 modèles, +11 variations, 0 corrigée, options inchangées).
+- Migration de contenu générée : `supabase/migrations/20261126092502_questions_idees_tle_geometrie_espace_publies_contenu.sql`
+  (9 modèles, +11 variations, 0 corrigée, options inchangées ; remplace celle de 09:03, jamais jouée).
+- Essai en base locale (2026-11-26) : 3 neufs créés, et les 11 variations dans 9 copies
+  « [essai local] » ; aperçu admin vu par `pnpm voir` (N1, N2, N3 avec le cube, V3, V8) : rendu
+  correct. Un tirage de V3 avait un leurre égal au bon point décalé de 1 (mêmes coefficients) :
+  coefficients (V3) et paramètres (V4) désormais distincts d'un point à l'autre.
