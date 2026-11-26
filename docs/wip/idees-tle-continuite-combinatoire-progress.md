@@ -7,16 +7,15 @@ Page à cocher de la phase 0 : https://claude.ai/artifact/SmYJM9k1YCqeck3Qs98W4T
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3153 et `db:migrate`._
+_Mis à jour le 2026-11-26, série de relecture enregistrée, 7 modèles validés._
 
-- **État** : 4 brouillons rangés en prod (a94acfec, bb7dc033, 3603141b, c3f70ab6) ; 5 variations
-  ajoutées à 2491dd75, 10393ff9, 0965c56c ; migrations jouées, garde des niveaux verte ·
-  **Prochaine action** : créer la série de relecture des 3 publiés (`creer-serie.ts`), puis lire les
-  verdicts de `/dev/modeles`, corriger, `publier-lot.ts` en simulation · **En attente de David** :
-  relecture dans `/dev/modeles` (brouillons par `?noeud=`, publiés par la série) · **Pièges en
-  cours** : 2491dd75 et 10393ff9 sont aussi en T_COMP ; (π−1)/2 refusé par le juge en N2 c (à
-  ajouter à `outils-manquants.md` si David le veut) · **Worktree / branche** : aucun (nouveau
-  worktree sur `origin/main` pour la PR de corrections).
+- **État** : série de relecture b15c9d00 enregistrée (3 publiés) ; David a validé les 7 modèles ;
+  `publier-lot.ts` en simulation vert sur les 4 brouillons · **Prochaine action** : vérifier en
+  base que les 4 sont publiés, puis finir (tableau de répartition : rubriques « publiées »,
+  réservations levées ; journal versé) · **En attente de David** : `publier-lot.ts --dir
+scripts/questions/idees-tle-continuite-combinatoire-neufs --publier` · **Pièges en cours** :
+  2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** :
+  `ubumaths-wt-idees-tle-continuite-combinatoire-serie`, `chore/idees-tle-continuite-combinatoire-serie`.
 
 ## Historique
 
@@ -80,3 +79,14 @@ _Mis à jour le 2026-11-26, après #3153 et `db:migrate`._
 - `db:migrate` refusé à la session (écriture en prod) : à lancer par David.
 - David a lancé `db:migrate` (2026-11-26). `garde-niveaux-tags.ts` : 2744 modèles tagués, aucun
   niveau manquant.
+
+### 2026-11-26 — relecture, série, publication
+
+- Série de relecture des 3 publiés complétés
+  (`scripts/series/T_SPE-relecture-continuite-denombrement-publies.json`) enregistrée par David :
+  b15c9d00.
+- David valide les 7 modèles (aucun verdict « À revoir » en base). `publier-lot.ts` en
+  simulation : 4 brouillons passent le contrôle.
+- (π − 1)/2 refusé en N2 c : la forme de l'attendu (π/2 − 1/2) sert de modèle de forme
+  (`checkForm`) ; ½(π − 1) et π/2 − 0,5 aussi refusés, vérifié au correcteur. Noté en ligne 62 de
+  `outils-manquants.md` (72bfb100c) ; David publie le modèle tel quel.
