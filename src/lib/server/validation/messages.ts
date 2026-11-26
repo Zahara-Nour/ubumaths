@@ -3,6 +3,77 @@
  */
 
 import { z } from 'zod';
+import type { Json } from '#lib/types/database.ts';
+
+/** Texte d'un message : la limite d'avant, comptée sur le texte du document. */
+export const MESSAGE_MAX_CHARS = 10_000;
+
+/** Poids du document écrit en JSON (mise en forme et formules comprises). */
+const MESSAGE_MAX_JSON_LENGTH = 100_000;
+
+/** Emboîtement des blocs : l'éditeur ne dépasse pas quelques niveaux de listes. */
+const MESSAGE_MAX_DEPTH = 20;
+
+const NODE_TYPE_MAX_LENGTH = 50;
+
+/** Blocs qui, vides, ne montrent rien : à eux seuls ils ne font pas un message. */
+const BLANK_LEAF_TYPES = new Set(['paragraph', 'heading', 'hardBreak', 'text']);
+
+interface DocumentMeasure {
+	/** Caractères de texte */
+	chars: number;
+	/** Au moins un texte non blanc, ou un bloc sans texte qui se voit (formule…) */
+	visible: boolean;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Mesure un bloc du document et ses enfants ; `null` s'il n'a pas la forme d'un
+ * bloc de l'éditeur (type absent, enfants qui ne sont pas une liste, trop profond).
+ */
+function measureNode(node: unknown, depth: number): DocumentMeasure | null {
+	if (depth > MESSAGE_MAX_DEPTH || !isRecord(node)) return null;
+	const { type, text, content } = node;
+	if (typeof type !== 'string' || type.length === 0 || type.length > NODE_TYPE_MAX_LENGTH) {
+		return null;
+	}
+	if (text !== undefined && typeof text !== 'string') return null;
+	if (content !== undefined && !Array.isArray(content)) return null;
+
+	const ownText = typeof text === 'string' ? text : '';
+	const measure: DocumentMeasure = {
+		chars: ownText.length,
+		visible: ownText.trim().length > 0 || (content === undefined && !BLANK_LEAF_TYPES.has(type))
+	};
+	for (const child of content ?? []) {
+		const childMeasure = measureNode(child, depth + 1);
+		if (!childMeasure) return null;
+		measure.chars += childMeasure.chars;
+		measure.visible ||= childMeasure.visible;
+	}
+	return measure;
+}
+
+/**
+ * Ce qui empêche `value` d'être le contenu d'un message, ou `null` s'il convient :
+ * un document de l'éditeur riche (`{ type: 'doc', content: [...] }`), borné en
+ * profondeur, en poids et en texte, et qui montre quelque chose.
+ */
+export function messageDocumentProblem(value: unknown): string | null {
+	if (!isRecord(value) || value.type !== 'doc' || !Array.isArray(value.content)) {
+		return 'Message illisible';
+	}
+	const measure = measureNode(value, 0);
+	if (!measure) return 'Message illisible';
+	if (JSON.stringify(value).length > MESSAGE_MAX_JSON_LENGTH || measure.chars > MESSAGE_MAX_CHARS) {
+		return 'Message trop long (10 000 caractères au plus)';
+	}
+	if (!measure.visible) return 'Le message est vide';
+	return null;
+}
 
 /**
  * Schema for sending a message
@@ -14,10 +85,15 @@ export const sendMessageSchema = z.object({
 		.trim()
 		.min(1, 'Subject is required')
 		.max(200, 'Subject too long (max 200 characters)'),
+	// Le document de l'éditeur riche (jsonb de `send_private_message`), pas une chaîne
 	content: z
-		.string()
-		.min(1, 'Content is required')
-		.max(10000, 'Content too long (max 10,000 characters)'),
+		.unknown()
+		.superRefine((value, ctx) => {
+			const problem = messageDocumentProblem(value);
+			if (problem) ctx.addIssue({ code: 'custom', message: problem });
+		})
+		// Sorti de `request.json()` et vérifié ci-dessus : c'est du JSON
+		.transform((value) => value as Json),
 	isGroupMessage: z.boolean().default(false),
 	classId: z.string().uuid().optional().nullable(),
 	parentMessageId: z.string().uuid().optional().nullable()

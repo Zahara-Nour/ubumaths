@@ -562,7 +562,7 @@
 									</p>
 								{:else}
 									<div class="space-y-2">
-										{#each privateMessages.recipients as recipient (recipient.id)}
+										{#each privateMessages.recipients as recipient (recipient.user_id)}
 											<label
 												class="flex cursor-pointer items-center gap-3 rounded p-2 transition-colors hover:bg-muted/50"
 												class:pointer-events-none={replyToMessageId}
