@@ -1,0 +1,51 @@
+{
+	"migration": "supabase/migrations/20261126092228_questions_idees_1re_produit_scalaire_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "f114cc04-91c1-45e7-ab55-5c51340ec1e9",
+			"title": "Produit scalaire dans un parallélogramme",
+			"fichier": "n1-parallelogramme.json",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sousNotion": "expressions du produit scalaire",
+			"point": "1SPE-412"
+		},
+		{
+			"id": "b4a813ae-47d2-46bf-97f5-2a011cb3f67e",
+			"title": "Produit scalaire par projection sur une figure graduée",
+			"fichier": "n2-figure-a-points-espaces.json",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sousNotion": "expressions du produit scalaire",
+			"point": "1SPE-310"
+		},
+		{
+			"id": "e25be0a4-332a-466d-9972-3bcfd51fff4d",
+			"title": "Produit scalaire sur un quadrillage",
+			"fichier": "n3-quadrillage.json",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sousNotion": "expressions du produit scalaire",
+			"point": "1SPE-310"
+		},
+		{
+			"id": "18ff9913-6be9-4a42-9df2-bdb31751af30",
+			"title": "Aire d'un triangle avec le produit scalaire",
+			"fichier": "n4-aire-d-un-triangle.json",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sousNotion": "angles et longueurs",
+			"point": "1SPE-320"
+		},
+		{
+			"id": "ed2c1c0b-800d-42a8-9026-61299ebb4fca",
+			"title": "Droite d'Euler dans un repère",
+			"fichier": "n5-droite-d-euler.json",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sousNotion": "propriétés",
+			"point": "1SPE-436"
+		}
+	],
+	"niveaux": []
+}
