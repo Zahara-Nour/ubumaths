@@ -6,8 +6,8 @@ _Mis à jour le 2026-11-26, après #2875 (et #3149, E73)._
 
 - **État** : découpage initial livré (#2842, #2847, #2854, #2866, #2875) et en prod. 2026-11-25 : nouvelle demande de David (cartes + recherche), phase 0 EN COURS, rien codé, aucun worktree.
 - **Prochaine action** : obtenir les réponses de David (§ 2026-11-25 ci-dessous), puis 2 PR : (A) cartes (badge niveau, flèches de variations, bouton de retournement plus petit, hauteur × 1,5, corbeille dans Ma série) ; (B) recherche par rangs.
-- **En attente de David** : avis sur mes réserves (choix des QCM hors recherche, pas de champ « mots-clés » pour l'instant, plusieurs raccourcis) ; badge « CM1–CM2 » ou « CM1 · CM2 ».
-- **Tranché** : difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points) ; vérification des niveaux face aux points = futur chantier à part (David, 2026-11-26), hors `automaths`.
+- **En attente de David** : correction des questions dans le groupe replié (avec le programme) ? tags (`resource_tags`) sur les modèles = chantier à part, plus tard ?
+- **Tranché** : choix des QCM hors recherche ; badge « CM1–CM2 » si niveaux consécutifs, sinon « CM1 · 6e » ; difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points) ; vérification des niveaux face aux points = futur chantier à part (David, 2026-11-26), hors `automaths`.
 - **Pièges en cours** : séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
 - **Worktree / branche** : aucun (à créer : `../ubumaths-wt-automaths-cartes`, `feat/automaths-cartes`).
 
@@ -23,6 +23,8 @@ Constats (prod, lecture seule) :
 - Mesures de la recherche (6e + inférieurs, titre / notion seule / point seul) : triangle 45/0/13, nombres décimaux 16/0/31 (titres au singulier), multiplication 67/84/8, fraction 148/9/0. Script : rejouer sur `/api/questions/templates/all`.
 
 Réponses de David (2026-11-26) : bons résultats = titre + description + énoncé + choix (pas le nom de sous-notion, couvert par le raccourci) ; idée d'un champ en plus dans le format du modèle ; « Aussi dans le programme » replié ; un prof tape aussi bien un thème qu'une compétence. Mesure (6e + inférieurs) : l'énoncé SANS les choix ajoute peu (cercle 1, triangle 8, angle droit 5) ; les choix ajoutent les distracteurs (« Décrire une figure » sort pour « cercle » par « Je suis un cercle »).
+
+Champs existants mesurés (tous niveaux, en plus de titre + description + énoncé) : consigne 0 (19 modèles en ont une), indice ~0, correction : pythagore +5, produit en croix +4 (quatrième proportionnelle…), discriminant +9, cercle +19 (bruit : symétrie centrale, cône, trigo). Tags `resource_tags` : 140 tags, 429 liens (exercices, Python, fiches), aucun sur les modèles.
 
 Proposition recherche (version du 2026-11-25) : 1. raccourci vers la sous-notion/notion dont le nom correspond ; 2. résultats titre/description/sous-notion, groupe le plus pertinent d'abord ; 3. point du programme seul → groupe replié « Aussi dans le programme » ; 4. singulier/pluriel confondus ; 5. pas de recherche dans l'énoncé.
 
