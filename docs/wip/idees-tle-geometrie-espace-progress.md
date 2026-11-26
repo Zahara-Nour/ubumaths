@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot écrit et joué en base locale (pas encore de PR)._
+_Mis à jour le 2026-11-26, brouillons créés en prod par David, PR pas encore ouverte._
 
-- **État** : gros lot vert (specs, tirages, sonde des solides) et joué en base locale (aperçu admin, `pnpm voir`, iPhone) : N1-N3 dans `scripts/questions/idees-tle-geometrie-espace-neufs/`, 11 variations (V1-V9) à la fin des 9 publiés ; migration de contenu `20261126092502_…_publies_contenu.sql` + fixture ; Q1 noté (lignes 64, 65 d'`outils-manquants.md`).
-- **Prochaine action** : après le `--publier` de David, commiter les ids des 3 neufs, `migration-rangement.ts --dir …-neufs`, tests d'intégration `migrations-rangement-tags` et `migrations-contenu-publie`, `garde-niveaux-tags`, `security-auditor`, PR.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-geometrie-espace-neufs --publier` depuis le worktree (3 brouillons en prod).
+- **État** : 3 brouillons en prod (6c2e48c3 N1, 35c6fad0 N2, d2ad4df0 N3), ids commités ; migrations `20261126092502_…_publies_contenu.sql` (11 variations sur 9 publiés) et `20261126103343_…_neufs_rangement_tags.sql` ; tests d'intégration verts, garde des niveaux verte ; `security-auditor` lancé (résultat à lire).
+- **Prochaine action** : verdict `security-auditor`, ouvrir la PR, CI verte → merge ; puis `db:migrate` (4 conditions, `migration list --linked` d'abord), relecture des 3 brouillons et des 9 publiés dans `/dev/modeles`, publication par David.
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : `shared.blankDefaults` de 2b240d8c (`vecteur` + `colineaire`) : le schéma refuse de surcharger `answerKind`, la case choix de V5 n'en est pas gênée. aaa16821 sans `cleanCoefficients` : équation par `equation_propre()`. Message d'erreur prévue sous sa forme réécrite (`$x = x_A + a t$`, `$\left( AB \right)$`). Fichier publié modifié → relancer `migration-contenu.ts` (retirer l'ancienne). Base locale : 3 neufs et 9 copies « [essai local] » laissés en brouillon.
 - **Worktree / branche** : `../ubumaths-wt-idees-tle-geometrie-espace`, `chore/idees-tle-geometrie-espace`.
 
