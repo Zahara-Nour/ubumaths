@@ -2,18 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot 1 en PR._
+_Mis à jour le 2026-11-26, après #3195._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée par David
-  (§ 2, et Q1 à Q4 du § 3 selon les recommandations) ; **lot 1 fait** (moteur de vue, § 5).
-- **Prochaine action** : lot 2 — clé `tourner:` du bloc ` ```solide ` pour les polyèdres (§ 4), dans
-  une nouvelle session.
+  (§ 2, et Q1 à Q4 du § 3 selon les recommandations) ; **lot 1 mergé** (#3195 : moteur de vue
+  `utils/espace-vue.ts`, rien de branché à l'écran, § 5).
+- **Prochaine action** : lot 2 — clé `tourner:` du bloc ` ```solide ` pour les polyèdres (cube, pavé,
+  prisme, pyramide) : glisser, clavier, bouton « Vue de départ », catalogue et doc (§ 4).
 - **En attente de David** : rien.
-- **Pièges en cours** : une figure sans rotation doit rester strictement celle d'aujourd'hui
-  (`solide-scene-figee.test.ts`) ; cylindre, cône et boule sont dessinés « à plat » (ellipses
-  conventionnelles, pas une vraie projection) : leur passage à la vue tournée est à concevoir au
-  lot 3 ; le cadre du dessin tourné (échelle fixe, pivot fixe) est à faire au lot 2.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, `feat/solides-3d` (retirés au merge).
+- **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
+  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts (le cosinus diffère entre
+  le Mac et la CI) ; le cadre du dessin tourné (échelle fixe, pivot fixe, place réservée dès le
+  repos) est à concevoir au lot 2 ; cylindre, cône et boule sont dessinés « à plat » (pas une vraie
+  projection) : passage à la vue tournée à concevoir au lot 3 ; noms et cotes sont placés pour la
+  cavalière (cotes à la vue de départ seulement, Q1).
+- **Worktree / branche** : aucun (retirés au merge) ; lot 2 = nouveau worktree
+  `../ubumaths-wt-solides-3d`.
 
 ## 1. D'où l'on part
 
