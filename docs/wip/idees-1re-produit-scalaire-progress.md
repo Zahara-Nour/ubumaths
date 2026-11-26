@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3189 (mergée, 2 migrations jouées en prod et vérifiées)._
+_Mis à jour le 2026-11-26, après #3189 : David a VALIDÉ les modèles (5 neufs + 11 variations)._
 
-- **État** : #3189 mergée ; `db:migrate --include-all` a joué `20261126090426` (11 variations des
-  7 publiés) et `20261126092228` (rangement des 5 neufs, vérifié en prod : nœud + point posés,
-  toujours `draft`) · **Prochaine action** : David enregistre la série de relecture des publiés
-  (`scripts/series/1_SPE-relecture-produit-scalaire-publies.json`, simulée, dans le worktree
-  `-relecture`) ; commit du fichier avec son id (PR), puis relecture · **En attente de David** :
-  `--publier` de la série, puis relecture dans `/dev/modeles` : neufs par `?noeud=…&statut=draft`
-  (nœuds 3779c173, 35cfd263, b5b42982), publiés par `?serie=<id>` ; verdicts lus dans
-  `question_template_reviews` · **Pièges en cours** : relancer le script des neufs garde les ids ·
+- **État** : #3189 mergée, 2 migrations jouées en prod et vérifiées ; **David a validé tous les
+  modèles le 2026-11-26** (aucun « À revoir » à corriger) · **Prochaine action** : `publier-lot.ts
+--dir scripts/questions/<lot des neufs>` en simulation (bloquée par le classifieur la session
+  d'avant : la relancer, sinon donner la commande à David), puis David lance `--publier` ;
+  ensuite § 6 de la skill `idees-rubrique` (tableau de répartition « publiée », versement du
+  journal) · **En attente de David** : `--publier` du lot · **Pièges en cours** : la série
+  `scripts/series/1_SPE-relecture-produit-scalaire-publies.json` n'a pas été publiée et ne sert
+  plus (validation faite) : commitée sur la branche `-relecture`, demander à David s'il la garde ·
   **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire-relecture`,
   `chore/idees-1re-produit-scalaire-relecture`.
 
