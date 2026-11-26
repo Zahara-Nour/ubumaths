@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-26, après #3176._
 
 - **État** : PR B (recherche, #3172) et PR C (ordre des groupes, #3176) mergées ; worktrees retirés. Recherche livrée au prochain `deploy:prod` (sur demande de David).
 - **Prochaine action** : aucune PR prévue sur le chantier ; attendre la suite de David.
-- **En attente de David** : accord pour supprimer le dossier `ubumaths-wt-automaths-recherche` (caches `.svelte-kit` / `.vite` seuls).
+- **En attente de David** : rien (dossier `ubumaths-wt-automaths-recherche` supprimé le 2026-11-26).
 - **Pièges en cours** : figure dans une variable (`{{if:k==1|```figure…}}`) → variables retirées AVANT les blocs ; mot mis au singulier par la recherche = mot entier ; capture WebKit d'une carte = miroir ; `garde-migrations-horodatage` rouge par hasard → `gh run rerun --failed`.
 - **Worktree / branche** : aucun.
 
