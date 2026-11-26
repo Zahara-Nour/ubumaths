@@ -270,7 +270,7 @@
 				},
 				{
 					"name": "r",
-					"expression": "2..9"
+					"expression": "2|3|5|6|7"
 				},
 				{
 					"name": "b",
@@ -298,7 +298,7 @@
 						},
 						{
 							"answer": "\\frac{\\log({{b}})}{ {{a}} }",
-							"message": "$\\dfrac{\\log({{b}})}{ {{a}} }$ est la valeur de $\\log(x)$, pas de $x$ : il reste à calculer $x=10^{\\log(x)}$.",
+							"message": "$\\dfrac{\\log({{b}})}{ {{a}} }$ est la valeur de $\\log(x)$, pas de $x$ : écris $x$ {{if:w==1|comme un entier|comme une puissance de ${{b}}$}}.",
 							"label": "log(x) au lieu de x"
 						}
 					]
@@ -673,7 +673,7 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : il reste à calculer $x=10^{\\log(x)}$."
+				"expectedErrorMessage": "$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : écris $x$ comme une puissance de $5$."
 			},
 			"answers": ["\\frac{\\log(5)}{3}"]
 		},

@@ -147,7 +147,7 @@
 						},
 						{
 							"answer": "{{if:k==2|\\frac{ {{y}} }{2}|{{eval:-y}}}}",
-							"message": "{{if:k==2|$a^{2}$ n'est pas $2a$ : on prend la racine carrée, on ne divise pas par $2$.|$a>0$ : la base d'une fonction $x\\mapsto a^x$ est strictement positive.}}",
+							"message": "{{if:k==2|{{if:sg==-1|$a^{-2}=\\dfrac{1}{a^{2}}$, et |}}$a^{2}$ n'est pas $2a$ : on prend la racine carrée, on ne divise pas par $2$.|$a>0$ : la base d'une fonction $x\\mapsto a^x$ est strictement positive.}}",
 							"label": "{{if:k==2|Divisé par 2|Base négative}}"
 						}
 					]
@@ -160,7 +160,7 @@
 					"La fonction est $f:x\\mapsto{{if:sg==1|{{n}}^x|\\left(\\frac{1}{ {{n}} }\\right)^x}}$ : $a=\\textcolor{{{color:primary.0}}}{{{if:sg==1|{{n}}|\\frac{1}{ {{n}} }}}}$."
 				]
 			},
-			"hint": "Le point $A$ donne $f({{xA}})={{y}}$, donc $a^{ {{xA}} }={{y}}$."
+			"hint": "Remplace $x$ par l'abscisse de $A$ dans $f(x)=a^x$."
 		}
 	],
 	"testSpecs": [

@@ -1,5 +1,5 @@
 {
-	"migration": "supabase/migrations/20261126193659_questions_idees_tle_techno_analyse_publies_contenu.sql",
+	"migration": "supabase/migrations/20261126195520_questions_idees_tle_techno_analyse_publies_contenu.sql",
 	"modeles": [
 		{
 			"id": "10bd7075-2ff9-4bf1-9161-1fb141ea4d0a",
@@ -422,7 +422,7 @@
 								"expectedErrors": [
 									{
 										"answer": "{{if:g==0|{{if:t==1|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==1|[|]}}}}",
-										"message": "{{if:p<0|${{eval:c^p;d}}<1$, donc $\\log({{eval:c^p;d}})<0$ : diviser par $\\log({{eval:c^p;d}})$ change le sens de l'inégalité.|${{eval:c^p;d}}>1$, donc $\\log({{eval:c^p;d}})>0$ : diviser par $\\log({{eval:c^p;d}})$ ne change pas le sens de l'inégalité.}}",
+										"message": "{{if:p<0|À la fin, on divise par ${{p}}<0$ : le sens de l'inégalité change.|À la fin, on divise par ${{p}}>0$ : le sens de l'inégalité ne change pas.}}",
 										"label": "Sens de l'inégalité"
 									},
 									{
@@ -447,7 +447,7 @@
 								"$S=\\textcolor{{{color:primary.0}}}{ {{if:g==1|{{if:t==1|\\left]|\\left[}}{{eval:q/p}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:q/p}}{{if:t==1|\\right[|\\right]}}}} }$."
 							]
 						},
-						"hint": "Écris les deux nombres comme des puissances d'un même entier. Quel est le signe de $\\log({{eval:c^p;d}})$ ?"
+						"hint": "Écris les deux nombres comme des puissances d'un même entier. À la fin, par quel nombre divises-tu, et quel est son signe ?"
 					}
 				],
 				"testSpecs": [
@@ -612,7 +612,7 @@
 						},
 						"expected": {
 							"status": "incorrect",
-							"expectedErrorMessage": "$0.25 < 1$, donc $\\log(0.25)<0$ : diviser par $\\log(0.25)$ change le sens de l'inégalité."
+							"expectedErrorMessage": "À la fin, on divise par $-2 < 0$ : le sens de l'inégalité change."
 						},
 						"answers": ["]-\\infty;-\\frac{5}{2}["]
 					},
@@ -679,7 +679,7 @@
 						},
 						"expected": {
 							"status": "incorrect",
-							"expectedErrorMessage": "$8 > 1$, donc $\\log(8)>0$ : diviser par $\\log(8)$ ne change pas le sens de l'inégalité."
+							"expectedErrorMessage": "À la fin, on divise par $3 > 0$ : le sens de l'inégalité ne change pas."
 						},
 						"answers": ["]-\\infty;\\frac{2}{3}]"]
 					},
@@ -1356,7 +1356,7 @@
 							},
 							{
 								"name": "r",
-								"expression": "2..9"
+								"expression": "2|3|5|6|7"
 							},
 							{
 								"name": "b",
@@ -1384,7 +1384,7 @@
 									},
 									{
 										"answer": "\\frac{\\log({{b}})}{ {{a}} }",
-										"message": "$\\dfrac{\\log({{b}})}{ {{a}} }$ est la valeur de $\\log(x)$, pas de $x$ : il reste à calculer $x=10^{\\log(x)}$.",
+										"message": "$\\dfrac{\\log({{b}})}{ {{a}} }$ est la valeur de $\\log(x)$, pas de $x$ : écris $x$ {{if:w==1|comme un entier|comme une puissance de ${{b}}$}}.",
 										"label": "log(x) au lieu de x"
 									}
 								]
@@ -1759,7 +1759,7 @@
 						},
 						"expected": {
 							"status": "incorrect",
-							"expectedErrorMessage": "$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : il reste à calculer $x=10^{\\log(x)}$."
+							"expectedErrorMessage": "$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : écris $x$ comme une puissance de $5$."
 						},
 						"answers": ["\\frac{\\log(5)}{3}"]
 					},
@@ -2175,7 +2175,7 @@
 									},
 									{
 										"answer": "{{if:k==2|\\frac{ {{y}} }{2}|{{eval:-y}}}}",
-										"message": "{{if:k==2|$a^{2}$ n'est pas $2a$ : on prend la racine carrée, on ne divise pas par $2$.|$a>0$ : la base d'une fonction $x\\mapsto a^x$ est strictement positive.}}",
+										"message": "{{if:k==2|{{if:sg==-1|$a^{-2}=\\dfrac{1}{a^{2}}$, et |}}$a^{2}$ n'est pas $2a$ : on prend la racine carrée, on ne divise pas par $2$.|$a>0$ : la base d'une fonction $x\\mapsto a^x$ est strictement positive.}}",
 										"label": "{{if:k==2|Divisé par 2|Base négative}}"
 									}
 								]
@@ -2188,7 +2188,7 @@
 								"La fonction est $f:x\\mapsto{{if:sg==1|{{n}}^x|\\left(\\frac{1}{ {{n}} }\\right)^x}}$ : $a=\\textcolor{{{color:primary.0}}}{{{if:sg==1|{{n}}|\\frac{1}{ {{n}} }}}}$."
 							]
 						},
-						"hint": "Le point $A$ donne $f({{xA}})={{y}}$, donc $a^{ {{xA}} }={{y}}$."
+						"hint": "Remplace $x$ par l'abscisse de $A$ dans $f(x)=a^x$."
 					}
 				],
 				"testSpecs": [
@@ -2892,14 +2892,14 @@
 								"expectedAnswer": "{{n}}",
 								"expectedErrors": [
 									{
-										"answer": "{{eval:a^n}}",
-										"message": "On demande le coefficient devant $\\log({{a}})$ : écris ${{eval:a^n}}$ comme une puissance de ${{a}}$, l'exposant donne le coefficient.",
-										"label": "Nombre au lieu de l'exposant"
-									},
-									{
 										"answer": "{{m}}",
 										"message": "Le coefficient de $\\log({{a}})$ vient du numérateur, ${{a}}^{ {{n}} }$.",
 										"label": "Coefficients échangés"
+									},
+									{
+										"answer": "{{eval:a^n}}",
+										"message": "On demande le coefficient devant $\\log({{a}})$ : écris ${{eval:a^n}}$ comme une puissance de ${{a}}$, l'exposant donne le coefficient.",
+										"label": "Nombre au lieu de l'exposant"
 									},
 									{
 										"answer": "{{eval:n-m}}",
@@ -2917,14 +2917,14 @@
 										"label": "Signe oublié"
 									},
 									{
-										"answer": "{{eval:-b^m}}",
-										"message": "On demande le coefficient devant $\\log({{b}})$ : écris ${{eval:b^m}}$ comme une puissance de ${{b}}$.",
-										"label": "Nombre au lieu de l'exposant"
-									},
-									{
 										"answer": "{{eval:-n}}",
 										"message": "Le coefficient de $\\log({{b}})$ vient du dénominateur, ${{b}}^{ {{m}} }$.",
 										"label": "Coefficients échangés"
+									},
+									{
+										"answer": "{{eval:-b^m}}",
+										"message": "On demande le coefficient devant $\\log({{b}})$ : écris ${{eval:b^m}}$ comme une puissance de ${{b}}$.",
+										"label": "Nombre au lieu de l'exposant"
 									}
 								]
 							}
@@ -2967,6 +2967,18 @@
 							{
 								"name": "r",
 								"expression": "eval:a*k-b*j+c*m"
+							},
+							{
+								"name": "u",
+								"expression": "eval:a*k"
+							},
+							{
+								"name": "v",
+								"expression": "eval:-b*j"
+							},
+							{
+								"name": "z",
+								"expression": "eval:c*m"
 							}
 						],
 						"conditions": ["r != 0", "r != a-b+c", "a*k+b*j+c*m != a-b+c", "a-b+c != a*k-b+c*m"],
@@ -2995,7 +3007,7 @@
 						"correction": {
 							"steps": [
 								"Pour $x>0$ : $\\log\\left(x^n\\right)=n\\log(x)$ et $\\log\\left(\\dfrac{1}{x^n}\\right)=-n\\log(x)$.",
-								"$A={{eval:a*k}}\\log(x){{eval:-b*j;+}}\\log(x){{eval:c*m;+}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{if:r==1||{{if:r==-1|-|{{r}}}}}}\\log(x)}$."
+								"$A={{if:u==1||{{if:u==-1|-|{{u}}}}}}\\log(x){{if:v==1|+|{{if:v==-1|-|{{v;+}}}}}}\\log(x){{if:z==1|+|{{if:z==-1|-|{{z;+}}}}}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{if:r==1||{{if:r==-1|-|{{r}}}}}}\\log(x)}$."
 							]
 						},
 						"hint": "$\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)=\\log(1)-\\log\\left(x^{ {{j}} }\\right)$, et $\\log(1)=0$."
@@ -3211,7 +3223,10 @@
 							"k": "3",
 							"j": "2",
 							"m": "1",
-							"r": "-1"
+							"r": "-1",
+							"u": "6",
+							"v": "-6",
+							"z": "-1"
 						},
 						"expected": {
 							"status": "correct"
@@ -3228,7 +3243,10 @@
 							"k": "3",
 							"j": "2",
 							"m": "1",
-							"r": "-1"
+							"r": "-1",
+							"u": "6",
+							"v": "-6",
+							"z": "-1"
 						},
 						"expected": {
 							"status": "incorrect",
@@ -3246,7 +3264,10 @@
 							"k": "3",
 							"j": "2",
 							"m": "1",
-							"r": "-1"
+							"r": "-1",
+							"u": "6",
+							"v": "-6",
+							"z": "-1"
 						},
 						"expected": {
 							"status": "incorrect",
@@ -3264,7 +3285,10 @@
 							"k": "3",
 							"j": "2",
 							"m": "1",
-							"r": "-1"
+							"r": "-1",
+							"u": "6",
+							"v": "-6",
+							"z": "-1"
 						},
 						"expected": {
 							"status": "incorrect",
@@ -5127,6 +5151,7 @@
 							"steps": [
 								"{{if:d==0|Une hausse|Une baisse}} de ${{x}}~\\%$ correspond au coefficient multiplicateur global $CM={{eval:M;d}}$.",
 								"En ${{n}}$ heure{{if:n>1|s|}}, il y a ${{N}}$ minutes : le taux moyen par minute vérifie $(1+t_m)^{ {{N}} }={{eval:M;d}}$, donc $1+t_m={{eval:M;d}}^{\\frac{1}{ {{N}} }}$.",
+								"Donc $t_m={{eval:M;d}}^{\\frac{1}{ {{N}} }}-1\\approx{{eval:round(10000*(M^(1/N)-1))/10000;d}}$.",
 								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(100*(100*(M^(1/N)-1)))/100;a2}} }~\\%$ par minute."
 							]
 						},

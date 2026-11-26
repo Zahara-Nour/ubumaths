@@ -134,7 +134,7 @@ F1 = variation(
 F6 = variation(
     'Résous dans $\\left]0\\,;+\\infty\\right[$ l\'équation $x^{ {{a}} }={{b}}$. Donne la valeur '
     'exacte : un entier si c\'est possible, sinon une puissance de ${{b}}$.\n\n$x=?$',
-    [var('a', '3..9'), var('w', '0|0|1'), var('c', '2|3'), var('r', '2..9'),
+    [var('a', '3..9'), var('w', '0|0|1'), var('c', '2|3'), var('r', '2|3|5|6|7'),
      var('b', 'eval:w*c^a+(1-w)*r')],
     [case('{{if:w==1|{{c}}|{{b}}^{\\frac{1}{ {{a}} }}}}', [
         erreur('\\frac{ {{b}} }{ {{a}} }', '$x^{ {{a}} }$ n\'est pas ${{a}}x$ : on ne divise pas '
@@ -142,7 +142,8 @@ F6 = variation(
         erreur('{{b}}^{ {{a}} }', 'Pour défaire la puissance ${{a}}$, on élève à la puissance '
                '$\\dfrac{1}{ {{a}} }$, pas à la puissance ${{a}}$.', 'b puissance a'),
         erreur('\\frac{\\log({{b}})}{ {{a}} }', '$\\dfrac{\\log({{b}})}{ {{a}} }$ est la valeur de '
-               '$\\log(x)$, pas de $x$ : il reste à calculer $x=10^{\\log(x)}$.', 'log(x) au lieu '
+               '$\\log(x)$, pas de $x$ : écris $x$ {{if:w==1|comme un entier|comme une puissance de '
+               '${{b}}$}}.', 'log(x) au lieu '
                'de x'),
     ])],
     [
@@ -180,8 +181,8 @@ SPECS_52 = [
          'Pour défaire la puissance $3$, on élève à la puissance $\\dfrac{1}{3}$, pas à la '
          'puissance $3$.'),
     spec('F6 : log(x)', 1, V_F6, 'incorrect', ['\\frac{\\log(5)}{3}'],
-         '$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : il reste à calculer '
-         '$x=10^{\\log(x)}$.'),
+         '$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : écris $x$ comme '
+         'une puissance de $5$.'),
     spec('F6 : x³ = 27 → 3', 1, V_F6E, 'correct', ['3']),
     spec('F6 : x³ = 27, b/a', 1, V_F6E, 'incorrect', ['9']),
 ]
@@ -213,10 +214,8 @@ F2 = variation(
                        var('g', 'eval:mod(floor(s/2)+(1-sign(p))/2,2)')],
     [case(intervalle('g==1', 't==1', R), [
         erreur(intervalle('g==0', 't==1', R),
-               '{{if:p<0|$' + A_DEC + '<1$, donc $\\log(' + A_DEC + ')<0$ : diviser par $\\log('
-               + A_DEC + ')$ change le sens de l\'inégalité.|$' + A_DEC + '>1$, donc $\\log('
-               + A_DEC + ')>0$ : diviser par $\\log(' + A_DEC + ')$ ne change pas le sens de '
-               'l\'inégalité.}}', 'Sens de l\'inégalité'),
+               '{{if:p<0|À la fin, on divise par ${{p}}<0$ : le sens de l\'inégalité change.|À la fin, '
+               'on divise par ${{p}}>0$ : le sens de l\'inégalité ne change pas.}}', 'Sens de l\'inégalité'),
         erreur(intervalle('g==1', 't==0', R),
                'L\'inégalité est {{if:t==1|stricte : la borne est exclue|large : la borne est '
                'incluse}}.', 'Crochet'),
@@ -234,8 +233,8 @@ F2 = variation(
         '$S=' + PRIMAIRE + '{ {{if:g==1|{{if:t==1|\\left]|\\left[}}' + R + '\\,;+\\infty\\right[|'
         '\\left]-\\infty\\,;' + R + '{{if:t==1|\\right[|\\right]}}}} }$.',
     ],
-    'Écris les deux nombres comme des puissances d\'un même entier. Quel est le signe de '
-    '$\\log(' + A_DEC + ')$ ?',
+    'Écris les deux nombres comme des puissances d\'un même entier. À la fin, par quel nombre '
+    'divises-tu, et quel est son signe ?',
     CONDITIONS_PUISSANCES,
 )
 
@@ -246,16 +245,14 @@ V_F2B = {'c': '2', 'p': '3', 'q': '2', 's': '3', 't': '0', 'g': '1'}
 SPECS_10 = [
     spec('F2 : 0,25ˣ < 32 → ]−5/2 ; +∞[', 0, V_F2, 'correct', [']-\\frac{5}{2};+\\infty[']),
     spec('F2 : sens non changé', 0, V_F2, 'incorrect', [']-\\infty;-\\frac{5}{2}['],
-         '$0.25 < 1$, donc $\\log(0.25)<0$ : diviser par $\\log(0.25)$ change le sens de '
-         'l\'inégalité.'),
+         'À la fin, on divise par $-2 < 0$ : le sens de l\'inégalité change.'),
     spec('F2 : crochet', 0, V_F2, 'incorrect', ['[-\\frac{5}{2};+\\infty['],
          'L\'inégalité est stricte : la borne est exclue.'),
     spec('F2 : borne renversée', 0, V_F2, 'incorrect', [']-\\frac{2}{5};+\\infty['],
          '$-2 x < 5$ : on divise $5$ par $-2$, pas l\'inverse.'),
     spec('F2 : 8ˣ ⩾ 4 → [2/3 ; +∞[', 0, V_F2B, 'correct', ['[\\frac{2}{3};+\\infty[']),
     spec('F2 : 8ˣ ⩾ 4, sens changé', 0, V_F2B, 'incorrect', [']-\\infty;\\frac{2}{3}]'],
-         '$8 > 1$, donc $\\log(8)>0$ : diviser par $\\log(8)$ ne change pas le sens de '
-         'l\'inégalité.'),
+         'À la fin, on divise par $3 > 0$ : le sens de l\'inégalité ne change pas.'),
     spec('F2 : 8ˣ ⩾ 4, crochet', 0, V_F2B, 'incorrect', [']\\frac{2}{3};+\\infty['],
          'L\'inégalité est large : la borne est incluse.'),
 ]
@@ -271,21 +268,21 @@ F3 = variation(
     '$\\log({{b}})$.\n\n$\\log\\left(' + FRAC_F3 + '\\right)=?\\log({{a}})+?\\log({{b}})$',
     [var('a', '2|3|5'), var('b', '2|3|5'), var('n', '2..5'), var('m', '2..5'), var('w', '0|1')],
     [case('{{n}}', [
+        erreur('{{m}}', 'Le coefficient de $\\log({{a}})$ vient du numérateur, '
+               '${{a}}^{ {{n}} }$.', 'Coefficients échangés'),
         erreur('{{eval:a^n}}', 'On demande le coefficient devant $\\log({{a}})$ : écris '
                '${{eval:a^n}}$ comme une puissance de ${{a}}$, l\'exposant donne le coefficient.',
                'Nombre au lieu de l\'exposant'),
-        erreur('{{m}}', 'Le coefficient de $\\log({{a}})$ vient du numérateur, '
-               '${{a}}^{ {{n}} }$.', 'Coefficients échangés'),
         erreur('{{eval:n-m}}', 'Chaque logarithme a son coefficient : $\\log({{a}})$ et '
                '$\\log({{b}})$ ne se regroupent pas.', 'Tout dans une case'),
     ]),
      case('{{eval:-m}}', [
          erreur('{{m}}', '$\\log\\left(\\dfrac{A}{B}\\right)=\\log(A)-\\log(B)$ : le coefficient '
                 'de $\\log({{b}})$ est négatif.', 'Signe oublié'),
-         erreur('{{eval:-b^m}}', 'On demande le coefficient devant $\\log({{b}})$ : écris '
-                '${{eval:b^m}}$ comme une puissance de ${{b}}$.', 'Nombre au lieu de l\'exposant'),
          erreur('{{eval:-n}}', 'Le coefficient de $\\log({{b}})$ vient du dénominateur, '
                 '${{b}}^{ {{m}} }$.', 'Coefficients échangés'),
+         erreur('{{eval:-b^m}}', 'On demande le coefficient devant $\\log({{b}})$ : écris '
+                '${{eval:b^m}}$ comme une puissance de ${{b}}$.', 'Nombre au lieu de l\'exposant'),
      ])],
     [
         'Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$. Pour $a>0$ '
@@ -305,7 +302,8 @@ F4 = variation(
     + coef_signe('b') + '\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)' + coef_signe('c')
     + '\\log\\left(' + puissance('m') + '\\right)$ sous la forme $k\\log(x)$.\n\n$A=?\\log(x)$',
     [var('a', '1..5;±'), var('b', '1..5;±'), var('c', '1..5;±'), var('k', '1..3'),
-     var('j', '2|3'), var('m', '1..3'), var('r', 'eval:a*k-b*j+c*m')],
+     var('j', '2|3'), var('m', '1..3'), var('r', 'eval:a*k-b*j+c*m'), var('u', 'eval:a*k'),
+     var('v', 'eval:-b*j'), var('z', 'eval:c*m')],
     [case('{{r}}', [
         erreur('{{eval:a*k+b*j+c*m}}', '$\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)=-{{j}}\\log(x)$ : '
                'ce terme change de signe.', 'log(1/x^j) compté positif'),
@@ -317,7 +315,7 @@ F4 = variation(
     [
         'Pour $x>0$ : $\\log\\left(x^n\\right)=n\\log(x)$ et $\\log\\left(\\dfrac{1}{x^n}\\right)='
         '-n\\log(x)$.',
-        '$A={{eval:a*k}}\\log(x){{eval:-b*j;+}}\\log(x){{eval:c*m;+}}\\log(x)=' + PRIMAIRE + '{'
+        '$A=' + coef('u') + '\\log(x)' + coef_signe('v') + '\\log(x)' + coef_signe('z') + '\\log(x)=' + PRIMAIRE + '{'
         + coef('r') + '\\log(x)}$.',
     ],
     '$\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)=\\log(1)-\\log\\left(x^{ {{j}} }\\right)$, et '
@@ -326,7 +324,8 @@ F4 = variation(
 )
 
 V_F3 = {'a': '2', 'b': '5', 'n': '3', 'm': '2', 'w': '0'}  # log(8/25)
-V_F4 = {'a': '2', 'b': '3', 'c': '-1', 'k': '3', 'j': '2', 'm': '1', 'r': '-1'}
+V_F4 = {'a': '2', 'b': '3', 'c': '-1', 'k': '3', 'j': '2', 'm': '1', 'r': '-1', 'u': '6', 'v': '-6',
+        'z': '-1'}
 # 2·3 − 3·2 − 1·1 = −1
 SPECS_AF = [
     spec('F3 : log(8/25) = 3 log 2 − 2 log 5', 0, V_F3, 'correct', ['3', '-2']),
@@ -432,6 +431,7 @@ F7 = variation(
         'global $CM={{eval:M;d}}$.',
         'En ${{n}}$ heure{{if:n>1|s|}}, il y a ${{N}}$ minutes : le taux moyen par minute vérifie '
         '$(1+t_m)^{ {{N}} }={{eval:M;d}}$, donc $1+t_m={{eval:M;d}}^{\\frac{1}{ {{N}} }}$.',
+        'Donc $t_m={{eval:M;d}}^{\\frac{1}{ {{N}} }}-1\\approx{{eval:round(10000*(M^(1/N)-1))/10000;d}}$.',
         'À la calculatrice : $t_m\\approx' + PRIMAIRE + '{ {{eval:' + TM + ';a2}} }~\\%$ par '
         'minute.',
     ],
@@ -486,7 +486,7 @@ F8 = variation(
         erreur('{{if:k==2|{{y}}|{{eval:-y}}}}', '{{if:k==2|$a^{ {{xA}} }={{y}}$ : l\'exposant est '
                '${{xA}}$, il faut encore défaire la puissance.|$a>0$ : la base d\'une fonction '
                '$x\\mapsto a^x$ est strictement positive.}}', '{{if:k==2|Ordonnée de A|Base négative}}'),
-        erreur('{{if:k==2|\\frac{ {{y}} }{2}|{{eval:-y}}}}', '{{if:k==2|$a^{2}$ n\'est pas $2a$ : '
+        erreur('{{if:k==2|\\frac{ {{y}} }{2}|{{eval:-y}}}}', '{{if:k==2|{{if:sg==-1|$a^{-2}=\\dfrac{1}{a^{2}}$, et |}}$a^{2}$ n\'est pas $2a$ : '
                'on prend la racine carrée, on ne divise pas par $2$.|$a>0$ : la base d\'une '
                'fonction $x\\mapsto a^x$ est strictement positive.}}',
                '{{if:k==2|Divisé par 2|Base négative}}'),
@@ -500,7 +500,7 @@ F8 = variation(
         'La fonction est $f:x\\mapsto{{if:sg==1|{{n}}^x|\\left(\\frac{1}{ {{n}} }\\right)^x}}$ : $a=' + PRIMAIRE + '{'
         + BASE_F8 + '}$.',
     ],
-    'Le point $A$ donne $f({{xA}})={{y}}$, donc $a^{ {{xA}} }={{y}}$.',
+    'Remplace $x$ par l\'abscisse de $A$ dans $f(x)=a^x$.',
     ['n^k <= 9'],
 )
 

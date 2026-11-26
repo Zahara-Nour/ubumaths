@@ -171,7 +171,7 @@
 					"expectedErrors": [
 						{
 							"answer": "{{if:g==0|{{if:t==1|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==1|[|]}}}}",
-							"message": "{{if:p<0|${{eval:c^p;d}}<1$, donc $\\log({{eval:c^p;d}})<0$ : diviser par $\\log({{eval:c^p;d}})$ change le sens de l'inégalité.|${{eval:c^p;d}}>1$, donc $\\log({{eval:c^p;d}})>0$ : diviser par $\\log({{eval:c^p;d}})$ ne change pas le sens de l'inégalité.}}",
+							"message": "{{if:p<0|À la fin, on divise par ${{p}}<0$ : le sens de l'inégalité change.|À la fin, on divise par ${{p}}>0$ : le sens de l'inégalité ne change pas.}}",
 							"label": "Sens de l'inégalité"
 						},
 						{
@@ -196,7 +196,7 @@
 					"$S=\\textcolor{{{color:primary.0}}}{ {{if:g==1|{{if:t==1|\\left]|\\left[}}{{eval:q/p}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:q/p}}{{if:t==1|\\right[|\\right]}}}} }$."
 				]
 			},
-			"hint": "Écris les deux nombres comme des puissances d'un même entier. Quel est le signe de $\\log({{eval:c^p;d}})$ ?"
+			"hint": "Écris les deux nombres comme des puissances d'un même entier. À la fin, par quel nombre divises-tu, et quel est son signe ?"
 		}
 	],
 	"testSpecs": [
@@ -361,7 +361,7 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "$0.25 < 1$, donc $\\log(0.25)<0$ : diviser par $\\log(0.25)$ change le sens de l'inégalité."
+				"expectedErrorMessage": "À la fin, on divise par $-2 < 0$ : le sens de l'inégalité change."
 			},
 			"answers": ["]-\\infty;-\\frac{5}{2}["]
 		},
@@ -428,7 +428,7 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "$8 > 1$, donc $\\log(8)>0$ : diviser par $\\log(8)$ ne change pas le sens de l'inégalité."
+				"expectedErrorMessage": "À la fin, on divise par $3 > 0$ : le sens de l'inégalité ne change pas."
 			},
 			"answers": ["]-\\infty;\\frac{2}{3}]"]
 		},

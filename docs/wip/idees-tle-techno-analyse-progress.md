@@ -2,20 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot écrit et migration générée (aucune PR encore)._
+_Mis à jour le 2026-11-26, revues faites et corrigées, PR à ouvrir._
 
-- **État** : 9 variations écrites (script `docs/wip/questions/idees-tle-techno-analyse-publies.py`,
-  relançable), 7 modèles verts (`question:specs`, `create-questions` en simulation, sonde des courbes),
-  migration `20261126193659_…_publies_contenu` + fixture générées, test d'intégration vert ; commité
-  sur la branche, pas poussé. 7 copies « [essai] » brouillons en base LOCALE (ids 00fc2afe, 11ae1464,
-  9fda9141, 2d3c6edc, 3f8670c8, 76c038a0, 7ee1d753) · **Prochaine action** : regarder les captures
-  `pnpm voir` (F8 courbe 9fda9141, F9 76c038a0) et jouer une réponse juste et une fausse, supprimer
-  les copies locales, revue `code-reviewer` (opus, correction des réponses) + `security-auditor`,
-  push, PR, merge ; `db:migrate` = David · **En attente de David** : rien · **Pièges en cours** :
-  variable `i` = imaginaire (F9 renommée `h`) ; `e1` évité (`w1`) ; `∛5` refusé par la forme (F6 :
-  la consigne demande une puissance) ; messages des specs sous leur forme réécrite (`0.25`, `2 x`) ;
-  serveur de dev arrêté (le relancer sur 5176 pour `pnpm voir`) · **Worktree / branche** :
-  `../ubumaths-wt-idees-tle-techno-analyse`, `docs/idees-tle-techno-analyse`.
+- **État** : 9 variations sur 7 modèles publiés ; essai local fait (F8, F9 : juste acceptée, fausse
+  refusée avec son message), copies « [essai] » locales supprimées ; `security-auditor` sans finding,
+  `code-reviewer` (opus) : 2 défauts de F6 et 6 mineurs corrigés ; migration régénérée
+  `20261126195520_…_publies_contenu` + fixture, `question:specs` et test d'intégration verts ·
+  **Prochaine action** : PR, CI, merge ; puis `db:migrate` = David · **En attente de David** : deux
+  mineurs non corrigés car conformes à la fiche validée (cf. journal, « revues ») · **Pièges en
+  cours** : `i` = imaginaire (F9 `h`) ; `e1` évité (`w1`) ; messages des specs sous leur forme
+  réécrite · **Worktree / branche** : `../ubumaths-wt-idees-tle-techno-analyse`,
+  `docs/idees-tle-techno-analyse`.
 
 ## Journal
 
@@ -47,3 +44,22 @@ _Mis à jour le 2026-11-26, lot écrit et migration générée (aucune PR encore
   nouvelle variation, cas rares compris (F6 entier, F8 à |x_A| = 2, F5 produit, F7 baisse) ;
   `create-questions` en simulation vert ; sonde des courbes 0 problème ;
   `test:integration tests/integration/migrations-contenu-publie.test.ts` vert (258 tests).
+
+### 2026-11-26 — essai local, revues, corrections
+
+- Essai en base locale (Playwright, compte admin fictif) : F8 `1/4` juste, `4` faux avec le message
+  « exposant négatif » ; F9 « décroissante » juste, « croissante » faux. Copies « [essai] » supprimées.
+- `security-auditor` : aucun finding (UPDATE de contenu seuls, garde passée sur les md5 de prod,
+  anciennes variations en tête). Remarque : lien claude.ai de la page à cocher dans ce journal (dépôt
+  public), comme d'autres journaux.
+- `code-reviewer` (opus), corrigé :
+  - F6 : r ∈ {2, 3, 5, 6, 7} (r = 4, 8, 9 : `\sqrt{2}` juste comptée fausse, ~11 % des tirages ; le
+    moteur ne voit pas 4^(1/4) = 2^(1/2), limite à signaler à part) ;
+  - F6 : le message « log(x) au lieu de x » n'invite plus à taper `10^{log(b)/a}` (jugé faux) ;
+  - F8 : coup de pouce qui ne donne plus a quand x_A = 1 ; message y/2 juste pour l'exposant −2 ;
+  - F3 : « coefficients échangés » avant « nombre au lieu de l'exposant » (même valeur parfois) ;
+  - F2 : message et coup de pouce parlent du signe de p, comme la correction ;
+  - F4 : plus de coefficient 1 écrit dans la correction ; F7 : étape t_m = CM^(1/N) − 1 ajoutée.
+- Non corrigé, conforme à la fiche validée, **à trancher par David** : F6, le coup de pouce « élève à
+  la puissance 1/a » donne presque la réponse ; F5, l'erreur « exposants oubliés » d'une somme vaut
+  a × c (un élève trouverait plutôt a + c).

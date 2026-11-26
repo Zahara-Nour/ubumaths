@@ -177,14 +177,14 @@
 					"expectedAnswer": "{{n}}",
 					"expectedErrors": [
 						{
-							"answer": "{{eval:a^n}}",
-							"message": "On demande le coefficient devant $\\log({{a}})$ : écris ${{eval:a^n}}$ comme une puissance de ${{a}}$, l'exposant donne le coefficient.",
-							"label": "Nombre au lieu de l'exposant"
-						},
-						{
 							"answer": "{{m}}",
 							"message": "Le coefficient de $\\log({{a}})$ vient du numérateur, ${{a}}^{ {{n}} }$.",
 							"label": "Coefficients échangés"
+						},
+						{
+							"answer": "{{eval:a^n}}",
+							"message": "On demande le coefficient devant $\\log({{a}})$ : écris ${{eval:a^n}}$ comme une puissance de ${{a}}$, l'exposant donne le coefficient.",
+							"label": "Nombre au lieu de l'exposant"
 						},
 						{
 							"answer": "{{eval:n-m}}",
@@ -202,14 +202,14 @@
 							"label": "Signe oublié"
 						},
 						{
-							"answer": "{{eval:-b^m}}",
-							"message": "On demande le coefficient devant $\\log({{b}})$ : écris ${{eval:b^m}}$ comme une puissance de ${{b}}$.",
-							"label": "Nombre au lieu de l'exposant"
-						},
-						{
 							"answer": "{{eval:-n}}",
 							"message": "Le coefficient de $\\log({{b}})$ vient du dénominateur, ${{b}}^{ {{m}} }$.",
 							"label": "Coefficients échangés"
+						},
+						{
+							"answer": "{{eval:-b^m}}",
+							"message": "On demande le coefficient devant $\\log({{b}})$ : écris ${{eval:b^m}}$ comme une puissance de ${{b}}$.",
+							"label": "Nombre au lieu de l'exposant"
 						}
 					]
 				}
@@ -252,6 +252,18 @@
 				{
 					"name": "r",
 					"expression": "eval:a*k-b*j+c*m"
+				},
+				{
+					"name": "u",
+					"expression": "eval:a*k"
+				},
+				{
+					"name": "v",
+					"expression": "eval:-b*j"
+				},
+				{
+					"name": "z",
+					"expression": "eval:c*m"
 				}
 			],
 			"conditions": ["r != 0", "r != a-b+c", "a*k+b*j+c*m != a-b+c", "a-b+c != a*k-b+c*m"],
@@ -280,7 +292,7 @@
 			"correction": {
 				"steps": [
 					"Pour $x>0$ : $\\log\\left(x^n\\right)=n\\log(x)$ et $\\log\\left(\\dfrac{1}{x^n}\\right)=-n\\log(x)$.",
-					"$A={{eval:a*k}}\\log(x){{eval:-b*j;+}}\\log(x){{eval:c*m;+}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{if:r==1||{{if:r==-1|-|{{r}}}}}}\\log(x)}$."
+					"$A={{if:u==1||{{if:u==-1|-|{{u}}}}}}\\log(x){{if:v==1|+|{{if:v==-1|-|{{v;+}}}}}}\\log(x){{if:z==1|+|{{if:z==-1|-|{{z;+}}}}}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{if:r==1||{{if:r==-1|-|{{r}}}}}}\\log(x)}$."
 				]
 			},
 			"hint": "$\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)=\\log(1)-\\log\\left(x^{ {{j}} }\\right)$, et $\\log(1)=0$."
@@ -496,7 +508,10 @@
 				"k": "3",
 				"j": "2",
 				"m": "1",
-				"r": "-1"
+				"r": "-1",
+				"u": "6",
+				"v": "-6",
+				"z": "-1"
 			},
 			"expected": {
 				"status": "correct"
@@ -513,7 +528,10 @@
 				"k": "3",
 				"j": "2",
 				"m": "1",
-				"r": "-1"
+				"r": "-1",
+				"u": "6",
+				"v": "-6",
+				"z": "-1"
 			},
 			"expected": {
 				"status": "incorrect",
@@ -531,7 +549,10 @@
 				"k": "3",
 				"j": "2",
 				"m": "1",
-				"r": "-1"
+				"r": "-1",
+				"u": "6",
+				"v": "-6",
+				"z": "-1"
 			},
 			"expected": {
 				"status": "incorrect",
@@ -549,7 +570,10 @@
 				"k": "3",
 				"j": "2",
 				"m": "1",
-				"r": "-1"
+				"r": "-1",
+				"u": "6",
+				"v": "-6",
+				"z": "-1"
 			},
 			"expected": {
 				"status": "incorrect",

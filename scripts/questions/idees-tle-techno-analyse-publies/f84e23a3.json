@@ -164,6 +164,7 @@
 				"steps": [
 					"{{if:d==0|Une hausse|Une baisse}} de ${{x}}~\\%$ correspond au coefficient multiplicateur global $CM={{eval:M;d}}$.",
 					"En ${{n}}$ heure{{if:n>1|s|}}, il y a ${{N}}$ minutes : le taux moyen par minute vérifie $(1+t_m)^{ {{N}} }={{eval:M;d}}$, donc $1+t_m={{eval:M;d}}^{\\frac{1}{ {{N}} }}$.",
+					"Donc $t_m={{eval:M;d}}^{\\frac{1}{ {{N}} }}-1\\approx{{eval:round(10000*(M^(1/N)-1))/10000;d}}$.",
 					"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(100*(100*(M^(1/N)-1)))/100;a2}} }~\\%$ par minute."
 				]
 			},
