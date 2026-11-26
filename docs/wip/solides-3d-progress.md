@@ -13,8 +13,8 @@ _Mis à jour le 2026-11-26, après #3200 et l'essai de David._
 - **Essai de David (2026-11-26, au doigt, par le lien)** : « le test est bon ». **Les noms des sommets
   qui bougent sont gênants : à corriger.** Pas encore conçu (piste : un nom garde son côté tant qu'il
   ne gêne pas ; la figure fixe et le PDF ne doivent pas changer).
-- **En attente de David** : garder ou retirer la mention « Figure à tourner » sous la figure au repos
-  (ajoutée hors phase 0). Il n'en a rien dit après l'essai : question à reposer, pas tranchée.
+- **En attente de David** : rien. Mention « Figure à tourner » sous la figure au repos : **gardée**
+  (recommandation de la session, « je suis tes recos », David, 2026-11-26).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; cylindre, cône et boule sont
   dessinés « à plat » (ellipses, pas une vraie projection) : leur vue tournée et leur contour sont à
