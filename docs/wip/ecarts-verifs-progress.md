@@ -414,3 +414,17 @@ Décision de David du 2026-11-26 (détail dans « PR W »). Rien n'est supprimé
 **Preuves** : `return-links.test.ts` (3 tests rouges puis verts), `student-inbox.test.ts` (1 rouge puis vert) ; `pnpm voir` : page « Assigner » (prof, ordi) à deux onglets, `/dashboard/student/exercises` → « Page introuvable », « Mon travail » de l'Élève 01 vide avec le seul bouton Python. Pas vu à l'écran : « Quitter » sur la page d'un exercice (`pnpm voir --compte eleve` = Élève 01, qui n'a pas d'exercice assigné) ; couvert par les tests du lien.
 
 **Revues** (affichage de données d'élèves touché) : `code-reviewer` (aucun bloquant, rien à corriger) ; `security-auditor` (aucun bloquant : la requête de « Mon travail » ne peut que rétrécir, le retour n'accepte qu'un UUID derrière un préfixe fixe, pas de redirection ouverte).
+
+## PR Y : `test.fail` de E65, E71, E72, E74, E75 retirés (2026-11-26)
+
+Cinq écarts tranchés par David le 2026-11-24 « pas de correctif » : la vérification affirme maintenant ce que David a gardé, sans `test.fail`.
+
+- **E65** (`atelier-paquet7.spec.ts`, #2641) : la ligne « Modèle : » est au-dessus du champ ; l'attendu « sous le champ » retiré.
+- **E71** (`pages-paquet7.spec.ts`, #2586) : double-clic sur « Envoyer » : un courriel, une requête, pas de message ; l'attendu « Un envoi est déjà en cours… » retiré (il reste affirmé par la vérification voisine, deux requêtes qui se croisent).
+- **E72** (`blockly-paquet7.spec.ts`, #2634) : plafond de durée de 18 s sous le WebKit de Playwright (iPhone, Safari ; ~15,5 s mesurées), 14,5 s ailleurs, inchangé. **Choisi par la session** : le 18 (une ligne à changer). Le chronométrage sur un vrai iPhone reste dans `verifications-manuelles.md`.
+- **E74** (`blockly-paquet8.spec.ts`, #2716) : `X` après `x` refusé par la boîte de Blockly ; l'attendu « message rouge sous les blocs » retiré.
+- **E75** (`blocs-geometrie-8.spec.ts`, #2829) : A, B, M et d nommés, I caché exprès ; l'attendu « I est écrit » retiré.
+
+**Preuve** : les cinq vérifications rejouées sous `ordi-chrome`, `ordi-safari` et `iphone`, 15 passages verts (serveur de dev du worktree, port 5178).
+
+**Après le merge** : barrer E65, E71, E72, E74, E75 au registre depuis main (`pnpm ecarts rejouer --barrer`, sinon à la main : preuve « à la main »).

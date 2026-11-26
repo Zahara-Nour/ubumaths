@@ -772,7 +772,7 @@ test.describe('#2586 — compteur d’envois du consentement', () => {
 			)
 		)[0].email_count;
 
-	test('#2586 — « Envoyer » à un parent : courriel reçu, compteur de l’élève + 1 ; double-clic rapide : un seul courriel (et la ligne dit un second clic « Un envoi est déjà en cours… »)', async ({
+	test('#2586 — « Envoyer » à un parent : courriel reçu, compteur de l’élève + 1 ; double-clic rapide : un seul courriel, le bouton se désactive, pas de message (E71, tranché le 2026-11-24)', async ({
 		page
 	}) => {
 		const decor = await creerEleveAConsentement();
@@ -799,9 +799,6 @@ test.describe('#2586 — compteur d’envois du consentement', () => {
 		expect(envois, 'requêtes d’envoi partantes').toEqual(['200']);
 		await expect(page.getByText(/Un envoi est déjà en cours/)).toHaveCount(0);
 		await page.screenshot({ path: `${SHOTS}/2586-${projectName()}.png` });
-		// ÉCART avec la ligne : « le second clic affiche « Un envoi est déjà en cours… » »
-		test.fail();
-		await expect(page.getByText(/Un envoi est déjà en cours/)).toBeVisible({ timeout: 2000 });
 	});
 
 	test('#2586 — deux requêtes qui se croisent (deux clics dans le même instant) : un seul courriel part, la seconde affiche « Un envoi est déjà en cours… », le compteur ne monte que d’un', async ({

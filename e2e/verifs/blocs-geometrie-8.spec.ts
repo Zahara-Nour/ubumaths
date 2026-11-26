@@ -534,18 +534,15 @@ test.describe('#2829 — « Calculer avec la médiatrice » (eadf2049) : figures
 		});
 	}
 
-	test('#2829 — figure codée : le milieu I est nommé sur le dessin (la ligne dit « d, I, angle droit, tirets »)', async ({
+	test('#2829 — figure codée : A, B, M et d sont nommés, le milieu I est caché exprès (E75, tranché le 2026-11-24)', async ({
 		page
 	}) => {
 		const card = await ouvrirCarte(page, MEDIATRICE_CALCULER_ID(), 0, 11);
 		const svg = card.locator('.flip-card-front svg.figure-svg');
 		await expect(svg).toHaveCount(1);
 		const etiquettes = await svg.locator('text').allTextContents();
-		// Symptôme : le point I est déclaré `visible=faux`, sans étiquette ; seuls A, B, M et d sont écrits
+		// Le point I est déclaré `visible=faux` dans le modèle, sans étiquette : David l'a gardé caché
 		expect(etiquettes.map((t) => t.trim()).sort()).toEqual(['A', 'B', 'M', 'd']);
-		// ÉCART à trancher par David : I n'est écrit nulle part (ni la figure, ni l'énoncé, ni la correction)
-		test.fail();
-		expect(etiquettes.map((t) => t.trim())).toContain('I');
 	});
 
 	test('#2829 — périmètre MAB : la bonne réponse (2 × MA + AB) → juste ; 9,5 → faux', async ({
