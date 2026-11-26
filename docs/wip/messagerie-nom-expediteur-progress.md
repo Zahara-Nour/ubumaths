@@ -77,3 +77,11 @@ Vérifiées dans le code et en prod pour les trois premières ; découpage et qu
 
 - Preuve rouge prise avant le fichier de migration : `tests/integration/messagerie-noms-et-classe.test.ts`, 8 rouges sur 13 (les 5 verts sont les refus « comme avant »), 13 verts avec la migration. Clients connectés, comptes sans nom complet.
 - Tests unitaires : `src/lib/utils/message-reply.test.ts`, `send.test.ts` (refus en français), `thread.test.ts` (destinataires).
+- Parcours navigateur `e2e/verifs/messagerie.spec.ts`, bloc « comptes sans nom complet » (nom complet vidé le temps du test, comme en prod) : la page « Écrire » nomme chacun ; l'élève répond depuis le fil qu'il a ouvert et le prof lui répond ; le prof écrit à une classe et l'élève ne reçoit que sa propre ligne de destinataire. 5 verts sur 5 (Chromium, serveur de dev de la branche, base locale).
+- Vu à l'écran (`pnpm voir /messages/compose --compte prof`) : rôle « (Galopin) » à la place de « (student) », 0 erreur de console. La liste des destinataires passe de 12 à 20 rem de haut.
+
+**Revues** (2026-11-26) :
+
+- `code-reviewer` : corps SQL recopiés sans régression (comparés un à un). Trois points sur la page « Écrire » en réponse, corrigés : la réponse n'est plus bloquée quand le destinataire n'est pas dans la liste des destinataires permis (élève de test, liste non chargée), le serveur décide ; un brouillon rouvert ne remplace plus le destinataire d'une réponse.
+- `security-auditor` : aucun finding bloquant. Le retrait de `get_message_details` est étanche (rôle non falsifiable, pas d'autre chemin vers les destinataires) ; droits conservés par `CREATE OR REPLACE` ; la fonction d'aide n'est appelable ni par `anon` ni par `authenticated`.
+- **Restes à inscrire au registre après le merge** (antérieurs à la branche, sauf le premier) : la liste des destinataires d'un élève ne filtre pas un compte prof de test ; `send_private_message` ne vérifie pas que l'appelant a envoyé ou reçu le message parent ; un message à une personne peut porter une étiquette de classe ; un message supprimé par son destinataire lui reste lisible par son adresse ; un destinataire en double donne un 500 ; un élève voit « Répondre » sur un message de l'admin alors que l'envoi sera refusé (403 en français).

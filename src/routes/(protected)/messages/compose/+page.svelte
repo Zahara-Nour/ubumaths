@@ -50,7 +50,9 @@
 
 	const MAX_FILES = MESSAGE_ATTACHMENT_MAX_COUNT;
 
-	// Réponse : le destinataire, tel que la liste des destinataires permis le nomme
+	// Réponse : le destinataire, tel que la liste des destinataires permis le nomme.
+	// Absent de cette liste (compte de test, liste non chargée) : la réponse part
+	// quand même, le serveur décide et répond en français.
 	const replyRecipient = $derived(
 		replyToMessageId
 			? (privateMessages.recipients.find((r) => r.user_id === selectedRecipients[0]) ?? null)
@@ -128,7 +130,10 @@
 			currentDraftId = draft.id;
 			subject = draft.subject || '';
 			content = draft.content || '';
-			selectedRecipients = draft.recipient_ids || [];
+			// Une réponse garde son destinataire, quel que soit le brouillon
+			if (!replyToMessageId) {
+				selectedRecipients = draft.recipient_ids || [];
+			}
 			isGroupMessage = draft.is_group_message || false;
 			selectedClassId = draft.class_id || undefined;
 		} catch (error) {
@@ -565,13 +570,11 @@
 											>
 										</div>
 									{:else}
-										<p class="text-sm text-muted-foreground">
-											Vous ne pouvez pas répondre à cette personne.
-										</p>
+										<p class="text-sm text-muted-foreground">L’auteur du message d’origine</p>
 									{/if}
 								</div>
 							{:else}
-								<div class="max-h-48 overflow-y-auto rounded-md border border-border bg-card p-4">
+								<div class="max-h-80 overflow-y-auto rounded-md border border-border bg-card p-4">
 									{#if privateMessages.recipients.length === 0}
 										<p class="py-4 text-center text-sm text-muted-foreground">
 											{#if privateMessages.userRole === 'student'}
@@ -711,10 +714,7 @@
 						>
 							Annuler
 						</Button>
-						<Button
-							type="submit"
-							disabled={isSending || (replyToMessageId !== null && !replyRecipient)}
-						>
+						<Button type="submit" disabled={isSending}>
 							{#if isSending}
 								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 								Envoi en cours...
