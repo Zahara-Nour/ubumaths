@@ -91,9 +91,9 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 
 ### Technologique
 
-| Rubrique | Codes | Exercices | État  | Sujet / session |
-| -------- | ----- | --------- | ----- | --------------- |
-| Analyse  | TTE   | 12        | libre |                 |
+| Rubrique | Codes | Exercices | État               | Sujet / session            |
+| -------- | ----- | --------- | ------------------ | -------------------------- |
+| Analyse  | TTE   | 12        | prise (2026-11-26) | `idees-tle-techno-analyse` |
 
 ## Sixième
 
