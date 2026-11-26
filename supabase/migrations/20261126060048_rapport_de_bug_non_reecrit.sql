@@ -28,6 +28,8 @@
 --     (api/bug-reports/[reportId]/screenshot), dont le chemin doit être rangé
 --     comme l'application le range : `<auteur>/<rapport>/<fichier>`.
 --     `screenshot_url` ne peut qu'être vidée (ce que fait la route de capture).
+--     Une capture jointe se remplace mais ne se retire pas (chemin remis à vide :
+--     refusé, aucun écran ne le fait et le fichier resterait orphelin).
 --   - Une fois le rapport pris en charge, la RLS lui refuse déjà tout (inchangé).
 --   - L'admin garde tous ses droits de traitement (policy « Admins can update all
 --     bug reports », inchangée). À la création, il est un auteur comme un autre.
@@ -138,17 +140,19 @@ BEGIN
 	END IF;
 
 	IF NEW.screenshot_url IS DISTINCT FROM OLD.screenshot_url AND NEW.screenshot_url IS NOT NULL THEN
-		RAISE EXCEPTION 'Chemin de capture non conforme'
+		RAISE EXCEPTION 'Adresse de capture non modifiable'
 			USING ERRCODE = '42501';
 	END IF;
 
 	IF NEW.screenshot_path IS DISTINCT FROM OLD.screenshot_path THEN
 		-- Rangement de l'application : <auteur>/<rapport>/<fichier>, rien d'autre
-		-- (même règle que isOwnScreenshotPath, src/lib/server/bug-report-screenshots.ts).
+		-- (règle de isOwnScreenshotPath, src/lib/server/bug-report-screenshots.ts).
+		-- Comparaison exacte, en minuscules comme `auth.uid()::text` : le stockage
+		-- distingue la casse, un dossier en majuscules n'appartiendrait à personne.
 		v_segments := string_to_array(coalesce(NEW.screenshot_path, ''), '/');
 		IF coalesce(array_length(v_segments, 1), 0) <> 3
-			OR lower(v_segments[1]) <> NEW.user_id::text
-			OR lower(v_segments[2]) <> NEW.id::text
+			OR v_segments[1] <> NEW.user_id::text
+			OR v_segments[2] <> NEW.id::text
 			OR v_segments[3] IN ('', '.', '..')
 		THEN
 			RAISE EXCEPTION 'Chemin de capture non conforme'

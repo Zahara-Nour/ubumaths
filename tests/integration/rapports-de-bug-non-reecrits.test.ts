@@ -287,6 +287,10 @@ describe('Rapports de bug — l’auteur n’écrit que ce que l’écran lui pr
 			await creationRefusee(eleveClient, eleve.id, { screenshot_path: chemin });
 		});
 
+		it('l’admin, à la création, est un auteur comme un autre', async () => {
+			await creationRefusee(adminClient, admin.id, { status: 'resolved' });
+		});
+
 		it('personne ne crée un rapport au nom d’un autre (RLS, inchangé)', async () => {
 			const { data, error } = await eleveClient
 				.from('bug_reports')
@@ -416,6 +420,7 @@ describe('Rapports de bug — l’auteur n’écrit que ce que l’écran lui pr
 			['avec un sous-dossier en trop', (u, r) => `${u}/${r}/sous/1.png`],
 			['sans nom de fichier', (u, r) => `${u}/${r}/`],
 			['sans dossier de rapport', (u) => `${u}/1.png`],
+			['au dossier écrit en majuscules', (u, r) => `${u.toUpperCase()}/${r}/1.png`],
 			['vide', () => '']
 		])('refuse un chemin de capture %s', async (_cas, chemin) => {
 			const id = await creer(eleve.id);
@@ -435,8 +440,26 @@ describe('Rapports de bug — l’auteur n’écrit que ce que l’écran lui pr
 				eleveClient,
 				id,
 				{ screenshot_url: 'https://exemple.test/image.png' },
-				'capture non conforme'
+				'Adresse de capture non modifiable'
 			);
+		});
+
+		it('ne retire pas la capture jointe (elle se remplace seulement)', async () => {
+			const id = await creer(eleve.id, { screenshot_path: `${eleve.id}/placeholder/1.png` });
+
+			await reecritureRefusee(eleveClient, id, { screenshot_path: null }, 'capture non conforme');
+		});
+
+		it('vide « résolu par » resté sur un rapport remis en attente (exception écrite)', async () => {
+			const id = await creer(eleve.id, { resolved_by: admin.id });
+
+			await modificationAcceptee(eleveClient, id, { resolved_by: null });
+		});
+
+		it('ne glisse rien derrière « résolu par » vidé', async () => {
+			const id = await creer(eleve.id, { resolved_by: admin.id });
+
+			await reecritureRefusee(eleveClient, id, { resolved_by: null, severity: 'critical' });
 		});
 	});
 
@@ -580,6 +603,26 @@ describe('Rapports de bug — l’auteur n’écrit que ce que l’écran lui pr
 			const lecture = await eleveClient.storage.from(BUCKET).download(chemin);
 			expect(lecture.error).toBeNull();
 			expect(lecture.data).not.toBeNull();
+		});
+
+		it('l’auteur remplace sa capture au même chemin, un camarade ne l’écrase pas', async () => {
+			const id = await creer(eleve.id);
+			const chemin = await deposerCapture(eleve.id, id);
+			captures.push(chemin);
+			const autreImage = new Uint8Array([...IMAGE, 0x00]);
+
+			const intrus = await camaradeClient.storage
+				.from(BUCKET)
+				.upload(chemin, autreImage, { contentType: 'image/png', upsert: true });
+			expect(intrus.error).not.toBeNull();
+
+			const remplacement = await eleveClient.storage
+				.from(BUCKET)
+				.upload(chemin, autreImage, { contentType: 'image/png', upsert: true });
+			expect(remplacement.error).toBeNull();
+
+			const { data } = await service.storage.from(BUCKET).download(chemin);
+			expect(data?.size).toBe(autreImage.length);
 		});
 
 		it('l’auteur efface sa propre capture', async () => {

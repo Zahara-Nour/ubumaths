@@ -768,6 +768,19 @@ celles de tous les élèves. `rag_documents` → `rag_chunks` : documents du pro
 `error_occurrences` (`src/lib/server/errorMonitoring.ts`), `bug_reports`, `background_job_runs`
 (tâches planifiées, lues par l'admin), `rate_limits` (`service_role` seul, via la RPC
 `check_and_increment_rate_limit` de `src/lib/server/rateLimiter.ts`), `server_cache`.
+`bug_reports` (`20261126060048`) : l'auteur d'un rapport n'écrit que ce que l'écran lui propose.
+À la création par un compte connecté, le rapport naît « en attente », daté de maintenant, sans
+capture, sans note, signature ni date de résolution : toute autre valeur est refusée par une
+erreur (`guard_bug_report_creation_trg`). Tant que le rapport est en attente, son auteur ne
+change que le titre, la description et la capture, dont le chemin doit être rangé
+`<auteur>/<rapport>/<fichier>` ; `screenshot_url` ne peut qu'être vidée ; toute autre colonne
+changée, d'aujourd'hui ou ajoutée plus tard, est refusée (`guard_bug_report_reecriture_trg`, liste
+blanche). Une fois le rapport pris en charge, la RLS refuse tout à l'auteur, en silence. L'admin
+garde tous ses droits de traitement ; le serveur (`service_role`) garde la main. Les règles du
+stockage des captures (bucket `bug-report-screenshots`, `20261126060050`) sont celles de la prod :
+l'auteur lit, dépose, remplace et efface dans son dossier `<son id>/…`, l'admin gère tout,
+personne d'autre n'y accède ; le bucket lui-même est créé par `supabase/seed.sql`.
+Preuve : `tests/integration/rapports-de-bug-non-reecrits.test.ts`.
 `web_vital_samples` (`20261121205833`) : mesures de performance des visiteurs (LCP, FCP, TTFB, INP,
 CLS), **anonymes** : heure arrondie à l'heure, identifiant de ligne tiré au hasard (pas de
 compteur, qui garderait l'ordre des envois), page sous la forme de son identifiant de route
