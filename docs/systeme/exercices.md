@@ -84,9 +84,9 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   de la ligne. Elles s'accordent sur l'élève désigné et la classe, pas sur `public` (cette
   surcharge dit oui, la lecture reste fermée : décision de David du 2026-11-26). L'onglet
   « Rendre public » de la page d'affectation est retiré : la page n'assigne plus qu'à des élèves
-  ou à des classes ; une ancienne affectation `public` reste listée et supprimable. L'envoi
-  groupé de l'API n'accepte plus `make_public` (retiré le 2026-11-26) ; l'envoi d'une seule
-  affectation accepte encore `assigned_to_type: 'public'`, sans appelant.
+  ou à des classes ; une ancienne affectation `public` reste listée et supprimable. L'API ne
+  crée plus d'affectation `public` (retiré le 2026-11-26) : ni `make_public` dans l'envoi groupé,
+  ni `assigned_to_type: 'public'` dans l'envoi d'une seule affectation (400).
   ⚠️ La fonction a deux surcharges, que le générateur de types saute : l'appel passe par
   `callExerciseAccess` (`exercise-assignments.ts`), seul contournement de typage du module.
 - **Maîtrise** : l'élève lit et écrit ses lignes ; le prof (et l'admin) **lit** celles des élèves

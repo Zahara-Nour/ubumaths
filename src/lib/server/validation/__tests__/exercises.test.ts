@@ -352,13 +352,9 @@ describe('exercise validation schemas', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept public assignment', () => {
-			const data = {
-				assigned_to_type: 'public'
-			};
-
-			const result = singleAssignSchema.safeParse(data);
-			expect(result.success).toBe(true);
+		it('refuse une affectation « public »', () => {
+			const result = singleAssignSchema.safeParse({ assigned_to_type: 'public' });
+			expect(result.success).toBe(false);
 		});
 
 		it('should reject student assignment without student_id', () => {

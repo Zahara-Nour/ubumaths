@@ -279,6 +279,27 @@ describe('POST /api/exercises/[id]/assign', () => {
 		}
 	);
 
+	it('refuse une affectation « public » envoyée seule (400, rien d’écrit)', async () => {
+		const { POST } = await import('../[id]/assign/+server');
+
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
+
+		// Profil du professeur (lu par requireRole)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { role: 'teacher' },
+			error: null
+		});
+
+		const request = createMockRequest({ assigned_to_type: 'public' });
+
+		await expect(
+			POST({ request, params: { id: mockExerciseId }, locals } as any)
+		).rejects.toMatchObject({ status: 400 });
+		expect(mockSupabase.from).not.toHaveBeenCalledWith('exercise_assignments');
+		expect(mockSupabase.from).not.toHaveBeenCalledWith('exercises');
+	});
+
 	it('refuse « make_public » seul : ce n’est plus une cible d’affectation', async () => {
 		const { POST } = await import('../[id]/assign/+server');
 

@@ -199,7 +199,8 @@ describe('createExerciseAssignment', () => {
 	it('should reject assignment when exercise not found', async () => {
 		const assignmentData: CreateExerciseAssignment = {
 			exercise_id: 'non-existent-id',
-			assigned_to_type: 'public'
+			assigned_to_type: 'class',
+			class_id: mockClassId
 		};
 
 		// Mock exercise not found
@@ -256,29 +257,11 @@ describe('createExerciseAssignment', () => {
 		expect(result.data?.student_id).toBeNull();
 	});
 
-	it('should create public assignment', async () => {
-		const assignmentData: CreateExerciseAssignment = {
+	it('refuse une affectation « public » sans rien écrire', async () => {
+		const assignmentData = {
 			exercise_id: mockExerciseId,
 			assigned_to_type: 'public'
-		};
-
-		// Mock ownership check
-		supabase._mockChain.single.mockResolvedValueOnce({
-			data: mockExercise,
-			error: null
-		});
-
-		// Mock creation
-		const publicAssignment = {
-			...mockAssignment,
-			assigned_to_type: 'public',
-			student_id: null,
-			class_id: null
-		};
-		supabase._mockChain.single.mockResolvedValueOnce({
-			data: publicAssignment,
-			error: null
-		});
+		} as unknown as CreateExerciseAssignment;
 
 		const result = await assignments.createExerciseAssignment(
 			supabase,
@@ -286,10 +269,9 @@ describe('createExerciseAssignment', () => {
 			mockTeacherId
 		);
 
-		expect(result.error).toBeNull();
-		expect(result.data?.assigned_to_type).toBe('public');
-		expect(result.data?.student_id).toBeNull();
-		expect(result.data?.class_id).toBeNull();
+		expect(result.data).toBeNull();
+		expect(result.error).toBe('assignment target must be a student or a class');
+		expect(supabase.from).not.toHaveBeenCalled();
 	});
 });
 
@@ -1077,37 +1059,15 @@ describe('validateAssignmentData', () => {
 		expect(result.error).toBe('class_id required for class assignment');
 	});
 
-	it('should validate public assignment without target IDs', () => {
-		const data: CreateExerciseAssignment = {
+	it('refuse une affectation « public »', () => {
+		const data = {
 			exercise_id: 'ex-123',
 			assigned_to_type: 'public'
-		};
-
-		const result = validateAssignmentData(data);
-		expect(result.valid).toBe(true);
-	});
-
-	it('should reject public assignment with student_id', () => {
-		const data: CreateExerciseAssignment = {
-			exercise_id: 'ex-123',
-			assigned_to_type: 'public',
-			student_id: 'student-456'
-		};
+		} as unknown as CreateExerciseAssignment;
 
 		const result = validateAssignmentData(data);
 		expect(result.valid).toBe(false);
-		expect(result.error).toBe('public assignment cannot have student_id or class_id');
-	});
-
-	it('should reject public assignment with class_id', () => {
-		const data: CreateExerciseAssignment = {
-			exercise_id: 'ex-123',
-			assigned_to_type: 'public',
-			class_id: 'class-abc'
-		};
-
-		const result = validateAssignmentData(data);
-		expect(result.valid).toBe(false);
+		expect(result.error).toBe('assignment target must be a student or a class');
 	});
 });
 

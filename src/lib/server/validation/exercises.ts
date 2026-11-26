@@ -438,7 +438,8 @@ export const bulkAssignSchema = z
  */
 export const singleAssignSchema = z
 	.object({
-		assigned_to_type: z.enum(['student', 'class', 'public'], {
+		// « public » n'est plus une cible : on n'assigne qu'à un élève ou à une classe.
+		assigned_to_type: z.enum(['student', 'class'], {
 			message: 'Type d’affectation invalide'
 		}),
 		student_id: z.string().uuid('Identifiant d’élève invalide').optional(),
@@ -449,8 +450,7 @@ export const singleAssignSchema = z
 	.refine(
 		(data) => {
 			if (data.assigned_to_type === 'student') return !!data.student_id;
-			if (data.assigned_to_type === 'class') return !!data.class_id;
-			return true; // public doesn't need student_id or class_id
+			return !!data.class_id;
 		},
 		{
 			message:

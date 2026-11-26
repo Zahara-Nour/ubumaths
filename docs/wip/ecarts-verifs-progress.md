@@ -460,3 +460,13 @@ Cinq écarts tranchés par David le 2026-11-24 « pas de correctif » : la véri
 **Preuves** : `{ make_public: true }` seul était accepté (l'ancien test l'affirmait) ; il est refusé par le schéma et la route répond 400 sans rien écrire ; avec des élèves, la clé est retirée des données validées. Tests ciblés : 140 verts ; `pnpm check:incremental` : 0 erreur.
 
 **Revues (2026-11-26)** : `code-reviewer` : rien de bloquant ni à corriger (aucun appelant restant, bords des coupes relus). `security-auditor` : rien de bloquant, aucun accès ouvert ; un élève ne peut pas créer d'affectation `public` (rôle exigé par la route, policies d'insertion lues en prod) ; `exercise_assignments` : 0 ligne en prod, `public` comprise. Un défaut antérieur de la route `POST /api/exercises/[id]/assign` corrigé ici : un corps `null`, un tableau, une chaîne ou un JSON illisible plantait (500) à l'aiguillage fait avant la validation ; réponse 400 maintenant (3 tests). Noté sans y toucher : la surcharge à deux arguments de `student_has_exercise_access` dit encore oui pour `public` alors que la lecture reste fermée (déjà écrit dans `docs/systeme/exercices.md`).
+
+## PR AB : plus d'affectation « public » créée par l'envoi d'une seule affectation (2026-11-26)
+
+**Validé par David le 2026-11-26** (« je te suis », sur la reco posée après #3182) : retirer la dernière voie qui créait une affectation `public`, dans une PR à part.
+
+**Fait** : `singleAssignSchema` n'accepte plus que `student` et `class` (la route `POST /api/exercises/[id]/assign` répond 400) ; le type `CreateExerciseAssignment` exclut `public` ; `validateAssignmentData` refuse toute cible autre qu'un élève ou une classe, donc `createExerciseAssignment` aussi, avant toute lecture en base.
+
+**Pas touché** : la lecture et la suppression d'une ancienne affectation `public` (filtre `type=public` de la liste, `AssignmentTargetType`, « Public » à l'affichage) ; la base (valeur `public` de la colonne, règles d'accès) : aucune migration ; la surcharge à deux arguments de `student_has_exercise_access` (tranchée le 2026-11-26).
+
+**Preuves** : les anciens tests affirmaient que `public` était accepté (schéma, fonction serveur) ; ils sont remplacés par le refus, au schéma, dans la fonction serveur (rien de lu ni d'écrit) et à la route (400). Tests ciblés : 142 verts ; `pnpm check:incremental` : 0 erreur.
