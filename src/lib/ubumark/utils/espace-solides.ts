@@ -26,12 +26,25 @@
  * `SOLIDE_SIZE` cm sur son plus grand côté. Repère : y vers le BAS (SVG), une
  * unité = 1 cm, étiquettes comprises dans la boîte.
  *
+ * Figure que l'on peut tourner (`tourner: oui`, chantier `solides-3d`, lot 2,
+ * ADR 0045) : `buildSolideScene(spec, vue)` dessine le polyèdre vu de `vue`,
+ * dans un cadre FIXE — même échelle que le dessin fixe, centre du solide au
+ * milieu d'un carré qui contient la figure sous tous les angles (la page ne
+ * bouge pas quand la figure tourne). À la vue de départ, c'est le dessin fixe,
+ * déplacé en bloc. Sans `vue` : le dessin fixe, celui du PDF.
+ *
  * @module ubumark/utils/espace-solides
  */
 
 import type { SolideForm, SolidePoint, SolideSpec } from '../types/espace';
 import { ESPACE_STROKE, type EspacePoint } from './espace-scene';
-import { VUE_DE_DEPART, hiddenEdges, vueProjection, type Point3 } from './espace-vue';
+import {
+	VUE_DE_DEPART,
+	hiddenEdges,
+	vueProjection,
+	type EspaceVue,
+	type Point3
+} from './espace-vue';
 
 export type { Point3 } from './espace-vue';
 
@@ -198,6 +211,13 @@ const NAME_PLACES: { gap: number; turn: number }[] = [
 ].flatMap((turns) =>
 	[1, 1.35].flatMap((gap) => turns.map((k) => ({ gap, turn: (k * Math.PI) / 8 })))
 );
+
+/**
+ * Marge du cadre d'une figure que l'on peut tourner, autour du plus grand
+ * cercle que parcourt un point du solide, en cm : la place du nom d'un sommet
+ * (au plus loin `LABEL_GAP` × 1,35, plus sa demi-boîte)
+ */
+const TURN_PAD = 0.75;
 
 /** Distance d'une cote à son trait, en cm */
 const COTE_GAP = 0.14;
@@ -453,6 +473,14 @@ interface Draft {
 	points: EspacePoint[];
 }
 
+/** Un polyèdre vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
+interface TurnedDraft extends Draft {
+	/** Le centre du solide, projeté (repère de calcul) */
+	pivot: EspacePoint;
+	/** Distance, dans l'espace, du centre au point nommable le plus éloigné */
+	reach: number;
+}
+
 const segment = (a: EspacePoint, b: EspacePoint, dashed: boolean): SolideLine => ({
 	points: [a, b],
 	dashed,
@@ -463,11 +491,12 @@ const middle = (a: EspacePoint, b: EspacePoint): EspacePoint => ({
 	y: (a.y + b.y) / 2
 });
 
-function polyhedronDraft(spec: SolideSpec): Draft {
+function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): TurnedDraft {
 	const topology = solideTopology(spec.form);
 	const points3 = polyhedronVertices(spec.form, spec.dims);
-	// Vue de départ : la cavalière (le moteur de vue saura aussi tourner la figure, ADR 0045)
-	const view = vueProjection(VUE_DE_DEPART, centroid(points3));
+	// Vue de départ : la cavalière ; une figure que l'on peut tourner : la vue du moment (ADR 0045)
+	const center3 = centroid(points3);
+	const view = vueProjection(vue, center3);
 	const project = view.project;
 	const vertices = points3.map(project);
 	const hiddenEdge = hiddenEdges(points3, topology.faces, topology.edges, view);
@@ -543,10 +572,13 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 		}
 	}
 	const { section, sectionLabels } = boxSection(spec, topology, points3, lines, cotes, project);
-	const points = solidePoints3(spec.form, spec.dims, spec.points)
-		.slice(points3.length)
-		.map(project);
+	const named3 = solidePoints3(spec.form, spec.dims, spec.points);
+	const points = named3.slice(points3.length).map(project);
 	return {
+		pivot: project(center3),
+		reach: Math.max(
+			...named3.map((p) => Math.hypot(p.x - center3.x, p.y - center3.y, p.z - center3.z))
+		),
 		lines,
 		fills,
 		vertices,
@@ -825,10 +857,11 @@ function arrowOf(
 	size: { length: number; halfWidth: number },
 	small: boolean
 ): SolideArrow {
-	const length = Math.hypot(to.x - from.x, to.y - from.y);
+	// Vecteur vu par le bout (figure tournée) : réduit à un point, sans direction
+	const length = Math.hypot(to.x - from.x, to.y - from.y) || 1;
 	const ux = (to.x - from.x) / length;
 	const uy = (to.y - from.y) / length;
-	const head = Math.min(size.length, length / 2);
+	const head = Math.min(size.length, Math.hypot(to.x - from.x, to.y - from.y) / 2);
 	const base = { x: to.x - ux * head, y: to.y - uy * head };
 	return {
 		shaft: [from, base],
@@ -939,18 +972,33 @@ function leaderCote(
 	return options.find(clear) ?? options[0];
 }
 
-/** Le dessin d'un solide */
-export function buildSolideScene(spec: SolideSpec): SolideScene {
-	const draft = solideTopology(spec.form).curved ? roundDraft(spec) : polyhedronDraft(spec);
+/**
+ * Le dessin d'un solide. `vue` : figure que l'on peut tourner (polyèdres), vue
+ * de là, dans son cadre fixe ; absente (ou solide rond) : le dessin fixe.
+ */
+export function buildSolideScene(spec: SolideSpec, vue?: EspaceVue): SolideScene {
+	const curved = solideTopology(spec.form).curved;
+	// Le dessin fixe donne l'échelle, que la figure tournée garde
+	const polyhedron = curved ? null : polyhedronDraft(spec);
+	const fixed = polyhedron ?? roundDraft(spec);
+	const turned = vue === undefined || polyhedron === null ? null : polyhedronDraft(spec, vue);
+	const draft = turned ?? fixed;
 
 	// Mise à l'échelle (plus grand côté : SOLIDE_SIZE) et passage en y vers le bas
-	const geometry = bounds([...draft.lines.flatMap((l) => l.points), ...draft.vertices]);
+	const geometry = bounds([...fixed.lines.flatMap((l) => l.points), ...fixed.vertices]);
 	const scale =
 		SOLIDE_SIZE / Math.max(geometry.maxX - geometry.minX, geometry.maxY - geometry.minY);
-	const toScreen = (p: EspacePoint): EspacePoint => ({
-		x: (p.x - geometry.minX) * scale,
-		y: (geometry.maxY - p.y) * scale
-	});
+	// Figure tournée : repérée depuis le centre du solide, qui ne bouge pas
+	const toScreen =
+		turned === null
+			? (p: EspacePoint): EspacePoint => ({
+					x: (p.x - geometry.minX) * scale,
+					y: (geometry.maxY - p.y) * scale
+				})
+			: (p: EspacePoint): EspacePoint => ({
+					x: (p.x - turned.pivot.x) * scale,
+					y: (turned.pivot.y - p.y) * scale
+				});
 	const lines = draft.lines.map((l) => ({ ...l, points: l.points.map(toScreen) }));
 	const fills = draft.fills.map((f) => f.map(toScreen));
 	const section = draft.section?.map(toScreen) ?? null;
@@ -1087,7 +1135,11 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		const to = named[vector.to];
 		if (vector.name === null) continue;
 		const length = Math.hypot(to.x - from.x, to.y - from.y);
-		let normal = { x: -(to.y - from.y) / length, y: (to.x - from.x) / length };
+		// Vu par le bout (figure tournée) : pas de direction, le nom se pose au-dessus
+		let normal =
+			length < 1e-9
+				? { x: 0, y: -1 }
+				: { x: -(to.y - from.y) / length, y: (to.x - from.x) / length };
 		const mid = middle(from, to);
 		if (normal.x * (mid.x - middleOfDrawing.x) + normal.y * (mid.y - middleOfDrawing.y) < 0) {
 			normal = { x: -normal.x, y: -normal.y };
@@ -1114,14 +1166,26 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		);
 	}
 
-	// Cadrage : tout dans la boîte, étiquettes comprises
-	const all = bounds([
+	// Cadrage : tout dans la boîte, étiquettes comprises ; figure tournée : un carré
+	// fixe autour du centre du solide, où elle tient sous tous les angles
+	const drawn = [
 		...lines.flatMap((l) => l.points),
 		...vertices,
 		...points,
 		...labels.flatMap(labelBox),
 		...arrows.flatMap((a) => [...a.shaft, ...a.head])
-	]);
+	];
+	let all = bounds(drawn);
+	if (turned !== null && polyhedron !== null) {
+		// Au repos (cavalière), les fuyantes peuvent dépasser ce cercle
+		const restReach = Math.max(
+			...[...polyhedron.vertices, ...polyhedron.points].map((p) =>
+				Math.max(Math.abs(p.x - polyhedron.pivot.x), Math.abs(p.y - polyhedron.pivot.y))
+			)
+		);
+		const half = Math.max(turned.reach, restReach) * scale + TURN_PAD;
+		all = { minX: -half, maxX: half, minY: -half, maxY: half };
+	}
 	const shift = (p: EspacePoint): EspacePoint => ({ x: p.x - all.minX, y: p.y - all.minY });
 	const order = (l: SolideLine) => (l.thick ? 2 : l.dashed ? 0 : 1);
 	return {
@@ -1152,6 +1216,7 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
  */
 export function solideLabel(spec: SolideSpec): string {
 	const parts = ['Solide en perspective cavalière'];
+	const turnable = spec.rotate ? ['figure que l’on peut tourner'] : [];
 	for (const mark of spec.marks) {
 		parts.push(`${mark.label} ${mark.kind === 'sommet' ? 'marqué' : 'marquée'}`);
 	}
@@ -1177,5 +1242,5 @@ export function solideLabel(spec: SolideSpec): string {
 			parts.push(`plan à ${frenchNumber(cut.distance)}${unit}`);
 		}
 	}
-	return parts.join(', ');
+	return [...parts, ...turnable].join(', ');
 }

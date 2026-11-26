@@ -114,3 +114,32 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   CI (cosinus de la machine, code non touché). Instantanés arrondis au milliardième de centimètre ;
   l'identité exacte avec l'ancien code a été vérifiée en local avant l'arrondi. À retenir pour les
   lots suivants : jamais d'instantané de flottants bruts.
+
+## 6. Lot 2 — `tourner: oui` sur les polyèdres (2026-11-26)
+
+- **Clé** `tourner: oui | non` du bloc ` ```solide ` (`SolideSpec.rotate`). Prise en charge : cube, pavé,
+  prisme, pyramide, avec sommets, `points:`, `vecteurs:`, `marquer:`, `cachees:`. Pas encore : cylindre, cône,
+  boule (lot 3), `section:` et `cotes:` (lot 4), `tracer:` (lot 5).
+- **Comportements 14 et 15** (figure fixe pour l'élève, message pour l'auteur) : une ligne `tourner:` qu'on
+  ne peut pas suivre ne met **pas** le bloc en erreur. La phrase va dans `EspaceNode.rotationErrors`, à part
+  de `errors` : tout ce qui lit `errors` (PDF, cases à geste, corrigé) continue de dessiner la figure, fixe.
+  L'auteur lit la phrase au-dessus de la figure (`SolideRotationNote.svelte`).
+- **Scène** : `buildSolideScene(spec, vue)`. Cadre du dessin tourné : échelle du dessin fixe, centre du solide
+  au milieu d'un carré fixe où la figure tient sous tous les angles (le pavé 4 × 2 × 3 passe de 4,8 cm à
+  6,1 cm de large, le cube à 6,6 cm, la pyramide carrée 4 × 5 à 7,1 cm ; sur un écran plus étroit la figure
+  rétrécit en bloc) ; la place est réservée dès le repos, la page ne bouge pas. À la vue de départ : le dessin
+  fixe, déplacé en bloc (prouvé sur les 8 formes). Noms des sommets : même placement que le dessin fixe, à
+  chaque angle (ils peuvent sauter d'un côté à l'autre d'un sommet pendant la rotation ; vus de dessus, les
+  noms de deux sommets superposés se chevauchent).
+- **Écran** (`Solide.svelte`) : glisser (seuil 4 px, la page ne défile pas sous le doigt), flèches du clavier
+  (15°), Échap et bouton « Vue de départ », passage cavalière → vue droite en 250 ms, retour en 350 ms,
+  immédiats si l'appareil demande moins d'animations. La vue est attachée au texte du bloc : un autre bloc
+  repart de la vue de départ.
+- **Ajout hors phase 0** : sous la figure au repos, la mention « Figure à tourner » (avec une icône), à la
+  place que prendra le bouton — sans elle, rien ne dit à l'élève que la figure tourne. À retirer si David
+  n'en veut pas.
+- Vu à l'écran par la session (captures Chromium du composant, pavé, pyramide et prisme sous cinq angles) :
+  tirets recalculés, face teintée, arête épaisse, flèches et noms qui suivent, bouton à la place de la
+  mention sans déplacer la suite. **Pas vu** : le geste du doigt sur un vrai téléphone (défilement de la
+  page bloqué sur la figure, fluidité).
+- Catalogue (`block-catalog/solide.ts` : réglage et exemple), doc `docs/systeme/ubumark.md`.
