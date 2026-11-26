@@ -17,7 +17,7 @@ const MESSAGE_MAX_DEPTH = 20;
 const NODE_TYPE_MAX_LENGTH = 50;
 
 /** Blocs qui, vides, ne montrent rien : à eux seuls ils ne font pas un message. */
-const BLANK_LEAF_TYPES = new Set(['paragraph', 'heading', 'hardBreak', 'text']);
+const BLANK_LEAF_TYPES = new Set(['paragraph', 'heading', 'hardBreak', 'text', 'codeBlock']);
 
 interface DocumentMeasure {
 	/** Caractères de texte */
@@ -68,8 +68,16 @@ export function messageDocumentProblem(value: unknown): string | null {
 	}
 	const measure = measureNode(value, 0);
 	if (!measure) return 'Message illisible';
-	if (JSON.stringify(value).length > MESSAGE_MAX_JSON_LENGTH || measure.chars > MESSAGE_MAX_CHARS) {
-		return 'Message trop long (10 000 caractères au plus)';
+	if (measure.chars > MESSAGE_MAX_CHARS) return 'Message trop long (10 000 caractères au plus)';
+	let weight: number;
+	try {
+		weight = JSON.stringify(value).length;
+	} catch {
+		// Attributs emboîtés au point de faire lever l'écriture en JSON
+		return 'Message illisible';
+	}
+	if (weight > MESSAGE_MAX_JSON_LENGTH) {
+		return 'Message trop lourd : allégez la mise en forme ou retirez une image';
 	}
 	if (!measure.visible) return 'Le message est vide';
 	return null;

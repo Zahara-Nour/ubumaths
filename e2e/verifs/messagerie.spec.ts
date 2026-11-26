@@ -21,6 +21,8 @@ import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
 const STUDENT = { email: 'eleve01@local.test', password: 'local-eleve' };
 const SUBJECT_PREFIX = 'Vérif messagerie';
 const SUBJECT = `${SUBJECT_PREFIX} ${Date.now()}`;
+const DRAFT_SUBJECT = `${SUBJECT_PREFIX} brouillon ${Date.now()}`;
+const DRAFT_TEXT = 'Je termine ce message plus tard.';
 const QUESTION = 'Bonjour, je n’ai pas compris l’exercice 3.';
 const ANSWER = 'On le reprend ensemble lundi.';
 
@@ -35,6 +37,7 @@ test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale s
 
 async function eraseTestMessages(): Promise<void> {
 	await sql(`delete from private_messages where subject like $1`, [`%${SUBJECT_PREFIX}%`]);
+	await sql(`delete from message_drafts where subject like $1`, [`%${SUBJECT_PREFIX}%`]);
 }
 
 test.beforeAll(async () => {
@@ -56,13 +59,22 @@ async function pageFor(
 	return page;
 }
 
-/** Écrit dans l'éditeur riche de la page d'écriture, puis envoie */
-async function writeAndSend(page: Page, text: string): Promise<void> {
+/** Écrit dans l'éditeur riche de la page d'écriture */
+async function write(page: Page, text: string): Promise<void> {
 	const editor = page.locator('.ProseMirror').first();
 	await editor.click();
 	await page.keyboard.type(text);
 	await expect(editor).toContainText(text);
+}
 
+/** Écrit dans l'éditeur riche de la page d'écriture, puis envoie */
+async function writeAndSend(page: Page, text: string): Promise<void> {
+	await write(page, text);
+	await send(page);
+}
+
+/** Envoie le message de la page d'écriture : le serveur l'accepte, la page passe aux envoyés */
+async function send(page: Page): Promise<void> {
 	const sent = page.waitForResponse((r) => r.url().includes('/api/messages/send'));
 	await page.getByRole('button', { name: 'Envoyer' }).click();
 	expect((await sent).status(), 'réponse de /api/messages/send').toBe(200);
@@ -104,6 +116,37 @@ test('V130 : l’élève écrit au prof, le prof répond, l’élève lit la ré
 	// 4. L'élève lit la réponse
 	await openFromInbox(student, SUBJECT);
 	await expect(student.getByText(ANSWER)).toBeVisible();
+
+	await student.context().close();
+	await teacher.context().close();
+});
+
+test('V130 : un brouillon repris part sans y toucher, et le prof le lit sans balises', async ({
+	browser
+}) => {
+	// 1. L'élève enregistre un brouillon
+	const student = await pageFor(browser, STUDENT);
+	await student.goto('/messages/compose');
+	await student.getByRole('checkbox').first().check();
+	await student.locator('#subject').fill(DRAFT_SUBJECT);
+	await write(student, DRAFT_TEXT);
+	const saved = student.waitForResponse(
+		(r) => r.url().includes('/api/messages/drafts') && r.request().method() === 'POST'
+	);
+	await student.getByRole('button', { name: 'Enregistrer brouillon' }).click();
+	const { draft } = (await (await saved).json()) as { draft: { id: string } };
+
+	// 2. Il le reprend et l'envoie sans toucher à l'éditeur
+	await student.goto(`/messages/compose?draftId=${draft.id}`);
+	await expect(student.locator('.ProseMirror').first()).toContainText(DRAFT_TEXT);
+	await expect(student.getByRole('checkbox').first()).toBeChecked();
+	await send(student);
+
+	// 3. Le prof lit le texte, pas le HTML du brouillon
+	const teacher = await pageFor(browser, TEACHER);
+	await openFromInbox(teacher, DRAFT_SUBJECT);
+	await expect(teacher.getByText(DRAFT_TEXT)).toBeVisible();
+	await expect(teacher.getByText('<p>')).toHaveCount(0);
 
 	await student.context().close();
 	await teacher.context().close();

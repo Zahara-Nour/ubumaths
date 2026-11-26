@@ -127,6 +127,7 @@ describe('POST /api/messages/send', () => {
 	it.each([
 		['sans bloc', { type: 'doc', content: [] }],
 		['fait d’un paragraphe vide', { type: 'doc', content: [{ type: 'paragraph' }] }],
+		['fait d’un bloc de code vide', { type: 'doc', content: [{ type: 'codeBlock' }] }],
 		['fait d’espaces', doc('   ')]
 	])('refuse un message vide (%s)', async (_label, content) => {
 		const { promise, rpcSpy } = call(pageBody(content));
@@ -156,7 +157,7 @@ describe('POST /api/messages/send', () => {
 
 		expect(await refusal(promise)).toEqual({
 			status: 400,
-			message: 'Message trop long (10 000 caractères au plus)'
+			message: 'Message trop lourd : allégez la mise en forme ou retirez une image'
 		});
 		expect(rpcSpy).not.toHaveBeenCalled();
 	});

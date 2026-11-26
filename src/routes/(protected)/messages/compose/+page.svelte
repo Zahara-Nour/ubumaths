@@ -211,6 +211,12 @@
 			return;
 		}
 
+		// Le serveur attend le document de l'éditeur, jamais le HTML du brouillon
+		if (!contentJson) {
+			toaster.error('Le message n’a pas pu être préparé. Modifiez-le puis réessayez.');
+			return;
+		}
+
 		try {
 			isSending = true;
 
@@ -218,10 +224,7 @@
 			const messageId = await privateMessages.sendMessage({
 				recipientIds: isGroupMessage ? undefined : selectedRecipients,
 				subject: subject.trim(),
-				content: contentJson || {
-					type: 'doc',
-					content: [{ type: 'paragraph', content: [{ type: 'text', text: content }] }]
-				},
+				content: contentJson,
 				isGroupMessage,
 				classId: isGroupMessage ? selectedClassId! : undefined,
 				parentMessageId: replyToMessageId || undefined
