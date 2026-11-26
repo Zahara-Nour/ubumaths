@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3179 (lot mergé)._
+_Mis à jour le 2026-11-26, brouillons créés en prod par David, ids commités._
 
-- **État** : #3179 mergée : 5 modèles neufs + variations de e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d sur `main` (177 specs vertes, prix en €). Rien écrit en prod. Worktree retiré.
-- **Prochaine action** : David lance en prod `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-proportionnalite-neufs --publier` ; nouveau worktree, ids commités ; niveaux relevés en prod ; migrations de rangement (neufs) et de contenu (4 publiés) générées, F4 (06df72fd) à la main ; `security-auditor`.
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
-- **Pièges en cours** : F4 = migration à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 4 publiés y portent déjà les variations ajoutées (PATCH local), les 5 neufs y sont en brouillon.
-- **Worktree / branche** : aucun (à recréer depuis `origin/main` pour la suite).
+- **État** : 5 neufs en brouillon en prod (vérifié par MCP : 6e, niveaux 4, 5, 6, 8, 9), ids commités sur `feat/idees-6e-proportionnalite-rangement` (poussée, pas de PR). Masse du père (N5 v2) validée par David.
+- **Prochaine action** : dans ce worktree, relever les niveaux en prod ; champ `rangement` → `migration-rangement.ts --dir scripts/questions/idees-6e-proportionnalite-neufs` ; `migration-contenu.ts --dir scripts/questions/idees-6e-proportionnalite-publies` (4 publiés, pas 06df72fd) ; F4 (06df72fd : niveau 6 + point 6-190) à la main ; question d'accès : personne ne gagne d'accès (rangement, variations) ; `security-auditor` ; PR ; `db:migrate` selon les 4 conditions (`migration list --linked` d'abord).
+- **En attente de David** : rien.
+- **Pièges en cours** : F4 = migration à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 4 publiés y portent déjà les variations (PATCH local), les 5 neufs y sont en brouillon sous d'autres ids.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite-rangement` (`feat/idees-6e-proportionnalite-rangement`).
 
 ## Journal
 
@@ -148,3 +148,4 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - Retouche 4 : N5 v1, piège « valeur × nouvelle quantité » pour les prix et l'imprimante seulement ; ailleurs, la nouvelle quantité ajoutée (variable `z` : une grandeur `[€]` ne simplifie pas `min`/`abs`).
 - Retouche 5 : N4 relier, une série parmi cinq (éléphant, lettre, camion, récréation, vacances, marathon, crayon, cuillère…), une unité par sorte de grandeur dans chaque série.
 - Essai local : `create-questions --publier` en base locale (ids restaurés), variations des 4 publiés posées par PATCH local ; `pnpm voir` des aperçus N5 et N2 : rendu juste (« 13,30 € »), 0 erreur de console. Réponses justes et fausses jugées par les specs (même juge), pas rejouées à la main.
+- #3179 mergée le 2026-11-26. David valide « masse du père » (« je te suis »), puis lance `create-questions --publier` en prod : 5 brouillons (N1 3cfccd63, N2 057a1424, N3 33d2cad7, N4 376e7768, N5 5600e665), ids commités sur `feat/idees-6e-proportionnalite-rangement`.
