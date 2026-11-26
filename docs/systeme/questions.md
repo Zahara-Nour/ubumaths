@@ -5,6 +5,7 @@ couvre:
   - src/lib/validation/series.ts
   - src/lib/srs/generator.ts
   - src/lib/utils/answer-validator.ts
+  - src/lib/utils/grade-badge.ts
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
