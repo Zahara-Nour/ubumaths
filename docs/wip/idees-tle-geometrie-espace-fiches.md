@@ -1,7 +1,7 @@
 # Fiches de la phase 0 « géométrie dans l'espace » de Terminale (2026-11-26)
 
 Chantier [`idees-tle-geometrie-espace`](idees-tle-geometrie-espace-progress.md), relevé :
-[idees-tle-geometrie-espace-releve.md](idees-tle-geometrie-espace-releve.md). Copie des fiches de la page à cocher https://claude.ai/artifact/6Cx9jxScwsv78fkiAM9znZ. **En attente de David.**
+[idees-tle-geometrie-espace-releve.md](idees-tle-geometrie-espace-releve.md). Copie des fiches de la page à cocher https://claude.ai/artifact/6Cx9jxScwsv78fkiAM9znZ. Validées par David le 2026-11-26 (« je valide » : toutes oui, Q1 oui).
 
 Toutes les variations auront leurs `testSpecs` (réponses justes sous plusieurs écritures, erreurs
 typiques refusées), trois erreurs prévues par case et un coup de pouce qui ne donne pas la réponse.
