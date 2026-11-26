@@ -1124,7 +1124,7 @@ export interface TypstTranspilerOptions {
 	author?: string;
 
 	/**
-	 * Fonctions déclarées par l'exercice (`exercises.generic_functions`), même
+	 * Fonctions déclarées par l'exercice (`generic_functions` de sa version, `exercise_versions`), même
 	 * sens qu'à l'écran (`expressionToLatex`) :
 	 * - `undefined` : défauts du parseur (f, g, h, u, v, w, F, G, H) ;
 	 * - `null` : aucune lettre n'est une fonction ;

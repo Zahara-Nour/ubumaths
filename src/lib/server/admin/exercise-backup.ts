@@ -417,7 +417,7 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.title)},
   ${escapeSQL(ex.source)},
   ${escapeSQL(ex.category)},
-  ${escapeSQL(ex.grades)},
+  ${escapeTextArray(ex.grades)},
   ${escapeSQL(ex.topic)},
   ${ex.is_public},
   ${consistentSearchIndexed(ex.is_public, ex.search_indexed)},

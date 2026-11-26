@@ -103,6 +103,12 @@ beforeAll(async () => {
 
 	// Exercice dont la v1 est pointée par une fiche
 	pointedId = (await TestData.exercise(teacherId).create()).id;
+	// Des niveaux, comme presque tous les exercices de la prod (colonne text[] du fichier SQL)
+	const { error: gradesError } = await service
+		.from('exercises')
+		.update({ grades: ['1_SPE', 'T_SPE'] })
+		.eq('id', pointedId);
+	if (gradesError) throw new Error(gradesError.message);
 	pointedV1 = (await versionsOf(pointedId))[0].id;
 	const { data: ws } = await service
 		.from('worksheets')
@@ -244,6 +250,10 @@ describe('fichier SQL de la sauvegarde', () => {
 				[pointedId]
 			);
 			expect(rows).toEqual(before.map(({ number, variations }) => ({ number, variations })));
+			const { rows: exo } = await pg.query('select grades from public.exercises where id = $1', [
+				pointedId
+			]);
+			expect(exo).toEqual([{ grades: ['1_SPE', 'T_SPE'] }]);
 		} finally {
 			await pg.query('rollback');
 		}
