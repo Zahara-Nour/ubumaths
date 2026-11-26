@@ -23,6 +23,7 @@
 	@module components/markdown/nodes/SolideGeste
 -->
 <script lang="ts">
+	import SolideRotationNote from './SolideRotationNote.svelte';
 	import type { EspaceNode, SolideSpec } from '#lib/ubumark/types/espace.ts';
 	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 	import {
@@ -168,6 +169,8 @@
 		return `Point ${name}`;
 	}
 </script>
+
+<SolideRotationNote {node} />
 
 {#snippet figure(arrow: SolideVectorEnds | null, kind: 'eleve' | 'juste', markers: boolean)}
 	{@const width = scene.width + 2 * ESPACE_MARGIN}
