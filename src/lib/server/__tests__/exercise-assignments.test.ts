@@ -538,7 +538,7 @@ describe('deleteAssignment', () => {
 		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
-					data: {},
+					data: [{ id: mockAssignmentId }],
 					error: null
 				})
 			);
@@ -562,7 +562,7 @@ describe('deleteAssignment', () => {
 		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
-					data: {},
+					data: [{ id: mockAssignmentId }],
 					error: null
 				})
 			);
@@ -1211,4 +1211,27 @@ describe('erreur de la base : le message de Postgres ne part pas vers l’appela
 		expect(result.success).toBe(false);
 		expect(result.error).toBe('L’affectation n’a pas pu être supprimée.');
 	});
+
+	it.each([[true], [false]])(
+		'deleteAssignment (définitif : %s) : zéro ligne écrite, sans erreur (refus des règles d’accès) → échec',
+		async (hard) => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { assigned_by: mockTeacherId },
+				error: null
+			});
+			supabase._mockChain.then.mockImplementationOnce((onFulfilled) =>
+				Promise.resolve(onFulfilled({ data: [], error: null }))
+			);
+
+			const result = await assignments.deleteAssignment(
+				supabase,
+				mockAssignmentId,
+				mockTeacherId,
+				hard
+			);
+
+			expect(result.success).toBe(false);
+			expect(result.error).toBe('L’affectation n’a pas pu être supprimée.');
+		}
+	);
 });

@@ -565,21 +565,27 @@ export async function deleteAssignment(
 
 	if (hardDelete) {
 		// Hard delete: remove from database
-		const { error } = await supabase.from('exercise_assignments').delete().eq('id', assignmentId);
+		// `.select('id')` : un refus des règles d'accès rend zéro ligne SANS erreur.
+		const { data: deleted, error } = await supabase
+			.from('exercise_assignments')
+			.delete()
+			.eq('id', assignmentId)
+			.select('id');
 
-		if (error) {
-			logger.error('Error deleting assignment:', error);
+		if (error || !deleted?.length) {
+			logger.error('Error deleting assignment:', error ?? 'aucune ligne supprimée');
 			return { success: false, error: 'L’affectation n’a pas pu être supprimée.' };
 		}
 	} else {
 		// Soft delete: mark inactive
-		const { error } = await supabase
+		const { data: deactivated, error } = await supabase
 			.from('exercise_assignments')
 			.update({ is_active: false })
-			.eq('id', assignmentId);
+			.eq('id', assignmentId)
+			.select('id');
 
-		if (error) {
-			logger.error('Error deactivating assignment:', error);
+		if (error || !deactivated?.length) {
+			logger.error('Error deactivating assignment:', error ?? 'aucune ligne modifiée');
 			return { success: false, error: 'L’affectation n’a pas pu être supprimée.' };
 		}
 	}
