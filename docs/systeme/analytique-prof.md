@@ -245,12 +245,10 @@ admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page
 
 ## Écarts connus
 
-- **Grille A : traces lues sans pagination** (`getClassCurriculumPointGrid`) : au-delà du plafond de
-  lignes de PostgREST, des modèles tentés peuvent manquer en silence. La page de suivi d'un élève, elle,
-  pagine. Vu le 2026-11-14, non corrigé.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Nom d'un point en LaTeX brut** dans les infobulles (`title`) de la grille : un attribut ne rend pas
-  les formules. (La fenêtre du widget E rend son titre par `InlineMarkdown` depuis le 2026-11-14.)
+### Points non vérifiés
+
 - **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;
   elle ne lit pas `student_point_state` (régime d'acquisition `fluence` / `diversite`). Un point
   peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second. Tranché le

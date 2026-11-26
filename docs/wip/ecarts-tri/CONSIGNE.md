@@ -4,7 +4,7 @@ Chantier `ecarts-a-trier`, étape 3 (2026-11-24). Dépôt : `/Users/david/Coding
 
 ## But
 
-La [recollecte](../ecarts-a-trier-recollecte.md) (section A, lignes 15 à 260) liste 225 points relevés dans les docs système, **jamais vérifiés dans le code**. Pour chaque point de ton lot, dire s'il est **encore vrai aujourd'hui dans le code**, avec une preuve qu'on peut rejouer.
+La [recollecte](../../archive/wip/ecarts-a-trier-recollecte.md) (section A, lignes 15 à 260) liste 225 points relevés dans les docs système, **jamais vérifiés dans le code**. Pour chaque point de ton lot, dire s'il est **encore vrai aujourd'hui dans le code**, avec une preuve qu'on peut rejouer.
 
 ## Méthode, par point
 

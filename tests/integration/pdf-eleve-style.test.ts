@@ -114,7 +114,8 @@ async function assigned(ids: { style_id?: string | null }) {
 		[`${RUN} fiche`, teacherId, ids.style_id ?? null]
 	);
 	await sql(
-		'insert into public.worksheet_exercises (worksheet_id, exercise_id, position) values ($1, $2, 1)',
+		`insert into public.worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, position)
+		 values ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), 1)`,
 		[worksheetId, exerciseId]
 	);
 	const [{ id: assignmentId }] = await sql(

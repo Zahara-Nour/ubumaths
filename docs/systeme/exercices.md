@@ -1,8 +1,9 @@
 ---
 couvre:
   - 'src/lib/components/exercises/**'
-  - 'src/lib/server/{exercises,exercise-assignments,exercise-import-export,exercise-share-tokens,resource-tags}.ts'
-  - 'src/lib/server/validation/{exercises,exercise-mastery,image-upload,tags}.ts'
+  - 'src/lib/server/{exercises,exercise-assignments,exercise-import-export,exercise-share-tokens,resource-tags,exercise-versions-access}.ts'
+  - 'src/lib/server/validation/{exercises,exercise-mastery,image-upload,tags,exercise-versions}.ts'
+  - src/lib/exercises/edited-version.ts
   - 'src/lib/types/exercise-*.ts'
   - 'src/routes/api/exercises/**'
   - 'src/routes/api/teacher/exercises/**'
@@ -20,7 +21,7 @@ couvre:
 # Exercices : éditeur, partage, affectation, maîtrise
 
 > Première doc de la zone, écrite à partir du code (règle « doc d'abord », 2026-10-12).
-> Vérifié contre le code le 2026-10-12 ; réponses des niveaux de guidage le 2026-10-13 ; points du programme (C5, B2) le 2026-10-21.
+> Vérifié contre le code le 2026-10-12 ; réponses des niveaux de guidage le 2026-10-13 ; points du programme (C5, B2) le 2026-10-21 ; versions dans l'éditeur (ADR 0044) le 2026-11-25.
 
 ## À quoi ça sert
 
@@ -43,16 +44,17 @@ de guidage** (`guided`, `intermediate`, `autonomous`), pas des « variations » 
 
 ## Modèle de données
 
-| Table                                      | Rôle                                                                                                                                                                                                                                                                                                              |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `exercises`                                | L'exercice. Contenu dans `variations` (jsonb, **seule source** de l'énoncé et de la correction) + `shared` (valeurs communes). `variables` (jsonb) = ancien format, encore validé. `is_public`, `search_indexed`, `distribution_mode`, `generic_functions`, `translations` (titre en anglais).                    |
-| `resource_tags` (+ `tags`)                 | Étiquettes : jonction polymorphe `(resource_kind, resource_id, tag_id)`, `resource_kind = 'exercise'`. Les étiquettes ne sont **pas** une colonne d'`exercises`.                                                                                                                                                  |
-| `exercise_share_tokens`                    | Liens de partage d'un exercice privé (jeton de 16 caractères, expiration facultative, révocation par `is_active = false`).                                                                                                                                                                                        |
-| `exercise_assignments`                     | Affectation hors fiche : `assigned_to_type` ∈ `student` / `class` / `public`, `optional_deadline`, `is_active`.                                                                                                                                                                                                   |
-| `exercise_completions`                     | Vues (`view_count`, `last_viewed_at`) et « terminé » (`completed_at`) d'un élève.                                                                                                                                                                                                                                 |
-| `student_exercise_mastery`                 | Auto-évaluation de l'élève par exercice : `not_worked` / `mastered` / `needs_review` (`MASTERY_STATUSES`, `src/lib/types/exercise-mastery.ts`).                                                                                                                                                                   |
-| `exercise_curriculum_points`               | Points du programme rattachés à l'exercice (page `exercices/[id]`, API `/api/teacher/curriculum/exercise-tags`). Points neufs seulement, posés sur un nœud de rangement de l'exercice (`exercise_classifications`) ou sur sa notion — règle en base ; détail dans [cours-et-chapitres.md](cours-et-chapitres.md). |
-| `exercise_favorites`, `exercise_templates` | Lues seulement par la sauvegarde admin (`src/lib/server/admin/exercise-backup.ts`) ; aucun écran.                                                                                                                                                                                                                 |
+| Table                                      | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exercises`                                | L'exercice : sa fiche d'identité. Son **contenu** est dans ses versions (`exercise_versions`, ligne suivante) ; les anciennes colonnes `variations` / `shared` / `generic_functions` d'`exercises` sont figées depuis la reprise (ADR 0044) et partent en PR 4. `variables` (jsonb) = ancien format, encore validé. `is_public`, `search_indexed`, `distribution_mode`, `generic_functions`, `translations` (titre en anglais). |
+| `exercise_versions`                        | Versions successives d'un exercice (ADR 0044) : `number`, `note`, et le contenu — `variations` (jsonb, **seule source** de l'énoncé et de la correction), `shared` (valeurs communes), `generic_functions`. Hors fiche : la dernière ; dans une fiche : celle de `worksheet_exercises.exercise_version_id`. Lecture et écriture : `src/lib/server/exercise-versions.ts`.                                                        |
+| `resource_tags` (+ `tags`)                 | Étiquettes : jonction polymorphe `(resource_kind, resource_id, tag_id)`, `resource_kind = 'exercise'`. Les étiquettes ne sont **pas** une colonne d'`exercises`.                                                                                                                                                                                                                                                                |
+| `exercise_share_tokens`                    | Liens de partage d'un exercice privé (jeton de 16 caractères, expiration facultative, révocation par `is_active = false`).                                                                                                                                                                                                                                                                                                      |
+| `exercise_assignments`                     | Affectation hors fiche : `assigned_to_type` ∈ `student` / `class` / `public`, `optional_deadline`, `is_active`.                                                                                                                                                                                                                                                                                                                 |
+| `exercise_completions`                     | Vues (`view_count`, `last_viewed_at`) et « terminé » (`completed_at`) d'un élève.                                                                                                                                                                                                                                                                                                                                               |
+| `student_exercise_mastery`                 | Auto-évaluation de l'élève par exercice : `not_worked` / `mastered` / `needs_review` (`MASTERY_STATUSES`, `src/lib/types/exercise-mastery.ts`).                                                                                                                                                                                                                                                                                 |
+| `exercise_curriculum_points`               | Points du programme rattachés à l'exercice (page `exercices/[id]`, API `/api/teacher/curriculum/exercise-tags`). Points neufs seulement, posés sur un nœud de rangement de l'exercice (`exercise_classifications`) ou sur sa notion — règle en base ; détail dans [cours-et-chapitres.md](cours-et-chapitres.md).                                                                                                               |
+| `exercise_favorites`, `exercise_templates` | Lues seulement par la sauvegarde admin (`src/lib/server/admin/exercise-backup.ts`) ; aucun écran.                                                                                                                                                                                                                                                                                                                               |
 
 `src/lib/types/exercise-row.ts` (`toExercise`) convertit la ligne brute en type métier `Exercise` :
 une catégorie inconnue devient `automatisme`, un mode de distribution inconnu `on_demand`.
@@ -62,7 +64,13 @@ une catégorie inconnue devient `automatisme`, un mode de distribution inconnu `
 - **Lecture de `exercises`** (policies permissives, combinées en OU) : l'auteur (`Teachers can
 view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof ne lit plus les
   exercices des autres) ; tout le monde, anonyme compris, si `is_public` ; l'élève par
-  `student_has_exercise_access(id)`. Écriture et suppression : l'auteur.
+  `student_has_exercise_access(id)` : par une fiche qui lui est distribuée, ou (depuis
+  20261126091954, écart E78) par une affectation hors fiche **active**, posée par l'**auteur** de
+  l'exercice, à lui ou à une classe dont il est membre **actif**. Une affectation `public`
+  n'ouvre pas la lecture, ni celle qu'un autre compte que l'auteur poserait (la policy
+  d'insertion `exercise_assignments_insert` ne regarde pas à qui est l'exercice : c'est la
+  fonction de lecture qui refuse). Écriture et
+  suppression : l'auteur.
 - **Jeton de partage** : aucune policy ne l'ouvre (les deux policies « à tout le monde » ont été
   retirées par 20260902101000, finding H8 : elles exposaient tout exercice partagé). L'accès passe
   par la RPC `SECURITY DEFINER` `get_exercise_by_share_token(p_token)`, qui exige le jeton exact,
@@ -72,6 +80,10 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   (dernière version : 20261003230000) = exercice public, ou affectation active directe, à une
   classe dont l'adhésion est **active** (20260912150000 : l'élève archivé perd les exercices de
   la classe quittée), ou `public`. Garde d'appelant : son propre compte, ou prof/admin.
+  ⚠️ Cette surcharge répond à la route d'accès ; c'est l'autre, `(id)`, qui garde la **lecture**
+  de la ligne. Elles s'accordent sur l'élève désigné et la classe, pas sur `public` (cette
+  surcharge dit oui, la lecture reste fermée : décision de David du 2026-11-26, qui retire
+  l'onglet « Rendre public » de la page d'affectation).
   ⚠️ La fonction a deux surcharges, que le générateur de types saute : l'appel passe par
   `callExerciseAccess` (`exercise-assignments.ts`), seul contournement de typage du module.
 - **Maîtrise** : l'élève lit et écrit ses lignes ; le prof (et l'admin) **lit** celles des élèves
@@ -93,12 +105,27 @@ Notebooks ([python/README.md](python/README.md)). `+page.server.ts` redirige (30
 Templates. Le hub n'a pas de garde à lui : celle de `dashboard/teacher/+layout.server.ts`
 (prof seul, 403 sinon) s'applique, et certains onglets en ajoutent une.
 
-| Page (`dashboard/teacher/contenu/exercices/`) | Rôle                                                                                                                                                                                                                                                                                                    |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `+page`                                       | Liste (`getTeacherExercises` au chargement, `/api/teacher/exercises` pour filtrer), aperçu (`ExerciseDisplay mode="template"`), export / import groupés, suppression (action de formulaire).                                                                                                            |
-| `new/`                                        | `ExerciseForm` → `POST /api/exercises`.                                                                                                                                                                                                                                                                 |
-| `[id]/`                                       | Édition (`ExerciseForm` → `PUT /api/exercises/[id]`), énoncé et correction rendus, JSON, PDF (Typst, `generateExerciseTypst`), liens de partage, points du programme (par niveau de l'exercice, ceux de ses notions de rangement ; non rangé → aucun, l'écran le dit). Réservée à l'auteur (403 sinon). |
-| `[id]/assign/`                                | Affectation à des élèves, des classes, ou publique (`POST/GET /api/exercises/[id]/assign`, suppression par `/api/exercises/assignments/[assignmentId]`).                                                                                                                                                |
+| Page (`dashboard/teacher/contenu/exercices/`) | Rôle                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `+page`                                       | Liste (`getTeacherExercises` au chargement, `/api/teacher/exercises` pour filtrer), aperçu (`ExerciseDisplay mode="template"`), export / import groupés, suppression (action de formulaire).                                                                                                                                                                            |
+| `new/`                                        | `ExerciseForm` → `POST /api/exercises`.                                                                                                                                                                                                                                                                                                                                 |
+| `[id]/`                                       | Édition d'**une version** (ADR 0044, détail plus bas) (`ExerciseForm` → `PUT /api/exercises/[id]` avec `version_id`), énoncé et correction rendus, JSON, PDF (Typst, `generateExerciseTypst`), liens de partage, points du programme (par niveau de l'exercice, ceux de ses notions de rangement ; non rangé → aucun, l'écran le dit). Réservée à l'auteur (403 sinon). |
+| `[id]/assign/`                                | Affectation à des élèves, des classes, ou publique (`POST/GET /api/exercises/[id]/assign`, suppression par `/api/exercises/assignments/[assignmentId]`).                                                                                                                                                                                                                |
+
+**Versions dans la page `[id]/`** (ADR 0044, PR 2 du chantier `versions-exercices`) :
+`ExerciseVersionsBar.svelte` au-dessus du formulaire. La page ouvre `?version=<numéro>`, sinon,
+venue d'une fiche (`?fiche=<id>`), la version de cette fiche, sinon la plus récente
+(`src/lib/exercises/edited-version.ts`, `pickEditedVersion`). « Mettre à jour » modifie **sur
+place** la version affichée, aucune autre (`save_exercise_with_version` : fiche d'identité et
+contenu ensemble). Menu des versions (numéro, note, nombre de fiches) ; « Nouvelle version »
+(`POST /api/exercises/[id]/versions`, note facultative ≤ 500) recopie la **plus récente**, même si
+on en regarde une autre ; « Note » (`PATCH …/versions/[versionId]`) ; « Supprimer » (`DELETE`),
+refusé (409) si une fiche utilise la version — le refus nomme les fiches — ou si c'est la seule.
+Bandeau : les fiches qui utilisent la version affichée (« distribuée » = une affectation active),
+et un rappel quand ce n'est pas la plus récente. Routes réservées à l'auteur
+(`src/lib/server/exercise-versions-access.ts`, 404 / 403), note validée par
+`src/lib/server/validation/exercise-versions.ts`. Vérification à l'écran :
+`e2e/verifs/versions-exercices-editeur.spec.ts`.
 
 **`ExerciseForm.svelte`** est l'éditeur : titre, slug (format `^[a-z0-9][a-z0-9-]*[a-z0-9]$`,
 3 à 100 caractères ; proposé par `/api/exercises/generate-slug` à partir du `topic`), source,
@@ -159,8 +186,9 @@ graine.
 `noindex` partout **sauf** exercice public coché « Afficher sur Google » ouvert **sans** jeton.
 
 **Page élève** `dashboard/student/exercises/` : la liste lit `/api/exercises/assigned`
-(`getAssignmentsForStudent`) ; `[id]` vérifie l'accès (`/api/exercises/[id]/access`), affiche
-l'exercice (`ExerciseDisplay mode="instance"`), enregistre une vue (`POST …/view`) et le
+(`getAssignmentsForStudent`) ; `[id]` vérifie l'accès (`/api/exercises/[id]/access`), lit
+l'affectation à montrer (note, échéance : celle de l'élève, sinon celle d'une de ses classes
+actives, `pickStudentAssignment`), affiche l'exercice (`ExerciseDisplay mode="instance"`), enregistre une vue (`POST …/view`) et le
 « terminé » (`POST`/`DELETE …/complete`, dans `exercise_completions`).
 
 ## Partage par jeton
@@ -202,12 +230,18 @@ source, catégorie, étiquettes, niveaux scolaires, `topic`, `variations`, `shar
 recopiés du premier niveau de guidage ; **pas** le slug, qui doit rester unique) ou Markdown ;
 import JSON (v1.0 migré vers les variations, champs relus par Zod : noms de fonction, ressources
 http(s), mode connu) ou Markdown. Doublon = même empreinte SHA-256 de `titre:énoncé` parmi
-**tous** les exercices de l'importateur (lecture paginée par 1 000, ordonnée par `id`) ; `on_duplicate` : `skip` (défaut), `replace`
+**tous** les exercices de l'importateur (lecture paginée par 1 000, ordonnée par `id`, énoncé de
+leur **dernière** version) ; `on_duplicate` : `skip` (défaut), `replace`
 (seulement son propre exercice), `create-copy` (titre suffixé « (copie) »). L'import ne porte ni
-`is_public` ni `search_indexed` : un exercice importé naît privé.
+`is_public` ni `search_indexed` : un exercice importé naît privé. Versions (ADR 0044) : l'export
+lit la dernière version ; un import crée la version 1 ; `replace` réécrit la dernière version, sur
+place, avec la fiche d'identité dans la même écriture (tout ou rien).
 
 `/api/admin/exercises/backup` (admin) : sauvegarde JSON ou SQL des tables d'exercices, restauration
-avec mot de confirmation ; `backup-stats` compte les lignes. Code : `src/lib/server/admin/exercise-backup.ts`.
+avec mot de confirmation ; `backup-stats` compte les lignes. Chaque exercice sauvegardé emporte
+**toutes** ses versions (`versions`) ; une sauvegarde antérieure devient la version 1, ou une
+nouvelle version d'un exercice qui en a déjà (détail dans
+[comptes-classes-ecoles.md](comptes-classes-ecoles.md)). Code : `src/lib/server/admin/exercise-backup.ts`.
 
 ## Maîtrise
 
@@ -244,12 +278,10 @@ longueur. Journal : [longueurs-segments-progress.md](../archive/wip/longueurs-se
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 - **`GET /api/exercises`** a un appelant (`ExerciseSelector`, éditeur de fiche) : gardée. Les
   routes `by-slug/[slug]`, `[id]/stats`, `[id]/export` et `ExerciseParameterizationEditor.svelte`,
   sans appelant, ont été retirées le 2026-10-12.
-- **`exerciseFont.svelte.ts` sans effet** : le store (police d'affichage des exercices, clé
-  `localStorage` `exerciseFont`, variable CSS `--exercise-font-family` lue par `app.css`) n'a qu'un
-  importeur, `FontSelector.svelte`, lui-même sans importeur
-  ([coquille-et-caches.md](coquille-et-caches.md)) : la police reste celle de `app.css` (Inter).
-- **Libellés du hub sans accents ni français** : « Contenu pedagogique », « Gerez », « Enigmes »,
-  et les onglets « Templates », « Worksheets », « Notebooks ».

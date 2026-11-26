@@ -1,0 +1,33 @@
+{
+	"migration": "supabase/migrations/20261126072904_questions_idees_1re_variations_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "80c43412-3b52-47d3-a10b-00600323822d",
+			"title": "Variations d'une fonction rationnelle",
+			"fichier": "n1-variations-fonction-rationnelle.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "variations et extremums",
+			"point": "1SPE-283"
+		},
+		{
+			"id": "8f08fca1-76c3-46c5-a947-4ef342c81d19",
+			"title": "Variations et extremums d'un polynôme de degré 3 sur un intervalle",
+			"fichier": "n2-degre-3-sur-un-intervalle.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "variations et extremums",
+			"point": "1SPE-401"
+		},
+		{
+			"id": "61c4a8ed-56c3-438b-bd41-d3300d46d6ff",
+			"title": "Maximum et minimum de ax + b/x sur un intervalle",
+			"fichier": "n3-ax-plus-b-sur-x-sur-un-intervalle.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "variations et extremums",
+			"point": "1SPE-401"
+		}
+	],
+	"niveaux": []
+}

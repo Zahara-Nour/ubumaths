@@ -29,6 +29,7 @@ export const COPIE: readonly string[] = [
 	'question_template_points',
 	'question_template_reviews',
 	'exercises',
+	'exercise_versions',
 	'exercise_classifications',
 	'exercise_curriculum_points',
 	'exercise_templates',

@@ -1,6 +1,15 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { getExercise } from '#lib/server/exercises.ts';
+import {
+	fetchVersion,
+	listVersionsWithUsage,
+	withVersionContent,
+	worksheetVersionIdOf
+} from '#lib/server/exercise-versions.ts';
+import { pickEditedVersion, requestedVersionNumber } from '#lib/exercises/edited-version.ts';
+import { WORKSHEET_RETURN_PARAM } from '#lib/worksheets/exercise-edit-link.ts';
+import { z } from 'zod';
 import { getProgrammeTreeKeeping, loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
 import {
 	filterTreePoints,
@@ -38,10 +47,38 @@ async function gradesToShow(
 	return [...exerciseGrades, ...[...new Set(extra)].sort()];
 }
 
+const worksheetIdSchema = z.string().uuid();
+
+/** Les versions de l'exercice et celle que la page ouvre, avec son contenu. */
+async function loadEditedVersion<E extends { id: string }>(
+	supabase: App.Locals['supabase'],
+	exercise: E,
+	searchParams: URLSearchParams
+) {
+	try {
+		const versions = await listVersionsWithUsage(supabase, exercise.id);
+		const worksheet = worksheetIdSchema.safeParse(searchParams.get(WORKSHEET_RETURN_PARAM));
+		const worksheetVersionId = worksheet.success
+			? await worksheetVersionIdOf(supabase, worksheet.data, exercise.id)
+			: null;
+		const edited = pickEditedVersion(versions, {
+			number: requestedVersionNumber(searchParams),
+			worksheetVersionId
+		});
+		if (!edited) throw new Error(`Exercice ${exercise.id} sans version`);
+		const content = await fetchVersion(supabase, exercise.id, edited.id);
+		if (!content) throw new Error(`Version ${edited.id} illisible`);
+		return { versions, edited, exercise: withVersionContent(exercise, content) };
+	} catch (e) {
+		logger.error('Versions illisibles :', e);
+		throw error(500, 'Impossible de charger les versions');
+	}
+}
+
 /**
  * Load exercise for editing and view assignments
  */
-export const load: PageServerLoad = async ({ locals, params, fetch }) => {
+export const load: PageServerLoad = async ({ locals, params, fetch, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/auth/login');
@@ -61,6 +98,14 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	if (result.data.created_by !== user.id) {
 		throw error(403, 'Modification de cet exercice non autorisée');
 	}
+
+	// Version ouverte (ADR 0044) : `?version=`, sinon celle de la fiche d'où l'on vient, sinon la
+	// plus récente. Son contenu remplace celui de la plus récente, lu par `getExercise`.
+	const { versions, edited, exercise } = await loadEditedVersion(
+		locals.supabase,
+		result.data,
+		url.searchParams
+	);
 
 	// Fetch assignments count via API
 	const assignmentsResponse = await fetch(`/api/exercises/${id}/assign`);
@@ -115,7 +160,9 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	}
 
 	return {
-		exercise: result.data,
+		exercise,
+		versions,
+		editedVersionId: edited.id,
 		assignmentCount,
 		curriculumByGrade,
 		exerciseUnranked,

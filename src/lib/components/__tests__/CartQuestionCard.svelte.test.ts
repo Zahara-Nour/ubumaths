@@ -11,7 +11,9 @@ import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
 import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
-import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { variationExample } from '#lib/questions/series-draw.ts';
+import type { QuestionTemplate, QuestionVariation } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 import type { SeriesItem } from '#lib/validation/series.ts';
 import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
@@ -236,16 +238,344 @@ describe('CartQuestionCard', () => {
 });
 
 describe('CartQuestionCard — variations choisies (idée 2)', () => {
-	const count = TEMPLATE_WITH_ID.variations.length;
-
-	it('prof : le choix des variations est proposé (modèle à plusieurs variations)', async () => {
-		expect(count).toBeGreaterThan(1);
-		const screen = await renderCard({ onUpdateVariations: vi.fn() });
-		await expect.element(screen.getByText(`Toutes les variations (${count})`)).toBeInTheDocument();
-	});
-
-	it('sans gestionnaire (élève) : rien', async () => {
+	it('sans gestionnaire (élève) : pas de fenêtre de choix', async () => {
 		const screen = await renderCard();
 		expect(screen.container.querySelector('[data-choix-variations]')).toBeNull();
+	});
+
+	it('prof : plus de fenêtre de choix dans Ma série (PR A2)', async () => {
+		const screen = await renderCard({ onUpdateVariations: vi.fn() });
+		expect(screen.container.querySelector('[data-choix-variations]')).toBeNull();
+	});
+});
+
+/** Chantier `automaths`, PR A (phase 0 validée le 2026-11-26) */
+describe('CartQuestionCard — corbeille, niveaux, variations', () => {
+	it('corbeille entre la durée et les répétitions : retire la ligne sans confirmation', async () => {
+		const onRemove = vi.fn();
+		const screen = await renderCard({ onRemove });
+
+		const trash = screen.getByRole('button', { name: 'Retirer de ma série' });
+		await expect.element(trash).toBeVisible();
+		const duration = screen.getByTitle('Durée par question').element();
+		const repeats = screen.getByTitle('Nombre de répétitions').element();
+		const trashBox = trash.element().getBoundingClientRect();
+		expect(trashBox.left).toBeGreaterThan(duration.getBoundingClientRect().right);
+		expect(trashBox.right).toBeLessThan(repeats.getBoundingClientRect().left);
+
+		await trash.click();
+
+		expect(onRemove).toHaveBeenCalledWith(ITEM.templateId);
+		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
+		await expect.element(page.getByRole('alertdialog')).not.toBeInTheDocument();
+	});
+
+	it('badge des niveaux et flèches des variations au-dessus de la carte', async () => {
+		const screen = await renderCard();
+
+		expect(screen.container.querySelector('[data-tile-grades]')?.textContent?.trim()).toBe('CE1');
+		await expect
+			.element(screen.getByRole('button', { name: 'Variation suivante' }))
+			.toBeInTheDocument();
+	});
+
+	it('une seule variation choisie par le prof : pas de flèches', async () => {
+		const generatedFor = generateInstance(
+			{ ...TEMPLATE_WITH_ID, variations: [TEMPLATE_WITH_ID.variations[1]] },
+			PREVIEW_SEED
+		);
+		const screen = await render(CartQuestionCard, {
+			item: { ...ITEM, variations: [1] },
+			template: TEMPLATE_WITH_ID,
+			instance: generatedFor.success ? generatedFor.instance : instance,
+			onIncrementQuantity: vi.fn(),
+			onDecrementQuantity: vi.fn(),
+			onUpdateQuantity: vi.fn(),
+			onUpdateDelay: vi.fn(),
+			onRemove: vi.fn()
+		});
+
+		expect(screen.container.querySelector('[data-tile-grades]')).not.toBeNull();
+		expect(screen.container.querySelector('[data-tile-variations]')).toBeNull();
+	});
+
+	it('carte de 18rem, bouton de retournement de 32 px', async () => {
+		const screen = await renderCard();
+
+		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		await vi.waitFor(() => expect(screen.container.querySelector('.flip-card')).not.toBeNull());
+		expect(screen.container.querySelector('.flip-card')!.getBoundingClientRect().height).toBe(
+			18 * rem
+		);
+		const flip = page.getByRole('button', { name: 'Voir la correction' }).first().element();
+		expect(flip.getBoundingClientRect().width).toBe(2 * rem);
+	});
+});
+
+/** Chantier `automaths`, PR A : points de la revue (2026-11-26) */
+describe('CartQuestionCard — points de la revue', () => {
+	it('aperçu d’une variation que le prof n’a pas choisie : la carte montre une variation choisie', async () => {
+		// Aperçu tiré sur la variation 0, mais le prof n'a gardé que la 1 et la 2
+		const three = {
+			...TEMPLATE_WITH_ID,
+			variations: [
+				TEMPLATE_WITH_ID.variations[0],
+				TEMPLATE_WITH_ID.variations[1],
+				TEMPLATE_WITH_ID.variations[1]
+			]
+		};
+		const preview = variationExample(three, 0, generateInstance);
+		expect(preview?.selectedVariationIndex).toBe(0);
+		const props = {
+			template: three,
+			instance: preview!,
+			onIncrementQuantity: vi.fn(),
+			onDecrementQuantity: vi.fn(),
+			onUpdateQuantity: vi.fn(),
+			onUpdateDelay: vi.fn(),
+			onRemove: vi.fn()
+		};
+		const statement = (container: HTMLElement) =>
+			container.querySelector('.flip-card-front .statement-content')?.textContent ?? '';
+		const all = await render(CartQuestionCard, { ...props, item: ITEM });
+		const previewText = statement(all.container);
+		await all.unmount();
+
+		const screen = await render(CartQuestionCard, {
+			...props,
+			item: { ...ITEM, variations: [1, 2] }
+		});
+
+		const counter = screen.container.querySelector<HTMLElement>('[data-tile-variations]');
+		expect(counter?.textContent).toContain('1/2');
+		await expect.poll(() => statement(screen.container)).not.toBe('');
+		expect(statement(screen.container)).not.toBe(previewText);
+	});
+
+	it('la tuile est un groupe nommé par le titre du modèle', async () => {
+		const screen = await renderCard();
+
+		const tile = screen.getByRole('group', { name: TEMPLATE.title, exact: false });
+		await expect.element(tile).toBeInTheDocument();
+		await expect
+			.element(tile.getByRole('button', { name: 'Retirer de ma série' }))
+			.toBeInTheDocument();
+	});
+});
+
+/**
+ * Chantier `automaths`, PR A2 (phase 0 validée le 2026-11-26) : le prof choisit
+ * les variations avec les flèches de la carte, plus de fenêtre de choix.
+ */
+describe('CartQuestionCard — variations choisies sur la carte (PR A2)', () => {
+	function variation(statement: string, extra: Record<string, unknown> = {}): QuestionVariation {
+		return {
+			statement: templateMarkdown(statement),
+			blanks: [{ expectedAnswer: '0', ...extra }]
+		} as QuestionVariation;
+	}
+
+	function withErrors(statement: string, extra: Record<string, unknown> = {}): QuestionVariation {
+		return variation(statement, {
+			expectedAnswer: '12',
+			expectedErrors: [{ answer: '4', message: 'Tu as soustrait.' }],
+			...extra
+		});
+	}
+
+	// Variation 1 en QCM possible, 2 non (pas d'erreurs prévues), 3 non (veto)
+	const CALCULS: QuestionTemplate = {
+		id: '22222222-2222-4222-8222-222222222222',
+		title: 'Calculs',
+		status: 'published',
+		grades: ['6'],
+		level: 1,
+		variations: [
+			withErrors('Calcule : $8 + 4 = ?$'),
+			variation('Aire du triangle : $\\mathcal{A} = ?$'),
+			withErrors('Calcule encore : $8 + 4 = ?$', { neverChoice: true })
+		]
+	};
+	const CALCULS_ITEM: SeriesItem = { templateId: CALCULS.id, quantity: 3, delay: 25 };
+
+	async function renderTeacher(
+		options: {
+			item?: Partial<SeriesItem>;
+			teacher?: boolean;
+			onUpdateVariations?: (templateId: string, variations: number[] | undefined) => void;
+			onUpdateChoiceVariations?: (
+				templateId: string,
+				choiceVariations: number[] | undefined
+			) => void;
+		} = {}
+	) {
+		const teacher = options.teacher ?? true;
+		const onUpdateVariations = options.onUpdateVariations ?? vi.fn();
+		const onUpdateChoiceVariations = options.onUpdateChoiceVariations ?? vi.fn();
+		const screen = await render(CartQuestionCard, {
+			item: { ...CALCULS_ITEM, ...options.item },
+			template: CALCULS,
+			instance: variationExample(CALCULS, 0, generateInstance)!,
+			onIncrementQuantity: vi.fn(),
+			onDecrementQuantity: vi.fn(),
+			onUpdateQuantity: vi.fn(),
+			onUpdateDelay: vi.fn(),
+			onRemove: vi.fn(),
+			onUpdateVariations: teacher ? onUpdateVariations : undefined,
+			onUpdateChoiceVariations: teacher ? onUpdateChoiceVariations : undefined
+		});
+		return { screen, onUpdateVariations, onUpdateChoiceVariations };
+	}
+
+	const numberButton = (name: string | RegExp) => page.getByRole('button', { name });
+
+	it('les flèches parcourent toutes les variations, retirées comprises', async () => {
+		const { screen } = await renderTeacher({ item: { variations: [0, 2] } });
+
+		const counter = () =>
+			screen.container.querySelector<HTMLElement>('[data-tile-variations]')?.textContent ?? '';
+		expect(counter()).toContain('1/3');
+		await screen.getByRole('button', { name: 'Variation suivante' }).click();
+		expect(counter()).toContain('2/3');
+		await expect.element(numberButton(/^2\/3, retirée/)).toBeInTheDocument();
+	});
+
+	it('toutes gardées par défaut : numéro gardé, pas de phrase', async () => {
+		const { screen } = await renderTeacher();
+
+		const button = numberButton(/^1\/3, gardée/);
+		await expect.element(button).toBeInTheDocument();
+		await expect.element(button).toHaveAttribute('title', 'Retirer cette variation de la série');
+		expect(screen.container.querySelector('[data-variations-gardees]')).toBeNull();
+	});
+
+	it('clic sur le numéro : la variation est retirée', async () => {
+		const { onUpdateVariations } = await renderTeacher();
+
+		await numberButton(/^1\/3, gardée/).click();
+
+		expect(onUpdateVariations).toHaveBeenCalledWith(CALCULS.id, [1, 2]);
+	});
+
+	it('retirer la variation affichée : la carte reste sur elle (vu à l’écran)', async () => {
+		const { screen } = await renderTeacher();
+
+		await numberButton(/^1\/3, gardée/).click();
+		await screen.rerender({ item: { ...CALCULS_ITEM, variations: [1, 2] } });
+
+		await expect.element(numberButton(/^1\/3, retirée/)).toBeInTheDocument();
+	});
+
+	it('variation retirée : numéro barré, en rouge, infobulle « Remettre », phrase « 2 variations sur 3 »', async () => {
+		const { screen } = await renderTeacher({ item: { variations: [1, 2] } });
+
+		// Aperçu sur la variation 0, retirée : la carte part de la première gardée
+		await screen.getByRole('button', { name: 'Variation précédente' }).click();
+		const button = numberButton(/^1\/3, retirée/);
+		await expect.element(button).toHaveAttribute('title', 'Remettre cette variation');
+		expect(getComputedStyle(button.element()).textDecorationLine).toBe('line-through');
+		await expect
+			.element(screen.getByText('2 variations sur 3', { exact: true }))
+			.toBeInTheDocument();
+	});
+
+	it('nouveau clic sur une variation retirée : elle revient (toutes = pas de choix)', async () => {
+		const { screen, onUpdateVariations } = await renderTeacher({ item: { variations: [1, 2] } });
+
+		await screen.getByRole('button', { name: 'Variation précédente' }).click();
+		await numberButton(/^1\/3, retirée/).click();
+
+		expect(onUpdateVariations).toHaveBeenCalledWith(CALCULS.id, undefined);
+	});
+
+	it('la dernière variation gardée ne se retire pas, et l’infobulle le dit', async () => {
+		const { onUpdateVariations } = await renderTeacher({ item: { variations: [1] } });
+
+		const button = numberButton(/^2\/3, gardée/);
+		await expect.element(button).toHaveAttribute('aria-disabled', 'true');
+		await expect.element(button).toHaveAccessibleName(/ne se retire pas/);
+		await expect.element(button).toHaveAttribute('title', expect.stringContaining('dernière'));
+		// `aria-disabled` : Playwright refuse le clic ; on le force pour vérifier qu'il ne fait rien
+		await button.click({ force: true });
+		expect(onUpdateVariations).not.toHaveBeenCalled();
+	});
+
+	it('case « En QCM » seulement sur une variation qui peut se poser en QCM', async () => {
+		const { screen, onUpdateChoiceVariations } = await renderTeacher();
+
+		const qcm = page.getByRole('checkbox', { name: 'Variation 1 en QCM' });
+		await expect.element(qcm).toBeInTheDocument();
+		await qcm.click();
+		expect(onUpdateChoiceVariations).toHaveBeenCalledWith(CALCULS.id, [0]);
+
+		await screen.getByRole('button', { name: 'Variation suivante' }).click();
+		expect(page.getByRole('checkbox', { name: /en QCM/ }).query()).toBeNull();
+		await screen.getByRole('button', { name: 'Variation suivante' }).click();
+		expect(page.getByRole('checkbox', { name: /en QCM/ }).query()).toBeNull();
+	});
+
+	it('retirer une variation retire aussi son QCM', async () => {
+		const { onUpdateVariations, onUpdateChoiceVariations } = await renderTeacher({
+			item: { choiceVariations: [0] }
+		});
+
+		await numberButton(/^1\/3, gardée/).click();
+
+		expect(onUpdateChoiceVariations).toHaveBeenCalledWith(CALCULS.id, undefined);
+		expect(onUpdateVariations).toHaveBeenCalledWith(CALCULS.id, [1, 2]);
+	});
+
+	describe('nombre de variations en QCM sous la carte (PR A3)', () => {
+		const line = (screen: Awaited<ReturnType<typeof renderTeacher>>['screen']) =>
+			screen.container.querySelector<HTMLElement>('[data-variations-gardees]');
+
+		it('variations choisies et une en QCM : « 2 variations sur 3 · 1 en QCM »', async () => {
+			const { screen } = await renderTeacher({
+				item: { variations: [0, 1], choiceVariations: [0] }
+			});
+
+			expect(line(screen)?.textContent?.trim()).toBe('2 variations sur 3 · 1 en QCM');
+		});
+
+		it('toutes gardées et une en QCM : « 1 en QCM » seul', async () => {
+			const { screen } = await renderTeacher({ item: { choiceVariations: [0] } });
+
+			expect(line(screen)?.textContent?.trim()).toBe('1 en QCM');
+		});
+
+		it('QCM sur une variation retirée seulement : il ne compte pas', async () => {
+			const { screen } = await renderTeacher({
+				item: { variations: [1, 2], choiceVariations: [0] }
+			});
+
+			expect(line(screen)?.textContent?.trim()).toBe('2 variations sur 3');
+		});
+
+		it('une variation passe en QCM : la ligne apparaît', async () => {
+			const { screen } = await renderTeacher();
+
+			expect(line(screen)).toBeNull();
+			await screen.rerender({ item: { ...CALCULS_ITEM, choiceVariations: [0] } });
+			await expect.poll(() => line(screen)?.textContent?.trim()).toBe('1 en QCM');
+		});
+
+		it('élève : rien, même avec une variation en QCM', async () => {
+			const { screen } = await renderTeacher({
+				teacher: false,
+				item: { choiceVariations: [0] }
+			});
+
+			expect(line(screen)).toBeNull();
+		});
+	});
+
+	it('élève : flèches seulement, numéro non cliquable, pas de case « En QCM »', async () => {
+		const { screen } = await renderTeacher({ teacher: false });
+
+		await expect
+			.element(screen.getByRole('button', { name: 'Variation suivante' }))
+			.toBeInTheDocument();
+		expect(page.getByRole('button', { name: /^\d\/\d, / }).query()).toBeNull();
+		expect(page.getByRole('checkbox', { name: /en QCM/ }).query()).toBeNull();
 	});
 });

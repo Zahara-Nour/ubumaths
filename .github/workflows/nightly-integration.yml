@@ -86,6 +86,10 @@ on:
       - 'src/lib/questions/**'
       - 'src/lib/resources/**'
       - 'src/lib/server/**'
+      # Versions d'exercices (versions-exercices-lectures.test.ts) : import, slug, tuteur
+      - 'src/lib/exercises/markdown-frontmatter.ts'
+      - 'src/lib/exercises/slug-generator.ts'
+      - 'src/lib/config/personalities.ts'
       - 'src/lib/srs/**'
       - 'src/lib/statistics/**'
       - 'src/lib/theme/**'
@@ -152,6 +156,17 @@ on:
       - 'src/lib/worksheets/document/answer-frame-lines.ts'
       - 'src/lib/exercises/generator/instance-generator.ts'
       - 'src/lib/types/worksheets.ts'
+      # Corrigé de classe (versions-exercices-lectures.test.ts) : chaîne PDF Typst
+      - 'src/lib/typst/easy-reading.ts'
+      - 'src/lib/typst/generators/**'
+      - 'src/lib/typst/types.ts'
+      - 'src/lib/typst/utils/**'
+      - 'src/lib/typst/worksheet-palette.ts'
+      - 'src/lib/worksheets/document/math-limits.ts'
+      - 'src/lib/worksheets/document/numbering.ts'
+      - 'src/lib/worksheets/document/render-exercise.ts'
+      - 'src/lib/worksheets/document/teacher-adapter.ts'
+      - 'src/lib/worksheets/pdf-file-name.ts'
       # src/routes : handlers appelés directement par les tests. Chez GitHub, `[]`
       # est une classe de caractères, et `?` / `+` portent sur le caractère
       # PRÉCÉDENT (pas « un caractère quelconque ») : un segment `[id]` ou `(groupe)`
@@ -192,6 +207,13 @@ on:
       - 'src/routes/api/student/worksheets/*server.ts'
       - 'src/routes/api/student/worksheets/*/*server.ts'
       - 'src/routes/api/worksheets/assignments/*/preview/*server.ts'
+      - 'src/routes/api/worksheets/assignments/*/correction/*server.ts'
+      # Versions d'un exercice (versions-exercices-editeur.test.ts)
+      - 'src/routes/api/exercises/*/*server.ts'
+      - 'src/routes/api/exercises/*/versions/*server.ts'
+      - 'src/routes/api/exercises/*/versions/*/*server.ts'
+      - 'src/routes/api/worksheets/*/exercises/*server.ts'
+      - 'src/routes/api/tutor/conversations/*server.ts'
       - 'src/routes/api/worksheets/assignments/*/students/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*/*server.ts'

@@ -273,11 +273,8 @@ débord) ; `src/routes/(public)/royaume/[ville]/__tests__/` (404, clic sur un li
 
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (chantier K19 ; V15 corrigé par le Tour du
-Royaume, D19 par la chandelle qui se pose au bout d'une minute ; V14, C16, C17, D12-D15 corrigés le
-2026-10-12) :
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde
-  Automaths et le Shtam, les plus vivants).
-- Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
-  teintés (D17). Le lien d'évitement existe (« Aller au contenu », `src/routes/+layout.svelte`).
+### Points non vérifiés
+
+- Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde Automaths et le Shtam, les plus vivants).

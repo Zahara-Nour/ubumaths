@@ -13,6 +13,7 @@ import {
 	selectedColumns,
 	tableMock,
 	twoLevelExercise,
+	versionedLines,
 	type TableMock
 } from '#lib/server/worksheets/__tests__/table-mock.ts';
 import {
@@ -61,6 +62,12 @@ const STUDENTS = [
 	'550e8400-e29b-41d4-a716-446655440024'
 ];
 
+/** Ancien contenu de la ligne d'`exercises` : périmé, il ne doit jamais sortir (ADR 0044) */
+const STALE = {
+	variations: [{ label: 'guided', statement_md: 'PERIME', solution_md: 'PERIME' }],
+	shared: null
+};
+
 function supabase(
 	guidanceLevel: string,
 	individualized: boolean,
@@ -93,20 +100,24 @@ function supabase(
 		profiles: { data: { role: 'teacher', firstname: 'Ada', lastname: 'L.' }, error: null },
 		worksheet_assignment_students: { data: { id: 'was-1' }, error: null },
 		worksheet_exercises: {
-			data: [
-				{
-					id: WE_ID,
-					position: 1,
-					points: null,
-					custom_instructions: null,
-					translations: null,
-					correction_visible: true,
-					variation_index: null,
-					section_id: null,
-					is_essential: false,
-					exercise
-				}
-			],
+			// Contenu sur la version de la ligne (ADR 0044) ; l'exercice garde un ancien contenu
+			data: versionedLines(
+				[
+					{
+						id: WE_ID,
+						position: 1,
+						points: null,
+						custom_instructions: null,
+						translations: null,
+						correction_visible: true,
+						variation_index: null,
+						section_id: null,
+						is_essential: false,
+						exercise
+					}
+				],
+				STALE
+			),
 			error: null
 		},
 		worksheet_sections: { data: [], error: null }
@@ -163,6 +174,8 @@ describe('Aperçu d’affectation : la copie de l’élève', () => {
 
 	it('sans élève : la copie de la classe, au niveau de l’affectation', async () => {
 		const view = await preview(supabase('autonomous', true));
+		// Contenu de la VERSION de la ligne, jamais l'ancien contenu de l'exercice
+		expect(JSON.stringify(view)).not.toContain('PERIME');
 		const expected = resolveWorksheetExerciseCopy(
 			{ id: WE_ID, variation_index: null, exercise: twoLevelExercise() },
 			assignmentCopyScope(

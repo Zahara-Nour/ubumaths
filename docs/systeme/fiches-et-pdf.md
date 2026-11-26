@@ -142,7 +142,8 @@ worksheets (type, status, config jsonb, translations, style_id, school_id,
  │           category, custom_title)                  ← ADR 0041
  ├── worksheet_classifications (node_id → classification_nodes, position)  ← notions, ADR 0041
  ├── worksheet_sections (title, instructions, position, translations)
- ├── worksheet_exercises (exercise_id → exercises, section_id?, position, points,
+ ├── worksheet_exercises (exercise_id → exercises, exercise_version_id → exercise_versions
+ │                        (ADR 0044 : la version que la fiche utilise), section_id?, position, points,
  │                        custom_instructions, variation_index?, variant_mode/config (plus lus),
  │                        correction_visible, is_essential, translations)
  ├── worksheet_templates (template_content Typst, placeholders, style_id, form)   ← via le style
@@ -235,7 +236,11 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
 (`.../correction`, `CorrectionManager.svelte`), aperçu, lot ZIP et correction générale
 (`PdfPreview.svelte`), cahier de texte public.
 
-- **Version** d'un exercice = son **niveau de guidage**, choisi à l'affectation
+- **Contenu** de chaque exercice : celui de la **version** que la ligne de fiche désigne
+  (`worksheet_exercises.exercise_version_id`, ADR 0044), jamais la dernière ; lu par la jointure
+  `WORKSHEET_LINE_VERSION` + `withLineVersion` (`src/lib/server/exercise-versions.ts`), y compris
+  par les deux liens de partage (cahier de texte, cours).
+- Le **niveau de guidage** d'un exercice, choisi à l'affectation
   (`worksheet_assignments.guidance_level`, guidé par défaut), **jamais tiré** :
   `guidanceVariationIndex` (`src/lib/worksheets/student-copy.ts`) prend le niveau demandé, sinon le
   plus proche du côté le plus guidé. `worksheet_exercises.variation_index`, s'il est posé, prime.
@@ -938,48 +943,10 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 
 ## Écarts connus
 
-1. **Plus de copie individuelle à imprimer pour une affectation individualisée** : le lot ZIP vit sur
-   la page de la fiche, hors affectation (même copie pour tous). Sans effet aujourd'hui (aucun
-   exercice à variables en prod, mesuré le 2026-10-11).
-2. ~~Restes du tirage d'avant l'ADR 0023~~ : **retirés** (`worksheets/instance-generator.ts`,
-   routes `api/worksheets/[id]/instances` et `[id]/preview`, `VariantPreview.svelte`).
-3. **`worksheet_instances` vide (0 ligne) et sans écrivain** : plus lue par aucun code depuis M4
-   (2026-11-03). Le décompte « Publié pour N élève(s) » compte les élèves de l'affectation ;
-   `canStudentAccessInstanceCorrection`, sans appelant, est retirée. `DROP` décidé par David,
-   **après** le `deploy:prod` qui livre ce code.
-4. ~~Routes PDF serveur mortes~~ : **corrigé** (K11, 2026-10-12), `api/worksheets/[id]/pdf` et
-   `pdf/batch` retirées.
-5. ~~`CorrectionManager.svelte` charge typst.ts sans version~~ : **corrigé** (K11) : il passe par
-   `compileToPdf` du compilateur partagé. Garde : `src/lib/__tests__/cdn-versions-epinglees.test.ts`
-   (toute URL jsDelivr ou unpkg de `src/` nomme une version).
-6. ~~Ré-exports dépréciés encore importés~~ : **corrigé** (K11) : `#lib/worksheets/typst-compiler`,
-   `typst-generator` et `default-templates` retirés, les appelants importent `#lib/typst/index.ts`.
-7. ~~`available_from` nul refusé par la réponse de l'API élève~~ : **corrigé** (L17, 2026-11-01) :
-   `studentWorksheetDetailResponseSchema` et `studentWorksheetListItemSchema` acceptent `null`
-   (« disponible tout de suite »). Test : `src/lib/server/validation/__tests__/worksheet-type.test.ts`.
-8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
-   dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
-   production peuvent donc différer sur un glyphe.
-9. ~~Option « mélanger les exercices » : trois restes~~ : **corrigé** (D6, 2026-10-14) : case
-   « Mélanger dans les sections » retirée, numéro des signalements pris dans la copie de l'élève,
-   corrigé de classe et aperçu « vue prof » d'une affectation individualisée d'après la copie d'un
-   élève choisi, signalements de l'élève sur le numéro de sa copie.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-Vérifié contre le code le 2026-10-15 (lot 1 de l'ADR 0030 : le type décide de l'en-tête). 8. **Catégorie et notions : trois requêtes, pas une transaction** (ADR 0041, revue de la PR 2b,
-2026-11-19). `PUT /api/worksheets/[id]` écrit d'abord les champs sans rapport avec les notions
-(un refus, style d'un autre auteur, arrive avant tout retrait), puis retire les notions en
-trop, met à jour type / catégorie / titre, écrit les notions. Une panne entre les deux dernières
-étapes (nœud supprimé entre-temps, coupure) laisserait la fiche sans ses nouvelles notions ;
-réenregistrer répare. Une fonction SQL `security invoker` réunirait les trois écritures. 9. **Fiche anglaise au titre composé sans catégorie, un nom sans anglais** : ni notion ni
-catégorie à imprimer, le PDF imprime `title` (le titre anglais s'il est écrit, sinon le titre
-composé, en français). Depuis la migration `20261124204132`, tous les nœuds actifs ont un nom
-anglais : le cas ne revient qu'avec un nœud créé ensuite sans nom anglais, que l'éditeur signale. 10. **`escapeTypst` n'échappe pas `[` `]`** (`src/lib/ubumark/generators/typst-generator.ts`) : un
-texte venu de la base, posé dans une cellule `[…]` d'un gabarit, peut fermer la cellule et
-être lu comme du code Typst (audit de sécurité de la PR #2912). Corrigé pour le titre, la ligne
-sous le titre et le bas de page (`escapeTypstBrackets`) ; reste les autres textes de la fiche
-(consignes, nom de section…), écrits par le prof ou l'admin seulement. Passer chacun par
-`escapeTypstBrackets` ou `typstTextLiteral`. 11. **`escapeTypst` n'échappe pas `/`** (relevé à la PR 4 du
-chantier `categorie-fiche`, 2026-11-22) : en mode contenu Typst, `//` et `/*` ouvrent un
-commentaire, et un texte venu de la base qui en contient (titre, consigne) serait coupé à cet
-endroit dans le PDF. Faible : aucun des 50 titres de fiche en prod n'en contient (mesuré le 2026-11-22). Correctif : ajouter
-`/` aux remplacements de `escapeTypst`, dans une PR à part.
+### Points non vérifiés
+
+- **Plus de copie individuelle à imprimer pour une affectation individualisée** : le lot ZIP vit sur
+  la page de la fiche, hors affectation (même copie pour tous). Sans effet aujourd'hui (aucun
+  exercice à variables en prod, mesuré le 2026-10-11).

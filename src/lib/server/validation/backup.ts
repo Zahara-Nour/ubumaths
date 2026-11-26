@@ -51,6 +51,19 @@ const emailSchema = z.string().email();
  * Schema for a single exercise record in backup
  * Matches database.ts exercises Row type
  */
+/** Une version d'exercice dans une sauvegarde (ADR 0044) */
+export const exerciseVersionBackupSchema = z.object({
+	number: z.number().int().min(1).max(100000),
+	note: z.string().min(1).max(500).nullable(),
+	variations: z.unknown().nullable(),
+	shared: z.unknown().nullable(),
+	generic_functions: z.array(z.string()).nullable(),
+	created_at: datetimeSchema,
+	updated_at: datetimeSchema
+});
+
+export type ExerciseVersionBackupRecord = z.infer<typeof exerciseVersionBackupSchema>;
+
 export const exerciseBackupRecordSchema = z.object({
 	// Primary key
 	id: uuidSchema,
@@ -83,6 +96,16 @@ export const exerciseBackupRecordSchema = z.object({
 	// Titre traduit (`exercises.translations`) : absent des sauvegardes
 	// antérieures à la colonne ; sans la clé, la restauration le perdrait.
 	translations: z.unknown().nullable().optional(),
+	// Versions de l'exercice (ADR 0044) : absentes des sauvegardes antérieures, dont le contenu
+	// ci-dessus (variations, shared, generic_functions) devient alors la version 1. Présentes, le
+	// contenu ci-dessus est celui de la dernière, pour les lecteurs de l'ancien format.
+	versions: z
+		.array(exerciseVersionBackupSchema)
+		.max(1000)
+		.refine((versions) => new Set(versions.map((v) => v.number)).size === versions.length, {
+			message: 'Numéros de version en double'
+		})
+		.optional(),
 
 	// Audit fields
 	created_at: datetimeSchema,

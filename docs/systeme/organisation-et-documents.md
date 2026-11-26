@@ -85,7 +85,7 @@ Policies (`20260616220000_baseline_schema.sql`, `20260620090000_drop_class_teach
 | UPDATE    | « Teachers can update own documents »            | les siens seulement                                                      |
 | DELETE    | « Teachers can delete own documents »            | les siens ; `rag_chunks` suit en cascade                                 |
 
-Aucune policy ne donne à l'admin les documents d'un autre (voir Écarts connus). `anon` n'a aucun
+Aucune policy ne donne à l'admin les documents d'un autre (voir Écarts connus, qui renvoie au registre). `anon` n'a aucun
 droit sur la table (`20261001170000_anon_retrait_droits_herites.sql`).
 
 **Pas de fichier stocké.** Le dépôt ne garde **que le texte extrait** : `rag_documents.content`
@@ -161,30 +161,4 @@ plus les fragments de `rag_chunks`. Le fichier d'origine n'est écrit ni dans un
 
 ## Écarts connus
 
-1. **L'admin croit tout voir et tout gérer, la RLS ne le suit pas.** `GET` annonce « admins see
-   all » mais aucune policy SELECT ne lui ouvre les documents d'un autre professeur. Pire, sur un
-   document d'autrui, `PATCH` et `DELETE` sautent la vérification de propriété, la RLS refuse en
-   silence (0 ligne, pas d'erreur : `deleteDocument`, `enableDocument`, `disableDocument` et
-   l'`update` n'utilisent pas `.select()`) et la route répond **succès**. Cas improbable
-   aujourd'hui (l'admin ne voit pas ces documents), mais la réponse ment.
-2. **Un document désactivé disparaît de l'écran.** `DocumentManager` ne passe pas `enabledOnly` ;
-   le schéma vaut `true` par défaut ; après « Désactiver », le rechargement le retire de la liste,
-   et rien ne permet de le réactiver ni de le supprimer depuis l'interface.
-3. **La policy élève de `rag_documents` ne regarde pas le statut** de l'adhésion : un élève archivé
-   (`class_members.status` ≠ `active`) lit encore les documents des professeurs, et le tuteur peut
-   les lui citer. Hors zone (accès du RAG), à trancher avec [tuteur-ia.md](tuteur-ia.md).
-4. **Policy storage élève absente du baseline local** (relevé dans
-   `20260915220000_is_class_student_active_only.sql`) : en local, un élève qui ouvre un document
-   de chapitre reçoit 500 ; aucun test ne peut exercer le chemin de production.
-5. `PATCH` ne valide pas `documentId` comme UUID (seulement `typeof string`) ; `description`
-   est acceptée par `documentUpdateSchema` mais jamais écrite ; `enabledForRag` du dépôt est
-   ignoré (`indexDocument` force `true`, déjà noté dans tuteur-ia.md).
-6. `extractText` : le test `mimeType.endsWith('.md')` ne peut jamais servir (un type MIME n'a pas
-   d'extension) ; `text/x-markdown` est traité comme du texte brut.
-7. L'en-tête de `api/documents/[id]/+server.ts` annonce des chemins `/view` et `/download` qui
-   n'existent pas : c'est `?download`.
-8. Bouton « Modifier » de `DocumentCard` désactivé (« bientôt disponible ») ; suppression confirmée
-   par `confirm()` natif.
-9. Pomodoro : la clé `localStorage` n'est pas propre au compte. Sur un ordinateur partagé, le compte
-   suivant hérite du minuteur et du compteur du jour (aucune donnée personnelle). Le commentaire
-   de `tick` renvoie à un « design doc » introuvable dans le dépôt.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

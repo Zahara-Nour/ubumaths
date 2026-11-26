@@ -21,7 +21,8 @@ import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
-	cleanupAllTestData
+	cleanupAllTestData,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
@@ -136,6 +137,7 @@ beforeAll(async () => {
 	rowId = await insert('worksheet_exercises', {
 		worksheet_id: worksheetId,
 		exercise_id: exerciseId,
+		exercise_version_id: await latestTestVersionId(exerciseId),
 		position: 1
 	});
 	const assignmentId = await insert('worksheet_assignments', {

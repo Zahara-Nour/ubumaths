@@ -65,7 +65,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	let q = locals.supabase
 		.from('srs_anti_fraud_flags')
 		.select(
-			'id, student_id, capacity_point_id, flag_type, severity, score, sample_size, details, resolved, resolved_by, resolved_at, created_at, profiles!srs_anti_fraud_flags_student_id_fkey(id, first_name, last_name), curriculum_points(id, name)'
+			'id, student_id, capacity_point_id, flag_type, severity, score, sample_size, details, resolved, resolved_by, resolved_at, created_at, profiles!srs_anti_fraud_flags_student_id_fkey(id, firstname, lastname), curriculum_points(id, name)'
 		)
 		.in('student_id', studentIds)
 		.gte('created_at', sinceIso)
@@ -79,27 +79,12 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const { data: flagRows, error: flagErr } = await q;
 	if (flagErr) {
-		return Response.json({ error: flagErr.message }, { status: 500 });
+		// Le message de la base (noms de colonnes) reste dans le journal du serveur.
+		logger.error('Signalements illisibles :', flagErr);
+		return Response.json({ error: 'Impossible de lire les signalements' }, { status: 500 });
 	}
 
-	type FlagRow = {
-		id: string;
-		student_id: string;
-		capacity_point_id: string | null;
-		flag_type: string;
-		severity: number;
-		score: number;
-		sample_size: number;
-		details: Record<string, unknown> | null;
-		resolved: boolean;
-		resolved_by: string | null;
-		resolved_at: string | null;
-		created_at: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
-		curriculum_points: { id: string; name: string } | null;
-	};
-
-	const flags = ((flagRows ?? []) as unknown as FlagRow[]).map((row) => ({
+	const flags = (flagRows ?? []).map((row) => ({
 		id: row.id,
 		student_id: row.student_id,
 		capacity_point_id: row.capacity_point_id,
@@ -115,8 +100,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		student: row.profiles
 			? {
 					id: row.profiles.id,
-					first_name: row.profiles.first_name,
-					last_name: row.profiles.last_name
+					first_name: row.profiles.firstname,
+					last_name: row.profiles.lastname
 				}
 			: { id: row.student_id, first_name: null, last_name: null },
 		point: row.curriculum_points

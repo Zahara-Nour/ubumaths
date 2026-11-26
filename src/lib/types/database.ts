@@ -3592,6 +3592,75 @@ export type Database = {
 					}
 				];
 			};
+			exercise_versions: {
+				Row: {
+					created_at: string;
+					created_by: string;
+					exercise_id: string;
+					generic_functions: string[] | null;
+					id: string;
+					note: string | null;
+					number: number;
+					shared: Json | null;
+					updated_at: string;
+					variations: Json | null;
+				};
+				ComputedFields: never;
+				Insert: {
+					created_at?: string;
+					created_by: string;
+					exercise_id: string;
+					generic_functions?: string[] | null;
+					id?: string;
+					note?: string | null;
+					number: number;
+					shared?: Json | null;
+					updated_at?: string;
+					variations?: Json | null;
+				};
+				Update: {
+					created_at?: string;
+					created_by?: string;
+					exercise_id?: string;
+					generic_functions?: string[] | null;
+					id?: string;
+					note?: string | null;
+					number?: number;
+					shared?: Json | null;
+					updated_at?: string;
+					variations?: Json | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'exercise_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'exercise_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'exercise_versions_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			exercises: {
 				Row: {
 					category: string;
@@ -14289,6 +14358,7 @@ export type Database = {
 					created_at: string;
 					custom_instructions: string | null;
 					exercise_id: string;
+					exercise_version_id: string;
 					id: string;
 					is_essential: boolean;
 					points: number | null;
@@ -14308,6 +14378,7 @@ export type Database = {
 					created_at?: string;
 					custom_instructions?: string | null;
 					exercise_id: string;
+					exercise_version_id: string;
 					id?: string;
 					is_essential?: boolean;
 					points?: number | null;
@@ -14326,6 +14397,7 @@ export type Database = {
 					created_at?: string;
 					custom_instructions?: string | null;
 					exercise_id?: string;
+					exercise_version_id?: string;
 					id?: string;
 					is_essential?: boolean;
 					points?: number | null;
@@ -14345,6 +14417,13 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'exercises';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_exercises_exercise_version_fkey';
+						columns: ['exercise_id', 'exercise_version_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercise_versions';
+						referencedColumns: ['exercise_id', 'id'];
 					},
 					{
 						foreignKeyName: 'worksheet_exercises_section_id_fkey';
@@ -15868,6 +15947,27 @@ export type Database = {
 			count_user_notebooks: { Args: { p_user_id: string }; Returns: number };
 			count_user_python_files: { Args: { p_user_id: string }; Returns: number };
 			create_1on1_chat: { Args: { p_user1_id: string; p_user2_id: string }; Returns: string };
+			create_exercise_version: {
+				Args: { p_exercise_id: string; p_note?: string };
+				Returns: {
+					created_at: string;
+					created_by: string;
+					exercise_id: string;
+					generic_functions: string[] | null;
+					id: string;
+					note: string | null;
+					number: number;
+					shared: Json | null;
+					updated_at: string;
+					variations: Json | null;
+				};
+				SetofOptions: {
+					from: '*';
+					to: 'exercise_versions';
+					isOneToOne: true;
+					isSetofReturn: false;
+				};
+			};
 			create_short_link: { Args: { p_target: string }; Returns: string };
 			create_tournament: {
 				Args: {
@@ -16784,6 +16884,27 @@ export type Database = {
 				Args: { p_difficulty: string; p_match_type?: string };
 				Returns: Json;
 			};
+			latest_exercise_versions: {
+				Args: { p_exercise_ids: string[] };
+				Returns: {
+					created_at: string;
+					created_by: string;
+					exercise_id: string;
+					generic_functions: string[] | null;
+					id: string;
+					note: string | null;
+					number: number;
+					shared: Json | null;
+					updated_at: string;
+					variations: Json | null;
+				}[];
+				SetofOptions: {
+					from: '*';
+					to: 'exercise_versions';
+					isOneToOne: false;
+					isSetofReturn: true;
+				};
+			};
 			leave_multiplayer_queue: { Args: Record<PropertyKey, never>; Returns: Json };
 			link_chapter_to_template: {
 				Args: { p_chapter_id: string; p_template_id: string };
@@ -17088,6 +17209,27 @@ export type Database = {
 			run_weekly_best_bonuses: { Args: Record<PropertyKey, never>; Returns: undefined };
 			run_weekly_rewards: { Args: Record<PropertyKey, never>; Returns: undefined };
 			same_school: { Args: { p_other: string }; Returns: boolean };
+			save_exercise_with_version: {
+				Args: { p_content: Json; p_exercise_id: string; p_identity: Json; p_version_id?: string };
+				Returns: {
+					created_at: string;
+					created_by: string;
+					exercise_id: string;
+					generic_functions: string[] | null;
+					id: string;
+					note: string | null;
+					number: number;
+					shared: Json | null;
+					updated_at: string;
+					variations: Json | null;
+				};
+				SetofOptions: {
+					from: '*';
+					to: 'exercise_versions';
+					isOneToOne: true;
+					isSetofReturn: false;
+				};
+			};
 			search_private_messages: {
 				Args: {
 					p_date_from?: string;

@@ -17,7 +17,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; bloc trous (texte à trous à étiquettes) le 2026-11-14 ; bloc schema-barres (affichage) le 2026-11-12, colonne étroite le 2026-11-13 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08, triangle rectangle le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26, en fin de page seulement le 2026-11-09 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; courbe de données (`données:`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; droite graduée fermée dans un item de liste et droite PDF réduite à la colonne le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03 ; bloc associer le 2026-11-14, courbe dans un élément (lot 2) le 2026-11-14 ; bloc tortue (écran, PDF) le 2026-11-14, `départ:` le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e, parseur) le 2026-11-16, `départ:` à compléter le 2026-11-17 ; bloc calcul (parseur, PR 5a) le 2026-11-14, écran et PDF (PR 5b) le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16, son écran (blocs du niveau dans la carte) le 2026-11-16 ; bloc robot (parseur, moteur, juge) le 2026-11-15, écran, corrigé et PDF (PR 1b) le 2026-11-15 ; limite cachée d'une ligne `variation:` (parseur, écran, PDF, `withSingleCellShown`) le 2026-11-23 ; formule d'une étape à ranger coupée après `=` / `+`, noms des sommets d'un solide hors des traits, teintes de la petite aiguille et du trait actif de la boîte le 2026-11-24 ; labyrinthe (`labyrinthe) le 2026-11-24, largeur sur téléphone le 2026-11-24 ; droite graduée dessinée à l'écran dans un item de liste (`ListNode`, écart E56) le 2026-11-24.
+> Vérifié contre le code le 2026-10-11 ; bloc trous (texte à trous à étiquettes) le 2026-11-14 ; bloc schema-barres (affichage) le 2026-11-12, colonne étroite le 2026-11-13 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08, triangle rectangle le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26, en fin de page seulement le 2026-11-09 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; courbe de données (`données:`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; droite graduée fermée dans un item de liste et droite PDF réduite à la colonne le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03 ; bloc associer le 2026-11-14, courbe dans un élément (lot 2) le 2026-11-14 ; bloc tortue (écran, PDF) le 2026-11-14, `départ:` le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e, parseur) le 2026-11-16, `départ:` à compléter le 2026-11-17 ; bloc calcul (parseur, PR 5a) le 2026-11-14, écran et PDF (PR 5b) le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16, son écran (blocs du niveau dans la carte) le 2026-11-16 ; bloc robot (parseur, moteur, juge) le 2026-11-15, écran, corrigé et PDF (PR 1b) le 2026-11-15 ; limite cachée d'une ligne `variation:` (parseur, écran, PDF, `withSingleCellShown`) le 2026-11-23 ; formule d'une étape à ranger coupée après `=` / `+`, noms des sommets d'un solide hors des traits, teintes de la petite aiguille et du trait actif de la boîte le 2026-11-24 ; labyrinthe (`labyrinthe) le 2026-11-24, largeur sur téléphone le 2026-11-24 ; droite graduée dessinée à l'écran dans un item de liste (`ListNode`, écart E56) le 2026-11-24 ; droite graduée, un nombre écrit sur deux quand ils se toucheraient (E63, E82), et courbes d'« associer » de 130 px au téléphone (E70) le 2026-11-25.
 
 ## À quoi ça sert
 
@@ -414,7 +414,8 @@ dans une étiquette ou un intrus, suite en retrait sans bloc (texte sur plusieur
 retrait), lien absent ou pas en dernière ligne, plus de 6 éléments
 (`ASSOCIER_MAX_BLOCK_ITEMS`). Les erreurs propres de la courbe (fenêtre manquante…) s'affichent sur la
 courbe, pas dans le bloc associer. Instance : `serializeAssocierBlock` écrit la suite en retrait et un
-`->` vide en dernière ligne. Écran : `AssocierContenu.svelte` (courbe en petit, 130 à 180 px, sans
+`->` vide en dernière ligne. Écran : `AssocierContenu.svelte` (courbe en petit, 130 à 180 px — 130 px au moins à 393 px de large, colonne
+des courbes 1,6 pour 1 dans `AssocierRelier.svelte`, écart E70 —, sans
 `pointer-events` : le geste se fait sur la case). PDF : éléments numérotés « 1. » (tous, dès qu'un
 élément a un bloc), courbe en taille `petite`.
 
@@ -627,6 +628,13 @@ réduite : marges, chiffres, points et traits gardent leur taille, seul l'écart
 resserre ; pas de défilement horizontal (il se battrait avec le glisser). `valueToX`, `xToValue`,
 `computeGraduations`, `computeLineExtents` prennent la largeur (défaut 600 : PDF et
 inchangés) ; `NumberLinePlacer` lit le doigt en px (`xToValue(…, rect.width)`).
+**Nombres écrits trop serrés** (écarts E63 et E82, `number-line-etiquettes-serrees.test.ts`) : quand
+deux nombres voisins se toucheraient, l'écran n'en écrit qu'un sur deux (ou sur N), tous les traits
+gardés — `thinLabels` (`utils/number-line-render.ts`), appelée par `NumberLine.svelte` seul, le PDF
+garde tout. Le zéro reste écrit (sinon le premier nombre : le dernier peut disparaître) ; un « ? »
+reste toujours, un nombre qui le toucherait est retiré. Largeur d'un nombre : `estimateLabelWidth`
+(mesures à l'écran : un chiffre 8 px, « −6 » 20,5 px), plus 4 px d'air ; le rythme est celui du plus
+petit écart entre deux nombres écrits.
 PDF (`number-line-typst.ts`) : droite de 12 cm, **réduite** à la largeur disponible si elle la
 dépasse (colonne de fiche ≈ 8,7 cm ; `layout` + `measure` + `scale(reflow: true)`, comme l'arbre de
 probabilités ; jamais agrandie) — `number-line-typst.test.ts`.
@@ -1931,6 +1939,50 @@ fini ». Un nombre JS réinjecté dans une expression relue (tirage `{{random:�
 validation `custom`) passe par `numberToLatexSafe` (`mathAST/common/numeric.ts`), jamais
 `String(n)` (`String(3e-7)` = `3e-7`, relu 3e − 7). Tests :
 `src/lib/mathAST/eval/__tests__/evaluate-with-modifiers-sans-notation-js.test.ts`.
+
+**Décimales et arrondis** (2026-11-26). Règle : **un zéro final ne s'écrit que s'il dit quelque
+chose : arrondi, centimes, ou demandé par l'auteur.** Sans réglage, `1.5` reste `1,5`.
+
+| Modificateur | Ce qu'il fait                                                  | Exemples                                                                      |
+| ------------ | -------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `;dN`        | au moins N décimales, **sans arrondir** (N de 1 à 15)          | `1.5;d2` → 1,50 · `4;d2` → 4,00 · `3.755;d2` → 3,755                          |
+| `;aN`        | arrondit à N décimales et en écrit exactement N (N de 0 à 15)  | `2.675;a2` → 2,68 · `3.04;a1` → 3,0 · `-2.345;a2` → −2,35 · `2.6;a0` → 3      |
+| `;pN`        | arrondit à N chiffres significatifs, tous écrits (N de 1 à 15) | `3.04;p2` → 3,0 · `0.00456;p2` → 0,0046 · `9.96;p2` → 10 · `0.0996;p2` → 0,10 |
+| `;sci;pN`    | notation scientifique, mantisse à N chiffres                   | `1234;sci;p2` → 1,2 × 10³ · `3;sci;p2` → 3,0 × 10⁰                            |
+
+`;d` seul garde son sens (écriture décimale). L'arrondi se fait **au plus proche, 5 vers
+l'extérieur, sur la valeur exacte** (2,675 → 2,68, là où un calcul en flottants donnerait 2,67) ;
+un résultat irrationnel (`sqrt(2);a4`) est arrondi depuis sa valeur à 15 chiffres. Les espaces de
+groupement restent ceux du rendu (`1234;p2` → 1200, `123456;p2` → 120 000). Avec une grandeur :
+`{{eval:(x)[m];a2}}` → 1,50 m, et `;[cm]` convertit **avant** d'arrondir (`1[min];[h];a2` → 0,02 h).
+`;+` et `;()` lisent le signe écrit (`-0.001;a2,+` → +0,00). **Refusés** (erreur de tirage) : `;a`
+avec `;p` ; `;dN` avec `;a` ou `;p` ; `;a`, `;p` ou `;dN` avec `;hms` ; `;sci` avec `;a` ou `;dN`
+(arrondir avec `;pN`) ; `;a`, `;p` sans chiffre ; N hors bornes ; `;aN`, `;pN`, `;dN` sur un
+calcul littéral.
+
+**Euro** : une grandeur en euros (`€`, `euro`, `euros`, `EUR`) sans `;aN`, `;pN`, `;dN` ni `;sci`,
+écrite avec UNE décimale, en prend deux : `(37/10)[€]` → 3,70 €, `12[€]` → 12 €, `4.25[€]` et
+`3.755[€]` inchangés (tout est écrit). Un réglage écrit l'emporte (`12.345[€];p3` → 12,3 €). Ce
+complément est fait sur le résultat du `{{eval}}` (`euroWriting`), pas dans l'écriture des unités
+(`generateUnit`), qui sert aussi aux réponses des élèves.
+
+`round(x, n)` (n entier de 0 à 15) : le même arrondi exact que `;aN`, mais la **valeur** seulement,
+sans zéro d'écriture (`round(3.704, 2)` vaut 3,7). Les moitiés vont vers l'extérieur, `n = 0`
+compris (`round(-2.5, 0)` = −3), alors que `round(x)` garde son comportement historique
+(`round(-2.5)` = −2) : il ne change pas, à cause des modèles publiés. Calcul évalué et compilé
+(`mathAST/eval/decimal-rounding.ts`) ; dans le chemin compilé, un `n` invalide (négatif, non
+entier, > 15) donne NaN au lieu de lever.
+
+**Avertissements** de `pnpm question:specs` (`checkTemplate`, sans effet sur le verdict) : des
+euros qui gardent plus de deux décimales sans `;aN`, `;pN` ni `;dN` ; `;dN` sur une valeur qui a
+plus de N décimales ; dans une case sans `precision`, une réponse attendue arrondie (`;aN`, `;pN` :
+l'élève qui n'arrondit pas serait compté faux sans message) ou à décimales imposées (`;dN` :
+l'élève qui recopie ces zéros serait en forme à améliorer), écrite dans l'attendu ou dans une
+variable qu'il cite (`{{p}}`). Les deux premiers sont dits par les `{{eval}}` du tirage RETENU
+(`collectEvalWarnings` / `warnEval`, `mathAST/eval/eval-warnings.ts` ; `generateInstance` écarte
+ceux d'un tirage rejeté par une condition) ; au plus trois différents sont listés. Tests : `src/lib/questions/generator/__tests__/eval-ecriture-nombres.test.ts`,
+`src/lib/mathAST/eval/__tests__/round-decimales.test.ts`,
+`src/lib/questions/review/__tests__/ecriture-nombres-warnings.test.ts`.
 
 ## Le pipeline
 

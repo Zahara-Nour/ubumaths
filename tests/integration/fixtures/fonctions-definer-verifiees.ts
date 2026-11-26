@@ -757,7 +757,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	},
 	'student_has_exercise_access(p_exercise_id uuid)': {
 		categorie: 'predicat-rls',
-		justification: 'délègue à student_has_worksheet_access (auth.uid())'
+		justification:
+			'fiche : délègue à student_has_worksheet_access ; hors fiche : assignation active à auth.uid() ou à sa classe (membre actif)'
 	},
 	'student_has_worksheet_access(p_worksheet_id uuid)': {
 		categorie: 'predicat-rls',

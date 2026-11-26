@@ -107,9 +107,10 @@ que le modèle de la ligne (le choix ne la restreint pas). Variations **« en QC
 erreurs prévues ([questions.md](questions.md), `choice-from-errors.ts`), sur la même graine ; le
 tirage le fait pour toutes les formes sauf les flash-cards (`choiceCases`), et pour l'évaluation,
 dont l'instance figée au démarrage garde la forme QCM (la régénération depuis la graine seule, repli
-des tentatives d'avant Q42, la redonnerait en saisie). Le prof les coche dans la fenêtre des
-variations (`VariationPicker`, case « En QCM » sous chaque variation qui le permet, prof seulement),
-dans le panier comme dans l'éditeur de série ; retirer une variation retire son QCM ; le panier garde
+des tentatives d'avant Q42, la redonnerait en saisie). Le prof les coche : dans le panier (Ma série),
+sur la carte même (`TileCard`, case « En QCM » de la variation affichée, chantier `automaths`) ; dans
+l'éditeur de série, dans la fenêtre des variations (`VariationPicker`, case sous chaque variation qui
+le permet) ; prof seulement ; retirer une variation retire son QCM ; le panier garde
 le choix à la fusion et par un lien, comme les variations choisies. Elle est tirée **à
 neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) donne à
 chaque ligne une graine neuve (sauf lien « Mêmes nombres pour tous », ci-dessous), d'où sortent les
@@ -540,35 +541,22 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ## Écarts connus
 
-- **`shuffle_questions` sans effet** : réglé dans `EvaluationConfigForm` (« Mélanger l'ordre des
-  questions », coché par défaut), stocké, mais jamais lu au tirage : l'ordre suit toujours la
-  composition.
-- **`validateAttempt` (`evaluations.ts`) n'est appelé que par les tests** : `startEvaluationAttempt`
-  refait les mêmes contrôles à sa façon. Deux règles à tenir d'accord.
-- **Archivage sans écran** : seule l'action `publish` existe sur `/dashboard/teacher/assessments` ;
-  aucune route ne passe un contrôle en `archived`.
-- **Assignation à un élève sans écran** : `assignEvaluation` accepte `student_ids`, la page
-  `[id]/assign` n'envoie que des classes.
-- **Saisie des observations** : `DELETE` puis `INSERT` sans `.select()` ni transaction ; un
-  refus RLS du `DELETE` rend 0 ligne sans erreur et la grille est **doublée**
-  ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)). Les caches ne se recalculent
-  qu'à l'`INSERT` : un observable retiré du périmètre garde ses anciennes observations dans le cache.
-- **Mode test, deux sources** : le store `testMode` part de `localStorage`, la vérité est
-  `user_preferences`. Sur un nouvel appareil, l'interrupteur peut afficher l'inverse de l'état serveur
-  et le premier clic renvoyer la valeur déjà enregistrée. Le store utilise `writable`, pas les runes.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
 - **Temps de course par défaut** : 5 min dans `TestModeDialog` (séance libre), 7 min pour un
   contrôle.
-- **Fenêtre de choix du panier** (`TestModeDialog`) : un clic sur une carte lance la série ; seule la
-  Course aux nombres affiche d'abord le temps imparti, puis « Commencer le test ». La fenêtre défile
-  (`max-h-[90vh]`) : avec quatre cartes, elle dépasse un écran bas.
-- **En-têtes de code anglais et anciens** : `test.ts`, `TestCourse`, `TestResults`, `test-mode.ts`
-  parlent encore de « quiz », « Revision », « assessment ».
 - **Le code garde les anciens noms** : les écrans disent **contrôle** et **observation** depuis le
   2026-10-11, mais les URL (`/assessments`, `/evaluation-tasks`), les tables et les identifiants
   (`evaluations`, `EvaluationCard`…) n'ont pas été renommés. Les notifications déjà envoyées et les
   modèles de messages en base gardent « évaluation ».
-- **Couverture mal rangée** : `grades.ts` (niveaux scolaires) et les signalements de fiches
-  (`student/reports`) relèveraient d'autres docs.
+
+### Points non vérifiés
+
+- **Fenêtre de choix du panier** (`TestModeDialog`) : un clic sur une carte lance la série ; seule la
+  Course aux nombres affiche d'abord le temps imparti, puis « Commencer le test ». La fenêtre défile
+  (`max-h-[90vh]`) : avec quatre cartes, elle dépasse un écran bas.
 
 ---
 

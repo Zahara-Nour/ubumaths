@@ -2,6 +2,7 @@
 couvre:
   - 'supabase/migrations/**'
   - src/lib/types/database-helpers.ts
+  - src/lib/server/exercise-versions.ts
 ---
 
 # Base de données — ce que la liste des tables ne dit pas
@@ -278,11 +279,35 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
     NULL = français seulement ; même forme que `worksheets.translations`. Suit les droits de la
     ligne (personne ne gagne d'accès, David, 2026-11-25) ; aucun CHECK, la lecture
     (`asRowTranslations`) écarte une forme inattendue.
+- `exercise_versions` (ADR 0044, `20261125163605`) : les versions successives d'un exercice
+  (`number` ≥ 1, unique par exercice ; `note` facultative, 1 à 500 caractères). Elles portent le
+  **contenu** (`variations`, `shared`, `generic_functions`, mêmes CHECK que sur `exercises`) ; la
+  ligne d'`exercises` garde la fiche d'identité. Hors fiche, on lit la dernière (plus grand
+  numéro) ; dans une fiche, celle de `worksheet_exercises.exercise_version_id`. Toute lecture et
+  écriture du contenu passe par `src/lib/server/exercise-versions.ts`. Reprise : chaque exercice
+  existant est devenu sa v1. ⚠️ Jusqu'à la PR 4 du chantier `versions-exercices`, `exercises` garde
+  ses anciennes colonnes de contenu, figées à la reprise : plus rien ne les lit ni ne les écrit.
+  Accès : une version se lit exactement quand son exercice se lit (la policy délègue à la RLS
+  d'`exercises`) ; elle s'écrit par le prof auteur de l'exercice. Personne ne gagne d'accès (David,
+  2026-11-25). Fonctions (`20261125183550`, PR 2, toutes avec les droits de l'appelant) :
+  `latest_exercise_versions(ids)` rend la dernière version de chaque exercice (une ligne par
+  exercice, jamais tronquée par la limite de lignes de PostgREST) ; `create_exercise_version`
+  (« Nouvelle version ») recopie la dernière au numéro suivant (`created_by` = l'appelant, ou, sans
+  compte connecté, l'auteur de la version recopiée) ; `save_exercise_with_version` écrit ensemble la
+  fiche d'identité (clés = colonnes d'`exercises`, inconnue ou interdite → 22023) et le contenu
+  d'une version, tout ou rien. Déclencheur `exercise_versions_touch_exercise` : toute écriture
+  d'une version remet à jour `exercises.updated_at` (y compris une restauration ou un script).
+  Tests : `tests/integration/versions-exercices.test.ts`,
+  `tests/integration/versions-exercices-lectures.test.ts`,
+  `tests/integration/versions-exercices-editeur.test.ts`,
+  `tests/integration/versions-exercices-sauvegarde.test.ts`.
 - `migration_images` : reste de l'import des questions TinyMath, terminé ; aucun code ne la lit. `migration_tracking`, `migration_edits` et la vue `migration_review_tree` ont été supprimées le 2026-10-29 (migration `20261029203000`) ; leur contenu est exporté dans `data/import-tinymath/`.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
 professeur ; l'écriture des modèles est admin. Un exercice est lu par son auteur, par un élève qui y a
-accès (`student_has_exercise_access`) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
+accès (`student_has_exercise_access` : par une fiche qui lui est distribuée ou, depuis `20261126091954`,
+par une affectation hors fiche active posée par l'auteur, à lui ou à une classe dont il est membre
+actif ; détail dans [exercices.md](exercices.md#accès-rls-et-gardes)) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
 complétions et sa maîtrise ; depuis `20261012120000`, le professeur lit la maîtrise des élèves inscrits
 dans une classe (`is_teacher_of_student`). Un exercice privé partagé par lien se lit par la RPC
 `SECURITY DEFINER` `get_exercise_by_share_token` (jeton exact, actif, non expiré), qui incrémente
@@ -408,6 +433,14 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   attente et n'en change que la description (pas d'affectation, d'exercice ni d'auteur) ; `status`, `reviewed_by`, `reviewed_at` et `response` sont
   au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
   `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
+- `worksheet_exercises.exercise_version_id` (ADR 0044, `20261125163605`) : la version de
+  l'exercice que la fiche utilise, obligatoire. Clé composée `(exercise_id, exercise_version_id)`
+  vers `exercise_versions (exercise_id, id)`, en NO ACTION : une ligne ne pointe pas la version d'un
+  autre exercice, une version utilisée par une fiche ne se supprime pas, supprimer l'exercice emporte
+  ses versions et ses lignes. Une ligne neuve prend la dernière version ; dupliquer la fiche garde
+  les versions. Les liens de partage d'une fiche (`get_worksheet_by_share_token`,
+  `get_course_worksheet_by_share_token`) rendent le contenu de cette version ;
+  `get_exercise_by_share_token` et `get_student_exercises` (hors fiche) celui de la dernière.
 - `worksheet_exercises.answer_frame_lines` (ADR 0030 lot 4, `20261016103900`) : nombre de lignes
   des cadres de réponse choisi par le prof pour cet exercice dans cette fiche,
   `{ "questions": [int|null, …], "exercise": int|null }` ; `null` (colonne ou case) = estimation
@@ -737,6 +770,19 @@ celles de tous les élèves. `rag_documents` → `rag_chunks` : documents du pro
 `error_occurrences` (`src/lib/server/errorMonitoring.ts`), `bug_reports`, `background_job_runs`
 (tâches planifiées, lues par l'admin), `rate_limits` (`service_role` seul, via la RPC
 `check_and_increment_rate_limit` de `src/lib/server/rateLimiter.ts`), `server_cache`.
+`bug_reports` (`20261126060048`) : l'auteur d'un rapport n'écrit que ce que l'écran lui propose.
+À la création par un compte connecté, le rapport naît « en attente », daté de maintenant, sans
+capture, sans note, signature ni date de résolution : toute autre valeur est refusée par une
+erreur (`guard_bug_report_creation_trg`). Tant que le rapport est en attente, son auteur ne
+change que le titre, la description et la capture, dont le chemin doit être rangé
+`<auteur>/<rapport>/<fichier>` ; `screenshot_url` ne peut qu'être vidée ; toute autre colonne
+changée, d'aujourd'hui ou ajoutée plus tard, est refusée (`guard_bug_report_reecriture_trg`, liste
+blanche). Une fois le rapport pris en charge, la RLS refuse tout à l'auteur, en silence. L'admin
+garde tous ses droits de traitement ; le serveur (`service_role`) garde la main. Les règles du
+stockage des captures (bucket `bug-report-screenshots`, `20261126060050`) sont celles de la prod :
+l'auteur lit, dépose, remplace et efface dans son dossier `<son id>/…`, l'admin gère tout,
+personne d'autre n'y accède ; le bucket lui-même est créé par `supabase/seed.sql`.
+Preuve : `tests/integration/rapports-de-bug-non-reecrits.test.ts`.
 `web_vital_samples` (`20261121205833`) : mesures de performance des visiteurs (LCP, FCP, TTFB, INP,
 CLS), **anonymes** : heure arrondie à l'heure, identifiant de ligne tiré au hasard (pas de
 compteur, qui garderait l'ordre des envois), page sous la forme de son identifiant de route

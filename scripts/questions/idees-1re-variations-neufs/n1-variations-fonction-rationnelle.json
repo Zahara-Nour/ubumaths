@@ -1,0 +1,674 @@
+{
+	"id": "80c43412-3b52-47d3-a10b-00600323822d",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "1SPE-283"
+	},
+	"title": "Variations d'une fonction rationnelle",
+	"description": "Variations de (ax + b)/(cx + d), k/(cx + d), k/(x² + c) et (x² + bx + c)/(x + a) : signe de f′(x), tableau de variations sans limites, extremums.",
+	"grades": ["1_SPE"],
+	"level": 5,
+	"delay": 360,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ par $f(x)=\\dfrac{ {{eval:a*x+b}} }{ {{eval:c*x+d}} }$.\n\nPour tout $x\\neq{{al}}$, $f'(x)=\\dfrac{?}{({{eval:c*x+d}})^2}$.\n\nQuelle phrase décrit les variations de $f$ ?\n\n```choix\n- $f$ est croissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et sur $\\left]{{al}}\\,;+\\infty\\right[$\n- $f$ est décroissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et sur $\\left]{{al}}\\,;+\\infty\\right[$\n- $f$ est croissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et décroissante sur $\\left]{{al}}\\,;+\\infty\\right[$\n- $f$ est décroissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et croissante sur $\\left]{{al}}\\,;+\\infty\\right[$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "c",
+					"expression": "1..2"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-c*al"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "D",
+					"expression": "eval:a*d-b*c"
+				}
+			],
+			"conditions": ["al != 0", "D != 0", "a*d+b*c != D"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{D}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*d+b*c}}",
+							"message": "Le numérateur de $f'(x)$ est $u'v-uv'$ : c'est une différence, pas une somme.",
+							"label": "Somme au lieu de différence"
+						},
+						{
+							"answer": "{{eval:b*c-a*d}}",
+							"message": "Tu as calculé $uv'-u'v$ : la formule est $u'v-uv'$, dans cet ordre.",
+							"label": "uv′ − u′v"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:D>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\dfrac{u}{v}$ avec $u(x)={{eval:a*x+b}}$ et $v(x)={{eval:c*x+d}}$ : $f'(x)=\\dfrac{ {{a}}({{eval:c*x+d}})-{{c}}({{eval:a*x+b}})}{({{eval:c*x+d}})^2}=\\dfrac{\\textcolor{{{color:primary.0}}}{ {{D}} }}{({{eval:c*x+d}})^2}$.",
+					"Le dénominateur est un carré, strictement positif sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ : $f'(x)$ a le signe de ${{D}}$, {{if:D>0|positif|négatif}} des deux côtés de la valeur interdite.",
+					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:D>0|croissante|décroissante}}}}$ sur $\\left]-\\infty\\,;{{al}}\\right[$ et sur $\\left]{{al}}\\,;+\\infty\\right[$ (pas sur leur réunion : la double barre coupe le tableau).",
+					"```variation\nvariable: x\ndomain: -inf, {{al}}, +inf\n\nsign: f'(x)\n  -inf,{{al}}: {{if:D>0|+|-}}\n  {{al}}: ||\n  {{al}},+inf: {{if:D>0|+|-}}\n\nvariation: f(x)\n  -inf: , {{if:D>0|bottom|top}}\n  {{al}}: ||, , {{if:D>0|top|bottom}}, , {{if:D>0|bottom|top}}\n  +inf: , {{if:D>0|top|bottom}}\n```"
+				]
+			},
+			"hint": "Dérive avec $\\left(\\dfrac{u}{v}\\right)'=\\dfrac{u'v-uv'}{v^2}$ : le numérateur de $f'(x)$ est un nombre. Un carré est positif : le signe de $f'(x)$ est celui de ce nombre, des deux côtés de la valeur interdite."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ par $f(x)=\\dfrac{ {{k}} }{ {{eval:c*x+d}} }$.\n\nPour tout $x\\neq{{al}}$, $f'(x)=\\dfrac{?}{({{eval:c*x+d}})^2}$.\n\nQuelle phrase décrit les variations de $f$ ?\n\n```choix\n- $f$ est croissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et sur $\\left]{{al}}\\,;+\\infty\\right[$\n- $f$ est décroissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et sur $\\left]{{al}}\\,;+\\infty\\right[$\n- $f$ est croissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et décroissante sur $\\left]{{al}}\\,;+\\infty\\right[$\n- $f$ est décroissante sur $\\left]-\\infty\\,;{{al}}\\right[$ et croissante sur $\\left]{{al}}\\,;+\\infty\\right[$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "c",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-c*al"
+				},
+				{
+					"name": "k",
+					"expression": "1..10;±"
+				},
+				{
+					"name": "D",
+					"expression": "eval:-k*c"
+				}
+			],
+			"conditions": ["al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{D}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-k}}",
+							"message": "N'oublie pas la dérivée du dénominateur : $\\left(\\dfrac{1}{v}\\right)'=-\\dfrac{v'}{v^2}$.",
+							"label": "Dérivée du dénominateur oubliée"
+						},
+						{
+							"answer": "{{eval:k*c}}",
+							"message": "Attention au signe moins de $\\left(\\dfrac{1}{v}\\right)'=-\\dfrac{v'}{v^2}$.",
+							"label": "Signe moins oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:D>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f={{k}}\\times\\dfrac{1}{v}$ avec $v(x)={{eval:c*x+d}}$ et $v'(x)={{c}}$ : $f'(x)={{k}}\\times\\left(-\\dfrac{ {{c}} }{({{eval:c*x+d}})^2}\\right)=\\dfrac{\\textcolor{{{color:primary.0}}}{ {{D}} }}{({{eval:c*x+d}})^2}$.",
+					"Le dénominateur est un carré, strictement positif : $f'(x)$ a le signe de ${{D}}$, {{if:D>0|positif|négatif}} des deux côtés de la valeur interdite.",
+					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:D>0|croissante|décroissante}}}}$ sur $\\left]-\\infty\\,;{{al}}\\right[$ et sur $\\left]{{al}}\\,;+\\infty\\right[$ (pas sur leur réunion : la double barre coupe le tableau).",
+					"```variation\nvariable: x\ndomain: -inf, {{al}}, +inf\n\nsign: f'(x)\n  -inf,{{al}}: {{if:D>0|+|-}}\n  {{al}}: ||\n  {{al}},+inf: {{if:D>0|+|-}}\n\nvariation: f(x)\n  -inf: , {{if:D>0|bottom|top}}\n  {{al}}: ||, , {{if:D>0|top|bottom}}, , {{if:D>0|bottom|top}}\n  +inf: , {{if:D>0|top|bottom}}\n```"
+				]
+			},
+			"hint": "Écris $f(x)={{k}}\\times\\dfrac{1}{v(x)}$ et dérive avec $\\left(\\dfrac{1}{v}\\right)'=-\\dfrac{v'}{v^2}$. Le signe de $f'(x)$ dépend de celui de ${{k}}$ et de celui de ${{c}}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{ {{k}} }{x^2+{{c}}}$.\n\nÉtudie le signe de $f'(x)$. En $0$, la fonction $f$ admet :\n\n```choix\n- un maximum, égal à ${{eval:k/c}}$\n- un minimum, égal à ${{eval:k/c}}$\n- un maximum, égal à ${{eval:c/k}}$\n- un minimum, égal à ${{eval:c/k}}$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..10;±"
+				}
+			],
+			"conditions": ["k != c", "k != -c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f={{k}}\\times\\dfrac{1}{v}$ avec $v(x)=x^2+{{c}}$ : $f'(x)=\\dfrac{ {{eval:-2*k}}x}{(x^2+{{c}})^2}$.",
+					"Le dénominateur est strictement positif : $f'(x)$ a le signe de ${{eval:-2*k}}x$, {{if:k>0|positif avant $0$, négatif après|négatif avant $0$, positif après}} : $f$ est {{if:k>0|croissante puis décroissante|décroissante puis croissante}}.",
+					"$f$ admet en $0$ un $\\textcolor{{{color:primary.0}}}{\\text{{{if:k>0|maximum|minimum}}}}$, égal à $f(0)=\\dfrac{ {{k}} }{ {{c}} }=\\textcolor{{{color:primary.0}}}{ {{eval:k/c}} }$."
+				]
+			},
+			"hint": "Calcule $f'(x)$ : son signe est celui de son numérateur. Pour la valeur, calcule $f(0)$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ par $f(x)=\\dfrac{ {{eval:x^2+b*x+c}} }{ {{eval:x+a}} }$. On admet que $f'(x)=\\dfrac{({{eval:x-x1}})({{eval:x-x2}})}{({{eval:x+a}})^2}$.\n\nComplète le tableau de variations de $f$ (sans limites).\n\n```variation\nvariable: x\ndomain: -inf, {{x1}}, {{al}}, {{x2}}, +inf\n\nsign: f'(x)\n  -inf,{{x1}}: ?+\n  {{x1}}: z\n  {{x1}},{{al}}: -\n  {{al}}: ||\n  {{al}},{{x2}}: -\n  {{x2}}: z\n  {{x2}},+inf: ?+\n\nvariation: f(x)\n  -inf: , bottom\n  {{x1}}: ?{{eval:2*x1+b}}, top\n  {{al}}: ||, , bottom, , top\n  {{x2}}: ?{{eval:2*x2+b}}, bottom\n  +inf: , top\n  -inf,{{x1}}: ?flèche\n  {{x2}},+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:-a-k"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:-a+k"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*b-x1*x2"
+				},
+				{
+					"name": "al",
+					"expression": "eval:-a"
+				}
+			],
+			"conditions": ["abs(c) <= 12", "x1 != 0", "x2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$({{eval:x+a}})^2>0$ : $f'(x)$ a le signe de $({{eval:x-x1}})({{eval:x-x2}})$, positif à l'extérieur des racines ${{x1}}$ et ${{x2}}$, négatif entre elles (de part et d'autre de la valeur interdite ${{al}}$).",
+					"$f({{x1}})=\\dfrac{ {{eval:x1^2+b*x1+c}} }{ {{eval:x1+a}} }=\\textcolor{{{color:primary.0}}}{ {{eval:2*x1+b}} }$ et $f({{x2}})=\\dfrac{ {{eval:x2^2+b*x2+c}} }{ {{eval:x2+a}} }=\\textcolor{{{color:primary.0}}}{ {{eval:2*x2+b}} }$.",
+					"```variation\nvariable: x\ndomain: -inf, {{x1}}, {{al}}, {{x2}}, +inf\n\nsign: f'(x)\n  -inf,{{x1}}: +\n  {{x1}}: z\n  {{x1}},{{al}}: -\n  {{al}}: ||\n  {{al}},{{x2}}: -\n  {{x2}}: z\n  {{x2}},+inf: +\n\nvariation: f(x)\n  -inf: , bottom\n  {{x1}}: {{eval:2*x1+b}}, top\n  {{al}}: ||, , bottom, , top\n  {{x2}}: {{eval:2*x2+b}}, bottom\n  +inf: , top\n```"
+				]
+			},
+			"hint": "Un carré est positif : $f'(x)$ a le signe du produit de son numérateur. Pour les valeurs, remplace $x$ dans l'expression de $f(x)$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]{{al}}\\,;+\\infty\\right[$ par $f(x)=\\dfrac{ {{eval:x^2+b*x+c}} }{ {{eval:x+a}} }$. On admet que $f'(x)=\\dfrac{({{eval:x-x1}})({{eval:x-x2}})}{({{eval:x+a}})^2}$.\n\nLa fonction $f$ admet un minimum sur $\\left]{{al}}\\,;+\\infty\\right[$.\n\nCe minimum vaut $?$ ; il est atteint en $x=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:-a-k"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:-a+k"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*b-x1*x2"
+				},
+				{
+					"name": "al",
+					"expression": "eval:-a"
+				}
+			],
+			"conditions": ["abs(c) <= 12", "x1 != 0", "x2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*x2+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x2^2+b*x2+c}}",
+							"message": "Tu as calculé le numérateur seul : divise-le par la valeur du dénominateur.",
+							"label": "Numérateur seul"
+						},
+						{
+							"answer": "{{eval:2*x1+b}}",
+							"message": "${{x1}}$ n'est pas dans l'intervalle d'étude : sur cet intervalle, $f'$ ne s'annule qu'une fois.",
+							"label": "Extremum hors de l'intervalle"
+						},
+						{
+							"answer": "{{x2}}",
+							"message": "C'est l'abscisse du minimum : sa valeur est l'image par $f$.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{x2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{x1}}",
+							"message": "${{x1}}$ n'est pas dans l'intervalle d'étude : sur cet intervalle, $f'$ ne s'annule qu'une fois.",
+							"label": "Racine hors de l'intervalle"
+						},
+						{
+							"answer": "{{al}}",
+							"message": "${{al}}$ est la valeur interdite : $f$ n'y est pas définie.",
+							"label": "Valeur interdite"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left]{{al}}\\,;+\\infty\\right[$, $({{eval:x+a}})^2>0$ et $x{{eval:-x1;+}}>0$ : $f'(x)$ a le signe de ${{eval:x-x2}}$, négatif avant ${{x2}}$, positif après.",
+					"$f$ est décroissante puis croissante : son minimum est atteint en $x=\\textcolor{{{color:primary.0}}}{ {{x2}} }$ et vaut $f({{x2}})=\\dfrac{ {{eval:x2^2+b*x2+c}} }{ {{eval:x2+a}} }=\\textcolor{{{color:primary.0}}}{ {{eval:2*x2+b}} }$."
+				]
+			},
+			"hint": "Sur cet intervalle, $x+{{a}}>0$ : regarde le signe de chaque facteur du numérateur de $f'(x)$, puis calcule l'image de la valeur qui l'annule."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(3x + 1)/(x − 2) : −7, −, −, décroissante",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"al": "2",
+				"d": "-2",
+				"a": "3",
+				"b": "1",
+				"D": "-7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-7", "1"]
+		},
+		{
+			"description": "ad + bc (−5)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"al": "2",
+				"d": "-2",
+				"a": "3",
+				"b": "1",
+				"D": "-7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le numérateur de $f'\\left( x \\right)$ est $u' v - u v'$ : c'est une différence, pas une somme."
+			},
+			"answers": ["-5", "1"]
+		},
+		{
+			"description": "uv′ − u′v (7)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"al": "2",
+				"d": "-2",
+				"a": "3",
+				"b": "1",
+				"D": "-7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $u v' - u' v$ : la formule est $u' v - u v'$, dans cet ordre."
+			},
+			"answers": ["7", "0"]
+		},
+		{
+			"description": "Signes justes, variations inversées",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"al": "2",
+				"d": "-2",
+				"a": "3",
+				"b": "1",
+				"D": "-7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-7", "0"]
+		},
+		{
+			"description": "(3x − 4)/(2x + 2) : 14, +, +, croissante",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"al": "-1",
+				"d": "2",
+				"a": "3",
+				"b": "-4",
+				"D": "14"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14", "0"]
+		},
+		{
+			"description": "5/(−2x + 6) : 10, +, +, croissante (c négatif)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "-2",
+				"al": "3",
+				"d": "6",
+				"k": "5",
+				"D": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10", "0"]
+		},
+		{
+			"description": "k seul (−5)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "-2",
+				"al": "3",
+				"d": "6",
+				"k": "5",
+				"D": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas la dérivée du dénominateur : $\\left(\\dfrac{1}{v}\\right)'=-\\dfrac{v'}{v^2}$."
+			},
+			"answers": ["-5", "1"]
+		},
+		{
+			"description": "Signe moins oublié (−10)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "-2",
+				"al": "3",
+				"d": "6",
+				"k": "5",
+				"D": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe moins de $\\left(\\dfrac{1}{v}\\right)'=-\\dfrac{v'}{v^2}$."
+			},
+			"answers": ["-10", "1"]
+		},
+		{
+			"description": "4/(2x + 4) : −8, −, −, décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"al": "-2",
+				"d": "4",
+				"k": "4",
+				"D": "-8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-8", "1"]
+		},
+		{
+			"description": "6/(x² + 4) : maximum 3/2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "6/(x² + 4) : minimum coché",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "6/(x² + 4) : valeur inversée",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "−5/(x² + 2) : minimum −5/2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"k": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "(x² + x + 4)/(x + 1) : max −5 en −3, min 3 en 1",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+", "+", "↗", "-5", "3", "↗"]
+		},
+		{
+			"description": "f(−3) : numérateur seul (10)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+", "+", "↗", "10", "3", "↗"]
+		},
+		{
+			"description": "f(1) : abscisse (1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+", "+", "↗", "-5", "1", "↗"]
+		},
+		{
+			"description": "Flèches extérieures inversées",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+", "+", "↘", "-5", "3", "↘"]
+		},
+		{
+			"description": "(x² + x + 4)/(x + 1) sur ]−1 ; +∞[ : 3 en 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "1"]
+		},
+		{
+			"description": "Numérateur seul (6)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le numérateur seul : divise-le par la valeur du dénominateur."
+			},
+			"answers": ["6", "1"]
+		},
+		{
+			"description": "Extremum de l'autre côté (−5)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-3$ n'est pas dans l'intervalle d'étude : sur cet intervalle, $f'$ ne s'annule qu'une fois."
+			},
+			"answers": ["-5", "1"]
+		},
+		{
+			"description": "Abscisse hors intervalle (−3)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-3$ n'est pas dans l'intervalle d'étude : sur cet intervalle, $f'$ ne s'annule qu'une fois."
+			},
+			"answers": ["3", "-3"]
+		},
+		{
+			"description": "Valeur interdite (−1)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"b": "1",
+				"x1": "-3",
+				"x2": "1",
+				"c": "4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-1$ est la valeur interdite : $f$ n'y est pas définie."
+			},
+			"answers": ["3", "-1"]
+		}
+	]
+}

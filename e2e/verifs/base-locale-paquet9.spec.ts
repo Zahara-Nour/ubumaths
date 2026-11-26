@@ -373,12 +373,8 @@ test.describe('#3012 — images du contenu, compte élève', () => {
 		const url = '/dashboard/student/exercises/0151950f-3d0b-4d0b-bc0b-30085f27e0f9';
 		const response = await go(session.page, url);
 		await session.page.waitForTimeout(1500);
-		// Symptôme constaté : la page de l'exercice assigné est introuvable pour l'élève (404)
-		// → ÉCART : `student_has_exercise_access` ne regarde que les fiches (`worksheet_exercises`),
-		// jamais `exercise_assignments` ; la RLS de `exercises` masque donc l'exercice assigné.
-		expect(response?.status(), 'statut de la page de l’exercice').toBe(404);
-		await expectText(session.page, 'Exercice non trouvé', 'symptôme');
-		test.fail(true, 'Un exercice assigné directement à l’élève est masqué par la RLS (404)');
+		// E78 (corrigé) : la page de l'exercice assigné répondait 404, la règle de lecture
+		// d'`exercises` ne regardait que les fiches, jamais `exercise_assignments`
 		expect(response?.status()).toBeLessThan(400);
 		const report = await imageReport(session.page, /exercise-images/);
 		expect(report.loaded.length, 'images de l’exercice').toBeGreaterThan(0);
@@ -936,18 +932,8 @@ test.describe('Base locale — compte prof, lecture seule', () => {
 			}
 			expect(text, `onglet ${onglet.source}`).not.toMatch(/Aucune donnée|Aucun élève/i);
 		}
-		// ÉCART : la liste des alertes anti-fraude (onglet Surveillance) répond 500 — la route lit
-		// `profiles(first_name, last_name)` alors que les colonnes s'appellent `firstname`, `lastname`
-		const erreurs = realErrors(session);
-		expect(
-			erreurs.some((e) => /^HTTP 500 .*anti-fraud\/flags/.test(e)),
-			`symptôme attendu (HTTP 500 sur anti-fraud/flags) ; vu : ${JSON.stringify(erreurs)}`
-		).toBe(true);
-		test.fail(
-			true,
-			'GET /api/teacher/classes/[classId]/anti-fraud/flags répond 500 (colonnes first_name/last_name)'
-		);
-		expect(erreurs, 'erreurs de la page analytics').toEqual([]);
+		// E79 (corrigé) : la liste des signalements de l'onglet Surveillance répondait 500
+		expect(realErrors(session), 'erreurs de la page analytics').toEqual([]);
 	});
 
 	test('#2980 : résultats du contrôle « Essai évaluation » — 12 assignés, bilan par question', async () => {

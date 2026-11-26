@@ -1,0 +1,1106 @@
+{
+	"id": "b28ed4fa-8a9c-4aaa-986f-00da7fde2215",
+	"title": "Deux épreuves",
+	"description": "Calculer une probabilité dans une expérience à deux épreuves aux issues équiprobables : deux pièces, une pièce et un dé, deux dés (tableau des sommes), une pièce puis une urne (arbre)",
+	"grades": ["4"],
+	"level": 2,
+	"delay": 75,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|\\frac{1}{4}|{{if:k==1|\\frac{3}{4}|\\frac{1}{2}}}}}"
+				}
+			],
+			"statement": "On lance deux pièces équilibrées.\n\nQuelle est la probabilité d'{{if:k==0|obtenir deux fois Pile|{{if:k==1|obtenir au moins une fois Pile|obtenir une fois Pile et une fois Face}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"Les issues sont PP, PF, FP, FF (P pour Pile, F pour Face) : quatre issues équiprobables. PF et FP sont deux issues différentes (la première pièce, puis la seconde).",
+					"L'évènement compte {{if:k==0|une seule issue, PP|{{if:k==1|trois issues : PP, PF et FP|deux issues : PF et FP}}}} : $P = \\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|\\frac{1}{12}|\\frac{1}{4}}}"
+				}
+			],
+			"statement": "On lance une pièce équilibrée et un dé équilibré à six faces.\n\nQuelle est la probabilité d'obtenir {{if:k==0|Pile et le ${{m}}$|Face et un nombre pair}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "m",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"Il y a $2 \\times 6 = 12$ issues équiprobables : P1, P2, …, P6, F1, F2, …, F6.",
+					"{{if:k==0|Une seule réalise l'évènement, P{{m}} : $P = \\textcolor{{{color:primary.0}}}{{{solution}}}$.|Trois le réalisent, F2, F4 et F6 : $P = \\dfrac{3}{12} = \\textcolor{{{color:primary.0}}}{{{solution}}}$.}}"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:min(s-1,13-s)/36}}"
+				}
+			],
+			"statement": "On lance deux dés équilibrés à six faces et on additionne les deux nombres obtenus. Le tableau donne toutes les sommes possibles.\n\n| $+$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n|---|---|---|---|---|---|---|\n| $1$ | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ |\n| $2$ | $3$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n| $3$ | $4$ | $5$ | $6$ | $7$ | $8$ | $9$ |\n| $4$ | $5$ | $6$ | $7$ | $8$ | $9$ | $10$ |\n| $5$ | $6$ | $7$ | $8$ | $9$ | $10$ | $11$ |\n| $6$ | $7$ | $8$ | $9$ | $10$ | $11$ | $12$ |\n\nQuelle est la probabilité d'obtenir une somme égale à ${{s}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "2..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"Le tableau a $6 \\times 6 = 36$ cases : $36$ issues équiprobables.",
+					"La somme ${{s}}$ apparaît ${{eval:min(s-1,13-s)}}$ fois : $P = \\dfrac{{{eval:min(s-1,13-s)}}}{36} = \\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|\\frac{1}{6}|{{if:k==1|\\frac{1}{3}|\\frac{1}{3}}}}}"
+				}
+			],
+			"statement": "On lance une pièce équilibrée, puis on tire une boule au hasard dans une urne qui contient une boule rouge, une boule verte et une boule bleue. L'arbre donne toutes les issues.\n\n```probtree\noutcomes: true\n\nPile:1/2\n  Rouge:1/3, PR\n  Verte:1/3, PV\n  Bleue:1/3, PB\nFace:1/2\n  Rouge:1/3, FR\n  Verte:1/3, FV\n  Bleue:1/3, FB\n```\n\nQuelle est la probabilité d'obtenir {{if:k==0|Pile et une boule rouge|{{if:k==1|Face et une boule qui n'est pas rouge|une boule verte}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"L'arbre a $2 \\times 3 = 6$ issues équiprobables : PR, PV, PB, FR, FV, FB.",
+					"L'évènement compte {{if:k==0|une issue, PR|{{if:k==1|deux issues, FV et FB|deux issues, PV et FV}}}} : $P = \\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient ${{r}}$ {{if:r==1|boule rouge|boules rouges}} et ${{v}}$ {{if:v==1|boule verte|boules vertes}}. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une seconde boule.\n\nQuelle est la probabilité d'obtenir {{if:k==0|deux boules rouges|{{if:k==1|deux boules de la même couleur|deux boules de couleurs différentes}}}} ? Donne le résultat sous la forme d'une fraction irréductible ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["r != v", "k + abs(v - 3*r) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:({{if:k==0|r*r|{{if:k==1|r*r+v*v|2*r*v}}}})/((r+v)*(r+v))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:k==0|\\frac{1}{4}|\\frac{1}{2}}}",
+							"message": "Les quatre issues (R ; R), (R ; V), (V ; R), (V ; V) ne sont pas équiprobables : il n'y a pas autant de boules rouges que de vertes. Numérote les boules.",
+							"label": "Quatre issues RR, RV, VR, VV"
+						},
+						{
+							"answer": "{{eval:({{if:k==0|r*(r+v)|{{if:k==1|r*r|r*v}}}})/((r+v)*(r+v))}}",
+							"message": "{{if:k==0|Tu as donné la probabilité de tirer une rouge **une** fois : il y a deux tirages.|{{if:k==1|Tu as oublié l'issue (verte ; verte).|Tu as oublié l'issue (verte ; rouge) : la rouge peut sortir au second tirage.}}}}",
+							"label": "Une épreuve ou une issue oubliée"
+						},
+						{
+							"answer": "{{eval:({{if:k==0|2*r/(r+v)|1/3}})}}",
+							"message": "{{if:k==0|Tu as additionné les deux tirages : pour deux rouges, compte les issues dans un tableau.|Il n'y a pas trois issues équiprobables : (R ; V) et (V ; R) sont deux issues différentes, et les couleurs n'ont pas le même nombre de boules.}}",
+							"label": "Tirages additionnés, ou trois issues équiprobables"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"On numérote les ${{eval:(r+v)}}$ boules : un tableau des deux tirages a ${{eval:(r+v)}}\\times{{eval:(r+v)}}={{eval:(r+v)*(r+v)}}$ cases, toutes équiprobables.",
+					"{{if:k==0|Deux rouges : ${{r}}\\times{{r}}={{eval:r*r}}$ cases.|{{if:k==1|Deux rouges : ${{eval:r*r}}$ cases ; deux vertes : ${{eval:v*v}}$ cases ; en tout ${{eval:r*r+v*v}}$ cases.|Rouge puis verte : ${{eval:r*v}}$ cases ; verte puis rouge : ${{eval:r*v}}$ cases ; en tout ${{eval:2*r*v}}$ cases.}}}} $P=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Numérote les boules et fais le tableau des deux tirages : chaque case est une issue."
+		},
+		{
+			"statement": "L'urne 1 contient ${{b1}}$ {{if:b1==1|boule bleue|boules bleues}}, ${{r1}}$ {{if:r1==1|boule rouge|boules rouges}} et ${{eval:6-b1-r1}}$ {{if:b1+r1==5|boule verte|boules vertes}}. L'urne 2 contient ${{b2}}$ {{if:b2==1|boule bleue|boules bleues}}, ${{r2}}$ {{if:r2==1|boule rouge|boules rouges}} et ${{eval:6-b2-r2}}$ {{if:b2+r2==5|boule verte|boules vertes}}.\n\nOn lance une pièce équilibrée : sur Pile, on tire une boule au hasard dans l'urne 1 ; sur Face, dans l'urne 2.\n\nQuelle est la probabilité de tirer une boule bleue ? Donne le résultat sous la forme d'une fraction irréductible ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "b1",
+					"expression": "1..3"
+				},
+				{
+					"name": "r1",
+					"expression": "1..3"
+				},
+				{
+					"name": "b2",
+					"expression": "1..3"
+				},
+				{
+					"name": "r2",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["b1 != r1", "b2 != r2", "b1 != b2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b1+b2)/12}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(b1+b2)/6}}",
+							"message": "Tu as additionné les boules bleues des deux urnes sur $6$ : il y a $2\\times6=12$ issues (pièce, boule).",
+							"label": "Dénominateur 6"
+						},
+						{
+							"answer": "{{eval:b1*b2/36}}",
+							"message": "Tu as multiplié les probabilités des deux urnes : on ne tire que dans **une** urne, celle que donne la pièce.",
+							"label": "Produit des deux urnes"
+						},
+						{
+							"answer": "{{eval:b1/6}}",
+							"message": "Tu n'as regardé que l'urne 1 : la pièce peut aussi tomber sur Face.",
+							"label": "Urne 1 seule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"Les deux urnes ont $6$ boules : un tableau (pièce, boule) a $2\\times6=12$ issues équiprobables.",
+					"Une boule bleue sort avec Pile dans ${{b1}}$ {{if:b1==1|issue|issues}} et avec Face dans ${{b2}}$ {{if:b2==1|issue|issues}} : $P=\\dfrac{ {{eval:b1+b2}} }{12}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Chaque issue est un couple (côté de la pièce, boule tirée). Combien y en a-t-il ?"
+		},
+		{
+			"statement": "On lance deux dés équilibrés à six faces. On note $X$ {{if:o==0|la somme des deux nombres obtenus|{{if:o==1|le produit des deux nombres obtenus|l'écart entre les deux nombres obtenus (le plus grand moins le plus petit)}}}}.\n\nQuelle est la probabilité que $X {{if:c==0|\\leqslant|{{if:c==1|<|{{if:c==2|\\geqslant|>}}}}}} {{s}}$ ? Donne le résultat sous la forme d'une fraction irréductible ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "ss",
+					"expression": "5..8"
+				},
+				{
+					"name": "sp",
+					"expression": "12..20"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(1-min(o,1))*ss+(min(o,1)-max(o-1,0))*sp+max(o-1,0)*3"
+				},
+				{
+					"name": "u",
+					"expression": "eval:s-min(c,1)+floor(c/3)"
+				},
+				{
+					"name": "ub",
+					"expression": "eval:s-1+min(c,1)-floor(c/3)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:floor(c/2)"
+				},
+				{
+					"name": "n",
+					"expression": "eval:w*36+(1-2*w)*((1-min(o,1))*(min(max(u-1,0),6)+min(max(u-2,0),6)+min(max(u-3,0),6)+min(max(u-4,0),6)+min(max(u-5,0),6)+min(max(u-6,0),6))+(min(o,1)-max(o-1,0))*(min(floor(u/1),6)+min(floor(u/2),6)+min(floor(u/3),6)+min(floor(u/4),6)+min(floor(u/5),6)+min(floor(u/6),6))+max(o-1,0)*((min(1+u,6)-max(1-u,1)+1)+(min(2+u,6)-max(2-u,1)+1)+(min(3+u,6)-max(3-u,1)+1)+(min(4+u,6)-max(4-u,1)+1)+(min(5+u,6)-max(5-u,1)+1)+(min(6+u,6)-max(6-u,1)+1)))"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:w*36+(1-2*w)*((1-min(o,1))*(min(max(ub-1,0),6)+min(max(ub-2,0),6)+min(max(ub-3,0),6)+min(max(ub-4,0),6)+min(max(ub-5,0),6)+min(max(ub-6,0),6))+(min(o,1)-max(o-1,0))*(min(floor(ub/1),6)+min(floor(ub/2),6)+min(floor(ub/3),6)+min(floor(ub/4),6)+min(floor(ub/5),6)+min(floor(ub/6),6))+max(o-1,0)*((min(1+ub,6)-max(1-ub,1)+1)+(min(2+ub,6)-max(2-ub,1)+1)+(min(3+ub,6)-max(3-ub,1)+1)+(min(4+ub,6)-max(4-ub,1)+1)+(min(5+ub,6)-max(5-ub,1)+1)+(min(6+ub,6)-max(6-ub,1)+1)))"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:w*21+(1-2*w)*((1-min(o,1))*(max(min(6,u-1)-1+1,0)+max(min(6,u-2)-2+1,0)+max(min(6,u-3)-3+1,0)+max(min(6,u-4)-4+1,0)+max(min(6,u-5)-5+1,0)+max(min(6,u-6)-6+1,0))+(min(o,1)-max(o-1,0))*(max(min(6,floor(u/1))-1+1,0)+max(min(6,floor(u/2))-2+1,0)+max(min(6,floor(u/3))-3+1,0)+max(min(6,floor(u/4))-4+1,0)+max(min(6,floor(u/5))-5+1,0)+max(min(6,floor(u/6))-6+1,0))+max(o-1,0)*(max(min(6,1+u)-1+1,0)+max(min(6,2+u)-2+1,0)+max(min(6,3+u)-3+1,0)+max(min(6,4+u)-4+1,0)+max(min(6,5+u)-5+1,0)+max(min(6,6+u)-6+1,0)))"
+				}
+			],
+			"conditions": [
+				"n >= 1",
+				"n <= 35",
+				"nb != n",
+				"2*n != 36",
+				"12*nt != 7*n",
+				"12*nt != 7*nb",
+				"12*nt != 7*(36-n)",
+				"nb != 36-n"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/36}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:nb/36}}",
+							"message": "Attention à l'inégalité : $X {{if:c==0|\\leqslant|{{if:c==1|<|{{if:c==2|\\geqslant|>}}}}}} {{s}}$ {{if:c==0|compte|{{if:c==1|ne compte pas|{{if:c==2|compte|ne compte pas}}}}}} les issues où $X = {{s}}$.",
+							"label": "Inégalité large et stricte confondues"
+						},
+						{
+							"answer": "{{eval:(36-n)/36}}",
+							"message": "Tu as compté les issues où $X {{if:c==0|\\leqslant|{{if:c==1|<|{{if:c==2|\\geqslant|>}}}}}} {{s}}$ est **faux** : c'est l'évènement contraire.",
+							"label": "Évènement contraire"
+						},
+						{
+							"answer": "{{eval:nt/21}}",
+							"message": "Les issues $(1\\,;2)$ et $(2\\,;1)$ sont différentes : il y a $36$ issues équiprobables, pas $21$.",
+							"label": "Issues sans ordre (21)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"Le tableau des deux dés a $6\\times6=36$ cases équiprobables ; dans chaque case, on écrit la valeur de $X$.",
+					"On compte les cases où $X {{if:c==0|\\leqslant|{{if:c==1|<|{{if:c==2|\\geqslant|>}}}}}} {{s}}$ : il y en a ${{n}}$. $P=\\dfrac{ {{n}} }{36}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Fais le tableau des $36$ issues et écris dans chaque case la valeur de $X$."
+		},
+		{
+			"statement": "On lance un dé équilibré à quatre faces (numérotées de $1$ à $4$) et un dé équilibré à six faces (numérotées de $1$ à $6$).\n\nQuelle est la probabilité que {{if:k==0|la somme des deux nombres soit un multiple de $3$|{{if:k==1|la somme des deux nombres soit strictement supérieure à $7$|{{if:k==2|la somme des deux nombres soit inférieure ou égale à $5$|{{if:k==3|le dé à six faces donne un nombre strictement plus grand que le dé à quatre faces|le produit des deux nombres soit strictement supérieur à $10$}}}}}}}} ? Donne le résultat sous la forme d'une fraction irréductible ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(8*(1-min(abs(k-0),1))+6*(1-min(abs(k-1),1))+10*(1-min(abs(k-2),1))+14*(1-min(abs(k-3),1))+8*(1-min(abs(k-4),1)))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/24}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n/36}}",
+							"message": "Le dé à quatre faces n'a que $4$ faces : il y a $4\\times6=24$ issues, pas $36$.",
+							"label": "Dénominateur 36 au lieu de 24"
+						},
+						{
+							"answer": "{{eval:(24-n)/24}}",
+							"message": "Tu as compté les issues qui ne conviennent **pas** : c'est l'évènement contraire.",
+							"label": "Évènement contraire"
+						},
+						{
+							"answer": "{{eval:n/10}}",
+							"message": "Il y a $4\\times6=24$ issues, pas $4 + 6 = 10$.",
+							"label": "Dénominateur 4 + 6"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux épreuves.** On écrit toutes les issues (tableau ou arbre) : elles sont équiprobables, puis on compte celles qui réalisent l'évènement.",
+					"Le tableau (dé à quatre faces en lignes, dé à six faces en colonnes) a $4\\times6=24$ cases équiprobables.",
+					"L'évènement est réalisé dans ${{n}}$ cases : $P=\\dfrac{ {{n}} }{24}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Fais le tableau des issues : $4$ lignes pour le premier dé, $6$ colonnes pour le second."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "0"
+			},
+			"description": "Deux Pile : 1/4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "0"
+			},
+			"description": "Erreur : 1/3 (PP, PF, FF)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,75"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "Au moins un Pile : 0,75",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "Erreur : 1/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "0",
+				"m": "6"
+			},
+			"description": "Pile et 6 : 1/12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "0",
+				"m": "6"
+			},
+			"description": "Erreur : 1/8 (2 + 6 issues)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{3}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"k": "1",
+				"m": "1"
+			},
+			"description": "Face et pair : 3/12 (ambre)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"s": "7"
+			},
+			"description": "Somme 7 : 1/6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{11}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"s": "7"
+			},
+			"description": "Erreur : 1/11 (onze sommes)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{36}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"s": "2"
+			},
+			"description": "Somme 2 : 1/36",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{3}{36}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"s": "10"
+			},
+			"description": "Somme 10 : 3/36 (ambre)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "0"
+			},
+			"description": "Pile et rouge : 1/6",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "0"
+			},
+			"description": "Erreur : 1/5 (somme des dénominateurs)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{2}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "Verte : 2/6 (ambre)",
+			"variationIndex": 3
+		},
+		{
+			"description": "Urne r=1 v=2 k=0",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0",
+				"r": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{9}"]
+		},
+		{
+			"description": "Urne r=1 v=2 k=0 : quatre issues",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0",
+				"r": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les quatre issues (R ; R), (R ; V), (V ; R), (V ; V) ne sont pas équiprobables : il n'y a pas autant de boules rouges que de vertes. Numérote les boules."
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "Urne r=1 v=2 k=0 : oubli",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0",
+				"r": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la probabilité de tirer une rouge **une** fois : il y a deux tirages."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Urne r=1 v=2 k=0 : trois",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0",
+				"r": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux tirages : pour deux rouges, compte les issues dans un tableau."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "Urne r=3 v=1 k=1",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"v": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5}{8}"]
+		},
+		{
+			"description": "Urne r=3 v=1 k=1 : quatre issues",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"v": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les quatre issues (R ; R), (R ; V), (V ; R), (V ; V) ne sont pas équiprobables : il n'y a pas autant de boules rouges que de vertes. Numérote les boules."
+			},
+			"answers": ["\\frac{1}{2}"]
+		},
+		{
+			"description": "Urne r=3 v=1 k=1 : oubli",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"v": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié l'issue (verte ; verte)."
+			},
+			"answers": ["\\frac{9}{16}"]
+		},
+		{
+			"description": "Urne r=3 v=1 k=1 : trois",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"v": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas trois issues équiprobables : (R ; V) et (V ; R) sont deux issues différentes, et les couleurs n'ont pas le même nombre de boules."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Urne r=2 v=3 k=2",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"r": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{12}{25}"]
+		},
+		{
+			"description": "Urne r=2 v=3 k=2 : quatre issues",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"r": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les quatre issues (R ; R), (R ; V), (V ; R), (V ; V) ne sont pas équiprobables : il n'y a pas autant de boules rouges que de vertes. Numérote les boules."
+			},
+			"answers": ["\\frac{1}{2}"]
+		},
+		{
+			"description": "Urne r=2 v=3 k=2 : oubli",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"r": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié l'issue (verte ; rouge) : la rouge peut sortir au second tirage."
+			},
+			"answers": ["\\frac{6}{25}"]
+		},
+		{
+			"description": "Urne r=2 v=3 k=2 : trois",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"r": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas trois issues équiprobables : (R ; V) et (V ; R) sont deux issues différentes, et les couleurs n'ont pas le même nombre de boules."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Urne r=3 v=1 k=1 : 10/16 non réduite",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"v": "1"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{10}{16}"]
+		},
+		{
+			"description": "Pièce et urnes b=1,3",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "1",
+				"r1": "2",
+				"b2": "3",
+				"r2": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Pièce et urnes b=1,3 : non réduite",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "1",
+				"r1": "2",
+				"b2": "3",
+				"r2": "1"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{4}{12}"]
+		},
+		{
+			"description": "Pièce et urnes b=1,3 : sur 6",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "1",
+				"r1": "2",
+				"b2": "3",
+				"r2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les boules bleues des deux urnes sur $6$ : il y a $2\\times6=12$ issues (pièce, boule)."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "Pièce et urnes b=1,3 : produit",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "1",
+				"r1": "2",
+				"b2": "3",
+				"r2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les probabilités des deux urnes : on ne tire que dans **une** urne, celle que donne la pièce."
+			},
+			"answers": ["\\frac{1}{12}"]
+		},
+		{
+			"description": "Pièce et urnes b=1,3 : urne 1",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "1",
+				"r1": "2",
+				"b2": "3",
+				"r2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as regardé que l'urne 1 : la pièce peut aussi tomber sur Face."
+			},
+			"answers": ["\\frac{1}{6}"]
+		},
+		{
+			"description": "Pièce et urnes b=2,1",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "2",
+				"r1": "3",
+				"b2": "1",
+				"r2": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "Pièce et urnes b=2,1 : non réduite",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "2",
+				"r1": "3",
+				"b2": "1",
+				"r2": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{3}{12}"]
+		},
+		{
+			"description": "Pièce et urnes b=2,1 : sur 6",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "2",
+				"r1": "3",
+				"b2": "1",
+				"r2": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les boules bleues des deux urnes sur $6$ : il y a $2\\times6=12$ issues (pièce, boule)."
+			},
+			"answers": ["\\frac{1}{2}"]
+		},
+		{
+			"description": "Pièce et urnes b=2,1 : produit",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "2",
+				"r1": "3",
+				"b2": "1",
+				"r2": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les probabilités des deux urnes : on ne tire que dans **une** urne, celle que donne la pièce."
+			},
+			"answers": ["\\frac{1}{18}"]
+		},
+		{
+			"description": "Pièce et urnes b=2,1 : urne 1",
+			"variationIndex": 5,
+			"variables": {
+				"b1": "2",
+				"r1": "3",
+				"b2": "1",
+				"r2": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as regardé que l'urne 1 : la pièce peut aussi tomber sur Face."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Dés o=0 c=0 s=5",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"c": "0",
+				"ss": "5",
+				"sp": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5}{18}"]
+		},
+		{
+			"description": "Dés o=0 c=0 s=5 : large / stricte",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"c": "0",
+				"ss": "5",
+				"sp": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention à l'inégalité : $X \\leqslant 5$ compte les issues où $X = 5$."
+			},
+			"answers": ["\\frac{1}{6}"]
+		},
+		{
+			"description": "Dés o=0 c=0 s=5 : contraire",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"c": "0",
+				"ss": "5",
+				"sp": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues où $X \\leqslant 5$ est **faux** : c'est l'évènement contraire."
+			},
+			"answers": ["\\frac{13}{18}"]
+		},
+		{
+			"description": "Dés o=0 c=0 s=5 : sur 21",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"c": "0",
+				"ss": "5",
+				"sp": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les issues $(1\\,;2)$ et $(2\\,;1)$ sont différentes : il y a $36$ issues équiprobables, pas $21$."
+			},
+			"answers": ["\\frac{2}{7}"]
+		},
+		{
+			"description": "Dés o=1 c=3 s=15",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1",
+				"c": "3",
+				"ss": "6",
+				"sp": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{11}{36}"]
+		},
+		{
+			"description": "Dés o=1 c=3 s=15 : large / stricte",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1",
+				"c": "3",
+				"ss": "6",
+				"sp": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention à l'inégalité : $X > 15$ ne compte pas les issues où $X = 15$."
+			},
+			"answers": ["\\frac{13}{36}"]
+		},
+		{
+			"description": "Dés o=1 c=3 s=15 : contraire",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1",
+				"c": "3",
+				"ss": "6",
+				"sp": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues où $X > 15$ est **faux** : c'est l'évènement contraire."
+			},
+			"answers": ["\\frac{25}{36}"]
+		},
+		{
+			"description": "Dés o=1 c=3 s=15 : sur 21",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1",
+				"c": "3",
+				"ss": "6",
+				"sp": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les issues $(1\\,;2)$ et $(2\\,;1)$ sont différentes : il y a $36$ issues équiprobables, pas $21$."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Dés o=2 c=2 s=3",
+			"variationIndex": 6,
+			"variables": {
+				"o": "2",
+				"c": "2",
+				"ss": "7",
+				"sp": "18"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Dés o=2 c=2 s=3 : large / stricte",
+			"variationIndex": 6,
+			"variables": {
+				"o": "2",
+				"c": "2",
+				"ss": "7",
+				"sp": "18"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention à l'inégalité : $X \\geqslant 3$ compte les issues où $X = 3$."
+			},
+			"answers": ["\\frac{1}{6}"]
+		},
+		{
+			"description": "Dés o=2 c=2 s=3 : contraire",
+			"variationIndex": 6,
+			"variables": {
+				"o": "2",
+				"c": "2",
+				"ss": "7",
+				"sp": "18"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues où $X \\geqslant 3$ est **faux** : c'est l'évènement contraire."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "Dés o=2 c=2 s=3 : sur 21",
+			"variationIndex": 6,
+			"variables": {
+				"o": "2",
+				"c": "2",
+				"ss": "7",
+				"sp": "18"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les issues $(1\\,;2)$ et $(2\\,;1)$ sont différentes : il y a $36$ issues équiprobables, pas $21$."
+			},
+			"answers": ["\\frac{2}{7}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=0",
+			"variationIndex": 7,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=1",
+			"variationIndex": 7,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=2",
+			"variationIndex": 7,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5}{12}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=3",
+			"variationIndex": 7,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{7}{12}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=4",
+			"variationIndex": 7,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=3 : non réduite",
+			"variationIndex": 7,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{14}{24}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=3 : 36",
+			"variationIndex": 7,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dé à quatre faces n'a que $4$ faces : il y a $4\\times6=24$ issues, pas $36$."
+			},
+			"answers": ["\\frac{7}{18}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=3 : contraire",
+			"variationIndex": 7,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues qui ne conviennent **pas** : c'est l'évènement contraire."
+			},
+			"answers": ["\\frac{5}{12}"]
+		},
+		{
+			"description": "Dés 4 et 6, k=3 : 10",
+			"variationIndex": 7,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $4\\times6=24$ issues, pas $4 + 6 = 10$."
+			},
+			"answers": ["\\frac{7}{5}"]
+		}
+	]
+}

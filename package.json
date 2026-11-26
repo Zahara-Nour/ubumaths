@@ -1,7 +1,7 @@
 {
 	"name": "chiphre",
 	"private": true,
-	"version": "0.110.0",
+	"version": "0.113.0",
 	"type": "module",
 	"imports": {
 		"#lib/*": "./src/lib/*",

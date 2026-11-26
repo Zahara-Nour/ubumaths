@@ -691,3 +691,25 @@ export type PublicGeometryFigure = Pick<
 	GeometryFigureRow,
 	'id' | 'title' | 'description' | 'dsl_script' | 'grades'
 >;
+
+// ============================================================================
+// Versions d'un exercice (ADR 0044)
+// ============================================================================
+
+type ExerciseVersionRow = Tables<'exercise_versions'>;
+
+/** Le contenu d'une version : ce qui change d'une version à l'autre. */
+export type ExerciseVersionContent = Pick<
+	ExerciseVersionRow,
+	'variations' | 'shared' | 'generic_functions'
+>;
+
+/** Une version telle que les lectures la rendent. */
+export type ExerciseVersionRead = Pick<ExerciseVersionRow, 'id' | 'number' | 'exercise_id'> &
+	ExerciseVersionContent;
+
+/** Une version vue par l'éditeur : numéro, note, dates (sans le contenu) */
+export type ExerciseVersionSummary = Pick<
+	ExerciseVersionRow,
+	'id' | 'number' | 'note' | 'created_at' | 'updated_at'
+>;

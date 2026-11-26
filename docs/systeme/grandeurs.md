@@ -215,6 +215,12 @@ plus) : un calcul non effectué est `bad_form`. Une écriture d'unité ambiguë 
 composée ne passent pas par cette lecture. Limite : un calcul à deux unités avec unité imposée
 (`3 h + 30 min`, `min` imposée) reçoit le message d'unité imposée (la grandeur réduite est en h).
 
+Zéros finaux de la partie numérique (décision de l'auteur du 2026-11-26) : une somme en euros
+(unité tapée `€`, `euro(s)`, `EUR`) écrite avec exactement deux décimales (`3,70 €`) est juste, sans
+violation `zeros` (les centimes) ; une case à arrondir garde les zéros de son arrondi (`3,0 m` au
+dixième). Toute autre écriture suit la règle `zeros` (`3,70 m` perfectible). Détail :
+[questions.md](questions.md) § Validation d'une case, **Zéros finaux** (`questions/meaningful-zeros.ts`).
+
 Messages : une réponse fausse dans une case à unité ne montre que les messages où **l'unité** est
 en cause (unité manquante, autre grandeur, unité imposée, mélange de grandeurs) ; une valeur fausse
 ou illisible (`7 m` pour 6 m, `2\times3\,m` pour 7 m, `2\sqrt{2}\,m`, `3x\,m`) reçoit le message

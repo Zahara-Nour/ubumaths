@@ -633,12 +633,6 @@ test.describe('#2946 — droites graduées lisibles', () => {
 		page
 	}) => {
 		const card = await openSeries(page, INEGALITES, 4, 3);
-		// ÉCART E82 (iPhone, 393 px) : les étiquettes négatives se touchent (« −6 » déborde de 1,2 px
-		// sur « −5 » : on lit « −6−5−4… »). Même défaut que E63 ; Android (412 px) passe.
-		test.fail(
-			projectName() === 'iphone',
-			'écart E82 : étiquettes négatives de la droite qui se touchent sur iPhone'
-		);
 		const reading = await measureLine(page, card, 'inégalités v4');
 		expect(reading.labels.length, 'repères de −6 à 6').toBeGreaterThanOrEqual(5);
 		const line = card.locator('.flip-card-front .number-line-container').first();

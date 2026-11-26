@@ -12,6 +12,7 @@ import {
 	selectedColumns,
 	tableMock,
 	twoLevelExercise,
+	versionedLine,
 	type TableMock
 } from '#lib/server/worksheets/__tests__/table-mock.ts';
 import {
@@ -57,6 +58,12 @@ const STUDENTS = [
 	'550e8400-e29b-41d4-a716-446655440026'
 ];
 
+/** Ancien contenu de la ligne d'`exercises` : périmé, il ne doit jamais atteindre l'élève */
+const STALE_VARIATIONS = [
+	{ label: 'guided', statement_md: 'PERIME guidé', solution_md: 'PERIME corrigé' },
+	{ label: 'autonomous', statement_md: 'PERIME autonome', solution_md: 'PERIME corrigé' }
+];
+
 function assignmentRow(
 	guidanceLevel: string,
 	individualized: boolean,
@@ -98,19 +105,24 @@ function supabase(
 		},
 		worksheet_exercises: {
 			data: [
-				{
-					id: WE_ID,
-					position: 1,
-					points: null,
-					custom_instructions: null,
-					translations: null,
-					correction_visible: true,
-					variation_index: null,
-					section_id: null,
-					is_essential: false,
-					answer_frame_lines: answerFrameLines,
-					exercise
-				}
+				// Le contenu vient de la version de la ligne ; l'exercice garde un vieux contenu
+				// qui ne doit jamais sortir (ADR 0044)
+				versionedLine(
+					{
+						id: WE_ID,
+						position: 1,
+						points: null,
+						custom_instructions: null,
+						translations: null,
+						correction_visible: true,
+						variation_index: null,
+						section_id: null,
+						is_essential: false,
+						answer_frame_lines: answerFrameLines
+					},
+					exercise,
+					{ variations: STALE_VARIATIONS, shared: null }
+				)
 			],
 			error: null
 		},
@@ -174,6 +186,12 @@ describe('API élève : la copie suit l’affectation', () => {
 			const view = await fetchCopy(supabase('guided', true), studentId);
 			expect(view.exercises[0].statement).toMatch(/^Guidé/);
 		}
+	});
+
+	it('le contenu est celui de la VERSION de la ligne, jamais l’ancien contenu de l’exercice', async () => {
+		const view = await fetchCopy(supabase('guided', false), STUDENTS[0]);
+		expect(view.exercises[0].statement).toMatch(/^Guidé/);
+		expect(JSON.stringify(view)).not.toContain('PERIME');
 	});
 
 	it('niveau autonome : TOUS les élèves reçoivent la version autonome', async () => {

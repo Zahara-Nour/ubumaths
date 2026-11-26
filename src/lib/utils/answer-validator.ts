@@ -30,6 +30,9 @@ import { gradedPart } from '#lib/questions/graded-part.ts';
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '#lib/math/index.ts';
 import { checkUnit } from '#lib/questions/constraint-validators.ts';
 import { SUPERFLU_RULE_IDS } from '#lib/mathAST/superflu/rules.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { numberAfterFactorIn } from '#lib/mathAST/parser/number-after-factor.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
 import {
 	checkForm as checkFormUnified,
 	type CheckFormOptions,
@@ -48,7 +51,8 @@ import { studentValueLatex } from '#lib/questions/units/student-calculation.ts';
 import {
 	CONSTRAINT_FEEDBACK,
 	FORGOTTEN_PERCENT_SIGN,
-	MISSING_CHOICES_FEEDBACK
+	MISSING_CHOICES_FEEDBACK,
+	numberAfterFactorFeedback
 } from '#lib/questions/feedback.ts';
 import { evaluateRule, type EvaluationContext } from '#lib/questions/validation-rule-evaluator.ts';
 import { readingOf, type FormulaReading } from '#lib/questions/formula-reading.ts';
@@ -73,6 +77,12 @@ import { judgePrimitiveAnswer } from '#lib/questions/calculus/primitive-answer.t
 import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differential-equation-answer.ts';
 import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
+import {
+	centsZerosMeaningful,
+	roundingZerosVerdict,
+	writtenRoundedValue,
+	type RoundingZerosVerdict
+} from '#lib/questions/meaningful-zeros.ts';
 import {
 	ANSWER_TOO_COMPLEX_FEEDBACK,
 	isAnswerTooComplex
@@ -628,15 +638,16 @@ function numericalResult(
 				...(verdict.onlyRoundingMissing ? { onlyRoundingMissing: true } : {})
 			};
 		}
-		const correctRounded = roundToPrecision(correctNum, precision);
+		// Bonne réponse écrite avec les zéros de son arrondi (« 3,0 » au dixième)
+		const correctRounded = writtenRoundedValue(roundToPrecision(correctNum, precision), precision);
 		return {
 			isCorrect: verdict.isCorrect,
 			message: verdict.isCorrect ? 'Correct !' : 'Incorrect',
 			feedback: verdict.isCorrect
 				? undefined
 				: precision.type === 'decimal'
-					? `La réponse arrondie à ${precision.digits} décimales est ${correctRounded}`
-					: `La réponse avec ${precision.digits} chiffres significatifs est ${correctRounded}`
+					? `La réponse arrondie à ${precision.digits} ${precision.digits > 1 ? 'décimales' : 'décimale'} est ${correctRounded}`
+					: `La réponse avec ${precision.digits} ${precision.digits > 1 ? 'chiffres significatifs' : 'chiffre significatif'} est ${correctRounded}`
 		};
 	}
 
@@ -754,12 +765,21 @@ function checkSimpleNumberForm(
 	latex: string,
 	constraints: ConstraintOptions,
 	reading: FormulaReading = {},
-	allowFraction = false
+	allowFraction = false,
+	precision?: PrecisionType
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const severities = buildConstraintSeverities(constraints);
-	const formOptions = formOptionsOf(constraints, reading);
+	// Arrondi demandé : ses zéros finaux ne sont pas superflus (cf. questions/meaningful-zeros)
+	const roundingZeros = roundingZerosOf(latex, precision);
+	const formOptions = {
+		...formOptionsOf(constraints, reading),
+		...(roundingZeros.trailingZerosMeaningful && { meaningfulTrailingZeros: true })
+	};
 	const raw = cosmeticViolations(latex, severities, formOptions);
-	const { status, violations } = mapCosmeticViolations(raw, false);
+	const { status, violations } = withMissingRoundingZeros(
+		mapCosmeticViolations(raw, false),
+		roundingZeros
+	);
 
 	const isNumberWriting = allowFraction
 		? isNumberOrNumberFractionLatex(latex)
@@ -1060,6 +1080,39 @@ function withDurationFormIssue(
 	const worse: ValidationStatus =
 		issue.severity === 'error' ? 'bad_form' : status === 'correct' ? 'unoptimal_form' : status;
 	return { status: worse, violations: [violation, ...violations] };
+}
+
+/**
+ * Zéros finaux d'une réponse à arrondir (`precision` decimal / significant) :
+ * utiles ou manquants (cf. questions/meaningful-zeros). Autre précision : rien à dire.
+ */
+function roundingZerosOf(
+	latex: string,
+	precision: PrecisionType | undefined
+): RoundingZerosVerdict {
+	return precision?.type === 'decimal' || precision?.type === 'significant'
+		? roundingZerosVerdict(latex, precision)
+		: { trailingZerosMeaningful: false };
+}
+
+/**
+ * Arrondi juste, mais des décimales manquent (« 3 » au dixième de 3,04) : perfectible,
+ * avec le message de l'arrondi en tête (décision de l'auteur, 2026-11-26).
+ */
+function withMissingRoundingZeros(
+	form: {
+		status: ValidationStatus;
+		violations: NonNullable<ValidationResult['constraintViolations']>;
+	},
+	roundingZeros: RoundingZerosVerdict
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const feedback = roundingZeros.missingFeedback;
+	if (feedback === undefined) return form;
+	const violation = { constraint: 'rounding' as const, severity: 'warning' as const, feedback };
+	if (form.status === 'bad_form') {
+		return { status: form.status, violations: [...form.violations, violation] };
+	}
+	return { status: 'unoptimal_form', violations: [violation, ...form.violations] };
 }
 
 /** Message d'un résultat : celui d'une ERREUR s'il est refusé, jamais un avertissement */
@@ -1386,6 +1439,38 @@ function malformedBareNumber(answer: string): string | null {
 }
 
 /**
+ * Message à l'élève si la réponse est refusée par le parseur pour un nombre collé derrière
+ * un facteur (`(n+2)4^n`, `x2` : règle du 2026-10-08), `undefined` pour toute autre saisie.
+ * Lecture seulement : le verdict (faux) ne change pas.
+ */
+function numberAfterFactorRefusal(answer: string, instance: QuestionInstance): string | undefined {
+	const num = numberAfterFactorOf(answer, instance);
+	if (num === null) return undefined;
+	// `12 500`, `1 2` : une espace entre deux nombres n'est pas un facteur suivi d'un
+	// nombre ; sans ses espaces, la saisie doit être refusée pour la même raison
+	const withoutSpaces = answer.replace(/\\[,;: ]|\s/g, '');
+	if (numberAfterFactorOf(withoutSpaces, instance) === null) return undefined;
+	return numberAfterFactorFeedback(num.replace('.', ','));
+}
+
+/** Nombre mis en cause par le refus « nombre après un facteur » du parseur, sinon `null` */
+function numberAfterFactorOf(answer: string, instance: QuestionInstance): string | null {
+	// Virgule nue décimale (`x0,5`), comme pour le juge de valeur
+	const latex = expectsSeparatorComma(answer) ? answer : bareDecimalCommaToPoint(answer);
+	const { errors } = parseLatexSafe(latex, readingOf(instance));
+	for (const error of errors) {
+		const num = error.code === 'MISSING_OPERATOR' ? numberAfterFactorIn(error.message) : null;
+		if (num !== null) return num;
+	}
+	return null;
+}
+
+/** Case de formule nue : ni unité, ni figure, ni réponse écrite par un composant */
+function isBareFormulaBlank(blank: InstanceBlank): boolean {
+	return blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire;
+}
+
+/**
  * Jugement d'une case. Un nombre seul mal écrit (`58,`, `,5`) dans une case sans unité,
  * refusé par la chaîne, est relu : valeur relue juste → mauvaise forme et message de
  * forme (même règle que devant une unité, `numberWritingAtFault`) ; sinon le refus reste.
@@ -1396,8 +1481,7 @@ function validateSingleBlank(
 	userAnswerLatex: string | undefined,
 	instance: QuestionInstance
 ): SingleBlankVerdict {
-	const rereadable =
-		blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire;
+	const rereadable = isBareFormulaBlank(blank);
 	const repaired = rereadable ? malformedBareNumber(userAnswer) : null;
 	let verdict: SingleBlankVerdict;
 	try {
@@ -1411,7 +1495,15 @@ function validateSingleBlank(
 	if (verdict.isCorrect || verdict.status === 'bad_form' || verdict.status === 'empty') {
 		return verdict;
 	}
-	if (repaired === null) return verdict;
+	if (repaired === null) {
+		// Faux sans un mot : si l'écriture est refusée pour un nombre collé derrière un
+		// facteur, le dire (écart E76)
+		if (!rereadable || verdict.status !== undefined || verdict.feedback !== undefined) {
+			return verdict;
+		}
+		const feedback = numberAfterFactorRefusal(userAnswerLatex || userAnswer, instance);
+		return feedback === undefined ? verdict : { ...verdict, feedback };
+	}
 	const reread = judgeSingleBlank(repaired, blank, repaired, instance);
 	if (!reread.isCorrect) return verdict;
 	const feedback = CONSTRAINT_FEEDBACK['form'].single;
@@ -1777,8 +1869,20 @@ function judgeSingleBlank(
 		const numericLatex =
 			studentValueLatex(effectiveLatex) ??
 			extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
-		const raw = cosmeticViolations(numericLatex, severities, formOptions);
-		const cosmetic = mapCosmeticViolations(raw, false);
+		// Zéros finaux utiles : arrondi demandé, ou centimes d'une somme en euros
+		// (cf. questions/meaningful-zeros)
+		const roundingZeros = roundingZerosOf(numericLatex, blank.precision);
+		const meaningfulTrailingZeros =
+			roundingZeros.trailingZerosMeaningful ||
+			centsZerosMeaningful(
+				numericLatex,
+				extractUnitFromLatex(normalizeStudentQuantity(effectiveLatex))
+			);
+		const raw = cosmeticViolations(numericLatex, severities, {
+			...formOptions,
+			...(meaningfulTrailingZeros && { meaningfulTrailingZeros: true })
+		});
+		const cosmetic = withMissingRoundingZeros(mapCosmeticViolations(raw, false), roundingZeros);
 		const { status, violations } = durationFormIssue
 			? withDurationFormIssue(cosmetic.status, cosmetic.violations, durationFormIssue)
 			: cosmetic;
@@ -1812,7 +1916,8 @@ function judgeSingleBlank(
 			effectiveLatex,
 			constraints,
 			reading,
-			allowsNumberFraction(blank)
+			allowsNumberFraction(blank),
+			blank.precision
 		);
 		return {
 			isCorrect: status !== 'bad_form',
@@ -2237,10 +2342,7 @@ function looseMatchOf(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): LooseMatch | undefined {
-	const repaired =
-		blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire
-			? malformedBareNumber(answer)
-			: null;
+	const repaired = isBareFormulaBlank(blank) ? malformedBareNumber(answer) : null;
 	if (repaired !== null) {
 		return validateBlankValue(repaired, blank, instance)
 			? { constraint: 'form', feedback: CONSTRAINT_FEEDBACK['form'].single }
@@ -2390,7 +2492,8 @@ function matchedAnswerForm(
 						blankLatex,
 						instance.options?.constraints ?? {},
 						reading,
-						allowsNumberFraction(blank)
+						allowsNumberFraction(blank),
+						blank.precision
 					)
 				: applyConstraints(
 						[userAnswer],
@@ -2472,6 +2575,18 @@ function validateBlanksOrderIndependent(
 				)
 		);
 		if (forgotPercent) return { isCorrect: false, feedback: FORGOTTEN_PERCENT_SIGN };
+		// Nombre collé derrière un facteur sur une réponse non appariée : même message
+		// qu'en mode positionnel
+		const refusal = userAnswers
+			.map((answer, i) =>
+				answer.trim() &&
+				matching[i] === -1 &&
+				blanks.some((blank, b) => !used.has(b) && isBareFormulaBlank(blank))
+					? numberAfterFactorRefusal(userAnswersLatex?.[i] || answer, instance)
+					: undefined
+			)
+			.find((feedback) => feedback !== undefined);
+		if (refusal !== undefined) return { isCorrect: false, feedback: refusal };
 		return { isCorrect: false, message: 'Incorrect' };
 	}
 
