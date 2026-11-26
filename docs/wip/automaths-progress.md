@@ -2,13 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR A (cartes) en cours ; phase 0 de la PR A2 validée._
+_Mis à jour le 2026-11-26, PR A (cartes) ouverte ; phase 0 de la PR A2 validée._
 
-- **État** : PR A codée sur `feat/automaths-cartes` (worktree `../ubumaths-wt-automaths-cartes`), commitée, PAS poussée : tests verts, rendu vu (catalogue ordi + téléphone, Ma série). Revue `code-reviewer` faite : aucun bloquant (§ ci-dessous).
-- **Prochaine action** : corriger les points 1, 3, 4 de la revue (tests d'abord), `git merge origin/main` (worktree en retard), push, PR, `pnpm pr:merger <n>` ; puis PR A2 (variations choisies sur la carte, phase 0 validée ci-dessous, branche `feat/automaths-variations-carte`) ; puis PR B (`feat/automaths-recherche`, phase 0 validée ci-dessous).
+- **État** : PR A (`feat/automaths-cartes`) poussée et ouverte, revue corrigée (§ ci-dessous), merge par `pnpm pr:merger`.
+- **Prochaine action** : après le merge, PR A2 (variations choisies sur la carte, phase 0 validée ci-dessous, branche `feat/automaths-variations-carte`, nouveau worktree) ; puis PR B (`feat/automaths-recherche`, phase 0 validée ci-dessous).
 - **En attente de David** : rien.
-- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`).
+- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable (s'arrête vers 120 fichiers, E28 du grapheur rouge sous charge, vert seul) → tests ciblés.
 - **Worktree / branche** : `../ubumaths-wt-automaths-cartes` · `feat/automaths-cartes`.
+
+### 2026-11-26 — PR A, revue corrigée
+
+- Point 1 : aperçu d'une variation non gardée → la carte part de la première variation gardée (exemple à graine fixe), compteur juste. Test rouge puis vert.
+- Point 3 : chaque tuile est un groupe (`role="group"`) nommé par le titre du modèle (`aria-labelledby`, `$props.id()`) ; modèle retiré : « Modèle retiré ». Tests rouges puis verts.
+- Point 4 : flèches des variations, zone de clic de 40 px (`::before`, `inset: -0.5rem`), ligne fine inchangée. Test rouge puis vert.
+- `git merge origin/main` ; 362 tests navigateur ciblés + 8 serveur verts ; `check:incremental` 0 erreur ; rendu revu (`pnpm voir --chrome`, 5e), 0 erreur de console.
 
 ### 2026-11-26 — PR A cartes, réalisation
 
