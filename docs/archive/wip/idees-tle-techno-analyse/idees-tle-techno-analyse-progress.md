@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3199 et sa migration._
+_Mis à jour le 2026-11-26 : chantier clos, journal archivé._
 
-- **État** : #3196 et #3199 mergées et migrées (prod vérifiée : coup de pouce de F6 et erreur
-  a + c de F5 en place) · **Prochaine action** : verser le chantier (archiver le journal, ligne de
-  la répartition) · **En attente de David** : rien · **Pièges en cours** : le moteur ne voit pas
-  4^(1/4) = 2^(1/2) (F6 limitée à r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** : aucun.
+- **État** : clos ; #3196 et #3199 mergées et migrées, rubrique « publiée » dans
+  `idees-ailleurs-repartition.md`, 7 modèles réservés rendus · **Prochaine action** : aucune ·
+  **En attente de David** : rien · **Piège durable** : le moteur ne voit pas 4^(1/4) = 2^(1/2)
+  (F6 limitée à r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** : aucun.
 
 ## Journal
 

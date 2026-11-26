@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-techno-analyse-publies/ (chantier idees-tle-techno-analyse).
 
 Phase 0 validée par David le 2026-11-26 (« je valide les modèles », fiches
-docs/wip/idees-tle-techno-analyse-fiches.md) : F1 et F6 (52b884ee), F2 (10bd7075), F3 et F4
+docs/archive/wip/idees-tle-techno-analyse/idees-tle-techno-analyse-fiches.md) : F1 et F6 (52b884ee), F2 (10bd7075), F3 et F4
 (af24839d), F5 (dc269779), F7 (f84e23a3), F8 (94b1dbf6), F9 (f6805041). Les variations s'ajoutent
 À LA FIN (les réponses des élèves gardent l'indice de leur variation) ; la migration de contenu est
 générée par scripts/questions/migration-contenu.ts.
