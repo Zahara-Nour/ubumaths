@@ -112,10 +112,21 @@
 		} catch (err) {
 			toaster.error(err instanceof Error ? err.message : 'Impossible de changer la version');
 		} finally {
+			// Recharger d'abord : le menu ne revient pas sur l'ancienne version, et reste fermé
+			// aux clics, le temps du rechargement
+			await onchanged?.();
 			saving = false;
 			selectKey++;
-			await onchanged?.();
 		}
+	}
+
+	/**
+	 * Boîte fermée sans confirmer (Échap, clic dehors : `onCancel` n'est appelé que par le bouton
+	 * « Renoncer ») : le menu revient à la version de la fiche.
+	 */
+	function setConfirmOpen(open: boolean) {
+		confirmOpen = open;
+		if (!open && pendingTarget) cancel();
 	}
 </script>
 
@@ -151,7 +162,7 @@
 	</div>
 
 	<ConfirmDialog
-		bind:open={confirmOpen}
+		bind:open={() => confirmOpen, setConfirmOpen}
 		title="Changer la version de la {exerciseName.toLowerCase()}"
 		description={confirmation ?? ''}
 		confirmLabel={pendingTarget ? `Passer à la v${pendingTarget.number}` : 'Changer'}

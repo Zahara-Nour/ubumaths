@@ -80,7 +80,10 @@ export const WORKSHEET_LINE_VERSION =
 /** Exercices par appel : au plus autant de lignes rendues, loin de la limite de PostgREST. */
 const IDS_PER_QUERY = 500;
 
-/** Lignes par page quand une lecture peut en rendre plus que la limite de PostgREST (1 000). */
+/**
+ * Lignes par page quand une lecture peut en rendre plus que la limite de PostgREST. ⚠️ Doit rester
+ * ≤ `max_rows` (`supabase/config.toml`, 1 000) : au-delà, une page pleine passerait pour la dernière.
+ */
 const ROWS_PER_PAGE = 1000;
 
 const logger = createServerLogger('server/exercise-versions');

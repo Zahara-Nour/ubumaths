@@ -11,7 +11,8 @@
  *    versions par numéro croissant, et le nombre d'affectations EN COURS de la fiche.
  * 2. Route `PUT …/exercises/[ligne]/version` : passer à la v2 sur une fiche publiée et distribuée,
  *    revenir à la v1 ; refusé sur une fiche archivée, pour la version d'un autre exercice, pour un
- *    élève (mono-professeur : il n'y a pas d'autre prof) ; la ligne ne bouge pas quand c'est refusé.
+ *    élève (mono-professeur : il n'y a pas d'autre prof) ; hors route, la RLS refuse l'élève et la
+ *    clé étrangère composée refuse la version d'un autre exercice ; la ligne ne bouge pas quand c'est refusé.
  *
  * @vitest-environment node
  */
@@ -243,6 +244,29 @@ describe('PUT /api/worksheets/[id]/exercises/[ligne]/version', () => {
 	it('un élève : refusé, la ligne ne bouge pas', async () => {
 		const result = await setVersion(studentLocals, worksheetId, lineId, v2Id);
 		expect([403, 404]).toContain(result.status);
+		expect(await lineVersion(lineId)).toBe(v1Id);
+	});
+
+	it('hors route, la base tient aussi : l’élève n’écrit rien (RLS, 0 ligne)', async () => {
+		const studentClient = studentLocals.supabase as unknown as SupabaseClient<Database>;
+		const { data, error } = await studentClient
+			.from('worksheet_exercises')
+			.update({ exercise_version_id: v2Id })
+			.eq('id', lineId)
+			.select('id');
+		expect(error).toBeNull();
+		expect(data ?? []).toEqual([]);
+		expect(await lineVersion(lineId)).toBe(v1Id);
+	});
+
+	it('hors route, la base tient aussi : version d’un autre exercice refusée (23503)', async () => {
+		const teacherClient = teacherLocals.supabase as unknown as SupabaseClient<Database>;
+		const { error } = await teacherClient
+			.from('worksheet_exercises')
+			.update({ exercise_version_id: singleV1Id })
+			.eq('id', lineId)
+			.select('id');
+		expect(error?.code).toBe('23503');
 		expect(await lineVersion(lineId)).toBe(v1Id);
 	});
 

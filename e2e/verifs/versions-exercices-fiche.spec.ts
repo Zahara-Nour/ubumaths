@@ -11,7 +11,7 @@ import { gotoSettled } from './helpers/pages';
  *    « Passer à la v2 » change la version tout de suite ; un exercice à une seule version n'affiche
  *    rien ; le menu ramène à la v1 ;
  * 2. fiche publiée avec une affectation en cours : « Passer à la v2 » demande confirmation ;
- *    « Annuler » ne change rien, la confirmation change la version.
+ *    « Renoncer » ou Échap ne changent rien, la confirmation change la version.
  *
  * Décor posé et retiré en SQL : deux exercices et deux fiches à soi, rien d'autre n'est touché.
  */
@@ -118,7 +118,7 @@ test.describe('version d’un exercice dans la fiche (base locale)', () => {
 		expect(await lineVersionNumber(draftId, exerciseId)).toBe(1);
 	});
 
-	test('fiche distribuée : confirmation, annuler ne change rien', async ({ page }) => {
+	test('fiche distribuée : confirmation, renoncer ne change rien', async ({ page }) => {
 		await login(page, TEACHER.email, TEACHER.password);
 		await gotoSettled(page, `/dashboard/teacher/contenu/worksheets/${publishedId}`);
 
@@ -126,7 +126,16 @@ test.describe('version d’un exercice dans la fiche (base locale)', () => {
 		await controls.getByRole('button', { name: 'Passer à la v2' }).click();
 		const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
 		await expect(dialog).toContainText('1 affectation en cours');
-		await dialog.getByRole('button', { name: 'Annuler' }).click();
+		await dialog.getByRole('button', { name: 'Renoncer' }).click();
+		expect(await lineVersionNumber(publishedId, exerciseId)).toBe(1);
+
+		// Le menu, puis Échap : rien n'est changé, le menu revient à la v1
+		await controls.getByRole('combobox').click();
+		await page.getByRole('option', { name: /^v2 / }).click();
+		await expect(dialog).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(dialog).toBeHidden();
+		await expect(controls.getByRole('combobox')).toContainText('v1');
 		expect(await lineVersionNumber(publishedId, exerciseId)).toBe(1);
 
 		await controls.getByRole('button', { name: 'Passer à la v2' }).click();
