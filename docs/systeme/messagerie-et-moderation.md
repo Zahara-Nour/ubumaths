@@ -126,6 +126,19 @@ Tests : `tests/integration/messagerie-pieces-jointes.test.ts` (bucket, policies)
 `tests/integration/messagerie-pieces-jointes-liens.test.ts` (envoi et lecture de bout en bout),
 `src/routes/api/messages/__tests__/attachments.test.ts` (routes).
 
+#### Index de recherche et nom de l'expéditeur
+
+Chaque message inséré ou modifié passe par le trigger `update_message_search_index`, qui écrit
+une ligne de `message_search_index` (sujet, texte, nom et rôle de l'expéditeur). La colonne
+`sender_name` est obligatoire, alors que `profiles.full_name` ne l'est pas : **en prod, presque
+tous les élèves ont un nom complet vide** (prénom et nom remplis). Depuis la migration
+`20261126094959`, le trigger prend le nom complet, sinon « prénom nom », sinon `Sans nom` ;
+avant, l'envoi d'un message par un de ces élèves rendait 500 (V131). Le nom est figé à l'envoi.
+
+Tests : `tests/integration/database/messaging-triggers.test.ts`, bloc « expéditeur sans nom
+complet ». La fabrique de profils de test donne un nom complet à tout le monde : un test de
+messagerie qui doit ressembler à la prod le vide lui-même.
+
 ### Modération et signalements (chat)
 
 La modération porte sur la table `messages` **du chat**, pas sur `private_messages`.
