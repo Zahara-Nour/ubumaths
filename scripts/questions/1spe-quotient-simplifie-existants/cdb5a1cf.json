@@ -22,6 +22,10 @@
 			"blanks": [
 				{
 					"expectedAnswer": "\\frac{n+1}{ {{k}}n}",
+					"requiredForm": {
+						"pattern": "($n+1)/v",
+						"acceptable": "u/v"
+					},
 					"expectedErrors": [
 						{
 							"answer": "\\frac{ {{k}}n}{n+1}",
@@ -245,9 +249,45 @@
 			},
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": ["products", "form"]
+				"constraintViolations": ["form"]
 			},
 			"answers": ["\\frac{n+1}{2}\\times\\frac{1}{n}"]
+		},
+		{
+			"description": "Non simplifié : puissances laissées dans le quotient (perfectible)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{2^n(n+1)}{2^{n+1}n}"]
+		},
+		{
+			"description": "Non simplifié : numérateur et dénominateur multipliés par 2 (perfectible)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{2n+2}{4n}"]
+		},
+		{
+			"description": "Autre écriture : (n+1)/(n × 2), symbole de multiplication (perfectible)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			},
+			"answers": ["\\frac{n+1}{n\\times2}"]
 		},
 		{
 			"description": "Erreur prévue : quotient inversé",
@@ -293,7 +333,7 @@
 			},
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": ["products", "form"]
+				"constraintViolations": ["form"]
 			},
 			"answers": ["\\frac{n+1}{2^{n+1}}\\times\\frac{2^n}{n}"]
 		},

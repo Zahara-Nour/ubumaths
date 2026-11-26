@@ -260,6 +260,13 @@ Worktree `ubumaths-wt-ecarts-verifs-e76-e77`, branche `fix/ecarts-verifs-e76-e77
 - **Revue** (`code-reviewer` Opus, sur le diff, avant PR) : rien de bloquant, aucun verdict ni note changé. Corrigé : (1) en ordre libre le message sortait aussi pour une case à unité (`5cm2`) → même condition qu'en ordre fixé (`isBareFormulaBlank`) ; (2) `12 500` ou `1 2` de valeur fausse recevaient le message → rien n'est dit si la saisie sans ses espaces n'est plus refusée ; (3) `x0,5` citait « 0 » → nombre cité en entier, avec sa virgule. Pas fait : `2h30` dans une case SANS unité reçoit le message (pas vérifié qu'une telle case existe) ; un dénominateur tordu non simplifié (`(n+2)/((4^{n+1}/4^n)(n+1))`) reste compté juste.
 - **Vérifs** : les deux `test.fail` de `e2e/verifs/atelier-paquet9.spec.ts` retirés ; l'attendu de E77 précisé (« ½ point » et son message, au lieu de « pas Juste ») ; 5 sur 5 verts sous ordi-chrome, base locale.
 
+### Suite de la PR V : variation u_n = n/k^n (2026-11-26, validée par David)
+
+Worktree `ubumaths-wt-ecarts-verifs-e77-variation-0`, branche `fix/ecarts-verifs-e77-variation-0`. Donnée seule, aucune revue.
+
+- Variation d'indice 0 du modèle `cdb5a1cf` : forme exigée `($n+1)/v`, forme acceptable `u/v`. `2^n(n+1)/(2^{n+1}n)` et `(2n+2)/(4n)` passent de 0 point à ½ point (« La réponse est juste, mais pas écrite sous la forme demandée. ») ; `(n+1)/(2n)` reste juste ; le produit de deux quotients reste à 0 point, son message devient « La réponse ne respecte pas la forme demandée. ».
+- Simulation sur la prod : 35 specs vertes, 7 rouges sur le contenu actuel (les 3 de #3159 comprises : la prod n'est pas encore écrite). Écrit dans la base locale. Pas rejoué à l'écran : seule la variation d'indice 2 a une vérif (`atelier-paquet9.spec.ts`), verte avant ce changement.
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |
