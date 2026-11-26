@@ -1,0 +1,269 @@
+{
+	"id": "72b876d7-6673-4b75-a67d-631caebe1b8c",
+	"title": "Moyenne géométrique de deux nombres positifs",
+	"description": "Calculer la moyenne géométrique de deux nombres positifs, retrouver un terme d'une suite géométrique entre deux autres",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 45,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*m*n}}"
+				}
+			],
+			"statement": "Calcule la moyenne géométrique de ${{eval:k*m^2}}$ et ${{eval:k*n^2}}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|3|5"
+				},
+				{
+					"name": "m",
+					"expression": "1..4"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["m < n"],
+			"correction": {
+				"steps": [
+					"La moyenne géométrique de deux nombres positifs $a$ et $b$ est $\\sqrt{ab}$.",
+					"$\\sqrt{ {{eval:k*m^2}}\\times{{eval:k*n^2}} }=\\sqrt{ {{eval:k^2*m^2*n^2}} }=\\textcolor{{{color:primary.0}}}{{{eval:k*m*n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					},
+					"expectedAnswer": "{{eval:round(10*sqrt(a*b))/10;a1}}"
+				}
+			],
+			"statement": "Calcule la moyenne géométrique de ${{a}}$ et ${{b}}$, arrondie au dixième.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				},
+				{
+					"name": "b",
+					"expression": "2..30"
+				}
+			],
+			"conditions": ["a < b", "round(sqrt(a*b))^2 != a*b"],
+			"correction": {
+				"steps": [
+					"La moyenne géométrique de deux nombres positifs $a$ et $b$ est $\\sqrt{ab}$.",
+					"$\\sqrt{ {{a}}\\times{{b}} }=\\sqrt{ {{eval:a*b}} }\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(10*sqrt(a*b))/10;a1}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*q}}"
+				}
+			],
+			"statement": "$(u_n)$ est une suite géométrique à termes positifs telle que $u_{{k}}={{eval:a*q^(2*s)}}$ et $u_{{k2}}={{eval:a*q^(2-2*s)}}$.\n\nCalcule $u_{{k1}}$.\n\n$u_{{k1}}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..6"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:k+1"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:k+2"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["a*q^2 <= 400"],
+			"correction": {
+				"steps": [
+					"Dans une suite géométrique à termes positifs, chaque terme est la moyenne géométrique du terme qui le précède et du terme qui le suit.",
+					"$u_{{k1}}=\\sqrt{u_{{k}}\\times u_{{k2}}}=\\sqrt{ {{eval:a*q^(2*s)}}\\times{{eval:a*q^(2-2*s)}} }=\\sqrt{ {{eval:a^2*q^2}} }=\\textcolor{{{color:primary.0}}}{{{eval:a*q}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1",
+				"m": "2",
+				"n": "3"
+			},
+			"description": "4 et 9 : 6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"m": "2",
+				"n": "3"
+			},
+			"description": "Erreur : moyenne arithmétique (6,5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"m": "2",
+				"n": "3"
+			},
+			"description": "Erreur : produit (36)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"m": "2",
+				"n": "3"
+			},
+			"description": "8 et 18 : 12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4,6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"description": "3 et 7 : 4,6",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"description": "Erreur : moyenne arithmétique (5)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4,4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"description": "Erreur : √3 + √7 (4,4)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"q": "4",
+				"s": "0",
+				"k1": "2",
+				"k2": "3"
+			},
+			"description": "u₁ = 3, u₃ = 48 : u₂ = 12",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["25,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"q": "4",
+				"s": "0",
+				"k1": "2",
+				"k2": "3"
+			},
+			"description": "Erreur : moyenne arithmétique (25,5)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"q": "4",
+				"s": "0",
+				"k1": "2",
+				"k2": "3"
+			},
+			"description": "Erreur : raison (4)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"k": "0",
+				"q": "5",
+				"s": "1",
+				"k1": "1",
+				"k2": "2"
+			},
+			"description": "décroissante : u₀ = 50, u₂ = 2 : u₁ = 10",
+			"variationIndex": 2
+		}
+	]
+}
