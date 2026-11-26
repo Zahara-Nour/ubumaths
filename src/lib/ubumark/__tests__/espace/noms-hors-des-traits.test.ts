@@ -1,5 +1,5 @@
 /**
- * Noms des sommets hors des traits (E48, E49 de `docs/wip/ecarts-verifs-progress.md`) :
+ * Noms des sommets hors des traits (E48, E49 de `docs/archive/wip/ecarts-verifs/ecarts-verifs-progress.md`) :
  * la place habituelle (direction libre entre les arêtes) d'abord, une autre
  * autour du sommet quand elle touche une arête ou le contour d'une section.
  * Les noms des points de la section (I, J…) restent posés contre leur arête.
