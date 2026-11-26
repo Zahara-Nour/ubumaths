@@ -6,14 +6,14 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, pendant la PR de V132, V133 et V134 (branche `fix/messagerie-nom-expediteur-suite`)._
+_Mis à jour le 2026-11-26, après #3188._
 
-- **État** : #3174 mergée et sa migration en prod (V131 clos). **PR suivante en cours** : V132 (message à une classe), V133 (« Répondre » s'écrit à soi-même), V134 (noms « Inconnu »), migration additive `20261126132310`, code d'application et tests écrits ; détail dans « PR de V132, V133 et V134 » ci-dessous.
-- **Prochaine action** : finir la PR (revues `code-reviewer` + `security-auditor`, rendu vérifié à l'écran, CI, merge), puis `pnpm db:migrate` **par David** et `pnpm deploy:prod` **à sa demande** (V133 et l'affichage sont du code d'application). Après le merge : clore V132 à V134 au registre avec le numéro de la PR.
-- **Décisions d'accès de David (2026-11-26)** : le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit ceux du prof qui lui écrit ; un élève qui reçoit un message envoyé à sa classe ne voit pas l'identité des autres destinataires. **Appliqué aussi au message envoyé à plusieurs élèves cochés un à un** (même cas, à confirmer par David).
-- **En attente de David** : `pnpm db:migrate` puis `pnpm deploy:prod` après le merge ; confirmer l'extension ci-dessus. Le lien « Messages » du menu (V104, journal `ecarts-a-trier`) attendait son essai, fait.
-- **Pièges en cours** : les comptes des tests ont tous un nom complet, pas ceux de la prod (le vider dans le test) ; `CREATE OR REPLACE` garde les droits mais **pas** le `search_path` : le redonner (`public, pg_temp`) ; `pnpm db:migrate` pousse toutes les migrations en attente, il est lancé par David ; restent au registre L128 à L130 et T37.
-- **Worktree / branche** : `ubumaths-wt-messagerie-nom-expediteur-suite` · `fix/messagerie-nom-expediteur-suite`.
+- **État** : #3188 mergée (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu » : clos au registre). **Rien n'est encore en prod** : la migration `20261126132310` n'est pas jouée et le code n'est pas déployé.
+- **Prochaine action** : aucune côté code. Après les deux gestes de David ci-dessous, vérifier en lecture seule que les fonctions de la prod portent `messagerie_nom_affiche`, puis lui proposer de refaire son essai (page « Écrire » du prof, « Répondre » depuis un fil côté élève, message à une classe).
+- **En attente de David** : (1) `pnpm db:migrate` depuis le dépôt principal (une seule migration en attente, vérifié le 2026-11-26 : `20261126132310`, additive) ; (2) `pnpm deploy:prod` quand il le veut (V133 et l'affichage sont du code d'application) ; (3) confirmer l'extension de sa décision d'accès : un élève ne voit pas non plus les autres destinataires d'un message envoyé à plusieurs élèves cochés un à un (il voit « et N autres destinataires »).
+- **Décisions d'accès de David (2026-11-26)** : le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit ceux du prof qui lui écrit ; un élève qui reçoit un message envoyé à sa classe ne voit pas l'identité des autres destinataires.
+- **Pièges en cours** : entre la migration et la mise en prod, l'ancien code tourne avec les nouvelles fonctions (compatible : mêmes signatures, noms en plus) ; `CREATE OR REPLACE` garde les droits mais pas le `search_path` ; le cliquet des types peut rougir sur un fichier non touché quand des fichiers de test s'ajoutent (vu sur la route du détail d'un échange du marché, typée à la main dans #3188) ; restes au registre : L128 à L135, V135, T37.
+- **Worktree / branche** : aucun (retirés au merge de #3188).
 
 ## Le constat (essai de David en prod, v0.113.0)
 
@@ -85,3 +85,5 @@ Vérifiées dans le code et en prod pour les trois premières ; découpage et qu
 - `code-reviewer` : corps SQL recopiés sans régression (comparés un à un). Trois points sur la page « Écrire » en réponse, corrigés : la réponse n'est plus bloquée quand le destinataire n'est pas dans la liste des destinataires permis (élève de test, liste non chargée), le serveur décide ; un brouillon rouvert ne remplace plus le destinataire d'une réponse.
 - `security-auditor` : aucun finding bloquant. Le retrait de `get_message_details` est étanche (rôle non falsifiable, pas d'autre chemin vers les destinataires) ; droits conservés par `CREATE OR REPLACE` ; la fonction d'aide n'est appelable ni par `anon` ni par `authenticated`.
 - **Restes à inscrire au registre après le merge** (antérieurs à la branche, sauf le premier) : la liste des destinataires d'un élève ne filtre pas un compte prof de test ; `send_private_message` ne vérifie pas que l'appelant a envoyé ou reçu le message parent ; un message à une personne peut porter une étiquette de classe ; un message supprimé par son destinataire lui reste lisible par son adresse ; un destinataire en double donne un 500 ; un élève voit « Répondre » sur un message de l'admin alors que l'envoi sera refusé (403 en français).
+
+**CI et merge de #3188** : deux rouges avant le vert, aucun dû à la messagerie. (1) Cliquet des types : le typage de la requête de `src/routes/api/marketplace/trades/[id]/+server.ts` tombait selon l'ordre de vérification des fichiers (rouge avec mes deux nouveaux fichiers de test, vert en en retirant un, n'importe lequel) ; résultat typé à la main (`overrideTypes`), sans effet à l'exécution. (2) Garde `SECURITY DEFINER` : base de test de la CI tombée en cours de route (connexion refusée), verte en local (7 sur 7) et à la relance.
