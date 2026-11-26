@@ -2,13 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR C (ordre des groupes) en cours._
+_Mis à jour le 2026-11-26, après #3176._
 
-- **État** : PR B mergée (#3172). PR C (le groupe qui a le plus de titres d'abord) codée sur `feat/automaths-ordre-groupes`, PR ouverte.
-- **Prochaine action** : CI → merge ; ensuite rien de prévu sur le chantier.
-- **En attente de David** : rien.
+- **État** : PR B (recherche, #3172) et PR C (ordre des groupes, #3176) mergées ; worktrees retirés. Recherche livrée au prochain `deploy:prod` (sur demande de David).
+- **Prochaine action** : aucune PR prévue sur le chantier ; attendre la suite de David.
+- **En attente de David** : accord pour supprimer le dossier `ubumaths-wt-automaths-recherche` (caches `.svelte-kit` / `.vite` seuls).
 - **Pièges en cours** : figure dans une variable (`{{if:k==1|```figure…}}`) → variables retirées AVANT les blocs ; mot mis au singulier par la recherche = mot entier ; capture WebKit d'une carte = miroir ; `garde-migrations-horodatage` rouge par hasard → `gh run rerun --failed`.
-- **Worktree / branche** : `ubumaths-wt-automaths-ordre-groupes` / `feat/automaths-ordre-groupes` (dossier `ubumaths-wt-automaths-recherche` : caches seuls, non supprimés).
+- **Worktree / branche** : aucun.
+
+### 2026-11-26 — PR C mergée (#3176)
+
+- CI verte, mergée par `pnpm pr:merger`.
 
 ### 2026-11-26 — PR C, ordre des groupes (décision de David : « je valide »)
 
