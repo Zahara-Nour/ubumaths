@@ -2,17 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, revues faites et corrigées, PR à ouvrir._
+_Mis à jour le 2026-11-26, après #3196._
 
-- **État** : 9 variations sur 7 modèles publiés ; essai local fait (F8, F9 : juste acceptée, fausse
-  refusée avec son message), copies « [essai] » locales supprimées ; `security-auditor` sans finding,
-  `code-reviewer` (opus) : 2 défauts de F6 et 6 mineurs corrigés ; migration régénérée
-  `20261126195520_…_publies_contenu` + fixture, `question:specs` et test d'intégration verts ·
-  **Prochaine action** : PR, CI, merge ; puis `db:migrate` = David · **En attente de David** : deux
-  mineurs non corrigés car conformes à la fiche validée (cf. journal, « revues ») · **Pièges en
-  cours** : `i` = imaginaire (F9 `h`) ; `e1` évité (`w1`) ; messages des specs sous leur forme
-  réécrite · **Worktree / branche** : `../ubumaths-wt-idees-tle-techno-analyse`,
-  `docs/idees-tle-techno-analyse`.
+- **État** : #3196 mergée (9 variations sur 7 modèles publiés, migration
+  `20261126195520_questions_idees_tle_techno_analyse_publies_contenu`) ; worktree retiré ·
+  **Prochaine action** : `pnpm db:migrate` (David) ; puis verser le chantier (archiver le journal,
+  ligne de la répartition) · **En attente de David** : `db:migrate` ; deux mineurs conformes à la
+  fiche validée, à trancher (F6 : coup de pouce « puissance 1/a » qui donne presque la réponse ; F5 :
+  erreur « exposants oubliés » d'une somme = a × c, plutôt a + c chez l'élève) · **Pièges en cours** :
+  le moteur ne voit pas 4^(1/4) = 2^(1/2) (F6 limitée à r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** :
+  aucun.
 
 ## Journal
 
