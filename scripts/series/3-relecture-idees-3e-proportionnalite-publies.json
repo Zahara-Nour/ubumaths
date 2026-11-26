@@ -1,0 +1,19 @@
+{
+	"title": "Relecture — pourcentages, 2 modèles publiés de 3e complétés",
+	"grade": "3",
+	"description": "Relecture dans /dev/modeles des 2 modèles publiés de 3e auxquels le chantier idees-3e-proportionnalite a ajouté des variations (4 chacun, à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Augmentation et coefficient multiplicateur",
+			"templateId": "ccb51039-cf8d-4edf-8d8e-9288e8fa11e2",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Diminution et coefficient multiplicateur",
+			"templateId": "76f5f143-14c0-4181-8e8c-525aa4f99292",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
