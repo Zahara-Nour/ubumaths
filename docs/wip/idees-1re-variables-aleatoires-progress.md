@@ -9,7 +9,9 @@ _Mis à jour le 2026-11-26, avant la première PR._
   tableau à compléter » (1SPE-355), trois variations.
 - **Prochaine action** : réponses de David à Q1 (1re techno ?) et Q2 (ligne des valeurs à remplir ?),
   puis le script `docs/wip/questions/idees-1re-variables-aleatoires-neufs.py`.
-- **En attente de David** : validation de F1, Q1, Q2 (page à cocher).
+- **En attente de David** : validation de F1, Q1, Q2 sur la
+  [page à cocher](https://claude.ai/artifact/9RFtwDwwN4dBDnrewpWMN5) (collection `verdicts`, un
+  document par élément : `F1`, `F1-v1` à `F1-v3`, `Q1`, `Q2`).
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-idees-1re-variables-aleatoires`,
   `docs/idees-1re-variables-aleatoires` (doc seule pour l'instant).
