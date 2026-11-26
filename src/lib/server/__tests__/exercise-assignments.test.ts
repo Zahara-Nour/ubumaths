@@ -538,7 +538,7 @@ describe('deleteAssignment', () => {
 		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
-					data: {},
+					data: [{ id: mockAssignmentId }],
 					error: null
 				})
 			);
@@ -562,7 +562,7 @@ describe('deleteAssignment', () => {
 		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
-					data: {},
+					data: [{ id: mockAssignmentId }],
 					error: null
 				})
 			);
@@ -1123,4 +1123,115 @@ describe('pickStudentAssignment — affectation montrée sur la page de l’exer
 	it('rend null sans aucune ligne', () => {
 		expect(assignments.pickStudentAssignment([], 'eleve-02', ['classe-1'])).toBeNull();
 	});
+});
+
+// ============================================================================
+// LE MESSAGE DE LA BASE NE SORT PAS
+// ============================================================================
+
+describe('erreur de la base : le message de Postgres ne part pas vers l’appelant', () => {
+	const postgresError = {
+		code: '23514',
+		message:
+			'new row for relation "exercise_assignments" violates check constraint "exercise_assignments_target_check"'
+	};
+	let supabase: MockSupabaseClient;
+
+	function refuseNextWrite() {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) =>
+			Promise.resolve(onFulfilled({ data: null, error: postgresError }))
+		);
+	}
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+		supabase = createMockSupabase();
+	});
+
+	it('createExerciseAssignment : message fixe', async () => {
+		supabase._mockChain.single.mockResolvedValueOnce({ data: mockExercise, error: null });
+		supabase._mockChain.single.mockResolvedValueOnce({ data: null, error: postgresError });
+
+		const result = await assignments.createExerciseAssignment(
+			supabase,
+			{ exercise_id: mockExerciseId, assigned_to_type: 'student', student_id: mockStudentId },
+			mockTeacherId
+		);
+
+		expect(result.data).toBeNull();
+		expect(result.error).toBe('L’affectation n’a pas pu être créée.');
+	});
+
+	it('createBulkAssignments : message fixe', async () => {
+		supabase._mockChain.single.mockResolvedValueOnce({ data: mockExercise, error: null });
+		refuseNextWrite();
+
+		const result = await assignments.createBulkAssignments(
+			supabase,
+			{ exercise_id: mockExerciseId, students: [mockStudentId] },
+			mockTeacherId
+		);
+
+		expect(result.count).toBe(0);
+		expect(result.error).toBe('Les affectations n’ont pas pu être créées.');
+	});
+
+	it('updateAssignment : message fixe', async () => {
+		supabase._mockChain.single.mockResolvedValueOnce({
+			data: { assigned_by: mockTeacherId },
+			error: null
+		});
+		supabase._mockChain.single.mockResolvedValueOnce({ data: null, error: postgresError });
+
+		const result = await assignments.updateAssignment(
+			supabase,
+			mockAssignmentId,
+			{ notes: 'x' },
+			mockTeacherId
+		);
+
+		expect(result.data).toBeNull();
+		expect(result.error).toBe('L’affectation n’a pas pu être modifiée.');
+	});
+
+	it.each([[true], [false]])('deleteAssignment (définitif : %s) : message fixe', async (hard) => {
+		supabase._mockChain.single.mockResolvedValueOnce({
+			data: { assigned_by: mockTeacherId },
+			error: null
+		});
+		refuseNextWrite();
+
+		const result = await assignments.deleteAssignment(
+			supabase,
+			mockAssignmentId,
+			mockTeacherId,
+			hard
+		);
+
+		expect(result.success).toBe(false);
+		expect(result.error).toBe('L’affectation n’a pas pu être supprimée.');
+	});
+
+	it.each([[true], [false]])(
+		'deleteAssignment (définitif : %s) : zéro ligne écrite, sans erreur (refus des règles d’accès) → échec',
+		async (hard) => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { assigned_by: mockTeacherId },
+				error: null
+			});
+			supabase._mockChain.then.mockImplementationOnce((onFulfilled) =>
+				Promise.resolve(onFulfilled({ data: [], error: null }))
+			);
+
+			const result = await assignments.deleteAssignment(
+				supabase,
+				mockAssignmentId,
+				mockTeacherId,
+				hard
+			);
+
+			expect(result.success).toBe(false);
+			expect(result.error).toBe('L’affectation n’a pas pu être supprimée.');
+		}
+	);
 });

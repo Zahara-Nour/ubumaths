@@ -418,12 +418,6 @@ test.describe('#3012 — images du contenu, compte élève', () => {
 			.annotations.some(
 				(a) => a.type === 'constat' && /games\/2048.*page d’erreur/.test(a.description ?? '')
 			);
-		if (erreurAuPremierChargement) {
-			test.fail(
-				true,
-				'ÉCART : /games/2048 tombe sur la page d’erreur (« Réessayer ») au premier chargement (erreur client appendChild)'
-			);
-		}
 		expect(erreurAuPremierChargement, 'page d’erreur au premier chargement de /games/2048').toBe(
 			false
 		);

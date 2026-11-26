@@ -190,8 +190,10 @@ export async function createExerciseAssignment(
 		.single();
 
 	if (error) {
+		// Le message de Postgres (nom de contrainte, de colonne) reste dans le journal du serveur :
+		// l'appelant le renvoie tel quel au navigateur. Même règle pour les quatre écritures suivantes.
 		logger.error('Error creating assignment:', error);
-		return { data: null, error: error.message };
+		return { data: null, error: 'L’affectation n’a pas pu être créée.' };
 	}
 
 	return { data: assignment as unknown as ExerciseAssignment, error: null };
@@ -312,7 +314,7 @@ export async function createBulkAssignments(
 
 	if (error) {
 		logger.error('Error creating bulk assignments:', error);
-		return { count: 0, error: error.message };
+		return { count: 0, error: 'Les affectations n’ont pas pu être créées.' };
 	}
 
 	return { count: created?.length || 0, error: null };
@@ -519,7 +521,7 @@ export async function updateAssignment(
 
 	if (error) {
 		logger.error('Error updating assignment:', error);
-		return { data: null, error: error.message };
+		return { data: null, error: 'L’affectation n’a pas pu être modifiée.' };
 	}
 
 	return { data: updated as unknown as ExerciseAssignment, error: null };
@@ -563,22 +565,28 @@ export async function deleteAssignment(
 
 	if (hardDelete) {
 		// Hard delete: remove from database
-		const { error } = await supabase.from('exercise_assignments').delete().eq('id', assignmentId);
+		// `.select('id')` : un refus des règles d'accès rend zéro ligne SANS erreur.
+		const { data: deleted, error } = await supabase
+			.from('exercise_assignments')
+			.delete()
+			.eq('id', assignmentId)
+			.select('id');
 
-		if (error) {
-			logger.error('Error deleting assignment:', error);
-			return { success: false, error: error.message };
+		if (error || !deleted?.length) {
+			logger.error('Error deleting assignment:', error ?? 'aucune ligne supprimée');
+			return { success: false, error: 'L’affectation n’a pas pu être supprimée.' };
 		}
 	} else {
 		// Soft delete: mark inactive
-		const { error } = await supabase
+		const { data: deactivated, error } = await supabase
 			.from('exercise_assignments')
 			.update({ is_active: false })
-			.eq('id', assignmentId);
+			.eq('id', assignmentId)
+			.select('id');
 
-		if (error) {
-			logger.error('Error deactivating assignment:', error);
-			return { success: false, error: error.message };
+		if (error || !deactivated?.length) {
+			logger.error('Error deactivating assignment:', error ?? 'aucune ligne modifiée');
+			return { success: false, error: 'L’affectation n’a pas pu être supprimée.' };
 		}
 	}
 
