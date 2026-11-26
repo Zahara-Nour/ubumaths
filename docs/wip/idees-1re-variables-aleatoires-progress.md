@@ -2,19 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3203._
+_Mis à jour le 2026-11-26, après #3203 et la création du brouillon en prod._
 
-- **État** : phase 0 validée ; modèle neuf `f1-loi-de-x-tableau-a-completer` mergé (#3203), pas
-  encore en prod.
-- **Prochaine action** : après la création du brouillon en prod, commiter l'id écrit en tête du
-  fichier, puis migration de rangement (`migration-rangement.ts --dir
-scripts/questions/idees-1re-variables-aleatoires-neufs`), `security-auditor`, PR, `db:migrate`.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-1re-variables-aleatoires-neufs --publier` (brouillon en prod).
+- **État** : modèle neuf en prod en brouillon, id `505ee05a-b19a-4cd3-a409-509d51cf9fbd` (sans
+  nœud ni tag). Id commité et poussé sur la branche `docs/idees-1re-variables-aleatoires-rangement`.
+- **Prochaine action** : dans ce worktree, `pnpm install --prefer-offline` + `.env`/`.env.local`,
+  puis `pnpm tsx scripts/questions/migration-rangement.ts --dir
+scripts/questions/idees-1re-variables-aleatoires-neufs`, tests d'intégration, `security-auditor`,
+  PR, merge, `db:migrate` (4 conditions ; `migration list --linked` d'abord).
+- **En attente de David** : rien.
 - **Pièges en cours** : second tag 1TECHNO-095 non posé par `migration-rangement.ts`
   (`outils-manquants.md` n° 66) ; la saisie scriptée des cases d'un tableau dans l'aperçu
   n'active pas « Valider » (jugement vérifié par les specs seulement).
-- **Worktree / branche** : aucun (retiré après #3203) ; le suivant sur `origin/main`, même sujet.
+- **Worktree / branche** : `../ubumaths-wt-idees-1re-variables-aleatoires-rangement`,
+  `docs/idees-1re-variables-aleatoires-rangement` (sans `.env` ni `node_modules` pour l'instant).
 
 ## Historique
 
@@ -28,3 +29,5 @@ scripts/questions/idees-1re-variables-aleatoires-neufs --publier` (brouillon en 
   Specs : une violation `reducedFractions` comptée **par case** non réduite ; message réécrit
   `P \left( X = 2 \right)`. Essai local : brouillon créé (id local retiré du fichier), aperçu
   vu (`pnpm voir`), sans erreur de console. PR #3203 mergée (CI verte).
+- 2026-11-26 : David a créé le brouillon en prod (`505ee05a`, vérifié par MCP : brouillon, sans
+  nœud). L'id, écrit dans le dépôt principal, a été déplacé sur la branche de rangement.
