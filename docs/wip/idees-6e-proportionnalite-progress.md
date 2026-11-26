@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot repris (prix en €, retouches 3 à 5), avant la PR des fichiers._
+_Mis à jour le 2026-11-26, après #3179 (lot mergé)._
 
-- **État** : lot complet sur `docs/idees-6e-proportionnalite` : 10 modèles, 177 specs vertes, prix en grandeurs € (« 4,50 € »), retouches 3 à 5 faites. Essai en base locale : 5 neufs créés en brouillon, variations des 4 publiés posées en local, aperçus rendus sans erreur.
-- **Prochaine action** : PR des fichiers (contenu, revue aucune), CI verte, merge ; puis David lance `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier` (prod), je commite les ids ; migrations de rangement + contenu (e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d) + F4 à la main.
-- **En attente de David** : N5 v2, « masse du père » à la place de « pointure du père » (un adulte garde sa pointure : « on ne peut pas » y serait discutable) : à confirmer à la relecture.
-- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d y portent déjà les variations ajoutées (PATCH local).
-- **Worktree / branche** : lot `../ubumaths-wt-idees-6e-proportionnalite` (`docs/idees-6e-proportionnalite`).
+- **État** : #3179 mergée : 5 modèles neufs + variations de e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d sur `main` (177 specs vertes, prix en €). Rien écrit en prod. Worktree retiré.
+- **Prochaine action** : David lance en prod `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-proportionnalite-neufs --publier` ; nouveau worktree, ids commités ; niveaux relevés en prod ; migrations de rangement (neufs) et de contenu (4 publiés) générées, F4 (06df72fd) à la main ; `security-auditor`.
+- **En attente de David** : (1) la commande `create-questions --publier` ci-dessus ; (2) N5 v2 : « masse du père » à la place de « pointure du père » (un adulte garde sa pointure), à confirmer.
+- **Pièges en cours** : F4 = migration à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 4 publiés y portent déjà les variations ajoutées (PATCH local), les 5 neufs y sont en brouillon.
+- **Worktree / branche** : aucun (à recréer depuis `origin/main` pour la suite).
 
 ## Journal
 
