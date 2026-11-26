@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-26, après #3179 (lot mergé)._
 
 - **État** : #3179 mergée : 5 modèles neufs + variations de e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d sur `main` (177 specs vertes, prix en €). Rien écrit en prod. Worktree retiré.
 - **Prochaine action** : David lance en prod `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-proportionnalite-neufs --publier` ; nouveau worktree, ids commités ; niveaux relevés en prod ; migrations de rangement (neufs) et de contenu (4 publiés) générées, F4 (06df72fd) à la main ; `security-auditor`.
-- **En attente de David** : (1) la commande `create-questions --publier` ci-dessus ; (2) N5 v2 : « masse du père » à la place de « pointure du père » (un adulte garde sa pointure), à confirmer.
+- **En attente de David** : la commande `create-questions --publier` ci-dessus.
 - **Pièges en cours** : F4 = migration à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 4 publiés y portent déjà les variations ajoutées (PATCH local), les 5 neufs y sont en brouillon.
 - **Worktree / branche** : aucun (à recréer depuis `origin/main` pour la suite).
 
@@ -144,7 +144,7 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 
 - Prix en grandeurs en euros (`{{eval:(…)[€]}}`) : « 7,20 € », « 12 € » écrits par le moteur. Prix sans unité (cases « Prix (€) », calculs du corrigé) écrits de même (`prix_nu` : `;d2` sauf prix entier).
 - Retouche 1 (`zeros: off` de e0ccaf84) abandonnée : « 21,60 € » est juste depuis #3170 (spec ajoutée). `zeros: off` gardé sur N1 à N3 : leurs cases de prix sans unité sont des nombres pour le juge (« 8,50 » y serait perfectible).
-- Retouche 3 : N5 v2 gagne une situation incalculable, **la masse du père** (au lieu de la pointure : un adulte garde sa pointure, et le coup de pouce « quelque chose qui ne change pas ? » y mènerait à « la même »). À confirmer par David.
+- Retouche 3 : N5 v2 gagne une situation incalculable, **la masse du père** (au lieu de la pointure : un adulte garde sa pointure, et le coup de pouce « quelque chose qui ne change pas ? » y mènerait à « la même »). Validé par David le 2026-11-26 (« je te suis »).
 - Retouche 4 : N5 v1, piège « valeur × nouvelle quantité » pour les prix et l'imprimante seulement ; ailleurs, la nouvelle quantité ajoutée (variable `z` : une grandeur `[€]` ne simplifie pas `min`/`abs`).
 - Retouche 5 : N4 relier, une série parmi cinq (éléphant, lettre, camion, récréation, vacances, marathon, crayon, cuillère…), une unité par sorte de grandeur dans chaque série.
 - Essai local : `create-questions --publier` en base locale (ids restaurés), variations des 4 publiés posées par PATCH local ; `pnpm voir` des aperçus N5 et N2 : rendu juste (« 13,30 € »), 0 erreur de console. Réponses justes et fausses jugées par les specs (même juge), pas rejouées à la main.
