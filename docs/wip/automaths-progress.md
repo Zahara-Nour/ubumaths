@@ -25,11 +25,11 @@ _Mis à jour le 2026-11-26, PR A (cartes) en cours._
 
 À corriger avant la PR :
 
-1. `TileCard` : `previewIndex` hors des variations permises → afficherait une variation non choisie, compteur faux. Prendre `list[0]` si `selectedVariationIndex` n'est pas dans `list` (+ test).
-2. Noms accessibles identiques d'une tuile à l'autre (« Variation suivante », « Retirer de ma série ») → y mettre le titre du modèle, ou nommer la tuile.
-3. Flèches des variations de 24 px : trop petites au doigt → zone de clic élargie (`::before`) ou plus grandes en `@media (hover: none)`.
+- (point 1) `TileCard` : `previewIndex` hors des variations permises → afficherait une variation non choisie, compteur faux. Prendre `list[0]` si `selectedVariationIndex` n'est pas dans `list` (+ test).
+- (point 3) Noms accessibles identiques d'une tuile à l'autre (« Variation suivante », « Retirer de ma série ») → y mettre le titre du modèle, ou nommer la tuile.
+- (point 4) Flèches des variations de 24 px : trop petites au doigt → zone de clic élargie (`::before`) ou plus grandes en `@media (hover: none)`.
 
-Écartés : 2 (`selectedVariationIndex` toujours rempli par `generateInstance`) ; 5 (`chosen` pas remis à zéro au changement de modèle : `{#each}` clés par id). À dire à David : Ma série reste à 18rem sur téléphone (le catalogue passe à 13,5rem).
+Écartés : point 2 (`selectedVariationIndex` toujours rempli par `generateInstance`) ; point 5 (`chosen` pas remis à zéro au changement de modèle : `{#each}` clés par id). À dire à David : Ma série reste à 18rem sur téléphone (le catalogue passe à 13,5rem).
 
 ### 2026-11-26 — phase 0 validée par David (« je valide »)
 
