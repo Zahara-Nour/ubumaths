@@ -2,28 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3200 et l'essai de David._
+_Mis à jour le 2026-11-26, noms tenus pendant la rotation (PR ouverte, § 7)._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1 et 2 mergés** (#3195 moteur de vue ; #3200 clé `tourner: oui` sur les polyèdres, § 6).
-  Rien n'est en prod.
-- **Prochaine action** : d'abord les **noms des sommets qui sautent** pendant la rotation (demande de
-  David après essai, ci-dessous), puis lot 3 — cylindre, cône, boule qui tournent (§ 4), revue
-  `code-reviewer` en opus. Une PR ou deux : à proposer à David au début de la session.
-- **Essai de David (2026-11-26, au doigt, par le lien)** : « le test est bon ». **Les noms des sommets
-  qui bougent sont gênants : à corriger.** Pas encore conçu (piste : un nom garde son côté tant qu'il
-  ne gêne pas ; la figure fixe et le PDF ne doivent pas changer).
-- **En attente de David** : rien. Mention « Figure à tourner » sous la figure au repos : **gardée**
-  (recommandation de la session, « je suis tes recos », David, 2026-11-26).
+  du § 3) ; **lots 1 et 2 mergés** (#3195 moteur de vue ; #3200 clé `tourner: oui` sur les polyèdres, § 6) ;
+  **noms tenus pendant la rotation** (§ 7) : PR ouverte depuis `feat/solides-3d-lot3`. Rien n'est en prod.
+- **Prochaine action** : merger la PR des noms (CI verte), puis lot 3 — cylindre, cône, boule qui tournent
+  (§ 4), dans une PR à part, revue `code-reviewer` en opus.
+- **En attente de David** : son essai au doigt des noms tenus (lien de `pnpm lien`, page
+  `/aide-ecriture/blocs/solide`, compte prof) ; il ne bloque pas le merge.
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
-  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; cylindre, cône et boule sont
-  dessinés « à plat » (ellipses, pas une vraie projection) : leur vue tournée et leur contour sont à
-  concevoir ; une ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; un `onclick`
-  de Svelte est délégué à la racine (écouteur posé sur la figure pour arrêter le clic après un glissement) ;
-  « moins d'animations » et le geste tactile réel n'ont pas de test.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot3` (aucun commit
-  de code). Serveur d'essai arrêté, lien retiré ; page d'essai `/aide-ecriture/blocs/solide`, compte
-  prof (un autre compte y reçoit un 403).
+  (`solide-scene-figee.test.ts`) : `labelOffsets` n'existe que dans une scène tournée ; jamais d'instantané de
+  flottants bruts ; cylindre, cône et boule sont dessinés « à plat » (ellipses, pas une vraie projection) :
+  leur vue tournée et leur contour sont à concevoir ; une ligne `tourner:` non suivie va dans
+  `rotationErrors`, jamais dans `errors` ; un `onclick` de Svelte est délégué à la racine ; « moins
+  d'animations » et le geste tactile réel n'ont pas de test.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot3`. Serveur d'essai sur
+  5176, lien du tailnet publié (`pnpm lien --stop` pour le retirer).
 
 ## 1. D'où l'on part
 
@@ -155,3 +150,29 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   s'arrête à la figure) ; Alt / Ctrl / Cmd + flèche laissés au navigateur ; souris relâchée hors de la figure
   sans capture ; animation arrêtée quand le bloc change. Restent sans test : « moins d'animations »
   (comportement 11), le vrai geste tactile (comportement 10).
+
+## 7. Noms tenus pendant la rotation (2026-11-26)
+
+- **Demande** : après son essai du lot 2, David trouve gênants les noms des sommets qui sautent pendant la
+  rotation. Cause : leur place était recalculée de zéro à chaque image (plus grand angle libre autour du
+  sommet, puis places essayées par crans).
+- **Décision de David** (2026-11-26, à la place des six comportements proposés par la session) : « les noms ne
+  bougent pas pendant l'animation, mais seulement quand on arrête l'animation ». Deux PR : les noms d'abord,
+  le lot 3 ensuite.
+- **Fait** : pendant un mouvement (glissement, flèche du clavier, retour à la vue de départ), chaque nom
+  (sommet, point déclaré, vecteur) garde sa place par rapport à son point ; à l'arrêt (doigt levé, touche
+  relâchée, fin du passage ou du retour), les noms glissent en 150 ms à la place qui convient à la vue — d'un
+  coup si l'appareil demande moins d'animations. Choix de la session, non demandés : le glissement de 150 ms
+  (plutôt qu'un saut à l'arrêt) et l'arrêt au clavier = touche relâchée.
+- **Conséquence acceptée** : pendant la rotation, un nom tenu peut passer sur une arête ; il s'en écarte à
+  l'arrêt.
+- Code : `buildSolideScene(spec, vue, held)` et `SolideScene.labelOffsets` (scène tournée seulement) ;
+  `holdNames` / `settleNames` dans `Solide.svelte`. Tests : `solide-tourner.test.ts` (« noms tenus pendant la
+  rotation »), `SolideTourner.svelte.test.ts` (noms tenus doigt posé, replacés doigt levé, revenus à leur
+  place au retour ; vérifié rouge sans `holdNames`).
+- Revue (`code-reviewer`) : aucun bug bloquant ; figure fixe inchangée (22 scènes figées), enchaînements
+  déroulés (retour interrompu par un glissement, glissement pendant que les noms se replacent,
+  `pointercancel`, « moins d'animations »). Corrigé avant la PR : deux flèches tenues ensemble, une relâchée
+  — les noms restent tenus tant qu'il reste une flèche enfoncée. Restent sans test : ces enchaînements
+  (touche relâchée, figure quittée au clavier, retour interrompu) ; un bloc qui change sous le doigt
+  (éditeur du prof) laisse les noms sauter jusqu'à la fin de ce glissement.

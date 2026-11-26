@@ -286,3 +286,81 @@ describe('```solide — scène tournée', () => {
 		}
 	});
 });
+
+describe('```solide — noms tenus pendant la rotation', () => {
+	const pave = spec(
+		...PAVE,
+		'points: I milieu AE, O centre ABCDEFGH',
+		'vecteurs: AG, u = AI',
+		'tourner: oui'
+	);
+
+	it('dessin fixe : aucune place de nom rendue (scène inchangée)', () => {
+		expect(buildSolideScene(pave)).not.toHaveProperty('labelOffsets');
+	});
+
+	it('figure à tourner : une place par nom, par rapport à son point', () => {
+		const rest = buildSolideScene(pave, VUE_DE_DEPART);
+		expect(rest.labelOffsets).toHaveLength(rest.labels.length);
+		// Les huit premiers noms sont ceux des sommets, dans l'ordre
+		rest.vertices.forEach((p, i) => {
+			expect(rest.labels[i].at.x - p.x).toBeCloseTo(rest.labelOffsets?.[i].x ?? NaN, 9);
+			expect(rest.labels[i].at.y - p.y).toBeCloseTo(rest.labelOffsets?.[i].y ?? NaN, 9);
+		});
+	});
+
+	it('places tenues : chaque nom garde sa place par rapport à son point, à chaque angle', () => {
+		const held = buildSolideScene(pave, VUE_DE_DEPART).labelOffsets;
+		for (const vue of GRID) {
+			const scene = buildSolideScene(pave, vue, held);
+			expect(scene.labelOffsets).toHaveLength(held?.length ?? -1);
+			scene.labelOffsets?.forEach((offset, i) => {
+				expect(offset.x).toBeCloseTo(held?.[i].x ?? NaN, 9);
+				expect(offset.y).toBeCloseTo(held?.[i].y ?? NaN, 9);
+			});
+			scene.vertices.forEach((p, i) => {
+				expect(scene.labels[i].at.x - p.x).toBeCloseTo(held?.[i].x ?? NaN, 9);
+				expect(scene.labels[i].at.y - p.y).toBeCloseTo(held?.[i].y ?? NaN, 9);
+			});
+			expect(scene.labels.map((l) => l.text)).toEqual(
+				buildSolideScene(pave, VUE_DE_DEPART).labels.map((l) => l.text)
+			);
+		}
+	});
+
+	it('places tenues : tout reste dans le cadre à chaque angle', () => {
+		const held = buildSolideScene(pave, VUE_DE_DEPART).labelOffsets;
+		for (const vue of GRID) {
+			const scene = buildSolideScene(pave, vue, held);
+			for (const p of drawn(scene)) {
+				expect(p.x).toBeGreaterThanOrEqual(-1e-9);
+				expect(p.y).toBeGreaterThanOrEqual(-1e-9);
+				expect(p.x).toBeLessThanOrEqual(scene.width + 1e-9);
+				expect(p.y).toBeLessThanOrEqual(scene.height + 1e-9);
+			}
+		}
+	});
+
+	it('la petite flèche d’un nom de vecteur suit le nom tenu', () => {
+		const held = buildSolideScene(pave, VUE_DE_DEPART).labelOffsets;
+		const vue = turned(1, 0.4);
+		const scene = buildSolideScene(pave, vue, held);
+		const name = scene.labels.find((l) => l.text === 'u');
+		const small = scene.arrows.find((a) => a.small);
+		expect(name).toBeDefined();
+		expect(small).toBeDefined();
+		const middleX = ((small?.shaft[0].x ?? NaN) + (small?.head[0].x ?? NaN)) / 2;
+		expect(middleX).toBeCloseTo(name?.at.x ?? NaN, 9);
+	});
+
+	it('à l’arrêt : les places rendues, redonnées telles quelles, redonnent la même scène', () => {
+		const vue = turned(2, -0.6);
+		const settled = buildSolideScene(pave, vue);
+		expect(buildSolideScene(pave, vue, settled.labelOffsets)).toEqual(settled);
+	});
+
+	it('places d’un autre bloc (pas le même nombre de noms) : placement habituel', () => {
+		const vue = turned(2, -0.6);
+		expect(buildSolideScene(pave, vue, [{ x: 0, y: 0 }])).toEqual(buildSolideScene(pave, vue));
+	});
+});
