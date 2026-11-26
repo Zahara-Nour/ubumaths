@@ -1,0 +1,4007 @@
+{
+	"migration": "supabase/migrations/20261126185210_questions_idees_3e_proportionnalite_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "76f5f143-14c0-4181-8e8c-525aa4f99292",
+			"title": "Diminution et coefficient multiplicateur",
+			"fichier": "76f5f143.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-t/100;d}}"
+							}
+						],
+						"statement": "Diminuer une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "5|10|15|20|25|30|40|50|75"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"$$1 - \\frac{{{t}}}{100} = 1 - {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:P*(1-t/100);d}}"
+							}
+						],
+						"statement": "Un article coûte ${{P}}~\\unit{€}$. Son prix baisse de ${{t}}~\\%$.\n\nCalcule le nouveau prix à l'aide du coefficient multiplicateur.\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "10|20|30|5|15|25"
+							},
+							{
+								"name": "j",
+								"expression": "2..30"
+							},
+							{
+								"name": "P",
+								"expression": "eval:10*j"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"Le coefficient multiplicateur est $1 - \\frac{{{t}}}{100} = {{eval:1-t/100;d}}$.",
+								"$${{P}} \\times {{eval:1-t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:100-K}}"
+							}
+						],
+						"statement": "Multiplier une quantité par ${{x}}$, c'est la diminuer de :\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "K",
+								"expression": "97|92|85|80|75|65|60|40"
+							},
+							{
+								"name": "x",
+								"expression": "eval:K/100;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"$${{x}} = 1 - {{eval:(100-K)/100;d}} = 1 - \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{100}$$",
+								"C'est une diminution de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0,8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "20"
+						},
+						"description": "− 20 % → × 0,8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1,2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "20"
+						},
+						"description": "Erreur : 1,2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "20"
+						},
+						"description": "Erreur : 0,2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,95"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "− 5 % → × 0,95",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "Erreur : − 5 % → 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["96"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "120 € − 20 % = 96 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "Erreur : 120 × 0,2 = 24",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["15"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "85",
+							"x": "0.85"
+						},
+						"description": "× 0,85 → − 15 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["85"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "85",
+							"x": "0.85"
+						},
+						"description": "Erreur : 85",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "60",
+							"x": "0.6"
+						},
+						"description": "× 0,6 → − 40 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["60"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "60",
+							"x": "0.6"
+						},
+						"description": "Erreur : × 0,6 → 60",
+						"variationIndex": 2
+					}
+				],
+				"description": "Traduire une diminution de t % par le coefficient 1 − t/100 : − 20 % → × 0,8 ; 120 € diminué de 20 % ; × 0,85 → − 15 %"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-t/100;d}}"
+							}
+						],
+						"statement": "Diminuer une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "5|10|15|20|25|30|40|50|75"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"$$1 - \\frac{{{t}}}{100} = 1 - {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:P*(1-t/100);d}}"
+							}
+						],
+						"statement": "Un article coûte ${{P}}~\\unit{€}$. Son prix baisse de ${{t}}~\\%$.\n\nCalcule le nouveau prix à l'aide du coefficient multiplicateur.\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "10|20|30|5|15|25"
+							},
+							{
+								"name": "j",
+								"expression": "2..30"
+							},
+							{
+								"name": "P",
+								"expression": "eval:10*j"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"Le coefficient multiplicateur est $1 - \\frac{{{t}}}{100} = {{eval:1-t/100;d}}$.",
+								"$${{P}} \\times {{eval:1-t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:100-K}}"
+							}
+						],
+						"statement": "Multiplier une quantité par ${{x}}$, c'est la diminuer de :\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "K",
+								"expression": "97|92|85|80|75|65|60|40"
+							},
+							{
+								"name": "x",
+								"expression": "eval:K/100;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"$${{x}} = 1 - {{eval:(100-K)/100;d}} = 1 - \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{100}$$",
+								"C'est une diminution de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+							]
+						}
+					},
+					{
+						"statement": "{{if:c==0|Le prix d'un article|{{if:c==1|L'effectif d'un collège|La population d'une ville}}}} passe de ${{if:c==0|{{eval:(a)[€]}}|{{if:c==1|{{eval:a}}|{{eval:a}}}}}}${{if:c==0||{{if:c==1| élèves| habitants}}}} à ${{if:c==0|{{eval:(b)[€]}}|{{if:c==1|{{eval:b}}|{{eval:b}}}}}}${{if:c==0||{{if:c==1| élèves| habitants}}}}.\n\nDe quel pourcentage {{if:c==0|le prix de l'article|{{if:c==1|l'effectif du collège|la population de la ville}}}} a-t-{{if:c==2|elle|il}} diminué ?\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "0..2"
+							},
+							{
+								"name": "j",
+								"expression": "2..30"
+							},
+							{
+								"name": "m",
+								"expression": "4..12"
+							},
+							{
+								"name": "h",
+								"expression": "10..90"
+							},
+							{
+								"name": "tp",
+								"expression": "1..10"
+							},
+							{
+								"name": "tc",
+								"expression": "2..10"
+							},
+							{
+								"name": "tv",
+								"expression": "5..30"
+							},
+							{
+								"name": "a",
+								"expression": "eval:(1-min(c,1))*10*j+(min(c,1)-max(c-1,0))*100*m+max(c-1,0)*1000*h"
+							},
+							{
+								"name": "t",
+								"expression": "eval:(1-min(c,1))*5*tp+(min(c,1)-max(c-1,0))*tc+max(c-1,0)*tv"
+							},
+							{
+								"name": "b",
+								"expression": "eval:a*(1-t/100);d"
+							}
+						],
+						"conditions": ["a != 100", "t != 50"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{t}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a-b}}",
+										"message": "C'est la baisse{{if:c==0| en euros|{{if:c==1| en nombre d'élèves| en nombre d'habitants}}}}, pas en pourcentage : il faut la comparer à la valeur de départ.",
+										"label": "Baisse sans pourcentage"
+									},
+									{
+										"answer": "{{eval:b/a;d}}",
+										"message": "${{eval:b/a;d}}$ est le coefficient multiplicateur : multiplier par ${{eval:b/a;d}}$, c'est diminuer de combien de pour cent ?",
+										"label": "Le coefficient multiplicateur"
+									},
+									{
+										"answer": "{{eval:100*b/a}}",
+										"message": "${{eval:100*b/a}}~\\%$ est la valeur finale exprimée en pourcentage de la valeur de départ : compare à $100~\\%$.",
+										"label": "Valeur finale en % de la valeur de départ"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"On passe de ${{eval:a}}$ à ${{eval:b}}$ en multipliant par $\\dfrac{ {{eval:b}} }{ {{eval:a}} } = {{eval:b/a;d}}$.",
+								"$${{eval:b/a;d}} = 1 - {{eval:t/100;d}} = 1 - \\frac{\\textcolor{{{color:primary.0}}}{ {{solution}} }}{100}$$",
+								"C'est une diminution de $\\textcolor{{{color:primary.0}}}{ {{solution}}~\\% }$."
+							]
+						},
+						"hint": "Par quel nombre faut-il multiplier ${{eval:a}}$ pour obtenir ${{eval:b}}$ ?"
+					},
+					{
+						"statement": "{{if:c==0|Un collège compte ${{eval:a}}$ élèves. Son effectif diminue de ${{t}}~\\%$.\n\nCombien d'élèves compte-t-il ensuite ?|{{if:c==1|Une ville compte ${{eval:a}}$ habitants. Sa population diminue de ${{t}}~\\%$.\n\nCombien d'habitants compte-t-elle ensuite ?|Une facture d'électricité annuelle s'élève à ${{eval:a}}~\\unit{€}$. Elle diminue de ${{t}}~\\%$.\n\nQuel est son nouveau montant ?}}}}\n\n$$?{{if:c==0|~\\text{élèves}|{{if:c==1|~\\text{habitants}|~\\text{€}}}}}$$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "0..2"
+							},
+							{
+								"name": "m",
+								"expression": "3..12"
+							},
+							{
+								"name": "h",
+								"expression": "10..90"
+							},
+							{
+								"name": "f",
+								"expression": "700..1400"
+							},
+							{
+								"name": "tc",
+								"expression": "1..11"
+							},
+							{
+								"name": "tv",
+								"expression": "5..30"
+							},
+							{
+								"name": "tf",
+								"expression": "1..12"
+							},
+							{
+								"name": "a",
+								"expression": "eval:(1-min(c,1))*100*m+(min(c,1)-max(c-1,0))*1000*h+max(c-1,0)*f"
+							},
+							{
+								"name": "t",
+								"expression": "eval:(1-min(c,1))*tc+(min(c,1)-max(c-1,0))*tv+max(c-1,0)*tf"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*(1-t/100);d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a-t}}",
+										"message": "Tu as enlevé ${{t}}$ : il faut enlever ${{t}}~\\%$ de ${{eval:a}}$, ou multiplier par le coefficient multiplicateur.",
+										"label": "a − t"
+									},
+									{
+										"answer": "{{eval:a*t/100;d}}",
+										"message": "C'est la baisse seule : il faut encore l'enlever de ${{eval:a}}$.",
+										"label": "La baisse seule"
+									},
+									{
+										"answer": "{{if:t<10|{{eval:a*(1-t/10);d}}|{{eval:a*(1+t/100);d}}}}",
+										"message": "{{if:t<10|${{t}}~\\%$, c'est $\\dfrac{ {{t}} }{100}={{eval:t/100;d}}$ : le coefficient est ${{eval:1-t/100;d}}$, pas ${{eval:1-t/10;d}}$.|Tu as calculé une augmentation : diminuer, c'est multiplier par $1-\\dfrac{t}{100}$.}}",
+										"label": "Coefficient 1 − t/10, ou augmentation"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"Le coefficient multiplicateur est $1 - \\frac{ {{t}} }{100} = {{eval:1-t/100;d}}$.",
+								"$${{eval:a}} \\times {{eval:1-t/100;d}} = \\textcolor{{{color:primary.0}}}{ {{solution}} }$$"
+							]
+						},
+						"hint": "Calcule d'abord le coefficient multiplicateur : $1 - \\dfrac{ {{t}} }{100}$."
+					},
+					{
+						"statement": "Diminuer une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|6|7|8|9|12|17|23|36|38|41|64|72"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-t/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:t/100;d}}",
+										"message": "Multiplier par ${{eval:t/100;d}}$ donne la baisse, pas ce qui reste : on enlève ${{eval:t/100;d}}$ à $1$.",
+										"label": "La baisse seule"
+									},
+									{
+										"answer": "{{if:t<10|{{eval:1-t/10;d}}|{{eval:100-t}}}}",
+										"message": "{{if:t<10|${{t}}~\\%$, c'est $\\dfrac{ {{t}} }{100}={{eval:t/100;d}}$, pas ${{eval:t/10;d}}$.|Le coefficient s'écrit en nombre décimal : ${{eval:100-t}}~\\%$, c'est $\\dfrac{ {{eval:100-t}} }{100}$.}}",
+										"label": "Taux lu en dixièmes, ou pourcentage non converti"
+									},
+									{
+										"answer": "{{eval:1+t/100;d}}",
+										"message": "Multiplier par ${{eval:1+t/100;d}}$, c'est augmenter : pour diminuer, on enlève $\\dfrac{ {{t}} }{100}$ à $1$.",
+										"label": "Coefficient d'augmentation"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"$$1 - \\frac{ {{t}} }{100} = 1 - {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{ {{solution}} }$$"
+							]
+						},
+						"hint": "Écris d'abord $\\dfrac{ {{t}} }{100}$ sous forme décimale."
+					},
+					{
+						"statement": "Multiplier une quantité par ${{x}}$, c'est la diminuer de :\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "K",
+								"expression": "99|98|97|96|94|93|91|88|83|77|64|58|46|31"
+							},
+							{
+								"name": "x",
+								"expression": "eval:K/100;d"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:100-K}}",
+								"expectedErrors": [
+									{
+										"answer": "{{K}}",
+										"message": "Multiplier par ${{x}}$, c'est garder ${{K}}~\\%$ de la quantité : la baisse est ce qui manque pour aller jusqu'à $100~\\%$.",
+										"label": "Ce qui reste"
+									},
+									{
+										"answer": "{{eval:(100-K)/100;d}}",
+										"message": "${{x}} = 1 - {{eval:(100-K)/100;d}}$ : il reste à écrire ${{eval:(100-K)/100;d}}$ en pourcentage.",
+										"label": "Pas multiplié par 100"
+									},
+									{
+										"answer": "{{eval:K-100}}",
+										"message": "« Diminuer de » dit déjà que c'est une baisse : le pourcentage s'écrit sans signe moins.",
+										"label": "Pourcentage négatif"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+								"$${{x}} = 1 - {{eval:(100-K)/100;d}} = 1 - \\frac{\\textcolor{{{color:primary.0}}}{ {{solution}} }}{100}$$",
+								"C'est une diminution de $\\textcolor{{{color:primary.0}}}{ {{solution}}~\\% }$."
+							]
+						},
+						"hint": "Écris ${{x}}$ sous la forme $1 - \\dots$"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0,8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "20"
+						},
+						"description": "− 20 % → × 0,8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1,2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "20"
+						},
+						"description": "Erreur : 1,2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "20"
+						},
+						"description": "Erreur : 0,2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,95"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "− 5 % → × 0,95",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "Erreur : − 5 % → 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["96"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "120 € − 20 % = 96 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "Erreur : 120 × 0,2 = 24",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["15"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "85",
+							"x": "0.85"
+						},
+						"description": "× 0,85 → − 15 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["85"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "85",
+							"x": "0.85"
+						},
+						"description": "Erreur : 85",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "60",
+							"x": "0.6"
+						},
+						"description": "× 0,6 → − 40 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["60"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "60",
+							"x": "0.6"
+						},
+						"description": "Erreur : × 0,6 → 60",
+						"variationIndex": 2
+					},
+					{
+						"description": "c=0 120 → 96 : 20 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "96"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["20"]
+					},
+					{
+						"description": "c=0 : écart 24",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "96"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["24"]
+					},
+					{
+						"description": "c=0 : coefficient 0,8",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "96"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,8"]
+					},
+					{
+						"description": "c=0 : 80 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "96"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["80"]
+					},
+					{
+						"description": "c=1 800 → 752 : 6 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "752"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["6"]
+					},
+					{
+						"description": "c=1 : écart 48",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "752"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["48"]
+					},
+					{
+						"description": "c=1 : coefficient 0,94",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "752"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,94"]
+					},
+					{
+						"description": "c=1 : 94 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "752"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["94"]
+					},
+					{
+						"description": "c=2 45000 → 39\\,600 : 12 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "39600"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["12"]
+					},
+					{
+						"description": "c=2 : écart 5400",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "39600"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["5400"]
+					},
+					{
+						"description": "c=2 : coefficient 0,88",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "39600"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,88"]
+					},
+					{
+						"description": "c=2 : 88 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "39600"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["88"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : 558",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["558"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : a - t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["593"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["42"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["180"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : 27\\,200",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["27\\,200"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : a - t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["31985"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["4800"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["36\\,800"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : 1115,5",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1115,5"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : a - t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1147"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["34,5"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["805"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : 862,4",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["862,4"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : a - t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["968"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["117,6"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1097,6"]
+					},
+					{
+						"description": "− 7 % → × 0,93",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,93"]
+					},
+					{
+						"description": "− 7 % : 0,07",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,07"]
+					},
+					{
+						"description": "− 7 % : 0,3",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,3"]
+					},
+					{
+						"description": "− 7 % : 1,07",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,07"]
+					},
+					{
+						"description": "− 3 % → × 0,97",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,97"]
+					},
+					{
+						"description": "− 3 % : 0,03",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,03"]
+					},
+					{
+						"description": "− 3 % : 0,7",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,7"]
+					},
+					{
+						"description": "− 3 % : 1,03",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,03"]
+					},
+					{
+						"description": "− 23 % → × 0,77",
+						"variationIndex": 5,
+						"variables": {
+							"t": "23"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,77"]
+					},
+					{
+						"description": "− 23 % : 0,23",
+						"variationIndex": 5,
+						"variables": {
+							"t": "23"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,23"]
+					},
+					{
+						"description": "− 23 % : 77",
+						"variationIndex": 5,
+						"variables": {
+							"t": "23"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["77"]
+					},
+					{
+						"description": "− 23 % : 1,23",
+						"variationIndex": 5,
+						"variables": {
+							"t": "23"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,23"]
+					},
+					{
+						"description": "− 64 % → × 0,36",
+						"variationIndex": 5,
+						"variables": {
+							"t": "64"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,36"]
+					},
+					{
+						"description": "− 64 % : 0,64",
+						"variationIndex": 5,
+						"variables": {
+							"t": "64"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,64"]
+					},
+					{
+						"description": "− 64 % : 36",
+						"variationIndex": 5,
+						"variables": {
+							"t": "64"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["36"]
+					},
+					{
+						"description": "− 64 % : 1,64",
+						"variationIndex": 5,
+						"variables": {
+							"t": "64"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,64"]
+					},
+					{
+						"description": "× 0,96 → − 4 %",
+						"variationIndex": 6,
+						"variables": {
+							"K": "96",
+							"x": "0.96"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["4"]
+					},
+					{
+						"description": "× 0,96 : 96",
+						"variationIndex": 6,
+						"variables": {
+							"K": "96",
+							"x": "0.96"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["96"]
+					},
+					{
+						"description": "× 0,96 : 0,04",
+						"variationIndex": 6,
+						"variables": {
+							"K": "96",
+							"x": "0.96"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,04"]
+					},
+					{
+						"description": "× 0,96 : -4",
+						"variationIndex": 6,
+						"variables": {
+							"K": "96",
+							"x": "0.96"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-4"]
+					},
+					{
+						"description": "× 0,77 → − 23 %",
+						"variationIndex": 6,
+						"variables": {
+							"K": "77",
+							"x": "0.77"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["23"]
+					},
+					{
+						"description": "× 0,77 : 77",
+						"variationIndex": 6,
+						"variables": {
+							"K": "77",
+							"x": "0.77"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["77"]
+					},
+					{
+						"description": "× 0,77 : 0,23",
+						"variationIndex": 6,
+						"variables": {
+							"K": "77",
+							"x": "0.77"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,23"]
+					},
+					{
+						"description": "× 0,77 : -23",
+						"variationIndex": 6,
+						"variables": {
+							"K": "77",
+							"x": "0.77"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-23"]
+					},
+					{
+						"description": "× 0,31 → − 69 %",
+						"variationIndex": 6,
+						"variables": {
+							"K": "31",
+							"x": "0.31"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["69"]
+					},
+					{
+						"description": "× 0,31 : 31",
+						"variationIndex": 6,
+						"variables": {
+							"K": "31",
+							"x": "0.31"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["31"]
+					},
+					{
+						"description": "× 0,31 : 0,69",
+						"variationIndex": 6,
+						"variables": {
+							"K": "31",
+							"x": "0.31"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,69"]
+					},
+					{
+						"description": "× 0,31 : -69",
+						"variationIndex": 6,
+						"variables": {
+							"K": "31",
+							"x": "0.31"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-69"]
+					}
+				],
+				"description": "Traduire une diminution de t % par le coefficient 1 − t/100 : − 20 % → × 0,8 ; 120 € diminué de 20 % ; × 0,85 → − 15 %"
+			},
+			"changements": {
+				"ajoutees": [4, 5, 6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "8b59ca4b-9a09-49df-a10c-4f3772176d46",
+			"title": "Coefficient multiplicateur d'une évolution répétée",
+			"fichier": "8b59ca4b.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur augmente de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1+t/100;d}}^{ {{n}} }$.",
+								"Attention : ce n'est pas $1+\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1+n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur diminue de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10|20"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1-t/100;d}}^{ {{n}} }$.",
+								"Attention : ce n'est pas $1-\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1-n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1{,}03^5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1,03^5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.03^{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1.03^5 saisi au point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159\\,274\\,074\\,3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte avec espaces fines : 1,159 274 074 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}1592740743"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte sans espaces : juste mais perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}331"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "3",
+							"t": "10"
+						},
+						"description": "+10 % pendant 3 ans : décimal exact 1,331",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur approchée 1,159 refusée (valeur exacte demandée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : taux additionnés 1,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}03\\times5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 1,03 × 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}03^5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 0,03^5 (taux au lieu du coefficient)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}98^{10}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "−2 % pendant 10 ans : 0,98^10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}64"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "2",
+							"t": "20"
+						},
+						"description": "−20 % pendant 2 ans : décimal exact 0,64",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}98^{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur : mauvais exposant 0,98^9",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : taux additionnés 0,8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1{,}02^{10}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : 1,02^10 (hausse au lieu de baisse)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\left(1+0{,}03\\right)^5"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "calcul non effectué (1+0,03)^5 : mauvaise forme (convention « calcul non effectué »)",
+						"variationIndex": 0
+					}
+				],
+				"description": "Même taux appliqué plusieurs années de suite"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur augmente de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1+t/100;d}}^{ {{n}} }$.",
+								"Attention : ce n'est pas $1+\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1+n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur diminue de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10|20"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1-t/100;d}}^{ {{n}} }$.",
+								"Attention : ce n'est pas $1-\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1-n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					},
+					{
+						"statement": "{{if:c==0|Un salaire mensuel de ${{a}}~\\unit{€}$ augmente de ${{t}}\\,\\%$ chaque année|Un capital de ${{a}}~\\unit{€}$ rapporte ${{t}}\\,\\%$ d'intérêts par an, ajoutés au capital chaque année}}, pendant ${{n}}$ ans.\n\nLe coefficient multiplicateur global est $?$.\n\nAu bout de ${{n}}$ ans, {{if:c==0|le salaire|le capital}} vaut, arrondi au centime, $?~\\text{€}$.",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "0..1"
+							},
+							{
+								"name": "j",
+								"expression": "20..40"
+							},
+							{
+								"name": "a",
+								"expression": "eval:50*j"
+							},
+							{
+								"name": "t",
+								"expression": "1..5"
+							},
+							{
+								"name": "n",
+								"expression": "3..6"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:1+n*t/100;d}}",
+										"message": "Les taux ne s'additionnent pas : chaque année, on multiplie par ${{eval:1+t/100;d}}$, donc ${{n}}$ fois de suite.",
+										"label": "Taux additionnés"
+									},
+									{
+										"answer": "{{eval:n*(1+t/100);d}}",
+										"message": "Multiplier ${{n}}$ fois par ${{eval:1+t/100;d}}$, ce n'est pas multiplier par ${{n}}\\times{{eval:1+t/100;d}}$ : c'est une puissance.",
+										"label": "Coefficient multiplié par n"
+									},
+									{
+										"answer": "{{eval:1+t/100;d}}",
+										"message": "C'est le coefficient d'une seule année : on le demande pour ${{n}}$ ans.",
+										"label": "Une seule année"
+									}
+								]
+							},
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:a*(1+t/100)^n;a2}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*(1+n*t/100);a2}}",
+										"message": "Les taux ne s'additionnent pas : on multiplie ${{a}}$ par ${{eval:1+t/100;d}}^{ {{n}} }$, pas par ${{eval:1+n*t/100;d}}$.",
+										"label": "Taux additionnés"
+									},
+									{
+										"answer": "{{eval:a*n*(1+t/100);a2}}",
+										"message": "Tu as multiplié par ${{n}}$ : il faut multiplier ${{n}}$ fois par ${{eval:1+t/100;d}}$, c'est-à-dire par ${{eval:1+t/100;d}}^{ {{n}} }$.",
+										"label": "Multiplié par n"
+									},
+									{
+										"answer": "{{eval:a*(1+t/100)^n-a;a2}}",
+										"message": "C'est ce qui a été gagné : on demande la nouvelle valeur.",
+										"label": "Le gain seul"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la valeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est $\\textcolor{{{color:primary.0}}}{ {{eval:1+t/100;d}}^{ {{n}} } }$.",
+								"$${{a}}\\times{{eval:1+t/100;d}}^{ {{n}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:a*(1+t/100)^n;a2}} }$$"
+							]
+						},
+						"hint": "Chaque année, la valeur est multipliée par le même nombre : lequel, et combien de fois ?"
+					},
+					{
+						"statement": "Une espèce protégée compte ${{a}}$ individus. Sa population diminue de ${{t}}\\,\\%$ chaque année, pendant ${{n}}$ ans.\n\nLe coefficient multiplicateur global est $?$.\n\nAu bout de ${{n}}$ ans, il reste environ $?$ individus (arrondi à l'unité).",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "300..1300"
+							},
+							{
+								"name": "t",
+								"expression": "4..16"
+							},
+							{
+								"name": "n",
+								"expression": "3..6"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:1-n*t/100;d}}",
+										"message": "Les taux ne s'additionnent pas : chaque année, on multiplie par ${{eval:1-t/100;d}}$, donc ${{n}}$ fois de suite.",
+										"label": "Taux additionnés"
+									},
+									{
+										"answer": "{{eval:n*(1-t/100);d}}",
+										"message": "Multiplier ${{n}}$ fois par ${{eval:1-t/100;d}}$, ce n'est pas multiplier par ${{n}}\\times{{eval:1-t/100;d}}$ : c'est une puissance.",
+										"label": "Coefficient multiplié par n"
+									},
+									{
+										"answer": "{{eval:1-t/100;d}}",
+										"message": "C'est le coefficient d'une seule année : on le demande pour ${{n}}$ ans.",
+										"label": "Une seule année"
+									}
+								]
+							},
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 0
+								},
+								"expectedAnswer": "{{eval:a*(1-t/100)^n;a0}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*(1-n*t/100);a0}}",
+										"message": "Les taux ne s'additionnent pas : on multiplie ${{a}}$ par ${{eval:1-t/100;d}}^{ {{n}} }$, pas par ${{eval:1-n*t/100;d}}$.",
+										"label": "Taux additionnés"
+									},
+									{
+										"answer": "{{eval:a*n*(1-t/100);a0}}",
+										"message": "Tu as multiplié par ${{n}}$ : il faut multiplier ${{n}}$ fois par ${{eval:1-t/100;d}}$, c'est-à-dire par ${{eval:1-t/100;d}}^{ {{n}} }$.",
+										"label": "Multiplié par n"
+									},
+									{
+										"answer": "{{eval:a-a*(1-t/100)^n;a0}}",
+										"message": "C'est le nombre d'individus disparus : on demande combien il en reste.",
+										"label": "La perte seule"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la population est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est $\\textcolor{{{color:primary.0}}}{ {{eval:1-t/100;d}}^{ {{n}} } }$.",
+								"$${{a}}\\times{{eval:1-t/100;d}}^{ {{n}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:a*(1-t/100)^n;a0}} }$$"
+							]
+						},
+						"hint": "Chaque année, la population est multipliée par le même nombre : lequel, et combien de fois ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1{,}03^5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1,03^5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.03^{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1.03^5 saisi au point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159\\,274\\,074\\,3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte avec espaces fines : 1,159 274 074 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}1592740743"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte sans espaces : juste mais perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}331"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "3",
+							"t": "10"
+						},
+						"description": "+10 % pendant 3 ans : décimal exact 1,331",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur approchée 1,159 refusée (valeur exacte demandée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : taux additionnés 1,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}03\\times5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 1,03 × 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}03^5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 0,03^5 (taux au lieu du coefficient)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}98^{10}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "−2 % pendant 10 ans : 0,98^10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}64"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "2",
+							"t": "20"
+						},
+						"description": "−20 % pendant 2 ans : décimal exact 0,64",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}98^{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur : mauvais exposant 0,98^9",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : taux additionnés 0,8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1{,}02^{10}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : 1,02^10 (hausse au lieu de baisse)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\left(1+0{,}03\\right)^5"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "calcul non effectué (1+0,03)^5 : mauvaise forme (convention « calcul non effectué »)",
+						"variationIndex": 0
+					},
+					{
+						"description": "1500 € à + 2 % pendant 5 ans",
+						"variationIndex": 2,
+						"variables": {
+							"c": "0",
+							"j": "30",
+							"a": "1500",
+							"t": "2",
+							"n": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1{,}02^{5}", "1656,12"]
+					},
+					{
+						"description": "1500 € : taux additionnés",
+						"variationIndex": 2,
+						"variables": {
+							"c": "0",
+							"j": "30",
+							"a": "1500",
+							"t": "2",
+							"n": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,1", "1650,00"]
+					},
+					{
+						"description": "1500 € : multiplié par n",
+						"variationIndex": 2,
+						"variables": {
+							"c": "0",
+							"j": "30",
+							"a": "1500",
+							"t": "2",
+							"n": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["5,1", "7650,00"]
+					},
+					{
+						"description": "1500 € : une seule année, gain seul",
+						"variationIndex": 2,
+						"variables": {
+							"c": "0",
+							"j": "30",
+							"a": "1500",
+							"t": "2",
+							"n": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,02", "156,12"]
+					},
+					{
+						"description": "1250 € à + 4 % pendant 3 ans",
+						"variationIndex": 2,
+						"variables": {
+							"c": "1",
+							"j": "25",
+							"a": "1250",
+							"t": "4",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1{,}04^{3}", "1406,08"]
+					},
+					{
+						"description": "1250 € : taux additionnés",
+						"variationIndex": 2,
+						"variables": {
+							"c": "1",
+							"j": "25",
+							"a": "1250",
+							"t": "4",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,12", "1400,00"]
+					},
+					{
+						"description": "1250 € : multiplié par n",
+						"variationIndex": 2,
+						"variables": {
+							"c": "1",
+							"j": "25",
+							"a": "1250",
+							"t": "4",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3,12", "3900,00"]
+					},
+					{
+						"description": "1250 € : une seule année, gain seul",
+						"variationIndex": 2,
+						"variables": {
+							"c": "1",
+							"j": "25",
+							"a": "1250",
+							"t": "4",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,04", "156,08"]
+					},
+					{
+						"description": "800 individus, − 10 % pendant 4 ans",
+						"variationIndex": 3,
+						"variables": {
+							"a": "800",
+							"t": "10",
+							"n": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}9^{4}", "525"]
+					},
+					{
+						"description": "800 individus : taux additionnés",
+						"variationIndex": 3,
+						"variables": {
+							"a": "800",
+							"t": "10",
+							"n": "4"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,6", "480"]
+					},
+					{
+						"description": "800 individus : multiplié par n",
+						"variationIndex": 3,
+						"variables": {
+							"a": "800",
+							"t": "10",
+							"n": "4"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3,6", "2880"]
+					},
+					{
+						"description": "800 individus : une seule année, perte seule",
+						"variationIndex": 3,
+						"variables": {
+							"a": "800",
+							"t": "10",
+							"n": "4"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,9", "275"]
+					},
+					{
+						"description": "1250 individus, − 5 % pendant 6 ans",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1250",
+							"t": "5",
+							"n": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}95^{6}", "919"]
+					},
+					{
+						"description": "1250 individus : taux additionnés",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1250",
+							"t": "5",
+							"n": "6"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,7", "875"]
+					},
+					{
+						"description": "1250 individus : multiplié par n",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1250",
+							"t": "5",
+							"n": "6"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["5,7", "7125"]
+					},
+					{
+						"description": "1250 individus : une seule année, perte seule",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1250",
+							"t": "5",
+							"n": "6"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,95", "331"]
+					}
+				],
+				"description": "Même taux appliqué plusieurs années de suite"
+			},
+			"changements": {
+				"ajoutees": [3, 4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "ccb51039-cf8d-4edf-8d8e-9288e8fa11e2",
+			"title": "Augmentation et coefficient multiplicateur",
+			"fichier": "ccb51039.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1+t/100;d}}"
+							}
+						],
+						"statement": "Augmenter une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "5|7|10|15|20|25|40|50|100"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"$$1 + \\frac{{{t}}}{100} = 1 + {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:P*(1+t/100);d}}"
+							}
+						],
+						"statement": "Un article coûte ${{P}}~\\unit{€}$. Son prix augmente de ${{t}}~\\%$.\n\nCalcule le nouveau prix à l'aide du coefficient multiplicateur.\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "10|20|30|5|15|25"
+							},
+							{
+								"name": "j",
+								"expression": "2..30"
+							},
+							{
+								"name": "P",
+								"expression": "eval:10*j"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"Le coefficient multiplicateur est $1 + \\frac{{{t}}}{100} = {{eval:1+t/100;d}}$.",
+								"$${{P}} \\times {{eval:1+t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:K-100}}"
+							}
+						],
+						"statement": "Multiplier une quantité par ${{x}}$, c'est l'augmenter de :\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "K",
+								"expression": "103|108|112|115|125|135|140|160"
+							},
+							{
+								"name": "x",
+								"expression": "eval:K/100;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"$${{x}} = 1 + {{eval:(K-100)/100;d}} = 1 + \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{100}$$",
+								"C'est une augmentation de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1,15"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "15"
+						},
+						"description": "+ 15 % → × 1,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "15"
+						},
+						"description": "Erreur : 0,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1,05"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "+ 5 % → × 1,05",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "Erreur : + 5 % → 1,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "100"
+						},
+						"description": "+ 100 % → × 2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["144"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "120 € + 20 % = 144 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "Erreur : 120 × 0,2 = 24 (la hausse seule)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["140"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "Erreur : 120 + 20 = 140",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["35"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "135",
+							"x": "1.35"
+						},
+						"description": "× 1,35 → + 35 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["135"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "135",
+							"x": "1.35"
+						},
+						"description": "Erreur : 135",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "108",
+							"x": "1.08"
+						},
+						"description": "× 1,08 → + 8 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["80"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "108",
+							"x": "1.08"
+						},
+						"description": "Erreur : × 1,08 → 80",
+						"variationIndex": 2
+					}
+				],
+				"description": "Traduire une augmentation de t % par le coefficient 1 + t/100 : + 15 % → × 1,15 ; 120 € augmenté de 20 % ; × 1,35 → + 35 %"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1+t/100;d}}"
+							}
+						],
+						"statement": "Augmenter une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "5|7|10|15|20|25|40|50|100"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"$$1 + \\frac{{{t}}}{100} = 1 + {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:P*(1+t/100);d}}"
+							}
+						],
+						"statement": "Un article coûte ${{P}}~\\unit{€}$. Son prix augmente de ${{t}}~\\%$.\n\nCalcule le nouveau prix à l'aide du coefficient multiplicateur.\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "10|20|30|5|15|25"
+							},
+							{
+								"name": "j",
+								"expression": "2..30"
+							},
+							{
+								"name": "P",
+								"expression": "eval:10*j"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"Le coefficient multiplicateur est $1 + \\frac{{{t}}}{100} = {{eval:1+t/100;d}}$.",
+								"$${{P}} \\times {{eval:1+t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:K-100}}"
+							}
+						],
+						"statement": "Multiplier une quantité par ${{x}}$, c'est l'augmenter de :\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "K",
+								"expression": "103|108|112|115|125|135|140|160"
+							},
+							{
+								"name": "x",
+								"expression": "eval:K/100;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"$${{x}} = 1 + {{eval:(K-100)/100;d}} = 1 + \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{100}$$",
+								"C'est une augmentation de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+							]
+						}
+					},
+					{
+						"statement": "{{if:c==0|Le prix d'un article|{{if:c==1|L'effectif d'un collège|La population d'une ville}}}} passe de ${{if:c==0|{{eval:(a)[€]}}|{{if:c==1|{{eval:a}}|{{eval:a}}}}}}${{if:c==0||{{if:c==1| élèves| habitants}}}} à ${{if:c==0|{{eval:(b)[€]}}|{{if:c==1|{{eval:b}}|{{eval:b}}}}}}${{if:c==0||{{if:c==1| élèves| habitants}}}}.\n\nDe quel pourcentage {{if:c==0|le prix de l'article|{{if:c==1|l'effectif du collège|la population de la ville}}}} a-t-{{if:c==2|elle|il}} augmenté ?\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "0..2"
+							},
+							{
+								"name": "j",
+								"expression": "2..30"
+							},
+							{
+								"name": "m",
+								"expression": "4..12"
+							},
+							{
+								"name": "h",
+								"expression": "10..90"
+							},
+							{
+								"name": "tp",
+								"expression": "1..10"
+							},
+							{
+								"name": "tc",
+								"expression": "2..10"
+							},
+							{
+								"name": "tv",
+								"expression": "5..30"
+							},
+							{
+								"name": "a",
+								"expression": "eval:(1-min(c,1))*10*j+(min(c,1)-max(c-1,0))*100*m+max(c-1,0)*1000*h"
+							},
+							{
+								"name": "t",
+								"expression": "eval:(1-min(c,1))*5*tp+(min(c,1)-max(c-1,0))*tc+max(c-1,0)*tv"
+							},
+							{
+								"name": "b",
+								"expression": "eval:a*(1+t/100);d"
+							}
+						],
+						"conditions": ["a != 100"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{t}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:b-a}}",
+										"message": "C'est l'augmentation{{if:c==0| en euros|{{if:c==1| en nombre d'élèves| en nombre d'habitants}}}}, pas en pourcentage : il faut la comparer à la valeur de départ.",
+										"label": "Augmentation sans pourcentage"
+									},
+									{
+										"answer": "{{eval:b/a;d}}",
+										"message": "${{eval:b/a;d}}$ est le coefficient multiplicateur : multiplier par ${{eval:b/a;d}}$, c'est augmenter de combien de pour cent ?",
+										"label": "Le coefficient multiplicateur"
+									},
+									{
+										"answer": "{{eval:100*b/a}}",
+										"message": "${{eval:100*b/a}}~\\%$ est la valeur finale exprimée en pourcentage de la valeur de départ : enlève $100~\\%$.",
+										"label": "Valeur finale en % de la valeur de départ"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"On passe de ${{eval:a}}$ à ${{eval:b}}$ en multipliant par $\\dfrac{ {{eval:b}} }{ {{eval:a}} } = {{eval:b/a;d}}$.",
+								"$${{eval:b/a;d}} = 1 + {{eval:t/100;d}} = 1 + \\frac{\\textcolor{{{color:primary.0}}}{ {{solution}} }}{100}$$",
+								"C'est une augmentation de $\\textcolor{{{color:primary.0}}}{ {{solution}}~\\% }$."
+							]
+						},
+						"hint": "Par quel nombre faut-il multiplier ${{eval:a}}$ pour obtenir ${{eval:b}}$ ?"
+					},
+					{
+						"statement": "{{if:c==0|Un collège compte ${{eval:a}}$ élèves. Son effectif augmente de ${{t}}~\\%$.\n\nCombien d'élèves compte-t-il ensuite ?|{{if:c==1|Une ville compte ${{eval:a}}$ habitants. Sa population augmente de ${{t}}~\\%$.\n\nCombien d'habitants compte-t-elle ensuite ?|Une facture d'électricité annuelle s'élève à ${{eval:a}}~\\unit{€}$. Elle augmente de ${{t}}~\\%$.\n\nQuel est son nouveau montant ?}}}}\n\n$$?{{if:c==0|~\\text{élèves}|{{if:c==1|~\\text{habitants}|~\\text{€}}}}}$$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "0..2"
+							},
+							{
+								"name": "m",
+								"expression": "3..12"
+							},
+							{
+								"name": "h",
+								"expression": "10..90"
+							},
+							{
+								"name": "f",
+								"expression": "700..1400"
+							},
+							{
+								"name": "tc",
+								"expression": "1..11"
+							},
+							{
+								"name": "tv",
+								"expression": "5..30"
+							},
+							{
+								"name": "tf",
+								"expression": "1..12"
+							},
+							{
+								"name": "a",
+								"expression": "eval:(1-min(c,1))*100*m+(min(c,1)-max(c-1,0))*1000*h+max(c-1,0)*f"
+							},
+							{
+								"name": "t",
+								"expression": "eval:(1-min(c,1))*tc+(min(c,1)-max(c-1,0))*tv+max(c-1,0)*tf"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*(1+t/100);d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a+t}}",
+										"message": "Tu as ajouté ${{t}}$ : il faut ajouter ${{t}}~\\%$ de ${{eval:a}}$, ou multiplier par le coefficient multiplicateur.",
+										"label": "a + t"
+									},
+									{
+										"answer": "{{eval:a*t/100;d}}",
+										"message": "C'est l'augmentation seule : il faut encore l'ajouter à ${{eval:a}}$.",
+										"label": "L'augmentation seule"
+									},
+									{
+										"answer": "{{if:t<10|{{eval:a*(1+t/10);d}}|{{eval:a*(1-t/100);d}}}}",
+										"message": "{{if:t<10|${{t}}~\\%$, c'est $\\dfrac{ {{t}} }{100}={{eval:t/100;d}}$ : le coefficient est ${{eval:1+t/100;d}}$, pas ${{eval:1+t/10;d}}$.|Tu as calculé une diminution : augmenter, c'est multiplier par $1+\\dfrac{t}{100}$.}}",
+										"label": "Coefficient 1 + t/10, ou diminution"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"Le coefficient multiplicateur est $1 + \\frac{ {{t}} }{100} = {{eval:1+t/100;d}}$.",
+								"$${{eval:a}} \\times {{eval:1+t/100;d}} = \\textcolor{{{color:primary.0}}}{ {{solution}} }$$"
+							]
+						},
+						"hint": "Calcule d'abord le coefficient multiplicateur : $1 + \\dfrac{ {{t}} }{100}$."
+					},
+					{
+						"statement": "Augmenter une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|6|7|8|9|110|120|125|130|150|160|175|180|190"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1+t/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:t<10|{{eval:1+t/10;d}}|{{eval:1+t/1000;d}}}}",
+										"message": "${{t}}~\\%$, c'est $\\dfrac{ {{t}} }{100}={{eval:t/100;d}}$ : on ajoute ${{eval:t/100;d}}$ à $1$, on n'écrit pas ${{t}}$ derrière la virgule.",
+										"label": "Coefficient « 1, t »"
+									},
+									{
+										"answer": "{{eval:t/100;d}}",
+										"message": "Multiplier par ${{eval:t/100;d}}$ donne ${{t}}~\\%$ de la quantité, pas la quantité augmentée : il faut encore ajouter $1$.",
+										"label": "Le 1 oublié"
+									},
+									{
+										"answer": "{{eval:100+t}}",
+										"message": "Le coefficient s'écrit en nombre décimal : ${{eval:100+t}}~\\%$, c'est $\\dfrac{ {{eval:100+t}} }{100}$.",
+										"label": "Pourcentage 100 + t non converti"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"$$1 + \\frac{ {{t}} }{100} = 1 + {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{ {{solution}} }$$"
+							]
+						},
+						"hint": "Écris d'abord $\\dfrac{ {{t}} }{100}$ sous forme décimale."
+					},
+					{
+						"statement": "Multiplier une quantité par ${{x}}$, c'est l'augmenter de :\n\n$$?~\\%$$",
+						"variables": [
+							{
+								"name": "K",
+								"expression": "101|102|103|104|105|106|107|108|109|150|170|180|200|220|250|290"
+							},
+							{
+								"name": "x",
+								"expression": "eval:K/100;d"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:K-100}}",
+								"expectedErrors": [
+									{
+										"answer": "{{K}}",
+										"message": "Multiplier par ${{x}}$, c'est prendre ${{K}}~\\%$ de la quantité : l'augmentation est ce qui dépasse $100~\\%$.",
+										"label": "Le coefficient en pourcentage"
+									},
+									{
+										"answer": "{{eval:(K-100)/100;d}}",
+										"message": "${{x}} = 1 + {{eval:(K-100)/100;d}}$ : il reste à écrire ${{eval:(K-100)/100;d}}$ en pourcentage.",
+										"label": "Pas multiplié par 100"
+									},
+									{
+										"answer": "{{if:K<110|{{eval:10*(K-100)}}|{{eval:K/10}}}}",
+										"message": "{{if:K<110|${{x}} = 1 + {{eval:(K-100)/100;d}}$ : ${{eval:(K-100)/100;d}}$, c'est ${{eval:K-100}}$ centièmes.|${{x}} = 1 + {{eval:(K-100)/100;d}}$ : c'est $\\dfrac{ {{eval:K-100}} }{100}$ qu'on ajoute à $1$.}}",
+										"label": "Virgule mal placée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+								"$${{x}} = 1 + {{eval:(K-100)/100;d}} = 1 + \\frac{\\textcolor{{{color:primary.0}}}{ {{solution}} }}{100}$$",
+								"C'est une augmentation de $\\textcolor{{{color:primary.0}}}{ {{solution}}~\\% }$."
+							]
+						},
+						"hint": "Écris ${{x}}$ sous la forme $1 + \\dots$"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1,15"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "15"
+						},
+						"description": "+ 15 % → × 1,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "15"
+						},
+						"description": "Erreur : 0,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1,05"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "+ 5 % → × 1,05",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "5"
+						},
+						"description": "Erreur : + 5 % → 1,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "100"
+						},
+						"description": "+ 100 % → × 2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["144"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "120 € + 20 % = 144 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "Erreur : 120 × 0,2 = 24 (la hausse seule)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["140"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "120",
+							"j": "12",
+							"t": "20"
+						},
+						"description": "Erreur : 120 + 20 = 140",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["35"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "135",
+							"x": "1.35"
+						},
+						"description": "× 1,35 → + 35 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["135"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "135",
+							"x": "1.35"
+						},
+						"description": "Erreur : 135",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"K": "108",
+							"x": "1.08"
+						},
+						"description": "× 1,08 → + 8 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["80"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"K": "108",
+							"x": "1.08"
+						},
+						"description": "Erreur : × 1,08 → 80",
+						"variationIndex": 2
+					},
+					{
+						"description": "c=0 120 → 144 : 20 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "144"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["20"]
+					},
+					{
+						"description": "c=0 : écart 24",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "144"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["24"]
+					},
+					{
+						"description": "c=0 : coefficient 1,2",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "144"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,2"]
+					},
+					{
+						"description": "c=0 : 120 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "0",
+							"j": "12",
+							"m": "5",
+							"h": "20",
+							"tp": "4",
+							"tc": "3",
+							"tv": "10",
+							"a": "120",
+							"t": "20",
+							"b": "144"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["120"]
+					},
+					{
+						"description": "c=1 800 → 848 : 6 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "848"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["6"]
+					},
+					{
+						"description": "c=1 : écart 48",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "848"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["48"]
+					},
+					{
+						"description": "c=1 : coefficient 1,06",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "848"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,06"]
+					},
+					{
+						"description": "c=1 : 106 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "1",
+							"j": "5",
+							"m": "8",
+							"h": "20",
+							"tp": "4",
+							"tc": "6",
+							"tv": "10",
+							"a": "800",
+							"t": "6",
+							"b": "848"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["106"]
+					},
+					{
+						"description": "c=2 45000 → 50\\,400 : 12 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "50400"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["12"]
+					},
+					{
+						"description": "c=2 : écart 5400",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "50400"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["5400"]
+					},
+					{
+						"description": "c=2 : coefficient 1,12",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "50400"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,12"]
+					},
+					{
+						"description": "c=2 : 112 %",
+						"variationIndex": 3,
+						"variables": {
+							"c": "2",
+							"j": "5",
+							"m": "8",
+							"h": "45",
+							"tp": "4",
+							"tc": "6",
+							"tv": "12",
+							"a": "45000",
+							"t": "12",
+							"b": "50400"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["112"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : 642",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["642"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : a + t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["607"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["42"]
+					},
+					{
+						"description": "c=0 a=600 t=7 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "0",
+							"m": "6",
+							"h": "20",
+							"f": "900",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "600",
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1020"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : 36\\,800",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["36\\,800"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : a + t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["32015"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["4800"]
+					},
+					{
+						"description": "c=1 a=32000 t=15 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "1",
+							"m": "6",
+							"h": "32",
+							"f": "900",
+							"tc": "7",
+							"tv": "15",
+							"tf": "3",
+							"a": "32000",
+							"t": "15"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["27\\,200"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : 1184,5",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1184,5"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : a + t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1153"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["34,5"]
+					},
+					{
+						"description": "c=2 a=1150 t=3 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "1150",
+							"tc": "7",
+							"tv": "10",
+							"tf": "3",
+							"a": "1150",
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1495"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : 1097,6",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1097,6"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : a + t",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["992"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : variation seule",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["117,6"]
+					},
+					{
+						"description": "c=2 a=980 t=12 : mauvais coefficient",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"m": "6",
+							"h": "20",
+							"f": "980",
+							"tc": "7",
+							"tv": "10",
+							"tf": "12",
+							"a": "980",
+							"t": "12"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["862,4"]
+					},
+					{
+						"description": "+ 3 % → × 1,03",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1,03"]
+					},
+					{
+						"description": "+ 3 % : 1,3",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,3"]
+					},
+					{
+						"description": "+ 3 % : 0,03",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,03"]
+					},
+					{
+						"description": "+ 3 % : 103",
+						"variationIndex": 5,
+						"variables": {
+							"t": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["103"]
+					},
+					{
+						"description": "+ 7 % → × 1,07",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1,07"]
+					},
+					{
+						"description": "+ 7 % : 1,7",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,7"]
+					},
+					{
+						"description": "+ 7 % : 0,07",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,07"]
+					},
+					{
+						"description": "+ 7 % : 107",
+						"variationIndex": 5,
+						"variables": {
+							"t": "7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["107"]
+					},
+					{
+						"description": "+ 150 % → × 2,5",
+						"variationIndex": 5,
+						"variables": {
+							"t": "150"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2,5"]
+					},
+					{
+						"description": "+ 150 % : 1,15",
+						"variationIndex": 5,
+						"variables": {
+							"t": "150"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,15"]
+					},
+					{
+						"description": "+ 150 % : 1,5",
+						"variationIndex": 5,
+						"variables": {
+							"t": "150"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,5"]
+					},
+					{
+						"description": "+ 150 % : 250",
+						"variationIndex": 5,
+						"variables": {
+							"t": "150"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["250"]
+					},
+					{
+						"description": "+ 190 % → × 2,9",
+						"variationIndex": 5,
+						"variables": {
+							"t": "190"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2,9"]
+					},
+					{
+						"description": "+ 190 % : 1,19",
+						"variationIndex": 5,
+						"variables": {
+							"t": "190"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,19"]
+					},
+					{
+						"description": "+ 190 % : 1,9",
+						"variationIndex": 5,
+						"variables": {
+							"t": "190"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,9"]
+					},
+					{
+						"description": "+ 190 % : 290",
+						"variationIndex": 5,
+						"variables": {
+							"t": "190"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["290"]
+					},
+					{
+						"description": "× 1,04 → + 4 %",
+						"variationIndex": 6,
+						"variables": {
+							"K": "104",
+							"x": "1.04"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["4"]
+					},
+					{
+						"description": "× 1,04 : 104",
+						"variationIndex": 6,
+						"variables": {
+							"K": "104",
+							"x": "1.04"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["104"]
+					},
+					{
+						"description": "× 1,04 : 0,04",
+						"variationIndex": 6,
+						"variables": {
+							"K": "104",
+							"x": "1.04"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,04"]
+					},
+					{
+						"description": "× 1,04 : 40",
+						"variationIndex": 6,
+						"variables": {
+							"K": "104",
+							"x": "1.04"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["40"]
+					},
+					{
+						"description": "× 1,09 → + 9 %",
+						"variationIndex": 6,
+						"variables": {
+							"K": "109",
+							"x": "1.09"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["9"]
+					},
+					{
+						"description": "× 1,09 : 109",
+						"variationIndex": 6,
+						"variables": {
+							"K": "109",
+							"x": "1.09"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["109"]
+					},
+					{
+						"description": "× 1,09 : 0,09",
+						"variationIndex": 6,
+						"variables": {
+							"K": "109",
+							"x": "1.09"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,09"]
+					},
+					{
+						"description": "× 1,09 : 90",
+						"variationIndex": 6,
+						"variables": {
+							"K": "109",
+							"x": "1.09"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["90"]
+					},
+					{
+						"description": "× 2,5 → + 150 %",
+						"variationIndex": 6,
+						"variables": {
+							"K": "250",
+							"x": "2.5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["150"]
+					},
+					{
+						"description": "× 2,5 : 250",
+						"variationIndex": 6,
+						"variables": {
+							"K": "250",
+							"x": "2.5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["250"]
+					},
+					{
+						"description": "× 2,5 : 1,5",
+						"variationIndex": 6,
+						"variables": {
+							"K": "250",
+							"x": "2.5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1,5"]
+					},
+					{
+						"description": "× 2,5 : 25",
+						"variationIndex": 6,
+						"variables": {
+							"K": "250",
+							"x": "2.5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["25"]
+					},
+					{
+						"description": "× 2 → + 100 %",
+						"variationIndex": 6,
+						"variables": {
+							"K": "200",
+							"x": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["100"]
+					},
+					{
+						"description": "× 2 : 200",
+						"variationIndex": 6,
+						"variables": {
+							"K": "200",
+							"x": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["200"]
+					},
+					{
+						"description": "× 2 : 1",
+						"variationIndex": 6,
+						"variables": {
+							"K": "200",
+							"x": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "× 2 : 20",
+						"variationIndex": 6,
+						"variables": {
+							"K": "200",
+							"x": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["20"]
+					}
+				],
+				"description": "Traduire une augmentation de t % par le coefficient 1 + t/100 : + 15 % → × 1,15 ; 120 € augmenté de 20 % ; × 1,35 → + 35 %"
+			},
+			"changements": {
+				"ajoutees": [4, 5, 6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}
