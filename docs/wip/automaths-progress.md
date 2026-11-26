@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-26, après #2875 (et #3149, E73)._
 
 - **État** : découpage initial livré (#2842, #2847, #2854, #2866, #2875) et en prod. 2026-11-25 : nouvelle demande de David (cartes + recherche), phase 0 EN COURS, rien codé, aucun worktree.
 - **Prochaine action** : obtenir les réponses de David (§ 2026-11-25 ci-dessous), puis 2 PR : (A) cartes (badge niveau, flèches de variations, bouton de retournement plus petit, hauteur × 1,5, corbeille dans Ma série) ; (B) recherche par rangs.
-- **En attente de David** : (1) les 5 points de la recherche + groupe « Aussi dans le programme » replié ou retiré + ce que tape un prof ; (2) badge « CM1–CM2 » ou « CM1 · CM2 ».
+- **En attente de David** : avis sur mes réserves (choix des QCM hors recherche, pas de champ « mots-clés » pour l'instant, plusieurs raccourcis) ; badge « CM1–CM2 » ou « CM1 · CM2 ».
 - **Tranché** : difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points) ; vérification des niveaux face aux points = futur chantier à part (David, 2026-11-26), hors `automaths`.
 - **Pièges en cours** : séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
 - **Worktree / branche** : aucun (à créer : `../ubumaths-wt-automaths-cartes`, `feat/automaths-cartes`).
@@ -22,7 +22,9 @@ Constats (prod, lecture seule) :
 - Pastille : la descente prend ~2 s et passe devant les sections du dessus ; un geste pendant ce temps l'arrête (pas la cause du constat de David).
 - Mesures de la recherche (6e + inférieurs, titre / notion seule / point seul) : triangle 45/0/13, nombres décimaux 16/0/31 (titres au singulier), multiplication 67/84/8, fraction 148/9/0. Script : rejouer sur `/api/questions/templates/all`.
 
-Proposition recherche (non validée) : 1. raccourci vers la sous-notion/notion dont le nom correspond ; 2. résultats titre/description/sous-notion, groupe le plus pertinent d'abord ; 3. point du programme seul → groupe replié « Aussi dans le programme » ; 4. singulier/pluriel confondus ; 5. pas de recherche dans l'énoncé.
+Réponses de David (2026-11-26) : bons résultats = titre + description + énoncé + choix (pas le nom de sous-notion, couvert par le raccourci) ; idée d'un champ en plus dans le format du modèle ; « Aussi dans le programme » replié ; un prof tape aussi bien un thème qu'une compétence. Mesure (6e + inférieurs) : l'énoncé SANS les choix ajoute peu (cercle 1, triangle 8, angle droit 5) ; les choix ajoutent les distracteurs (« Décrire une figure » sort pour « cercle » par « Je suis un cercle »).
+
+Proposition recherche (version du 2026-11-25) : 1. raccourci vers la sous-notion/notion dont le nom correspond ; 2. résultats titre/description/sous-notion, groupe le plus pertinent d'abord ; 3. point du programme seul → groupe replié « Aussi dans le programme » ; 4. singulier/pluriel confondus ; 5. pas de recherche dans l'énoncé.
 
 Niveaux d'un modèle (`grades`) et points : deux informations voulues séparées. Garde `scripts/lib/niveaux-des-tags.ts` (à la publication) : niveau d'un point ⊂ `grades`, 12 exceptions décidées, 0 écart restant. Sens inverse non vérifié. Relevé du 2026-11-26 :
 
