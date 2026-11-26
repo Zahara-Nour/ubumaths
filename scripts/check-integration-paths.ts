@@ -212,7 +212,12 @@ if (process.argv[1] && resolve(process.argv[1]) === import.meta.filename) {
 	const ROOT = resolve(import.meta.dirname, '..');
 	const patterns = pathsFilter(ROOT);
 	const reached = await integrationClosure(ROOT);
-	const tracked = execFileSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8' })
+	// La liste des fichiers suivis dépasse 1 Mo, le tampon par défaut (ENOBUFS le 2026-11-26)
+	const tracked = execFileSync('git', ['ls-files'], {
+		cwd: ROOT,
+		encoding: 'utf8',
+		maxBuffer: 64 * 1024 * 1024
+	})
 		.split('\n')
 		.filter(Boolean);
 

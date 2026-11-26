@@ -162,6 +162,13 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| b73923a1 Choisir la méthode dans une figure usuelle                 | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 9c7f7ef0 Produit scalaire par projection orthogonale                | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| d787d8c0 Produit scalaire avec les normes                           | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| fe407c88 Produit scalaire avec les coordonnées                      | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| f2cc01fc Orthogonaux ou non ?                                       | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 6058963e Produit scalaire : résoudre un problème géométrique        | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| bf5dadf6 Angle de deux vecteurs                                     | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
 | d192da3e Espace : équation cartésienne d'un plan (calculer d)       | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
 | d6938108 Espace : coordonnées de vecteurs et de points              | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
 | ac94a453 Espace : décomposer un vecteur, vecteurs coplanaires       | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |

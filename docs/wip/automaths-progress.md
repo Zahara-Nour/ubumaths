@@ -2,13 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3166._
+_Mis à jour le 2026-11-26, après #3167._
 
-- **État** : PR A2 (variations choisies sur la carte de Ma série) mergée (#3166), worktree retiré.
-- **Prochaine action** : PR A3 (petite) : « · 1 en QCM » sous la carte de Ma série, à côté de « 2 variations sur 3 » (décision de David, 2026-11-26, ci-dessous) ; puis PR B (recherche, branche `feat/automaths-recherche`), phase 0 validée.
+- **État** : PR A3 (« · 1 en QCM » sous la carte de Ma série) mergée (#3167), worktree retiré.
+- **Prochaine action** : PR B (recherche, branche `feat/automaths-recherche`), phase 0 validée.
 - **En attente de David** : rien.
 - **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; `aria-disabled` → Playwright refuse le clic (`click({ force: true })`) ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
 - **Worktree / branche** : aucun pour l'instant.
+
+### 2026-11-26 — PR A3 mergée (#3167) : « · 1 en QCM » sous la carte
+
+- `TileCard` : la ligne sous la ligne fine (prof) dit « 2 variations sur 3 · 1 en QCM » ; chaque partie seulement si elle dit quelque chose (« 1 en QCM » seul quand toutes sont gardées ; un QCM sur une variation retirée ne compte pas ; élève : rien).
+- 5 tests (`CartQuestionCard`, describe « PR A3 »), vus rouges puis verts ; 40/40 + 4/4 (éditeur de série) ; `check:incremental` 0 erreur ; cliquet tenu.
+- Vu à l'écran (Chromium, prof, `/automaths/panier`, base locale) : « 3 variations sur 4 · 1 en QCM » et « 1 en QCM », 0 erreur de console.
+- Revue : aucune (≈ 10 lignes d'affichage, CLAUDE.md § Planning point 4).
 
 ### 2026-11-26 — décision de David après #3166 (PR A3)
 
