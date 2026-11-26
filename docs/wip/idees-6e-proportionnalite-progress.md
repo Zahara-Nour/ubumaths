@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, réglages d'écriture des nombres validés._
+_Mis à jour le 2026-11-26, PR du moteur écrite (relecture en cours)._
 
-- **État** : lot entier écrit, vérifié (`question:specs --file` : 10 fichiers « importable ») et poussé sur la branche : 4 publiés (+6 variations) et 5 neufs (N1 à N5, `scripts/questions/idees-6e-proportionnalite-neufs/`).
-- **Prochaine action** : les retouches validées (ci-dessous), puis essai en base LOCALE (neufs + copie brouillon des publiés, aperçus avec `pnpm voir`, puis suppression), puis donner à David `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier`.
-- **En attente de David** : le changement du juge pour les cases à arrondi (32 modèles publiés touchés, journal 2026-11-26). Le reste du moteur est validé : PR à part avant le lot.
-- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Rangements des neufs dans les fichiers (quatrième proportionnelle 4, 5, 6 ; caractérisation 8, 9) : relever les niveaux en prod avant la migration.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite` (poussée, pas de PR).
+- **État** : lot écrit et poussé (`docs/idees-6e-proportionnalite`). PR du moteur écrite et commitée, pas encore ouverte : `;dN`, `;aN`, `;pN`, euro à deux décimales, `round(x, n)`, zéros utiles au juge. Tests verts (42 172 dans mathAST, questions, ubumark, utils), `check:incremental` 0, garde de doc verte.
+- **Prochaine action** : relecture `code-reviewer` (Opus), puis ouvrir la PR et `pnpm pr:merger`. Ensuite, migration de contenu des 32 modèles à arrondi (`round(k*x)/k;d` → `;aN`, liste du 2026-11-26), puis reprise du lot : prix en grandeurs €, retouches validées, essai en base locale.
+- **En attente de David** : rien.
+- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement.
+- **Worktree / branche** : lot `../ubumaths-wt-idees-6e-proportionnalite` (`docs/idees-6e-proportionnalite`) ; moteur `../ubumaths-wt-idees-6e-proportionnalite-moteur` (`feat/ecriture-nombres-arrondis`).
 
 ## Journal
 
@@ -111,3 +111,21 @@ Le juge retire les zéros finaux de la réponse sans regarder l'attendu (`remove
 `docs/systeme/questions.md` (« moins de décimales accepté si la valeur est exactement l'arrondi ») sera
 renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales ou chiffres significatifs),
 1 seul a une grandeur en €, et 66 ont `zeros: off`.
+
+#### Renversement validé et écriture (2026-11-26)
+
+- David valide le renversement pour les 32 modèles à arrondi, et « 3,7 € » qui reste juste. Dans
+  une case au centième, « 3,7 € » est perfectible : la règle de l'arrondi passe d'abord.
+- Écrit par deux agents en parallèle (mathAST : écriture des `{{eval}}` ; pédagogie : juge),
+  tests rouges d'abord. Choix laissés aux agents, des défauts sans conséquence :
+  - refus de `;sci` avec `;aN` ou `;dN` (renvoi vers `;pN`), et de `;dN` avec `;hms` ;
+  - `0;pN` s'écrit « 0 » ;
+  - bornes : `;a` de 0 à 15, `;p` et `;d` de 1 à 15 ;
+  - `round(x, n)` invalide donne NaN dans le chemin compilé.
+- Avertissements : collecteur ouvert seulement autour des tirages de `checkGeneration`
+  (`eval-warnings.ts`), rien gardé dans l'appli.
+- Essai de bout en bout : corrigé « 3,0 » et « 3,70 € » ; juge : « 3,0 » et « 3,70 € » justes,
+  « 3 » et « 0,1 » en forme à améliorer.
+- Suite : les 32 modèles écrivent leur attendu `round(k*x)/k;d`, qui perd les zéros (« 0,3 » au
+  centième). Une migration de contenu les passera à `;aN` après le merge (les modèles à l'unité ne
+  changent pas).
