@@ -207,12 +207,10 @@ for (const who of ['élève', 'prof'] as const) {
 		const control = await easyControl(page);
 		const box = await control.boundingBox();
 		const height = page.viewportSize()?.height ?? 0;
-		// Symptôme constaté : le bouton existe mais sa boîte dépasse le bas de l'écran
-		// (la liste du menu ne défile pas : `<nav>` sans `overflow-y-auto`, MobileNavDrawer.svelte)
+		// E81 (corrigé) : la liste du menu défile, « Préférences » reste en bas de l'écran
 		expect(box, 'bouton absent du menu').toBeTruthy();
 		const hidden = (box?.y ?? 0) + (box?.height ?? 0) > height;
-		expect(hidden, `bouton à y=${box?.y}, écran de ${height} px`).toBe(true);
-		test.fail(true, 'ÉCART : le bouton « Lecture facilitée » est hors écran dans le menu mobile');
+		expect(hidden, `bouton à y=${box?.y}, écran de ${height} px`).toBe(false);
 		await control.click({ timeout: 5000 });
 	});
 
