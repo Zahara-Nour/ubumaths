@@ -192,14 +192,10 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		expect(await tracesRestantes(eleve.id)).toEqual({});
 	});
 
-	it('favori de modèle et signalement piégé par un autre élève ne bloquent pas', async () => {
+	it('un signalement piégé par un autre élève ne bloque pas', async () => {
 		const eleve = await TestData.profile().withRole('student').create();
 		const autre = await TestData.profile().withRole('student').create();
 		const pg = await getPostgresClient();
-		await pg.query(
-			`insert into template_audit_log (action, performed_by) values ('favorited', $1)`,
-			[eleve.id]
-		);
 		// L'autre élève écrit reviewed_by = eleve sur SON signalement (droit de colonne
 		// ouvert). Fiche et devoir fictifs : contrôles de clés coupés le temps de l'insert.
 		await pg.query('begin');

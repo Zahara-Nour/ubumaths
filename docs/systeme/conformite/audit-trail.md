@@ -25,7 +25,6 @@ couvre:
   - [shop_purchase_history](#shop_purchase_history)
   - [item_usage_log](#item_usage_log)
 - [Specialized Audit Tables](#specialized-audit-tables)
-  - [template_audit_log](#template_audit_log)
   - [moderation_logs](#moderation_logs)
   - [error_logs](#error_logs)
 - [RGPD Compliance Audit](#rgpd-compliance-audit)
@@ -229,47 +228,6 @@ Tracks when students use purchased items and their effects.
 ---
 
 ## Specialized Audit Tables
-
-### template_audit_log
-
-**Migration**: `supabase/migrations_archive/098_enhance_message_templates.sql` (lines 167-194)
-
-Comprehensive audit trail for message template lifecycle.
-
-#### Columns
-
-| Column         | Type          | Nullable | Default             | Description                   |
-| -------------- | ------------- | -------- | ------------------- | ----------------------------- |
-| `id`           | `UUID`        | NOT NULL | `gen_random_uuid()` | Primary key                   |
-| `template_id`  | `UUID`        | NOT NULL | -                   | FK → `message_templates(id)`  |
-| `action`       | `TEXT`        | NOT NULL | -                   | Action type (see below)       |
-| `performed_by` | `UUID`        | NOT NULL | -                   | FK → `profiles(id)`           |
-| `performed_at` | `TIMESTAMPTZ` | NOT NULL | `now()`             | Timestamp                     |
-| `changes`      | `JSONB`       | NULL     | -                   | Old vs new values for updates |
-| `metadata`     | `JSONB`       | NULL     | `'{}'`              | Additional context            |
-| `ip_address`   | `INET`        | NULL     | -                   | Request IP address            |
-| `user_agent`   | `TEXT`        | NULL     | -                   | Browser user agent            |
-
-#### Action Types
-
-```sql
-CHECK (action IN (
-  'created', 'updated', 'deleted', 'duplicated',
-  'used', 'favorited', 'unfavorited',
-  'approved', 'rejected', 'submitted_for_approval'
-))
-```
-
-#### Indexes
-
-| Name                     | Columns                             |
-| ------------------------ | ----------------------------------- |
-| `idx_audit_log_template` | `(template_id, performed_at DESC)`  |
-| `idx_audit_log_user`     | `(performed_by, performed_at DESC)` |
-| `idx_audit_log_action`   | `(action, performed_at DESC)`       |
-| `idx_audit_log_date`     | `(performed_at DESC)`               |
-
----
 
 ### moderation_logs
 
@@ -532,8 +490,6 @@ profiles (id)
     ├──< marketplace_trades (sender_id, receiver_id)
     │         │
     │         └──> reward_events (via trigger, 2 events per trade)
-    │
-    ├──< template_audit_log (performed_by)
     │
     ├──< moderation_logs (moderator_id)
     │

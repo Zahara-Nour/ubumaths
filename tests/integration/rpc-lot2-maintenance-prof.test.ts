@@ -4,10 +4,11 @@
  *
  * Migration `20261003180000_rpc_lot2_maintenance_prof.sql`. Des fonctions
  * SECURITY DEFINER de maintenance (nettoyages, tâches planifiées, journal des
- * tâches, compteur du tuteur) et des actions de prof (énigme du jour,
- * duplication d'un modèle de message) étaient exécutables par tout compte
- * connecté, sans contrôle d'appelant : un élève vidait `audit_logs` avec
- * `cleanup_old_audit_logs(-1)`.
+ * tâches, compteur du tuteur) et une action de prof (énigme du jour) étaient
+ * exécutables par tout compte connecté, sans contrôle d'appelant : un élève
+ * vidait `audit_logs` avec `cleanup_old_audit_logs(-1)`. La duplication d'un
+ * modèle de message, gardée par la même migration, a disparu avec les modèles
+ * de message (`20261126224009_suppression_modeles_de_message.sql`).
  *
  * Décision de David (Q143) : un élève ne lance plus aucune tâche de
  * maintenance et ne fait plus d'action réservée au prof ; prof et admin gardent
@@ -142,11 +143,7 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 	let eleveId: string;
 	let autreId: string;
 	let enigme: string;
-	let modele: string;
 	let auditAncien: string;
-	let classe: string;
-	let modeleDeClasse: string;
-	const modelesCrees: string[] = [];
 	const jobRuns: string[] = [];
 
 	beforeAll(async () => {
@@ -166,32 +163,6 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 			status: 'published'
 		});
 
-		modele = await insert('message_templates', {
-			title: 'Modèle RPC lot 2',
-			subject_template: 'Sujet',
-			body_template: 'Corps',
-			trigger_type: 'general',
-			scope: 'system',
-			created_by: profId
-		});
-		modelesCrees.push(modele);
-
-		classe = await insert('classes', {
-			name: 'Classe RPC lot 2',
-			join_code: `L2${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
-			grade: '2'
-		});
-		modeleDeClasse = await insert('message_templates', {
-			title: 'Modèle de classe RPC lot 2',
-			subject_template: 'Sujet',
-			body_template: 'Corps',
-			trigger_type: 'general',
-			scope: 'class',
-			class_id: classe,
-			created_by: profId
-		});
-		modelesCrees.push(modeleDeClasse);
-
 		// Une ligne d'audit ancienne : cleanup_old_audit_logs(-1) l'effacerait.
 		auditAncien = await insert('audit_logs', {
 			action: 'DELETE',
@@ -209,13 +180,6 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 			.delete()
 			.in('date', [DATE_ELEVE, DATE_PROF, DATE_SERVICE]);
 		await service.from('riddles').delete().eq('id', enigme);
-		await service.from('message_templates').delete().in('id', modelesCrees);
-		await service
-			.from('template_audit_log')
-			.delete()
-			.in('performed_by', [profId, eleveId, autreId]);
-		await service.from('user_favorite_templates').delete().eq('user_id', eleveId);
-		await service.from('classes').delete().eq('id', classe);
 		await service.from('audit_logs').delete().eq('id', auditAncien);
 		if (jobRuns.length) await service.from('background_job_runs').delete().in('id', jobRuns);
 		await service.from('rate_limits').delete().like('key', 'rpc-lot2:%');
@@ -416,153 +380,6 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 				.eq('date', DATE_SERVICE)
 				.single();
 			expect(data?.selected_by).toBe(profId);
-		});
-	});
-
-	describe('duplicate_template : prof, en son propre nom', () => {
-		const titres = async (titre: string) => {
-			const { data, error } = await service
-				.from('message_templates')
-				.select('id, created_by')
-				.eq('title', titre);
-			expect(error).toBeNull();
-			for (const r of data ?? []) if (!modelesCrees.includes(r.id)) modelesCrees.push(r.id);
-			return data ?? [];
-		};
-
-		it("un élève est refusé et aucun modèle n'est créé", async () => {
-			const { error } = await rpc(eleve, 'duplicate_template', {
-				p_template_id: modele,
-				p_user_id: eleveId,
-				p_new_title: 'RPC lot 2 copie élève'
-			});
-			expect(error?.code).toBe(REFUS);
-			expect(await titres('RPC lot 2 copie élève')).toHaveLength(0);
-		});
-
-		it("un prof ne duplique pas au nom d'un autre", async () => {
-			const { error } = await rpc(prof, 'duplicate_template', {
-				p_template_id: modele,
-				p_user_id: autreId,
-				p_new_title: 'RPC lot 2 copie forgée'
-			});
-			expect(error?.code).toBe(REFUS);
-			expect(await titres('RPC lot 2 copie forgée')).toHaveLength(0);
-		});
-
-		// Depuis 20261003220000 (Q154), la copie est un modèle personnel (scope
-		// 'class', sans classe) : l'appel aboutit. Détail : succes-gidouilles.test.ts.
-		it('témoin : le prof en son nom passe la garde et obtient sa copie', async () => {
-			const { data, error } = await rpc(prof, 'duplicate_template', {
-				p_template_id: modele,
-				p_user_id: profId,
-				p_new_title: 'RPC lot 2 copie prof'
-			});
-			expect(error).toBeNull();
-			modelesCrees.push(data as string);
-			const copies = await titres('RPC lot 2 copie prof');
-			expect(copies.find((c) => c.id === data)?.created_by).toBe(profId);
-		});
-	});
-
-	describe('log_template_action : un élève ne journalise que ses favoris', () => {
-		it('un élève ne journalise pas une approbation', async () => {
-			const { error } = await rpc(eleve, 'log_template_action', {
-				p_template_id: modele,
-				p_action: 'approved',
-				p_performed_by: eleveId
-			});
-			expect(error?.code).toBe(REFUS);
-		});
-
-		it("un élève ne journalise pas un favori au nom d'un autre", async () => {
-			const { error } = await rpc(eleve, 'log_template_action', {
-				p_template_id: modele,
-				p_action: 'favorited',
-				p_performed_by: profId
-			});
-			expect(error?.code).toBe(REFUS);
-		});
-
-		it("un élève ne journalise pas un favori qu'il n'a pas", async () => {
-			const { error } = await rpc(eleve, 'log_template_action', {
-				p_template_id: modele,
-				p_action: 'favorited',
-				p_performed_by: eleveId
-			});
-			expect(error?.code).toBe(REFUS);
-		});
-
-		// Témoin : la séquence exacte de la route des favoris (POST : insère puis
-		// journalise ; DELETE : supprime puis journalise), avec le client élève.
-		it('témoin : la route des favoris — ajout puis journal', async () => {
-			const { data, error } = await eleve
-				.from('user_favorite_templates')
-				.insert({ user_id: eleveId, template_id: modele })
-				.select('template_id');
-			expect(error).toBeNull();
-			expect(data).toHaveLength(1);
-
-			const log = await rpc(eleve, 'log_template_action', {
-				p_template_id: modele,
-				p_action: 'favorited',
-				p_performed_by: eleveId
-			});
-			expect(log.error).toBeNull();
-		});
-
-		it('un élève ne glisse pas de métadonnées, même sur son vrai favori', async () => {
-			const { error } = await rpc(eleve, 'log_template_action', {
-				p_template_id: modele,
-				p_action: 'favorited',
-				p_performed_by: eleveId,
-				p_metadata: { notes: 'forgé' }
-			});
-			expect(error?.code).toBe(REFUS);
-		});
-
-		it('un élève ne journalise pas un retrait tant que le favori existe', async () => {
-			const { error } = await rpc(eleve, 'log_template_action', {
-				p_template_id: modele,
-				p_action: 'unfavorited',
-				p_performed_by: eleveId
-			});
-			expect(error?.code).toBe(REFUS);
-		});
-
-		it('témoin : la route des favoris — retrait puis journal', async () => {
-			const { data, error } = await eleve
-				.from('user_favorite_templates')
-				.delete()
-				.eq('user_id', eleveId)
-				.eq('template_id', modele)
-				.select('template_id');
-			expect(error).toBeNull();
-			expect(data).toHaveLength(1);
-
-			const log = await rpc(eleve, 'log_template_action', {
-				p_template_id: modele,
-				p_action: 'unfavorited',
-				p_performed_by: eleveId
-			});
-			expect(log.error).toBeNull();
-		});
-
-		it('témoin : le prof modifie son modèle (trigger INVOKER qui journalise)', async () => {
-			const { data, error } = await prof
-				.from('message_templates')
-				.update({ description: 'modifié par le prof' })
-				.eq('id', modeleDeClasse)
-				.select('id');
-			expect(error).toBeNull();
-			expect(data).toHaveLength(1);
-			// Le trigger a bien journalisé la modification.
-			const { count: n } = await service
-				.from('template_audit_log')
-				.select('id', { count: 'exact', head: true })
-				.eq('template_id', modeleDeClasse)
-				.eq('action', 'updated');
-			expect(n).toBe(1);
 		});
 	});
 });

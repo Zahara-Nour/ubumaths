@@ -393,11 +393,6 @@ describe('classement de toutes les tables (copier, inventer, jamais)', () => {
 		}
 	});
 
-	it('les modèles de messages ne sont pas copiés : la prod n’en a pas, ceux de la base locale restent', () => {
-		expect(COPIE).not.toContain('message_templates');
-		expect(COPIE).not.toContain('message_template_versions');
-	});
-
 	it('après audit : ce qui peut porter un élève sans que les gardes le voient n’est pas copié', () => {
 		// Identifiants d'inscription sans clé étrangère, nom de dossier libre, documents importés.
 		for (const t of ['school_year_closures', 'user_folders', 'rag_documents', 'rag_chunks']) {

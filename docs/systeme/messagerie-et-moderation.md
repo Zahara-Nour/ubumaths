@@ -243,10 +243,11 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   puis le reste le 2026-11-26 : pages admin (`dashboard/admin/message-templates/`), routes
   `api/messages/templates/`, store, moteur de variables (`templateEngine`, `advancedEngine`, `templateVariables`), composants
   `FiltersHelp` et `VariableAutocomplete`, types et validation.
-- **Restent en base** : la table `message_templates`, ses tables liées (versions, favoris,
-  usages), ses règles d'accès et ses fonctions, couvertes par les tests d'intégration
-  (`tests/integration/database/template-triggers.test.ts`, entre autres). Rien de l'appli ne
-  les lit ni ne les écrit.
+- **Plus rien en base** : la table `message_templates`, ses quatre tables liées (versions,
+  usages, journal, favoris) et leurs huit fonctions ont été supprimées par
+  `20261126224009_suppression_modeles_de_message.sql` (écart M60 ; 0 ligne en prod le
+  2026-11-26). La suppression de compte (`delete_user_account`) n'efface donc plus rien dans
+  `template_audit_log`. Garde : `tests/integration/suppression-modeles-de-message.test.ts`.
 - `TagsInput` (`src/lib/components/templates/`) sert à
   `src/routes/(protected)/constructions/conversion/+page.svelte`. Sans rapport avec les modèles
   de chapitre.
