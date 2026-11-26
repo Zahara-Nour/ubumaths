@@ -16,7 +16,7 @@ import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/ty
 
 /**
  * Configuration du parseur à partir des fonctions déclarées par un exercice
- * (colonne `exercises.generic_functions`).
+ * (colonne `exercise_versions.generic_functions`).
  *
  * - `undefined` / `null` : l'exercice ne déclare rien → `undefined`, donc les
  *   défauts du parseur (f, g, h, u, v, w, F, G, H).

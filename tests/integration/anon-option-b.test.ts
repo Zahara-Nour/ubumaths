@@ -204,8 +204,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.enforce_kanban_tags_per_board_cap()',
 	'public.enforce_single_teacher()',
 	'public.ensure_single_active_deck()',
-	'public.exercise_has_multiple_variations(uuid)',
-	'public.exercise_variation_count(uuid)',
 	'public.exercises_search_vector(text,text,text,text[])',
 	'public.extract_plain_text_from_tiptap(jsonb)',
 	'public.friendships_freeze_parties()',
@@ -374,11 +372,13 @@ describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	// → 132 relations, 133 fonctions.
 	// 2026-11-03 (M11, ecarts-a-trier) : `class_google_classroom_links` supprimée
 	// → 131 relations, 133 fonctions.
-	it('l’inventaire compte 131 relations et 133 fonctions', () => {
+	// 2026-11-26 (versions-exercices, PR 4) : `exercise_has_multiple_variations(uuid)` et
+	// `exercise_variation_count(uuid)` supprimées → 131 relations, 131 fonctions.
+	it('l’inventaire compte 131 relations et 131 fonctions', () => {
 		expect(RELATIONS_FERMEES).toHaveLength(131);
 		expect(new Set(RELATIONS_FERMEES).size).toBe(131);
-		expect(FONCTIONS_REVOQUEES).toHaveLength(133);
-		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(133);
+		expect(FONCTIONS_REVOQUEES).toHaveLength(131);
+		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(131);
 	});
 
 	it.each(RELATIONS_FERMEES)('table/vue %s : aucun droit pour anon', async (rel) => {

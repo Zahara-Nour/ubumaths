@@ -280,7 +280,8 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
   Quatre tables : `exercises`, `exercise_templates`, `exercise_favorites`, `exercise_share_tokens`.
   Le titre anglais (`exercises.translations`) est sauvegardé et restauré ; une sauvegarde antérieure
   à la colonne ne l'efface pas à la restauration. Les versions d'un exercice (ADR 0044) suivent
-  dans `versions` (export JSON et SQL) ; le contenu de premier niveau est celui de la dernière. À la
+  dans `versions` (export JSON et SQL) ; le contenu de premier niveau est celui de la dernière (il
+  ne s'écrit jamais sur la ligne d'`exercises`, qui n'a plus de colonnes de contenu). À la
   restauration, chaque version est écrite par numéro (une version plus récente que la sauvegarde
   reste ; deux versions au même numéro → fichier refusé). Une sauvegarde sans `versions` devient la
   version 1 d'un exercice qui n'en a pas ; sur un exercice qui en a déjà, elle devient une

@@ -80,7 +80,6 @@ describe('exercises.translations — titre en anglais', () => {
 				category: 'application',
 				title: 'Calculer avec les formules',
 				translations,
-				variations: [{ label: 'default', statement_md: 'Q ?', solution_md: 'R' }],
 				is_public: true
 			})
 			.select('id, translations')

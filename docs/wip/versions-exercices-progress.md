@@ -2,13 +2,50 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3194._
+_Mis à jour le 2026-11-26, PR 4 ouverte, **non mergée**._
 
-- **État** : PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0). PR 3 (la fiche, #3194) mergée, **pas encore en prod**.
-- **Prochaine action** : PR 4 (destructive : retrait des anciennes colonnes de contenu d'`exercises`), seulement après le `deploy:prod` qui livre la PR 3, et avec le go de David. Phase 0 d'abord (grep des usages + réconciliation des données).
-- **En attente de David** : `deploy:prod` (livre #3194), puis go pour la PR 4.
-- **Pièges en cours** : bouton d'annulation de `ConfirmDialog` = « Renoncer » (lore). Le merge d'une PR destructive ne se fait pas avant le go (un `db push` d'une autre session la jouerait).
-- **Worktree / branche** : aucun (celui de la PR 3 retiré) ; PR 4 → nouveau worktree depuis `origin/main`.
+- **État** : PR 1 (#3150), PR 2 (#3154) en prod (v0.112.0) ; PR 3 (#3194) mergée, **pas en prod**. PR 4 (retrait de l'ancien contenu d'`exercises`, destructive) ouverte, revues faites, **ne pas merger**.
+- **Prochaine action** : après le `deploy:prod` de #3194 ET le go de David : `pnpm check:migrations --pr <n>`, merge, `migration list --linked` (aucune autre en attente), `db:migrate` ; puis vérifier à l'écran (page d'exercice, lien de partage, sauvegarde admin).
+- **En attente de David** : `deploy:prod` (livre #3194), puis go pour merger la PR 4.
+- **Pièges en cours** : merge interdit avant le go (le `db push` d'une autre session la jouerait). Une migration plus récente arrivée sur `main` → renommer celle de la PR 4 (`pnpm migration:horodatage`), déjà fait une fois. `ConfirmDialog` : « Renoncer ».
+- **Worktree / branche** : `../ubumaths-wt-versions-exercices-retrait`, `feat/versions-exercices-retrait`.
+
+## PR 4 — fait (2026-11-26)
+
+- Migration `20261126221127_versions_exercices_retrait_ancien_contenu` (destructive, rollback en
+  commentaire, éprouvé par deux tests) : 5 fonctions mortes, 2 index, 2 CHECK, 3 colonnes ;
+  `get_exercise_by_share_token` en table explicite (mêmes champs, mêmes droits). Rouge prouvé
+  sans elle (`versions-exercices-retrait.test.ts`).
+- Code : types d'écriture d'un exercice = identité + contenu de version (`exercises.ts`,
+  `ExerciseForm`) ; sauvegarde (restauration + fichier SQL) n'écrit plus le contenu sur
+  `exercises`. Tests : fabriques et fixtures sans contenu sur `exercises` ; « élève archivé » passe
+  par `get_student_exercises` ; rejeu de la PR 1 précédé du rollback de la PR 4.
+- Revues : `security-auditor` aucun finding bloquant (personne ne gagne ni ne perd de lecture
+  utilisée). `code-reviewer` (opus) : fichier SQL de sauvegarde non rejouable sur un exercice à
+  niveaux (`grades` écrit en JSON dans un `text[]`, **déjà vrai sur `main`**) → corrigé, test rouge
+  puis vert ; commentaires `exercises.generic_functions` périmés → corrigés. Vieux scripts : laissés
+  (Q2).
+- Suite d'intégration complète : 1 seul échec (compteur d'`anon-option-b`), corrigé.
+- Pas vu à l'écran : la base de dev locale est partagée et la migration est destructive ; vérifier
+  après `db:migrate`.
+
+## Phase 0 de la PR 4 — retrait de l'ancien contenu (validée le 2026-11-26 : « je te suis »)
+
+- Colonnes supprimées : `exercises.variations`, `shared`, `generic_functions` (ADR 0044 point 11).
+  **`variables` reste** (Q1 : encore écrite à la création, lue par 3 fonctions ; chantier à part).
+- Réconciliation (prod, lecture seule, 2026-11-26) : 428 exercices, 428 avec une v1 identique à
+  l'ancien contenu, 0 contenu qui n'existerait que dans les anciennes colonnes, 0 exercice à
+  plusieurs versions, 0 exercice à `variables`. **Rien n'est perdu.**
+- Usages (grep du 2026-11-26) : aucun `from('exercises')` de `src/` ne nomme ces colonnes ; 5
+  fonctions SQL mortes (`get_my|teacher|all_exercise_assignments`,
+  `exercise_has_multiple_variations`, `exercise_variation_count`), appelées seulement par des tests ;
+  `get_exercise_by_share_token` (forme `exercises`, contenu glissé dedans) → table explicite, mêmes
+  champs ; sauvegarde admin (restauration + dump SQL) écrit encore ces colonnes → par les versions
+  seulement ; 4 index (2 du contenu supprimés) et 3 règles (2 du contenu supprimées).
+- Vieux scripts `scripts/create-*.ts`, `fix-*.ts` (déjà joués, hors typecheck) : laissés tels
+  quels (Q2) ; une ligne dans la skill `fiches-exercices`.
+- Calendrier (Q3) : PR écrite et ouverte sans merge ; `deploy:prod` de #3194, go de David, merge,
+  `db:migrate`.
 
 ## Décisions (2026-11-25)
 

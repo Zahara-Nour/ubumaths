@@ -3667,13 +3667,11 @@ export type Database = {
 					created_at: string;
 					created_by: string;
 					distribution_mode: string;
-					generic_functions: string[] | null;
 					grades: string[] | null;
 					id: string;
 					is_public: boolean;
 					resources: Json | null;
 					search_indexed: boolean;
-					shared: Json | null;
 					slug: string | null;
 					source: string | null;
 					source_type_id: string | null;
@@ -3682,7 +3680,6 @@ export type Database = {
 					translations: Json | null;
 					updated_at: string;
 					variables: NonNullable<Json>;
-					variations: Json | null;
 				};
 				ComputedFields: never;
 				Insert: {
@@ -3690,13 +3687,11 @@ export type Database = {
 					created_at?: string;
 					created_by: string;
 					distribution_mode?: string;
-					generic_functions?: string[] | null;
 					grades?: string[] | null;
 					id?: string;
 					is_public?: boolean;
 					resources?: Json | null;
 					search_indexed?: boolean;
-					shared?: Json | null;
 					slug?: string | null;
 					source?: string | null;
 					source_type_id?: string | null;
@@ -3705,20 +3700,17 @@ export type Database = {
 					translations?: Json | null;
 					updated_at?: string;
 					variables?: NonNullable<Json>;
-					variations?: Json | null;
 				};
 				Update: {
 					category?: string;
 					created_at?: string;
 					created_by?: string;
 					distribution_mode?: string;
-					generic_functions?: string[] | null;
 					grades?: string[] | null;
 					id?: string;
 					is_public?: boolean;
 					resources?: Json | null;
 					search_indexed?: boolean;
-					shared?: Json | null;
 					slug?: string | null;
 					source?: string | null;
 					source_type_id?: string | null;
@@ -3727,7 +3719,6 @@ export type Database = {
 					translations?: Json | null;
 					updated_at?: string;
 					variables?: NonNullable<Json>;
-					variations?: Json | null;
 				};
 				Relationships: [
 					{
@@ -16033,9 +16024,7 @@ export type Database = {
 			};
 			ensure_player_stats_exist: { Args: { p_student_id: string }; Returns: undefined };
 			execute_trade: { Args: { p_trade_id: string }; Returns: Json };
-			exercise_has_multiple_variations: { Args: { exercise_id: string }; Returns: boolean };
 			exercise_has_valid_share_token: { Args: { exercise_uuid: string }; Returns: boolean };
-			exercise_variation_count: { Args: { exercise_id: string }; Returns: number };
 			exercises_search_vector: {
 				Args: { solution_md: string; statement_md: string; tags: string[]; title: string };
 				Returns: unknown;
@@ -16110,35 +16099,6 @@ export type Database = {
 					student_id: string;
 					student_name: string;
 					total_points: number;
-				}[];
-			};
-			get_all_exercise_assignments: {
-				Args: Record<PropertyKey, never>;
-				Returns: {
-					assigned_at: string;
-					assigned_by: string;
-					assigned_by_name: string;
-					assigned_by_role: string;
-					assigned_to_name: string;
-					assigned_to_type: string;
-					class_id: string;
-					class_name: string;
-					distribution_mode: string;
-					exercise_creator_id: string;
-					exercise_id: string;
-					exercise_is_public: boolean;
-					exercise_title: string;
-					grades: string[];
-					id: string;
-					is_active: boolean;
-					notes: string;
-					optional_deadline: string;
-					shared: Json;
-					student_email: string;
-					student_id: string;
-					tags: string[];
-					variables: Json;
-					variations: Json;
 				}[];
 			};
 			get_allowed_recipients: {
@@ -16234,29 +16194,23 @@ export type Database = {
 					created_at: string;
 					created_by: string;
 					distribution_mode: string;
-					generic_functions: string[] | null;
-					grades: string[] | null;
+					generic_functions: string[];
+					grades: string[];
 					id: string;
 					is_public: boolean;
-					resources: Json | null;
+					resources: Json;
 					search_indexed: boolean;
-					shared: Json | null;
-					slug: string | null;
-					source: string | null;
-					source_type_id: string | null;
-					title: string | null;
-					topic: string | null;
-					translations: Json | null;
+					shared: Json;
+					slug: string;
+					source: string;
+					source_type_id: string;
+					title: string;
+					topic: string;
+					translations: Json;
 					updated_at: string;
-					variables: NonNullable<Json>;
-					variations: Json | null;
+					variables: Json;
+					variations: Json;
 				}[];
-				SetofOptions: {
-					from: '*';
-					to: 'exercises';
-					isOneToOne: false;
-					isSetofReturn: true;
-				};
 			};
 			get_exercise_completion_stats: {
 				Args: { p_exercise_id: string };
@@ -16420,35 +16374,6 @@ export type Database = {
 					worksheet_exercise_id: string;
 					worksheet_id: string;
 					worksheet_title: string;
-				}[];
-			};
-			get_my_exercise_assignments: {
-				Args: Record<PropertyKey, never>;
-				Returns: {
-					assigned_at: string;
-					assigned_by: string;
-					assigned_by_name: string;
-					assigned_by_role: string;
-					assigned_to_name: string;
-					assigned_to_type: string;
-					class_id: string;
-					class_name: string;
-					distribution_mode: string;
-					exercise_creator_id: string;
-					exercise_id: string;
-					exercise_is_public: boolean;
-					exercise_title: string;
-					grades: string[];
-					id: string;
-					is_active: boolean;
-					notes: string;
-					optional_deadline: string;
-					shared: Json;
-					student_email: string;
-					student_id: string;
-					tags: string[];
-					variables: Json;
-					variations: Json;
 				}[];
 			};
 			get_next_export_counter: {
@@ -16627,35 +16552,6 @@ export type Database = {
 					name: string;
 					students: Json;
 					updated_at: string;
-				}[];
-			};
-			get_teacher_exercise_assignments: {
-				Args: Record<PropertyKey, never>;
-				Returns: {
-					assigned_at: string;
-					assigned_by: string;
-					assigned_by_name: string;
-					assigned_by_role: string;
-					assigned_to_name: string;
-					assigned_to_type: string;
-					class_id: string;
-					class_name: string;
-					distribution_mode: string;
-					exercise_creator_id: string;
-					exercise_id: string;
-					exercise_is_public: boolean;
-					exercise_title: string;
-					grades: string[];
-					id: string;
-					is_active: boolean;
-					notes: string;
-					optional_deadline: string;
-					shared: Json;
-					student_email: string;
-					student_id: string;
-					tags: string[];
-					variables: Json;
-					variations: Json;
 				}[];
 			};
 			get_template_statistics: {

@@ -9,8 +9,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isHttpError, isRedirect } from '@sveltejs/kit';
 import type { Database } from '#lib/types/database.ts';
+import type { ExerciseVersionContent } from '#lib/types/database-helpers.ts';
 
-type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
+// Un exercice tel que le code le rend : fiche d'identité + contenu de sa version (ADR 0044)
+type ExerciseRow = Database['public']['Tables']['exercises']['Row'] & ExerciseVersionContent;
 
 vi.mock('#lib/server/exercises.ts', () => ({
 	getExerciseBySlug: vi.fn(),

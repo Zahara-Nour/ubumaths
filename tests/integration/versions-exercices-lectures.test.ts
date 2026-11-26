@@ -397,12 +397,6 @@ describe('écritures', () => {
 		const id = created.data?.id as string;
 		expect(created.data?.variations).toEqual(V1);
 		expect(await statementsByVersion(id)).toEqual({ 1: 'Énoncé v1' });
-		const { data: row } = await service
-			.from('exercises')
-			.select('variations')
-			.eq('id', id)
-			.single();
-		expect(row?.variations).toBeNull();
 	});
 
 	it('modification → la dernière version, l’ancienne intacte', async () => {

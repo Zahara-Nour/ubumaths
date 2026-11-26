@@ -441,11 +441,10 @@
 
 		// Always use variations - they are the single source of truth
 		// Legacy statement_md/solution_md fields are no longer saved
-		// @ts-expect-error - ExerciseVariation[] is compatible with Json at runtime
 		data.variations = variations;
 		data.shared =
 			shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
-				? (shared as unknown as ExerciseInsert['shared'])
+				? shared
 				: undefined;
 
 		await onsubmit(data);

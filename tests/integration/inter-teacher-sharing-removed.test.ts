@@ -30,7 +30,6 @@ function exerciseRow(createdBy: string, isPublic: boolean) {
 	return {
 		created_by: createdBy,
 		category: 'automatisme',
-		variations: [{ label: 'default', statement_md: 'Q?', solution_md: 'A' }],
 		is_public: isPublic
 	};
 }

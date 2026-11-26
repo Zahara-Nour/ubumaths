@@ -405,26 +405,25 @@ export async function exportBackupSQL(
 			// Note: statement_md and solution_md are deprecated in DB schema but preserved in backup for compatibility.
 			// Tags are NOT written on the exercises row anymore (legacy `tags` column dropped by the
 			// tag-normalization migration); they are emitted as exercise_tags junction rows below.
+			// Le contenu (variations, shared, generic_functions) ne vit plus sur `exercises` : il part dans
+			// les INSERT INTO exercise_versions qui suivent (ADR 0044).
 			lines.push(`INSERT INTO exercises (
   id, slug, title, source, category,
-  grades, topic, is_public, search_indexed, distribution_mode, variables, variations,
-  shared, resources, generic_functions, translations, created_at, updated_at, created_by
+  grades, topic, is_public, search_indexed, distribution_mode, variables,
+  resources, translations, created_at, updated_at, created_by
 ) VALUES (
   ${escapeSQL(ex.id)},
   ${escapeSQL(ex.slug)},
   ${escapeSQL(ex.title)},
   ${escapeSQL(ex.source)},
   ${escapeSQL(ex.category)},
-  ${escapeSQL(ex.grades)},
+  ${escapeTextArray(ex.grades)},
   ${escapeSQL(ex.topic)},
   ${ex.is_public},
   ${consistentSearchIndexed(ex.is_public, ex.search_indexed)},
   ${escapeSQL(ex.distribution_mode)},
   ${escapeSQL(ex.variables)},
-  ${escapeSQL(ex.variations)},
-  ${escapeSQL(ex.shared)},
   ${escapeSQL(ex.resources)},
-  ${escapeTextArray(ex.generic_functions)},
   ${escapeSQL(ex.translations ?? null)},
   ${escapeSQL(ex.created_at)},
   ${escapeSQL(ex.updated_at)},
@@ -440,10 +439,7 @@ export async function exportBackupSQL(
   search_indexed = EXCLUDED.search_indexed,
   distribution_mode = EXCLUDED.distribution_mode,
   variables = EXCLUDED.variables,
-  variations = EXCLUDED.variations,
-  shared = EXCLUDED.shared,
   resources = EXCLUDED.resources,
-  generic_functions = EXCLUDED.generic_functions,
   translations = EXCLUDED.translations,
   updated_at = EXCLUDED.updated_at;`);
 			lines.push('');
@@ -914,10 +910,7 @@ async function restoreExercises(
 						search_indexed: consistentSearchIndexed(record.is_public, record.search_indexed),
 						distribution_mode: record.distribution_mode,
 						variables: record.variables as NonNullable<Json>,
-						variations: record.variations as Json | null,
-						shared: record.shared as Json | null,
 						resources: record.resources as Json | null,
-						generic_functions: record.generic_functions,
 						// Sauvegarde antérieure à la colonne : le titre anglais en place reste
 						...(record.translations !== undefined && {
 							translations: record.translations as Json | null
@@ -950,10 +943,7 @@ async function restoreExercises(
 					search_indexed: consistentSearchIndexed(record.is_public, record.search_indexed),
 					distribution_mode: record.distribution_mode,
 					variables: record.variables as Json,
-					variations: record.variations as Json | null,
-					shared: record.shared as Json | null,
 					resources: record.resources as Json | null,
-					generic_functions: record.generic_functions,
 					translations: (record.translations ?? null) as Json | null,
 					created_at: record.created_at,
 					updated_at: record.updated_at,
