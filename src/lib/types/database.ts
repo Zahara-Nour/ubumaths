@@ -16983,6 +16983,10 @@ export type Database = {
 				}[];
 			};
 			mathou_decoration_slot: { Args: { p_decoration: string }; Returns: string };
+			messagerie_nom_affiche: {
+				Args: { p_firstname: string; p_full_name: string; p_lastname: string };
+				Returns: string;
+			};
 			minesweeper_scoped_leaderboard: {
 				Args: { p_limit?: number; p_scope: string };
 				Returns: {

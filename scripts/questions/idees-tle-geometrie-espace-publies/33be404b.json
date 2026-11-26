@@ -1,0 +1,632 @@
+{
+	"id": "33be404b-d498-4243-8653-dbb819ea7542",
+	"title": "Espace : lire une représentation paramétrique de droite",
+	"description": "Vecteur directeur, point de paramètre donné, paramètre d'un point, coordonnées manquantes d'un point de la droite (pièges : point pris pour vecteur, t mal reporté)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"answerKind": "vecteur",
+					"vectorMode": "colineaire",
+					"expectedAnswer": "({{u1}};{{u2}};{{u3}})"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne un vecteur directeur de la droite $d$ : $?$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "z0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["u1 != 0 || u2 != 0"],
+			"correction": {
+				"steps": [
+					"Une représentation $x=x_A+at$, $y=y_A+bt$, $z=z_A+ct$ est celle de la droite passant par $A(x_A\\,;\\,y_A\\,;\\,z_A)$ de vecteur directeur $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ : on lit les coefficients de $t$.",
+					"$\\textcolor{{{color:primary.0}}}{ \\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix} }$ (tout vecteur colinéaire non nul convient)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x0+k*u1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:y0+k*u2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:z0+k*u3}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne les coordonnées du point $B$ de $d$ de paramètre $t={{k}}$.\n\n$B(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "z0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..3;±"
+				}
+			],
+			"conditions": ["u1 != 0 || u2 != 0"],
+			"correction": {
+				"steps": [
+					"On remplace $t$ par ${{k}}$ : $x={{x0}}+{{u1;()}}\\times{{k;()}}$, $y={{y0}}+{{u2;()}}\\times{{k;()}}$, $z={{z0}}+{{u3;()}}\\times{{k;()}}$.",
+					"$\\textcolor{{{color:primary.0}}}{ B\\left({{eval:x0+k*u1}}\\,;\\,{{eval:y0+k*u2}}\\,;\\,{{eval:z0+k*u3}}\\right) }$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$ appartient à $d$. Détermine son paramètre $t$.\n\n$t=?$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "z0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:x0+k*u1}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:y0+k*u2}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:z0+k*u3}}"
+				}
+			],
+			"conditions": ["u1 != 0 || u2 != 0"],
+			"correction": {
+				"steps": [
+					"On cherche $t$ tel que ${{z0}}+({{u3}})t={{mz}}$ (troisième équation) : $t={{k}}$.",
+					"On vérifie les deux autres : ${{x0}}+{{u1;()}}\\times{{k;()}}={{mx}}$ et ${{y0}}+{{u2;()}}\\times{{k;()}}={{my}}$. Donc $\\textcolor{{{color:primary.0}}}{ t={{k}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y0+k*u2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:z0+k*u3}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M({{mx}}\\,;\\,m\\,;\\,n)$ appartient à $d$. Détermine $m$ et $n$.\n\n$m=?$ et $n=?$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "z0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:x0+k*u1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La première équation donne le paramètre de $M$ : ${{x0}}+({{u1}})t={{mx}}$, donc $t={{k}}$.",
+					"$m={{y0}}+{{u2;()}}\\times{{k;()}}$ et $n={{z0}}+{{u3;()}}\\times{{k;()}}$ : $\\textcolor{{{color:primary.0}}}{ m={{eval:y0+k*u2}} }$ et $\\textcolor{{{color:primary.0}}}{ n={{eval:z0+k*u3}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nParmi les points suivants, lesquels appartiennent à $d$ ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\n- ${{if:pm==0|K|{{if:pm==1|L|{{if:pm==2|R|S}}}}}}({{kx}}\\,;\\,{{ky}}\\,;\\,{{kz}})$\n- ${{if:pm==0|L|{{if:pm==1|R|{{if:pm==2|S|K}}}}}}({{lx}}\\,;\\,{{ly}}\\,;\\,{{lz}})$\n- ${{if:pm==0|R|{{if:pm==1|S|{{if:pm==2|K|L}}}}}}({{rx}}\\,;\\,{{ry}}\\,;\\,{{rz}})$\n- ${{if:pm==0|S|{{if:pm==1|K|{{if:pm==2|L|R}}}}}}({{sx}}\\,;\\,{{sy}}\\,;\\,{{sz}})$\n```",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "z0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "h",
+					"expression": "0..1"
+				},
+				{
+					"name": "tk",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "kx",
+					"expression": "{{eval:x0+tk*u1+(0)}}"
+				},
+				{
+					"name": "ky",
+					"expression": "{{eval:y0+tk*u2+(0)}}"
+				},
+				{
+					"name": "kz",
+					"expression": "{{eval:z0+tk*u3}}"
+				},
+				{
+					"name": "tl",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "lx",
+					"expression": "{{eval:x0+tl*u1+(1-h)}}"
+				},
+				{
+					"name": "ly",
+					"expression": "{{eval:y0+tl*u2+(0)}}"
+				},
+				{
+					"name": "lz",
+					"expression": "{{eval:z0+tl*u3}}"
+				},
+				{
+					"name": "tr",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "rx",
+					"expression": "{{eval:x0+tr*u1+(1)}}"
+				},
+				{
+					"name": "ry",
+					"expression": "{{eval:y0+tr*u2+(0)}}"
+				},
+				{
+					"name": "rz",
+					"expression": "{{eval:z0+tr*u3}}"
+				},
+				{
+					"name": "ts",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "sx",
+					"expression": "{{eval:x0+ts*u1+(0)}}"
+				},
+				{
+					"name": "sy",
+					"expression": "{{eval:y0+ts*u2+(1)}}"
+				},
+				{
+					"name": "sz",
+					"expression": "{{eval:z0+ts*u3}}"
+				},
+				{
+					"name": "pm",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [
+				"u1 != 0 || u2 != 0",
+				"tk != tl",
+				"tk != tr",
+				"tk != ts",
+				"tl != tr",
+				"tl != ts",
+				"tr != ts"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0{{if:h==1|;1|}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un point est sur $d$ quand un même réel $t$ vérifie les trois équations : on trouve $t$ avec une équation, puis on vérifie les deux autres.",
+					"${{if:pm==0|K|{{if:pm==1|L|{{if:pm==2|R|S}}}}}}$ : l'équation en $z$ donne $t={{tk}}$, et $x$, $y$ conviennent (${{x0}}+{{u1;()}}\\times{{tk;()}}={{kx}}$, ${{y0}}+{{u2;()}}\\times{{tk;()}}={{ky}}$) : ${{if:pm==0|K|{{if:pm==1|L|{{if:pm==2|R|S}}}}}}\\in d$.",
+					"{{if:h==1|${{if:pm==0|L|{{if:pm==1|R|{{if:pm==2|S|K}}}}}}$ : l'équation en $z$ donne $t={{tl}}$, et $x$, $y$ conviennent (${{x0}}+{{u1;()}}\\times{{tl;()}}={{lx}}$, ${{y0}}+{{u2;()}}\\times{{tl;()}}={{ly}}$) : ${{if:pm==0|L|{{if:pm==1|R|{{if:pm==2|S|K}}}}}}\\in d$.|${{if:pm==0|L|{{if:pm==1|R|{{if:pm==2|S|K}}}}}}$ : l'équation en $z$ donne $t={{tl}}$, mais alors $x={{x0}}+{{u1;()}}\\times{{tl;()}}={{eval:x0+tl*u1}}$, et non ${{lx}}$ : ${{if:pm==0|L|{{if:pm==1|R|{{if:pm==2|S|K}}}}}}\\notin d$.}}",
+					"${{if:pm==0|R|{{if:pm==1|S|{{if:pm==2|K|L}}}}}}$ : l'équation en $z$ donne $t={{tr}}$, mais alors $x={{x0}}+{{u1;()}}\\times{{tr;()}}={{eval:x0+tr*u1}}$, et non ${{rx}}$ : ${{if:pm==0|R|{{if:pm==1|S|{{if:pm==2|K|L}}}}}}\\notin d$.",
+					"${{if:pm==0|S|{{if:pm==1|K|{{if:pm==2|L|R}}}}}}$ : l'équation en $z$ donne $t={{ts}}$, mais alors $y={{y0}}+{{u2;()}}\\times{{ts;()}}={{eval:y0+ts*u2}}$, et non ${{sy}}$ : ${{if:pm==0|S|{{if:pm==1|K|{{if:pm==2|L|R}}}}}}\\notin d$.",
+					"Les points de $d$ : $\\textcolor{{{color:primary.0}}}{ {{if:pm==0|K|{{if:pm==1|L|{{if:pm==2|R|S}}}}}}{{if:h==1|\\text{ et }{{if:pm==0|L|{{if:pm==1|R|{{if:pm==2|S|K}}}}}}|}} }$."
+				]
+			},
+			"hint": "Pour chaque point, trouve $t$ avec une des équations, puis vérifie que ce même $t$ convient pour les deux autres coordonnées."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["(3;0;-1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v0 : (3 ; 0 ; -1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(-6;0;2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v0 : multiple",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(1;-2;0)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v0 : le point pris pour vecteur (1 ; -2 ; 0)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(3;-1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v0 : 0 oublié (3 ; -1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7", "-2", "-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v1 : B(7 ; -2 ; -2)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5", "0", "1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v1 : t ajouté au lieu de multiplié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1", "-2", "0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v1 : point de paramètre 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "-1",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v2 : t = -1",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "-1",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v2 : signe",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0", "-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"u1": "2",
+				"u2": "1",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v3 : m = 0, n = -2",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3", "-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"u1": "2",
+				"u2": "1",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v3 : t pris égal à x (t = 5)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-2", "0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"u1": "2",
+				"u2": "1",
+				"u3": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0"
+			},
+			"description": "v3 : échangés",
+			"variationIndex": 3
+		},
+		{
+			"description": "h = 1 : K et L",
+			"variationIndex": 4,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"tk": "1",
+				"tl": "-2",
+				"tr": "2",
+				"ts": "-1",
+				"pm": "2",
+				"h": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "h = 0 : K seul",
+			"variationIndex": 4,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"tk": "1",
+				"tl": "-2",
+				"tr": "2",
+				"ts": "-1",
+				"pm": "2",
+				"h": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "h = 0 : R (deux équations sur trois) coché",
+			"variationIndex": 4,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"tk": "1",
+				"tl": "-2",
+				"tr": "2",
+				"ts": "-1",
+				"pm": "2",
+				"h": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2"]
+		},
+		{
+			"description": "h = 1 : L oublié (½ point)",
+			"variationIndex": 4,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"u1": "3",
+				"u2": "0",
+				"u3": "-1",
+				"tk": "1",
+				"tl": "-2",
+				"tr": "2",
+				"ts": "-1",
+				"pm": "2",
+				"h": "1"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0"]
+		}
+	]
+}

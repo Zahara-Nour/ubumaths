@@ -116,6 +116,8 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   section en petite étiquette en majuscules, documents (et fiches publiques, exercices) en
   lignes compactes `ResourceRow` (pastille du type, titre tel que saisi, bouton de
   téléchargement), regroupées dans un même cadre par `groupPlanItems` (`plan-groups.ts`) ;
+  la ligne d'un exercice, côté élève connecté, mène à sa page avec `?depuis=cours&chapitre=<uuid>`
+  (`studentExerciseHref`) : « Quitter » y ramène au chapitre ;
   objectifs, séries et fiches de l'élève connecté restent des blocs. ⚠️ Le titre d'un document
   n'est pas un titre HTML : la règle globale `main h3` de `app.css` (`!important`) lui donnerait
   la taille d'une section. `DocumentCard` ne sert plus qu'au prof. Modèles :
@@ -632,5 +634,4 @@ Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) 
 
 - **`src/lib/components/templates/`** ne garde que `ChapterTemplateIndicator` pour les modèles de
   chapitre (les composants de l'ancien système ont été supprimés à l'étape 5A) ; il héberge aussi
-  `VariableAutocomplete`, `TagsInput`, `FiltersHelp`, qui servent les **modèles de message**
-  (hors de cette zone, donc hors `couvre:`).
+  `TagsInput` (page de conversion des constructions, hors de cette zone, donc hors `couvre:`).

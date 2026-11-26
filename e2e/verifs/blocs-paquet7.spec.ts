@@ -4,7 +4,14 @@ import { expect, test, type CDPSession, type Locator, type Page } from '@playwri
 import { associerEntry } from '../../src/lib/block-catalog/associer';
 import { figureACompleterEntry } from '../../src/lib/block-catalog/figure-a-completer';
 import { schemaBarresEntry } from '../../src/lib/block-catalog/schema-barres';
-import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import {
+	ADMIN,
+	assertLocalServerEnv,
+	login,
+	sql,
+	TEACHER,
+	withFirstVersion
+} from './helpers/carnet';
 import {
 	createWorksheet,
 	pdfText,
@@ -862,8 +869,10 @@ async function exerciseOf(
 	solution: string
 ): Promise<{ exercise: { id: string; title: string } }> {
 	const rows = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			title,
 			TEACHER_ID,

@@ -1,0 +1,373 @@
+{
+	"id": "cf51cb93-c89b-477d-bfed-eb3cffae5edf",
+	"title": "Calculer un terme d'une suite géométrique",
+	"description": "Calculer un terme à partir d'un autre (raison entière, ou décimale avec un arrondi au dixième)",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 40,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*(q)^d}}"
+				}
+			],
+			"statement": "$(u_n)$ est une suite géométrique de raison ${{q}}$, et $u_{ {{a}} }={{c}}$.\n\nCalcule $u_{ {{b}} }$.\n\n$u_{ {{b}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour passer de $u_{ {{a}} }$ à $u_{ {{b}} }$, on avance de ${{b}}-{{a}}={{d}}$ rangs : on multiplie ${{d}}$ fois par la raison $\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"$u_{ {{b}} }=u_{ {{a}} }\\times q^{ {{d}} }={{c}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}^{ {{d}} }={{c}}\\times{{eval:(q)^d;()}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"hint": "Combien de fois multiplie-t-on par la raison pour passer de $u_{ {{p}} }$ à $u_{ {{r}} }$ ? Utilise la touche puissance de la calculatrice.",
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					},
+					"expectedAnswer": "{{eval:round(10*(v))/10;a1}}",
+					"expectedErrors": [
+						{
+							"label": "Exposant décalé d'un rang",
+							"answer": "{{eval:round(10*(a)*(q)^(dd-1))/10;a1}}",
+							"message": "Tu as multiplié une fois de trop ou de moins : de $u_{ {{p}} }$ à $u_{ {{r}} }$, la puissance de $q$ est ${{dd}}$."
+						},
+						{
+							"label": "Puissance du produit",
+							"answer": "{{eval:round(10*((a)*(q))^(dd))/10;a1}}",
+							"message": "Seule la raison est élevée à la puissance : ${{a}}\\times q^{ {{dd}} }$, pas $({{a}}\\times q)^{ {{dd}} }$."
+						},
+						{
+							"label": "Produit au lieu de puissance",
+							"answer": "{{eval:round(10*(a)*(q)*(dd))/10;a1}}",
+							"message": "On multiplie ${{dd}}$ fois par $q$ : c'est une puissance, pas un produit par ${{dd}}$."
+						}
+					]
+				}
+			],
+			"statement": "$(u_n)$ est une suite géométrique de raison ${{q}}$, et $u_{ {{p}} }={{a}}$.\n\nCalcule $u_{ {{r}} }$, arrondi au dixième.\n\n$u_{ {{r}} }\\approx ?$",
+			"variables": [
+				{
+					"name": "kq",
+					"expression": "8..29!10,20"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				},
+				{
+					"name": "q",
+					"expression": "eval:sg*kq/10;d"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "dd",
+					"expression": "8..11"
+				},
+				{
+					"name": "r",
+					"expression": "eval:p+dd"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a*(q)^dd;d"
+				}
+			],
+			"conditions": [
+				"abs(10*(v)-floor(10*(v))-0.5) > 0.05",
+				"mod(round(10*abs(v)),10) != 0",
+				"abs(v) < 10000",
+				"abs(v) > 1"
+			],
+			"correction": {
+				"steps": [
+					"De $u_{ {{p}} }$ à $u_{ {{r}} }$, on avance de ${{r}}-{{p}}={{dd}}$ rangs : on multiplie ${{dd}}$ fois par la raison $\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"$u_{ {{r}} }=u_{ {{p}} }\\times q^{ {{dd}} }={{a}}\\times\\textcolor{{{color:primary.0}}}{\\left({{q}}\\right)}^{ {{dd}} }\\approx{{eval:round(1000*(v))/1000;a3}}$, soit $u_{ {{r}} }\\approx{{eval:round(10*(v))/10;a1}}$ au dixième."
+				]
+			},
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["135"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "3",
+				"q": "3"
+			},
+			"description": "u_2=5, q=3 → u_5=135",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-48"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "11",
+				"c": "-3",
+				"d": "4",
+				"q": "-2"
+			},
+			"description": "u_7=−3, q=−2 → u_11=−48",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"c": "2",
+				"d": "2",
+				"q": "-3"
+			},
+			"description": "u_4=2, q=−3 → u_6=18",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "3",
+				"q": "3"
+			},
+			"description": "une seule multiplication (5×3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1215"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "3",
+				"q": "3"
+			},
+			"description": "rang b au lieu de b−a (5×3^5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "3",
+				"q": "3"
+			},
+			"description": "raison multipliée par l'écart (5×3×3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "3",
+				"q": "3"
+			},
+			"description": "raison ajoutée comme une suite arithmétique (5+3×3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "11",
+				"c": "-3",
+				"d": "4",
+				"q": "-2"
+			},
+			"description": "signe de (−2)^4 faux",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\times3^3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "3",
+				"q": "3"
+			},
+			"description": "calcul non effectué 5×3^3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["31{,}8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"dd": "9",
+				"kq": "13",
+				"sg": "1"
+			},
+			"description": "u_2 = 3, q = 1,3 : u_11 ≈ 31,8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["31.8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"dd": "9",
+				"kq": "13",
+				"sg": "1"
+			},
+			"description": "écriture 31.8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-76{,}9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"p": "4",
+				"dd": "9",
+				"kq": "15",
+				"sg": "-1"
+			},
+			"description": "u_4 = 2, q = −1,5 : u_13 ≈ −76,9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["31{,}81"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			},
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"dd": "9",
+				"kq": "13",
+				"sg": "1"
+			},
+			"description": "trop de décimales",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["24{,}5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié une fois de trop ou de moins : de $u_2$ à $u_{11}$, la puissance de $q$ est $9$."
+			},
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"dd": "9",
+				"kq": "13",
+				"sg": "1"
+			},
+			"description": "exposant 8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["208\\,728{,}4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Seule la raison est élevée à la puissance : $3\\times q^{ 9 }$, pas $(3\\times q)^{ 9 }$."
+			},
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"dd": "9",
+				"kq": "13",
+				"sg": "1"
+			},
+			"description": "(3 × 1,3)⁹",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["35{,}1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On multiplie $9$ fois par $q$ : c'est une puissance, pas un produit par $9$."
+			},
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"dd": "9",
+				"kq": "13",
+				"sg": "1"
+			},
+			"description": "3 × 1,3 × 9",
+			"variationIndex": 1
+		}
+	]
+}

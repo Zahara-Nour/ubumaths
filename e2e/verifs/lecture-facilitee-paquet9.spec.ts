@@ -1,7 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { assertLocalServerEnv, login, sql, TEACHER, withFirstVersion } from './helpers/carnet';
 import { createWorksheet, FICHES_TMP, STYLE_IDS, TEACHER_ID } from './helpers/fiches';
 import { collectErrors, gotoSettled } from './helpers/pages';
 import { pdfBoxes, rasterPage, type PdfBox } from './helpers/pdf-mesures';
@@ -579,8 +579,10 @@ test('#2937 — corrigé PDF d’une fiche : texte coloré sans code brut, « la
 	const solution =
 		'Verifs9 : la phrase commence par [« la somme »]{.bleu} : son premier terme est [« le produit de 3 par 5 »]{.orange}, soit [$3 \\times 5$]{.orange}.';
 	const created = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ('Verifs9 couleurs', 'verifs9c', '{}', 'Verifs9', $1, 'automatisme', $2::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ('Verifs9 couleurs', 'verifs9c', '{}', 'Verifs9', $1, 'automatisme', $2::jsonb) returning id`
+		),
 		[
 			TEACHER_ID,
 			JSON.stringify([

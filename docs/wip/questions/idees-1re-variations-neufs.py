@@ -2,7 +2,7 @@
 scripts/questions/idees-1re-variations-neufs/.
 
 Phase 0 validée par David le 2026-11-26 (« je valide » ; journal
-docs/wip/idees-1re-variations-progress.md, page à cocher
+docs/archive/wip/idees-1re-variations/idees-1re-variations-progress.md, page à cocher
 https://claude.ai/artifact/Sz4fcFzPik8zJjPLHsrT7i) : N1, N2, N3, trois modèles neufs de 1re spé
 (Q1 : N2 en 1 SPE seul).
 

@@ -1,22 +1,22 @@
 ---
 couvre:
-  - 'src/lib/components/templates/{FiltersHelp,TagsInput,VariableAutocomplete}.svelte'
-  - 'src/lib/templates/**'
+  - src/lib/components/templates/TagsInput.svelte
   - 'src/routes/(protected)/messages/**'
   - 'src/routes/api/{messages,moderation,notifications,warnings}/**'
   - 'src/routes/api/{student,classes,students}/*/warnings/**'
   - 'src/routes/api/student/warnings/**'
   - 'src/lib/components/{moderation,notifications,student-inbox}/**'
   - 'src/lib/components/{AddFriend,FriendRequests,FriendsList,OnlineStatus}.svelte'
-  - 'src/lib/stores/{privateMessages,notifications,messageTemplates,mentions,hashtags}.svelte.ts'
+  - 'src/lib/stores/{privateMessages,notifications,mentions,hashtags}.svelte.ts'
   - 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox}.ts'
-  - 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts'
+  - 'src/lib/server/validation/{messages,moderation,notifications,warnings}.ts'
   - src/lib/server/message-attachments.ts
   - src/lib/utils/message-attachment-rules.ts
-  - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
+  - src/lib/utils/message-reply.ts
+  - 'src/lib/types/{notification,warnings,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
   - src/lib/navigation/goto-notification.ts
-  - 'src/routes/(protected)/dashboard/{teacher,admin}/{moderation,notifications,message-templates,friendships}/**'
+  - 'src/routes/(protected)/dashboard/{teacher,admin}/{moderation,notifications,friendships}/**'
   - 'src/routes/(protected)/dashboard/notifications/**'
 ---
 
@@ -73,13 +73,25 @@ Cette zone couvre cinq choses :
     La réponse suit la forme de la RPC, `id` en plus (copie de `message_id`) : `inboxMessagesResponseSchema`
     et `sentMessagesResponseSchema`, sans adresse de courriel. Ni l'une ni l'autre ne rend
     `parent_message_id` / `thread_root_id` : la marque « fil » des listes ne s'affiche donc pas ;
-  - `thread/` → `get_message_details` + `get_message_thread` ;
+  - `thread/` → `get_message_details` + `get_message_thread` ; chaque message y porte ses
+    destinataires (identifiant et nom), pour « Répondre » ;
   - `[id]/` : GET (`get_message_details`, `mark_message_as_read`), PATCH (actions
     `updateStatus`, `moveToFolder`, `toggleRead`, `toggleStar`), DELETE (corbeille côté
     expéditeur `deleted_by_sender`, côté destinataire `message_inbox.deleted`) ;
   - `drafts/`, `drafts/[id]/` → table `message_drafts`.
 - Validation : `src/lib/server/validation/messages.ts` (`sendMessageSchema` : sujet 1-200,
-  contenu 1-10 000, 100 destinataires max ; `updateMessageSchema` en union discriminée).
+  100 destinataires max ; `updateMessageSchema` en union discriminée). Le **contenu** d'un envoi
+  est le document de l'éditeur riche (`{ type: 'doc', content: [...] }`, le jsonb de
+  `send_private_message`), jamais une chaîne : `messageDocumentProblem` le refuse s'il n'a pas
+  cette forme (« Message illisible », 20 niveaux d'emboîtement au plus), s'il dépasse 10 000
+  caractères de texte (« Message trop long »), 100 000 caractères une fois écrit en JSON
+  (« Message trop lourd »), ou
+  s'il ne montre rien (« Le message est vide » ; une formule seule compte). Tests :
+  `src/routes/api/messages/send/__tests__/send.test.ts` (le corps exact de la page) et le
+  parcours `e2e/verifs/messagerie.spec.ts` (l'élève écrit, le prof répond, l'élève lit ; un
+  brouillon repris part sans y toucher). La page n'envoie jamais le HTML d'un brouillon :
+  `RichTextEditor` rend le document dès qu'il pose un contenu venu de `htmlValue`
+  (`syncJsonFromHtml`).
 - Tables : `private_messages` (le message), `message_inbox` (une ligne par destinataire :
   lu, étoilé, dossier, statut).
 
@@ -114,6 +126,40 @@ Jusque-là, le bucket n'existait pas en prod et toute pièce jointe échouait en
 Tests : `tests/integration/messagerie-pieces-jointes.test.ts` (bucket, policies),
 `tests/integration/messagerie-pieces-jointes-liens.test.ts` (envoi et lecture de bout en bout),
 `src/routes/api/messages/__tests__/attachments.test.ts` (routes).
+
+#### Index de recherche et nom de l'expéditeur
+
+Chaque message inséré ou modifié passe par le trigger `update_message_search_index`, qui écrit
+une ligne de `message_search_index` (sujet, texte, nom et rôle de l'expéditeur). La colonne
+`sender_name` est obligatoire, alors que `profiles.full_name` ne l'est pas : **en prod, presque
+tous les élèves ont un nom complet vide** (prénom et nom remplis). Depuis la migration
+`20261126094959`, le trigger prend le nom complet, sinon « prénom nom », sinon `Sans nom` ;
+avant, l'envoi d'un message par un de ces élèves rendait 500 (V131). Le nom est figé à l'envoi.
+
+Tests : `tests/integration/database/messaging-triggers.test.ts`, bloc « expéditeur sans nom
+complet ». La fabrique de profils de test donne un nom complet à tout le monde : un test de
+messagerie qui doit ressembler à la prod le vide lui-même.
+
+#### Noms affichés
+
+Les fonctions de lecture (`get_allowed_recipients`, `get_user_inbox`, `get_user_sent_messages`,
+`get_message_details`, `get_message_thread`) rendent le nom par `messagerie_nom_affiche` : nom
+complet, sinon « prénom nom », sinon rien (la page écrit alors « Inconnu »). Cette fonction
+d'aide n'est appelable ni par `anon` ni par `authenticated`. `get_allowed_recipients` garde le
+nom de colonne `full_name` et trie par ce nom (migration `20261126132310`, V134). Le rôle
+s'affiche par `messageRoleLabel` (`src/lib/utils/message-reply.ts`), jamais par son nom technique.
+
+#### Répondre
+
+`replyRecipientId` (`src/lib/utils/message-reply.ts`) choisit le destinataire d'une réponse,
+depuis un message ouvert comme depuis un fil : le dernier qui m'a écrit ; sinon l'unique
+destinataire de mon message ; sinon personne, et les pages ne proposent pas « Répondre » (V133 :
+avant, l'élève qui avait ouvert un fil s'écrivait à lui-même). La page d'écriture affiche alors
+ce seul destinataire, sans liste ; s'il n'est pas dans la liste des destinataires permis (élève
+de test), la réponse part quand même et le serveur décide. Les refus de la base ne sont jamais
+rendus tels quels par `send/` : 403 (destinataire non permis), 400 (classe sans élève actif,
+code `P0002`), 500 sans le message technique. Tests : `src/lib/utils/message-reply.test.ts`,
+`send.test.ts`, bloc « comptes sans nom complet » de `e2e/verifs/messagerie.spec.ts`.
 
 ### Modération et signalements (chat)
 
@@ -192,21 +238,18 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 ### Modèles de messages
 
-- Pages : `src/routes/(protected)/dashboard/admin/message-templates/` (+ `stats/`). La page du
-  prof (`dashboard/teacher/message-templates/`) a été retirée le 2026-11-25 (écarts E58 à E60 :
-  aperçu qui plantait, corps sans champ de saisie, création refusée ; David ne s'en servait
-  pas) ; la table `message_templates` et ses règles d'accès restent. Les pages admin utilisent `FiltersHelp`, `TagsInput` et
-  `VariableAutocomplete` de `src/lib/components/templates/` (`TagsInput` sert aussi à
-  `src/routes/(protected)/constructions/conversion/+page.svelte`).
-- API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul :
-  `requireAdmin`, prof en mode administration compris),
-  `[id]/duplicate/`, `[id]/preview/`, `[id]/versions/`, `favorites/`, `match/`, `stats/`.
-- Moteur de variables : `src/lib/templates/` (vérifié le 2026-10-13) — `templateVariables.ts`
-  (variables par déclencheur, `VARIABLES_BY_TRIGGER`), `templateEngine.ts` (`renderTemplate`,
-  `previewTemplate`, `validateTemplate`, placeholders `{{…}}`), `advancedEngine.ts` (blocs
-  `{{#if}}…{{/if}}`, filtres `{{var | filtre}}`, `TEMPLATE_FILTERS`) ; tests dans
-  `src/lib/templates/__tests__/`. Types `src/lib/types/messageTemplates.ts` ; validation
-  `src/lib/server/validation/message-templates.ts`. Sans rapport avec les modèles de chapitre.
+- **Plus aucun code** : les modèles de message ne servaient à aucun envoi (la page d'écriture
+  d'un message ne les lit pas). La page du prof a été retirée le 2026-11-25 (écarts E58 à E60),
+  puis le reste le 2026-11-26 : pages admin (`dashboard/admin/message-templates/`), routes
+  `api/messages/templates/`, store, moteur de variables (`templateEngine`, `advancedEngine`, `templateVariables`), composants
+  `FiltersHelp` et `VariableAutocomplete`, types et validation.
+- **Restent en base** : la table `message_templates`, ses tables liées (versions, favoris,
+  usages), ses règles d'accès et ses fonctions, couvertes par les tests d'intégration
+  (`tests/integration/database/template-triggers.test.ts`, entre autres). Rien de l'appli ne
+  les lit ni ne les écrit.
+- `TagsInput` (`src/lib/components/templates/`) sert à
+  `src/routes/(protected)/constructions/conversion/+page.svelte`. Sans rapport avec les modèles
+  de chapitre.
 
 ### Amitiés
 
@@ -222,7 +265,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 - `src/lib/server/student-inbox.ts` (`getStudentWorkInbox`) est la **boîte de travail** de
   l'élève : évaluations, exercices, fiches et Python à faire, rangés en cinq sections
-  (`late`, `thisWeek`, `later`, `noDeadline`, `doneRecently`). Rien à voir avec les messages.
+  (`late`, `thisWeek`, `later`, `noDeadline`, `doneRecently`). Une affectation d'exercice
+  `public` n'y figure pas (elle n'ouvre rien, cf. [exercices.md](exercices.md)). Rien à voir avec les messages.
   Composants `src/lib/components/student-inbox/` ; appelée par
   `src/routes/(protected)/dashboard/+page.server.ts` et `dashboard/student/work/+page.server.ts`.
 - `src/lib/stores/mentions.svelte.ts` et `hashtags.svelte.ts` alimentent les extensions
@@ -242,11 +286,19 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
    `get_allowed_recipients` et `search_private_messages`.
 3. **Un message de groupe** ne part que du prof ou de l'admin, vers une classe active
    (`validate_class_message_recipients`) ; la fonction remplace les destinataires par les élèves
-   de la classe. Test : `tests/integration/message-group-recipients.test.ts`.
+   de la classe (`get_students_in_class` : membres actifs d'une classe active). Une classe sans
+   élève actif est refusée, aucun message n'est créé (`20261126132310`, V132). Tests :
+   `tests/integration/message-group-recipients.test.ts`,
+   `tests/integration/messagerie-noms-et-classe.test.ts`.
 4. **Un fil ne montre que ses propres messages** : `get_message_thread` filtre sur
    expéditeur ou destinataire (`20260902102000_security_message_thread_filter.sql`, finding
    H12 : la réponse privée d'un élève fuitait vers ses camarades). Test :
    `tests/integration/security-message-thread.test.ts`.
+   4 bis. **Un élève ne lit pas l'identité des autres destinataires** (décision de David,
+   2026-11-26) : `get_message_details` ne rend la liste complète des destinataires qu'à
+   l'expéditeur du message et aux comptes prof ou admin ; tout autre destinataire n'y lit que sa
+   propre ligne, avec le nombre de destinataires (`20261126132310`). La page écrit « et N autres
+   destinataires ». Test : `tests/integration/messagerie-noms-et-classe.test.ts`.
 5. **On n'agit que sur sa boîte** : `update_message_status`, `move_message_to_folder`,
    `toggle_message_star`, `mark_message_as_read` refusent un autre `p_user_id`
    (`20261003190000_rpc_lot3_compte_autrui.sql`).
@@ -424,8 +476,7 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessageSchema`,
 `searchMessagesQuerySchema`, `restrictUserSchema`, `deleteMessageSchema`, `addWarningsBulkSchema`,
-`removeWarningsBulkSchema`, `createNotificationSchema`, `markNotificationReadSchema`, schémas de
-`message-templates.ts`. `reports/[id]/` porte son schéma en local (`reviewReportSchema`) ;
+`removeWarningsBulkSchema`, `createNotificationSchema`, `markNotificationReadSchema`. `reports/[id]/` porte son schéma en local (`reviewReportSchema`) ;
 `messages/[id]/context/` borne `count` à la main (1 à 50).
 
 ## Comment étendre
@@ -460,7 +511,7 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   `sent/__tests__/sent.test.ts`, `thread/__tests__/thread.test.ts` (le `GET` appelé avec l'adresse
   de la page et des lignes à la forme réelle des RPC).
 - Validation : `src/lib/server/validation/__tests__/warnings.test.ts`,
-  `message-templates.test.ts`, `rewards-messages-notifications.test.ts`.
+  `rewards-messages-notifications.test.ts`.
 - Client : `src/lib/stores/__tests__/notifications.test.ts`,
   `src/lib/utils/__tests__/sanitize-notification.test.ts`,
   `src/lib/components/student-inbox/__tests__/`,

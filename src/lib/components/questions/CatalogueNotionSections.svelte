@@ -6,10 +6,11 @@
 	défilent sur le côté et restent visibles en descendant ; un clic descend à
 	la section. Toutes les sous-notions sont dépliées l'une sous l'autre ; leurs
 	aperçus se calculent à l'approche (LazyCatalogueGallery). La page remonte
-	ce composant à chaque changement de notion (`{#key}`).
+	ce composant à chaque changement de notion (`{#key}`). `initialRubricId` :
+	sous-notion où descendre à l'arrivée (raccourci de la recherche).
 -->
 <script lang="ts">
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import LazyCatalogueGallery from '#lib/components/questions/LazyCatalogueGallery.svelte';
 	import type { CatalogueNotion, CatalogueRubric } from '#lib/questions/catalogue.ts';
 
@@ -21,7 +22,10 @@
 	// Écart toléré entre le haut de la section et sa place visée, en pixels
 	const SETTLE_TOLERANCE_PX = 8;
 
-	let { notion }: { notion: CatalogueNotion } = $props();
+	let {
+		notion,
+		initialRubricId = null
+	}: { notion: CatalogueNotion; initialRubricId?: string | null } = $props();
 
 	// Variables
 	// Sections montées d'office jusqu'à cet indice (pastille cliquée), -1 : aucune
@@ -97,6 +101,12 @@
 	}
 
 	$effect(() => () => stopSettling?.());
+
+	onMount(() => {
+		if (!initialRubricId) return;
+		const index = notion.rubrics.findIndex((rubric) => rubric.id === initialRubricId);
+		if (index >= 0) void goToSection(index);
+	});
 </script>
 
 <!-- tabindex -1 : la page y met le focus quand on choisit une notion (clavier, lecteur d'écran) -->

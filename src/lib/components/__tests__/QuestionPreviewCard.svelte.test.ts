@@ -107,3 +107,113 @@ describe('QuestionPreviewCard', () => {
 		expect(questionCart.getItem(TEMPLATE.id)?.delay).not.toBe(45);
 	});
 });
+
+/**
+ * Chantier `automaths`, PR A (phase 0 validée le 2026-11-26) : ligne fine
+ * au-dessus de la carte (niveaux à gauche, « ‹ 2/5 › » à droite), bouton de
+ * retournement de 32 px, carte 1,5 × plus haute.
+ */
+describe('QuestionPreviewCard — ligne des niveaux et des variations', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
+	async function renderWith(template: QuestionTemplate) {
+		const generatedFor = generateInstance(template, PREVIEW_SEED);
+		expect(generatedFor.success).toBe(true);
+		const main = document.body.appendChild(document.createElement('main'));
+		return await render(QuestionPreviewCard, {
+			target: main,
+			props: { template, preview: generatedFor.success ? generatedFor.instance : instance! }
+		});
+	}
+
+	function frontStatement(container: HTMLElement): string {
+		return container.querySelector('.flip-card-front .statement-content')?.textContent ?? '';
+	}
+
+	it('badge des niveaux au-dessus de la carte : « CM1–CM2 » pour des niveaux qui se suivent', async () => {
+		const screen = await renderWith({ ...TEMPLATE, grades: ['CM1', 'CM2'] });
+
+		const badge = screen.container.querySelector<HTMLElement>('[data-tile-grades]');
+		expect(badge?.textContent?.trim()).toBe('CM1–CM2');
+		// Au-dessus de la carte, pas dans l'intitulé
+		const card = screen.container.querySelector('.flip-card')!;
+		expect(badge!.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+		expect(screen.container.querySelector('[data-tile-heading] [data-tile-grades]')).toBeNull();
+	});
+
+	it('la difficulté reste dans l’intitulé, nommée « Difficulté »', async () => {
+		const screen = await renderTile();
+
+		await expect.element(screen.getByTitle('Difficulté')).toHaveTextContent(String(TEMPLATE.level));
+	});
+
+	it('deux variations : « k/2 », les flèches changent l’exemple sans toucher à Ma série', async () => {
+		const screen = await renderTile();
+		const start = instance!.selectedVariationIndex ?? 0;
+		const before = frontStatement(screen.container);
+
+		const counter = screen.container.querySelector<HTMLElement>('[data-tile-variations]');
+		expect(counter?.textContent).toContain(`${start + 1}/2`);
+
+		await page.getByRole('button', { name: 'Variation suivante' }).click();
+
+		await expect.poll(() => counter?.textContent).toContain(`${((start + 1) % 2) + 1}/2`);
+		expect(frontStatement(screen.container)).not.toBe(before);
+		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(false);
+
+		await page.getByRole('button', { name: 'Variation précédente' }).click();
+
+		await expect.poll(() => counter?.textContent).toContain(`${start + 1}/2`);
+		expect(frontStatement(screen.container)).toBe(before);
+	});
+
+	it('une seule variation : pas de flèches', async () => {
+		const screen = await renderWith({ ...TEMPLATE, variations: [TEMPLATE.variations[0]] });
+
+		expect(screen.container.querySelector('[data-tile-grades]')).not.toBeNull();
+		expect(screen.container.querySelector('[data-tile-variations]')).toBeNull();
+	});
+
+	it('bouton de retournement de 32 px', async () => {
+		await renderTile();
+
+		const flip = page.getByRole('button', { name: 'Voir la correction' }).first().element();
+		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		expect(flip.getBoundingClientRect().width).toBe(2 * rem);
+		expect(flip.getBoundingClientRect().height).toBe(2 * rem);
+	});
+});
+
+/** Chantier `automaths`, PR A : points de la revue (2026-11-26) */
+describe('QuestionPreviewCard — points de la revue', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
+	it('la tuile est un groupe nommé par le titre du modèle', async () => {
+		await renderTile();
+
+		const tile = page.getByRole('group', { name: TEMPLATE.title, exact: false });
+		await expect.element(tile).toBeInTheDocument();
+		await expect
+			.element(tile.getByRole('button', { name: 'Variation suivante' }))
+			.toBeInTheDocument();
+		await expect
+			.element(tile.getByRole('button', { name: 'Ajouter à ma série' }))
+			.toBeInTheDocument();
+	});
+
+	it('flèches des variations : zone de clic d’au moins 40 px', async () => {
+		await renderTile();
+
+		const arrow = page.getByRole('button', { name: 'Variation suivante' }).element();
+		const before = getComputedStyle(arrow, '::before');
+		const box = arrow.getBoundingClientRect();
+		const inset = -parseFloat(before.top);
+		expect(before.content).not.toBe('none');
+		expect(box.width + 2 * inset).toBeGreaterThanOrEqual(40);
+		expect(box.height + 2 * inset).toBeGreaterThanOrEqual(40);
+	});
+});

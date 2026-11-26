@@ -223,6 +223,122 @@ describe('Private Messaging Triggers', () => {
 
 			expect(searchIndex?.recipient_count).toBe(15);
 		});
+
+		// En prod, presque tous les élèves ont `full_name` vide (prénom et nom
+		// remplis) : le trigger doit se replier, sinon l'envoi échoue (V131).
+		describe('expéditeur sans nom complet', () => {
+			async function expediteurSansNomComplet(
+				prenom: string | null,
+				nom: string | null
+			): Promise<string> {
+				const sender = await TestData.profile().withRole('student').create();
+				const { data, error } = await serviceClient
+					.from('profiles')
+					.update({ full_name: null, firstname: prenom, lastname: nom })
+					.eq('id', sender.id)
+					.select('id, full_name');
+				expect(error).toBeNull();
+				expect(data).toEqual([{ id: sender.id, full_name: null }]);
+				return sender.id;
+			}
+
+			async function nomDansLIndex(senderId: string): Promise<string | undefined> {
+				const { data: message, error: erreurEnvoi } = await serviceClient
+					.from('private_messages')
+					.insert({
+						sender_id: senderId,
+						subject: 'Question',
+						content: { type: 'doc', content: [] },
+						plain_text: 'Bonjour',
+						recipient_count: 1
+					})
+					.select('id')
+					.single();
+				expect(erreurEnvoi).toBeNull();
+				expect(message).not.toBeNull();
+
+				const { data: ligne, error } = await serviceClient
+					.from('message_search_index')
+					.select('sender_name')
+					.eq('message_id', message!.id)
+					.single();
+				expect(error).toBeNull();
+				return ligne?.sender_name;
+			}
+
+			it("prénom et nom remplis : le message part, l'index porte « prénom nom »", async () => {
+				const senderId = await expediteurSansNomComplet('Camille', 'Fictif');
+				expect(await nomDansLIndex(senderId)).toBe('Camille Fictif');
+			});
+
+			it("prénom seul : l'index porte le prénom, sans espace en trop", async () => {
+				const senderId = await expediteurSansNomComplet('Camille', null);
+				expect(await nomDansLIndex(senderId)).toBe('Camille');
+			});
+
+			it('ni nom complet, ni prénom, ni nom : le message part quand même', async () => {
+				const senderId = await expediteurSansNomComplet(null, null);
+				expect(await nomDansLIndex(senderId)).toBe('Sans nom');
+			});
+
+			it("nom seul : l'index porte le nom, sans espace en trop", async () => {
+				const senderId = await expediteurSansNomComplet(null, 'Fictif');
+				expect(await nomDansLIndex(senderId)).toBe('Fictif');
+			});
+
+			// Le trigger joue aussi à la mise à jour (suppression côté expéditeur,
+			// correction) : le NOT NULL est vérifié avant le ON CONFLICT.
+			it('message modifié par un expéditeur sans nom complet : la mise à jour passe', async () => {
+				const senderId = await expediteurSansNomComplet('Camille', 'Fictif');
+				const { data: message } = await serviceClient
+					.from('private_messages')
+					.insert({
+						sender_id: senderId,
+						subject: 'Avant',
+						content: { type: 'doc', content: [] },
+						plain_text: 'Bonjour',
+						recipient_count: 1
+					})
+					.select('id')
+					.single();
+				expect(message).not.toBeNull();
+
+				const { data: avant } = await serviceClient
+					.from('message_search_index')
+					.select('subject_tsv')
+					.eq('message_id', message!.id)
+					.single();
+
+				const { data: modifies, error } = await serviceClient
+					.from('private_messages')
+					.update({ subject: 'Pythagore' })
+					.eq('id', message!.id)
+					.select('id');
+				expect(error).toBeNull();
+				expect(modifies).toHaveLength(1);
+
+				const { data: apres } = await serviceClient
+					.from('message_search_index')
+					.select('subject_tsv, sender_name')
+					.eq('message_id', message!.id)
+					.single();
+				expect(apres?.sender_name).toBe('Camille Fictif');
+				expect(String(apres?.subject_tsv)).toContain('pythagor');
+				expect(apres?.subject_tsv).not.toEqual(avant?.subject_tsv);
+			});
+
+			it("nom complet fait d'espaces : traité comme vide", async () => {
+				const senderId = await expediteurSansNomComplet('Camille', 'Fictif');
+				const { data, error } = await serviceClient
+					.from('profiles')
+					.update({ full_name: '   ' })
+					.eq('id', senderId)
+					.select('id');
+				expect(error).toBeNull();
+				expect(data).toHaveLength(1);
+				expect(await nomDansLIndex(senderId)).toBe('Camille Fictif');
+			});
+		});
 	});
 
 	describe('trigger_update_search_index_on_attachment', () => {

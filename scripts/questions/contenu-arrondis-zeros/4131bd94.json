@@ -1,0 +1,201 @@
+{
+	"id": "4131bd94-b19a-48b2-95a5-9716815df1a9",
+	"title": "Taux d'évolution entre deux années à partir des indices",
+	"description": "Calculer un taux d'évolution entre deux indices, sans confondre points et pourcentage",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					},
+					"expectedAnswer": "{{eval:round(1000*d/a)/10;a1}}"
+				}
+			],
+			"statement": "L'indice du prix de l'électricité, base $100$ en 2015, vaut ${{a}}$ en 2022 et ${{eval:a+d}}$ en 2024.\n\nCalcule le taux d'évolution du prix entre 2022 et 2024, en pourcentage arrondi au dixième.\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "104..125"
+				},
+				{
+					"name": "d",
+					"expression": "-12..18"
+				}
+			],
+			"conditions": ["d*d >= 9"],
+			"correction": {
+				"steps": [
+					"Le taux d'évolution entre deux années se calcule avec les indices comme avec les valeurs : $t=\\dfrac{I_2-I_1}{I_1}$. La différence $I_2-I_1$ est un écart en **points**, pas en pourcentage.",
+					"$t=\\dfrac{ {{eval:a+d}}-{{a}} }{ {{a}} }\\approx{{eval:round(10000*d/a)/10000;a4}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:round(1000*d/a)/10;a1}}}~\\%$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"statement": "L'indice du prix d'un service, base $100$ en 2015, passe de ${{a}}$ en 2022 à ${{eval:a+d}}$ en 2024.\n\nAffirmation : « Entre 2022 et 2024, le prix a augmenté de ${{eval:(1-s)*round(1000*d/a)/10+s*d;d}}~\\%$ (taux arrondi au dixième). »\n\nCette affirmation est…\n\n```choix\nmelanger: non\n- vraie\n- fausse\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "118..140"
+				},
+				{
+					"name": "d",
+					"expression": "8..20"
+				}
+			],
+			"conditions": ["d - 100*d/a >= 1.5"],
+			"correction": {
+				"steps": [
+					"Le taux d'évolution entre deux années se calcule avec les indices comme avec les valeurs : $t=\\dfrac{I_2-I_1}{I_1}$. La différence $I_2-I_1$ est un écart en **points**, pas en pourcentage.",
+					"$t=\\dfrac{ {{eval:a+d}}-{{a}} }{ {{a}} }\\approx{{eval:round(1000*d/a)/10;a1}}~\\%$.",
+					"{{if:s==0|L'affirmation est **vraie**.|L'affirmation est **fausse** : ${{d}}$ est l'écart en points, pas le taux d'évolution.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["10,0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "110",
+				"d": "11"
+			},
+			"description": "110 → 121 : 10,0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7,8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "115",
+				"d": "9"
+			},
+			"description": "115 → 124 : 7,8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "115",
+				"d": "9"
+			},
+			"description": "Erreur : écart en points (9)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "115",
+				"d": "9"
+			},
+			"description": "Erreur : I₂ − 100 (24)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "120",
+				"d": "-9"
+			},
+			"description": "120 → 111 : −7,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "120",
+				"d": "-9"
+			},
+			"description": "Erreur : signe perdu (7,5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "125",
+				"d": "10",
+				"s": "0"
+			},
+			"description": "taux juste annoncé : vraie",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "125",
+				"d": "10",
+				"s": "0"
+			},
+			"description": "taux juste annoncé : « fausse » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "125",
+				"d": "10",
+				"s": "1"
+			},
+			"description": "points annoncés : fausse",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "125",
+				"d": "10",
+				"s": "1"
+			},
+			"description": "points annoncés : « vraie » refusé",
+			"variationIndex": 1
+		}
+	]
+}

@@ -323,6 +323,28 @@ describe.each(TOUS)('$nom', ({ migration, modeles }) => {
 		}
 	);
 
+	// Seules les migrations écrites depuis le 2026-11-26 nomment le modèle absent : les plus
+	// anciennes, déjà jouées en prod, le sautent sans rien dire (le cas synthétique est toujours à jour).
+	it.skipIf(!readFileSync(migration, 'utf-8').includes('raise notice'))(
+		'modèle absent : sauté, et nommé par un notice',
+		async () => {
+			const [absent] = modeles;
+			const notices: string[] = [];
+			const ecouter = (n: { message?: string }) => notices.push(n.message ?? '');
+			pg.on('notice', ecouter);
+			try {
+				await enTransaction(async () => {
+					await poserEtatProd(pg, modeles);
+					await pg.query('delete from public.question_templates where id = $1', [absent.id]);
+					await pg.query(readFileSync(migration, 'utf-8'));
+				});
+			} finally {
+				pg.off('notice', ecouter);
+			}
+			expect(notices).toEqual([`${absent.id.slice(0, 8)} absent, saute`]);
+		}
+	);
+
 	it('modèles absents (base locale) : ne fait rien, sans erreur', async () => {
 		await enTransaction(async () => {
 			await pg.query('delete from public.question_templates where id = any($1::uuid[])', [

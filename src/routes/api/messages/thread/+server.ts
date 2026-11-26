@@ -78,7 +78,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					edited_at: row.edited_at,
 					parent_message_id: row.parent_message_id,
 					level: row.level,
-					attachments: detail.attachments
+					attachments: detail.attachments,
+					// Pour « Répondre » : à qui ce message a été écrit (un élève
+					// destinataire n'y lit que sa propre ligne)
+					recipients: detail.recipients
 				};
 			})
 		);

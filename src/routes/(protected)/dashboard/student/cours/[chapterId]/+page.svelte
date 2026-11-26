@@ -17,6 +17,7 @@
 
 	import { refreshAll } from '$app/navigation';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { studentExerciseHref } from '#lib/navigation/return-links.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		ChapterProgressIndicator,
@@ -154,7 +155,7 @@
 										<ResourceRow
 											title={item.title}
 											kind="exercise"
-											href="/dashboard/student/exercises/{item.exerciseId}"
+											href={studentExerciseHref(item.exerciseId, data.chapter.id)}
 										/>
 									{/if}
 								{/each}

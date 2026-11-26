@@ -1,5 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import {
+	ADMIN,
+	assertLocalServerEnv,
+	login,
+	sql,
+	TEACHER,
+	withFirstVersion
+} from './helpers/carnet';
 import {
 	createWorksheet,
 	pdfText,
@@ -378,7 +385,7 @@ test.describe('#2634 — La Tortue publique', () => {
 		await expect(page.locator(MESSAGE)).toHaveText('');
 	});
 
-	test('#2634 — « répéter 360 fois (avancer de 1, tourner à gauche de 1) » : animation d’environ 12 s, pas plus (écart WebKit de ~15,5 s mesuré sous Playwright, à confirmer sur un vrai iPhone)', async ({
+	test('#2634 — « répéter 360 fois (avancer de 1, tourner à gauche de 1) » : animation d’environ 12 s, pas plus (~15,5 s sous le WebKit de Playwright : E72, tranché le 2026-11-24)', async ({
 		page
 	}) => {
 		test.setTimeout(180_000);
@@ -394,14 +401,12 @@ test.describe('#2634 — La Tortue publique', () => {
 		// ⚠️ Un serveur de dev chargé (autres agents, builds) peut faire dériver ces durées : un rouge
 		// ici se rejoue SEUL, serveur au calme, avant d'être cru.
 		expect(secondes, `durée de l’animation : ${secondes} s`).toBeGreaterThan(10);
-		// ÉCART sous WebKit (iPhone, Safari) : 720 étapes à 16,7 ms par `setInterval` (`rythmeAnimation`,
+		// WebKit de Playwright (iPhone, Safari) : 720 étapes à 16,7 ms par `setInterval` (`rythmeAnimation`,
 		// `TortueBacASable.lancer`) ; WebKit rend la main moins vite que 16,7 ms et l'animation dure ~15,5 s.
-		// Chrome et Android : ~12,4 s. À confirmer au chronomètre sur un vrai iPhone.
-		if (['iphone', 'ordi-safari'].includes(projectName())) {
-			expect(secondes, 'WebKit : l’animation dépasse 14,5 s').toBeGreaterThan(14.5);
-			test.fail();
-		}
-		expect(secondes, `durée de l’animation : ${secondes} s`).toBeLessThan(14.5);
+		// Chrome et Android : ~12,4 s. David, le 2026-11-24 : rien à corriger sur cette mesure ; le
+		// chronométrage sur un vrai iPhone reste dans `docs/wip/verifications-manuelles.md` (#2634).
+		const plafond = ['iphone', 'ordi-safari'].includes(projectName()) ? 18 : 14.5;
+		expect(secondes, `durée de l’animation : ${secondes} s`).toBeLessThan(plafond);
 	});
 
 	test('#2634 — « Voir en Python » montre forward / left', async ({ page }) => {
@@ -797,8 +802,10 @@ const sourceExercices = (): string =>
 
 async function exercice(titre: string, enonce: string): Promise<{ id: string; title: string }> {
 	const rows = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			titre,
 			TEACHER_ID,

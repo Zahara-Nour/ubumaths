@@ -78,6 +78,12 @@ import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differe
 import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
 import {
+	centsZerosMeaningful,
+	roundingZerosVerdict,
+	writtenRoundedValue,
+	type RoundingZerosVerdict
+} from '#lib/questions/meaningful-zeros.ts';
+import {
 	ANSWER_TOO_COMPLEX_FEEDBACK,
 	isAnswerTooComplex
 } from '#lib/questions/answer-complexity.ts';
@@ -632,15 +638,16 @@ function numericalResult(
 				...(verdict.onlyRoundingMissing ? { onlyRoundingMissing: true } : {})
 			};
 		}
-		const correctRounded = roundToPrecision(correctNum, precision);
+		// Bonne réponse écrite avec les zéros de son arrondi (« 3,0 » au dixième)
+		const correctRounded = writtenRoundedValue(roundToPrecision(correctNum, precision), precision);
 		return {
 			isCorrect: verdict.isCorrect,
 			message: verdict.isCorrect ? 'Correct !' : 'Incorrect',
 			feedback: verdict.isCorrect
 				? undefined
 				: precision.type === 'decimal'
-					? `La réponse arrondie à ${precision.digits} décimales est ${correctRounded}`
-					: `La réponse avec ${precision.digits} chiffres significatifs est ${correctRounded}`
+					? `La réponse arrondie à ${precision.digits} ${precision.digits > 1 ? 'décimales' : 'décimale'} est ${correctRounded}`
+					: `La réponse avec ${precision.digits} ${precision.digits > 1 ? 'chiffres significatifs' : 'chiffre significatif'} est ${correctRounded}`
 		};
 	}
 
@@ -758,12 +765,21 @@ function checkSimpleNumberForm(
 	latex: string,
 	constraints: ConstraintOptions,
 	reading: FormulaReading = {},
-	allowFraction = false
+	allowFraction = false,
+	precision?: PrecisionType
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const severities = buildConstraintSeverities(constraints);
-	const formOptions = formOptionsOf(constraints, reading);
+	// Arrondi demandé : ses zéros finaux ne sont pas superflus (cf. questions/meaningful-zeros)
+	const roundingZeros = roundingZerosOf(latex, precision);
+	const formOptions = {
+		...formOptionsOf(constraints, reading),
+		...(roundingZeros.trailingZerosMeaningful && { meaningfulTrailingZeros: true })
+	};
 	const raw = cosmeticViolations(latex, severities, formOptions);
-	const { status, violations } = mapCosmeticViolations(raw, false);
+	const { status, violations } = withMissingRoundingZeros(
+		mapCosmeticViolations(raw, false),
+		roundingZeros
+	);
 
 	const isNumberWriting = allowFraction
 		? isNumberOrNumberFractionLatex(latex)
@@ -1064,6 +1080,39 @@ function withDurationFormIssue(
 	const worse: ValidationStatus =
 		issue.severity === 'error' ? 'bad_form' : status === 'correct' ? 'unoptimal_form' : status;
 	return { status: worse, violations: [violation, ...violations] };
+}
+
+/**
+ * Zéros finaux d'une réponse à arrondir (`precision` decimal / significant) :
+ * utiles ou manquants (cf. questions/meaningful-zeros). Autre précision : rien à dire.
+ */
+function roundingZerosOf(
+	latex: string,
+	precision: PrecisionType | undefined
+): RoundingZerosVerdict {
+	return precision?.type === 'decimal' || precision?.type === 'significant'
+		? roundingZerosVerdict(latex, precision)
+		: { trailingZerosMeaningful: false };
+}
+
+/**
+ * Arrondi juste, mais des décimales manquent (« 3 » au dixième de 3,04) : perfectible,
+ * avec le message de l'arrondi en tête (décision de l'auteur, 2026-11-26).
+ */
+function withMissingRoundingZeros(
+	form: {
+		status: ValidationStatus;
+		violations: NonNullable<ValidationResult['constraintViolations']>;
+	},
+	roundingZeros: RoundingZerosVerdict
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const feedback = roundingZeros.missingFeedback;
+	if (feedback === undefined) return form;
+	const violation = { constraint: 'rounding' as const, severity: 'warning' as const, feedback };
+	if (form.status === 'bad_form') {
+		return { status: form.status, violations: [...form.violations, violation] };
+	}
+	return { status: 'unoptimal_form', violations: [violation, ...form.violations] };
 }
 
 /** Message d'un résultat : celui d'une ERREUR s'il est refusé, jamais un avertissement */
@@ -1820,8 +1869,20 @@ function judgeSingleBlank(
 		const numericLatex =
 			studentValueLatex(effectiveLatex) ??
 			extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
-		const raw = cosmeticViolations(numericLatex, severities, formOptions);
-		const cosmetic = mapCosmeticViolations(raw, false);
+		// Zéros finaux utiles : arrondi demandé, ou centimes d'une somme en euros
+		// (cf. questions/meaningful-zeros)
+		const roundingZeros = roundingZerosOf(numericLatex, blank.precision);
+		const meaningfulTrailingZeros =
+			roundingZeros.trailingZerosMeaningful ||
+			centsZerosMeaningful(
+				numericLatex,
+				extractUnitFromLatex(normalizeStudentQuantity(effectiveLatex))
+			);
+		const raw = cosmeticViolations(numericLatex, severities, {
+			...formOptions,
+			...(meaningfulTrailingZeros && { meaningfulTrailingZeros: true })
+		});
+		const cosmetic = withMissingRoundingZeros(mapCosmeticViolations(raw, false), roundingZeros);
 		const { status, violations } = durationFormIssue
 			? withDurationFormIssue(cosmetic.status, cosmetic.violations, durationFormIssue)
 			: cosmetic;
@@ -1855,7 +1916,8 @@ function judgeSingleBlank(
 			effectiveLatex,
 			constraints,
 			reading,
-			allowsNumberFraction(blank)
+			allowsNumberFraction(blank),
+			blank.precision
 		);
 		return {
 			isCorrect: status !== 'bad_form',
@@ -2430,7 +2492,8 @@ function matchedAnswerForm(
 						blankLatex,
 						instance.options?.constraints ?? {},
 						reading,
-						allowsNumberFraction(blank)
+						allowsNumberFraction(blank),
+						blank.precision
 					)
 				: applyConstraints(
 						[userAnswer],

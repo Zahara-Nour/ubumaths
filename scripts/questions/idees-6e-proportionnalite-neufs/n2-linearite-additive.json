@@ -1,0 +1,428 @@
+{
+	"id": "057a1424-a50a-41d2-9164-a67e721d3f40",
+	"rangement": {
+		"noeud": "Proportionnalité > Situations de proportionnalité > quatrième proportionnelle",
+		"point": "6-191"
+	},
+	"title": "Résoudre un problème par la linéarité additive",
+	"description": "Deux prix donnés (n1 et n2 objets, de 2 à 9, ni l'un multiple de l'autre) : prix de n1 + n2 ou de n1 − n2 objets en additionnant ou soustrayant les prix, prix d'une fois et demie la quantité, nombre d'objets pour la somme des prix ; pièges : quantité ajoutée au prix, mauvaise opération",
+	"grades": ["6"],
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Tous les cahiers ont le même prix. ${{n1}}$ cahiers coûtent ${{eval:(n1*p/10)[€]}}$ et ${{n2}}$ cahiers coûtent ${{eval:(n2*p/10)[€]}}$.\n\nCombien coûtent ${{eval:n1+n2}}$ cahiers ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "2..9"
+				},
+				{
+					"name": "n2",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "11..35"
+				}
+			],
+			"conditions": ["mod(n1,n2)!=0", "mod(n2,n1)!=0", "mod(p,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n1+n2)*p/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n2*p/10+n1;d}}",
+							"message": "Tu as ajouté ${{n1}}~\\unit{€}$ : ${{n1}}$ cahiers de plus coûtent ${{eval:(n1*p/10)[€]}}$ de plus.",
+							"label": "Quantité ajoutée au prix"
+						},
+						{
+							"answer": "{{eval:abs(n2-n1)*p/10;d}}",
+							"message": "Tu as fait la différence des prix : c'est le prix de ${{eval:abs(n2-n1)}}$ cahiers. Pour ${{eval:n1+n2}}$ cahiers, additionne.",
+							"label": "Différence au lieu de somme"
+						},
+						{
+							"answer": "{{eval:n1*n2*p/10;d}}",
+							"message": "Tu as multiplié le prix de ${{n1}}$ cahiers par ${{n2}}$ : c'est le prix de ${{eval:n1*n2}}$ cahiers.",
+							"label": "Prix multiplié par la quantité"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Additionner deux lignes.** ${{eval:n1+n2}} = {{n1}} + {{n2}}$ : ${{eval:n1+n2}}$ cahiers, c'est ${{n1}}$ cahiers et encore ${{n2}}$ cahiers.",
+					"On additionne leurs prix : ${{if:mod(100*(n1*p/10),100)==0|{{eval:n1*p/10;d}}|{{eval:n1*p/10;d2}}}} + {{if:mod(100*(n2*p/10),100)==0|{{eval:n2*p/10;d}}|{{eval:n2*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:((n1+n2)*p/10)[€]}}}$."
+				]
+			},
+			"hint": "Écris ${{eval:n1+n2}}$ à l'aide des deux quantités de l'énoncé."
+		},
+		{
+			"statement": "Tous les bouteilles de jus ont le même prix. ${{n1}}$ bouteilles de jus coûtent ${{eval:(n1*p/10)[€]}}$ et ${{n2}}$ bouteilles de jus coûtent ${{eval:(n2*p/10)[€]}}$.\n\nCombien coûtent ${{eval:n1-n2}}$ bouteilles de jus ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "2..9"
+				},
+				{
+					"name": "n2",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "11..35"
+				}
+			],
+			"conditions": ["mod(n1,n2)!=0", "mod(n2,n1)!=0", "mod(p,10)!=0", "n1>n2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n1-n2)*p/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(n1+n2)*p/10;d}}",
+							"message": "Tu as additionné les prix : c'est le prix de ${{eval:n1+n2}}$ bouteilles. Pour ${{eval:n1-n2}}$ bouteilles, soustrais.",
+							"label": "Somme au lieu de différence"
+						},
+						{
+							"answer": "{{eval:n1*p/10-n2;d}}",
+							"message": "Tu as enlevé ${{n2}}~\\unit{€}$ : ${{n2}}$ bouteilles de moins coûtent ${{eval:(n2*p/10)[€]}}$ de moins.",
+							"label": "Quantité retirée du prix"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Soustraire deux lignes.** ${{eval:n1-n2}} = {{n1}} - {{n2}}$ : ${{eval:n1-n2}}$ bouteilles, c'est ${{n1}}$ bouteilles moins ${{n2}}$ bouteilles.",
+					"On soustrait leurs prix : ${{if:mod(100*(n1*p/10),100)==0|{{eval:n1*p/10;d}}|{{eval:n1*p/10;d2}}}} - {{if:mod(100*(n2*p/10),100)==0|{{eval:n2*p/10;d}}|{{eval:n2*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:((n1-n2)*p/10)[€]}}}$."
+				]
+			},
+			"hint": "Écris ${{eval:n1-n2}}$ à l'aide des deux quantités de l'énoncé."
+		},
+		{
+			"statement": "Tous les paquets de gâteaux ont le même prix. ${{n}}$ paquets coûtent ${{eval:(n*p/10)[€]}}$.\n\nCombien coûtent ${{eval:3*n/2}}$ paquets ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|6|8"
+				},
+				{
+					"name": "p",
+					"expression": "11..35"
+				}
+			],
+			"conditions": ["mod(p,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*n*p/20;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n*p/20;d}}",
+							"message": "C'est le prix de ${{eval:n/2}}$ paquets : il faut aussi ajouter le prix des ${{n}}$ premiers.",
+							"label": "Moitié seulement"
+						},
+						{
+							"answer": "{{eval:n*p/10+n/2;d}}",
+							"message": "Tu as ajouté ${{eval:n/2}}~\\unit{€}$ : ${{eval:n/2}}$ paquets de plus coûtent la moitié de ${{eval:(n*p/10)[€]}}$ de plus.",
+							"label": "Quantité ajoutée au prix"
+						},
+						{
+							"answer": "{{eval:3*n*n*p/20;d}}",
+							"message": "Tu as multiplié le prix de ${{n}}$ paquets par ${{eval:3*n/2}}$ : c'est le prix de ${{n}} \\times {{eval:3*n/2}}$ paquets.",
+							"label": "Prix multiplié par la quantité"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une fois et demie.** ${{eval:3*n/2}} = {{n}} + {{eval:n/2}}$, et ${{eval:n/2}}$ est la moitié de ${{n}}$ : ${{eval:n/2}}$ paquets coûtent la moitié de ${{eval:(n*p/10)[€]}}$, soit ${{eval:(n*p/20)[€]}}$.",
+					"On additionne : ${{if:mod(100*(n*p/10),100)==0|{{eval:n*p/10;d}}|{{eval:n*p/10;d2}}}} + {{if:mod(100*(n*p/20),100)==0|{{eval:n*p/20;d}}|{{eval:n*p/20;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(3*n*p/20)[€]}}}$."
+				]
+			},
+			"hint": "Écris ${{eval:3*n/2}}$ comme ${{n}}$ plus un autre nombre : lequel ?"
+		},
+		{
+			"statement": "Tous les cahiers ont le même prix. ${{n1}}$ cahiers coûtent ${{eval:(n1*p/10)[€]}}$ et ${{n2}}$ cahiers coûtent ${{eval:(n2*p/10)[€]}}$.\n\nCombien de cahiers peut-on acheter avec ${{eval:((n1+n2)*p/10)[€]}}$ ?\n\n$$?~\\text{ cahiers}$$",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "2..9"
+				},
+				{
+					"name": "n2",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "11..35"
+				}
+			],
+			"conditions": ["mod(n1,n2)!=0", "mod(n2,n1)!=0", "mod(p,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n1+n2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:abs(n1-n2)}}",
+							"message": "Tu as fait la différence des quantités : regarde comment obtenir ${{eval:(n1+n2)*p/10;d}}$ à partir des deux prix.",
+							"label": "Différence des quantités"
+						},
+						{
+							"answer": "{{eval:n1*n2}}",
+							"message": "Tu as multiplié les quantités : regarde comment obtenir ${{eval:(n1+n2)*p/10;d}}$ à partir des deux prix.",
+							"label": "Produit des quantités"
+						},
+						{
+							"answer": "{{eval:(n1+n2)*p/10;d}}",
+							"message": "C'est la somme dont on dispose, en euros : la question demande un nombre de cahiers.",
+							"label": "Prix recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Additionner deux lignes.** ${{if:mod(100*(n1*p/10),100)==0|{{eval:n1*p/10;d}}|{{eval:n1*p/10;d2}}}} + {{if:mod(100*(n2*p/10),100)==0|{{eval:n2*p/10;d}}|{{eval:n2*p/10;d2}}}} = {{if:mod(100*((n1+n2)*p/10),100)==0|{{eval:(n1+n2)*p/10;d}}|{{eval:(n1+n2)*p/10;d2}}}}$ : avec ${{eval:((n1+n2)*p/10)[€]}}$, on paie ${{n1}}$ cahiers et encore ${{n2}}$ cahiers.",
+					"On peut donc acheter ${{n1}} + {{n2}} = \\textcolor{{{color:primary.0}}}{{{eval:n1+n2}}}$ cahiers."
+				]
+			},
+			"hint": "Compare la somme dont on dispose aux deux prix de l'énoncé."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Somme : 3 → 4,50, 5 → 7,50 ; 8 → 12",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Somme : 12,00 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12{,}00"]
+		},
+		{
+			"description": "Somme : 7,50 + 3 (10,5)",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.50~\\unit{€}$ de plus."
+			},
+			"answers": ["10{,}5"]
+		},
+		{
+			"description": "Somme : différence (3)",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait la différence des prix : c'est le prix de $2$ cahiers. Pour $8$ cahiers, additionne."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Somme : 4,50 × 5 (22,5)",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le prix de $3$ cahiers par $5$ : c'est le prix de $15$ cahiers."
+			},
+			"answers": ["22{,}5"]
+		},
+		{
+			"description": "Différence : 7 → 10,50, 3 → 4,50 ; 4 → 6",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "7",
+				"n2": "3",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Différence : somme (15)",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "7",
+				"n2": "3",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les prix : c'est le prix de $10$ bouteilles. Pour $4$ bouteilles, soustrais."
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "Différence : 10,50 − 3 (7,5)",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "7",
+				"n2": "3",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as enlevé $3~\\unit{€}$ : $3$ bouteilles de moins coûtent $4.50~\\unit{€}$ de moins."
+			},
+			"answers": ["7{,}5"]
+		},
+		{
+			"description": "Une fois et demie : 6 → 9 ; 9 → 13,5",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["13{,}5"]
+		},
+		{
+			"description": "Une fois et demie : 13,50 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["13{,}50"]
+		},
+		{
+			"description": "Une fois et demie : moitié (4,5)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix de $3$ paquets : il faut aussi ajouter le prix des $6$ premiers."
+			},
+			"answers": ["4{,}5"]
+		},
+		{
+			"description": "Une fois et demie : 9 + 3 (12)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $3~\\unit{€}$ : $3$ paquets de plus coûtent la moitié de $9~\\unit{€}$ de plus."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Une fois et demie : 9 × 9 (81)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le prix de $6$ paquets par $9$ : c'est le prix de $6 \\times 9$ paquets."
+			},
+			"answers": ["81"]
+		},
+		{
+			"description": "Inverse : 12 € → 8 cahiers",
+			"variationIndex": 3,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "Inverse : différence (2)",
+			"variationIndex": 3,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait la différence des quantités : regarde comment obtenir $12$ à partir des deux prix."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Inverse : produit (15)",
+			"variationIndex": 3,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les quantités : regarde comment obtenir $12$ à partir des deux prix."
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "Inverse : prix recopié (20)",
+			"variationIndex": 3,
+			"variables": {
+				"n1": "3",
+				"n2": "5",
+				"p": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la somme dont on dispose, en euros : la question demande un nombre de cahiers."
+			},
+			"answers": ["20"]
+		}
+	]
+}

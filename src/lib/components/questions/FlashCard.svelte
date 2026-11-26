@@ -104,6 +104,8 @@
 		showHint?: boolean;
 		/** Coup de pouce ouvert (une fois par question) */
 		onHintOpen?: () => void;
+		/** Bouton de retournement réduit à 32 px (tuiles du catalogue et de Ma série) */
+		compactFlip?: boolean;
 	}
 
 	let {
@@ -122,7 +124,8 @@
 		startFlipped = false,
 		flipOnSubmit = false,
 		showHint = false,
-		onHintOpen
+		onHintOpen,
+		compactFlip = false
 	}: Props = $props();
 
 	// Mots cliquables dans l'énoncé du recto ; le verso n'en a aucun (R2, `LexiconOff`)
@@ -399,7 +402,13 @@
 	};
 </script>
 
-<div class={cn('question-display-wrapper mx-auto w-full', sizeClasses[size])}>
+<div
+	class={cn(
+		'question-display-wrapper mx-auto w-full',
+		sizeClasses[size],
+		compactFlip && 'compact-flip'
+	)}
+>
 	<FlipCard bind:flipped={isFlipped} {height}>
 		{#snippet front()}
 			<div class="face relative h-full">
@@ -804,5 +813,23 @@
 			bottom: calc(0.75rem * var(--font-scale, 1));
 			right: calc(0.75rem * var(--font-scale, 1));
 		}
+	}
+
+	/* Tuiles (catalogue, Ma série) : bouton de 32 px, à toutes les largeurs.
+	   Après la règle du téléphone, pour la remplacer aussi sous 640 px. */
+	.compact-flip .flip-button {
+		width: calc(2rem * var(--font-scale, 1));
+		height: calc(2rem * var(--font-scale, 1));
+		bottom: calc(0.5rem * var(--font-scale, 1));
+		right: calc(0.5rem * var(--font-scale, 1));
+	}
+
+	.compact-flip .flip-button :global(svg) {
+		width: calc(1rem * var(--font-scale, 1));
+		height: calc(1rem * var(--font-scale, 1));
+	}
+
+	.compact-flip .face :global(.face-card.reserve-bouton) {
+		padding-bottom: calc(2.75rem * var(--font-scale, 1));
 	}
 </style>

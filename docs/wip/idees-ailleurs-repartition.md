@@ -32,18 +32,18 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 
 ### Spécialité
 
-| Rubrique                          | Codes | Exercices | État                 | Sujet / session           |
-| --------------------------------- | ----- | --------- | -------------------- | ------------------------- |
-| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`        |
-| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre`  |
-| Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
-| Variations                        | 1AN2  | 5         | prise (2026-11-26)   | `idees-1re-variations`    |
-| Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle` |
-| Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`         |
-| Produit scalaire                  | 1G1   | 10        | libre                |                           |
-| Géométrie repérée                 | 1G2   | 5         | libre                |                           |
-| Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`   |
-| Variables aléatoires réelles      | 1P2   | 1         | libre                |                           |
+| Rubrique                          | Codes | Exercices | État                 | Sujet / session              |
+| --------------------------------- | ----- | --------- | -------------------- | ---------------------------- |
+| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`           |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre`     |
+| Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`       |
+| Variations                        | 1AN2  | 5         | publiée (2026-11-26) | `idees-1re-variations`       |
+| Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle`    |
+| Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`            |
+| Produit scalaire                  | 1G1   | 10        | prise (2026-11-26)   | `idees-1re-produit-scalaire` |
+| Géométrie repérée                 | 1G2   | 5         | libre                |                              |
+| Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`      |
+| Variables aléatoires réelles      | 1P2   | 1         | libre                |                              |
 
 ### Automatismes de l'épreuve anticipée
 
@@ -77,7 +77,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Primitives et équations différentielles                                        | TSA7        | 7         | publiée (2026-11-25) | `idees-tle-integration`             |
 | Intégration                                                                    | TSA8        | 5         | publiée (2026-11-25) | `idees-tle-integration`             |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | publiée (2026-11-26) | `idees-tle-continuite-combinatoire` |
-| Géométrie dans l'espace                                                        | TSG2        | 26        | prise (2026-11-26)   | `idees-tle-geometrie-espace`        |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | publiée (2026-11-26) | `idees-tle-geometrie-espace`        |
 | Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`                  |
 
 ### Maths expertes
@@ -91,9 +91,9 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 
 ### Technologique
 
-| Rubrique | Codes | Exercices | État  | Sujet / session |
-| -------- | ----- | --------- | ----- | --------------- |
-| Analyse  | TTE   | 12        | libre |                 |
+| Rubrique | Codes | Exercices | État                 | Sujet / session            |
+| -------- | ----- | --------- | -------------------- | -------------------------- |
+| Analyse  | TTE   | 12        | phase 0 (2026-11-26) | `idees-tle-techno-analyse` |
 
 ## Sixième
 
@@ -123,7 +123,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Espace                             | 6G8   | 4         | libre                |                             |
 | Organisation et gestion de données | 6P1   | 6         | libre                |                             |
 | Probabilités                       | 6P2   | 3         | libre                |                             |
-| Proportionnalité                   | 6P3   | 16        | prise (2026-11-25)   | `idees-6e-proportionnalite` |
+| Proportionnalité                   | 6P3   | 16        | publiée (2026-11-26) | `idees-6e-proportionnalite` |
 | Pensée informatique                | 6I1   | 10        | libre                |                             |
 
 ## Troisième
@@ -139,9 +139,9 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral`   |
 | Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
 | Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
-| Proportionnalité                         | 3P1       | 3         | libre                                                      |                              |
+| Proportionnalité                         | 3P1       | 3         | prise (2026-11-26)                                         | `idees-3e-proportionnalite`  |
 | Statistiques                             | 3S1       | 3         | libre                                                      |                              |
-| Probabilités                             | 3S2       | 5         | prise (2026-11-25)                                         | `idees-3e-probabilites`      |
+| Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
 | Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
@@ -160,33 +160,41 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| b28ed4fa Deux épreuves                                       | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| 2b382069 Intervalles où f est croissante, f′ trinôme         | `idees-1re-variations`                                      | 2026-11-26 |                                      |
-| e73b947f Probabilité d'un évènement                          | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| 247fddd1 Évènement contraire                                 | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| e0ccaf84 Résoudre un petit exercice de proportionnalité      | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 7981dab0 Repérer double, moitié, quadruple, quart et tiers   | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 52bf3fb9 Calculer la longueur réelle                         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 5e4e5e9d Calculer la longueur sur une carte                  | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 06df72fd Reconnaître des situations de proportionnalité      | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
-| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                        | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| --------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 52b884ee Résoudre une équation aˣ = b ou xᵃ = b avec log        | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| 10bd7075 Résoudre une inéquation aˣ < b ou xᵃ < b avec log      | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| af24839d Transformer des expressions avec le logarithme décimal | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| dc269779 Logarithme décimal : définition                        | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| f84e23a3 Calculer un taux d'évolution moyen                     | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| 94b1dbf6 Courbe de x ↦ aˣ sur ℝ                                 | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| f6805041 Sens de variation de x ↦ k·aˣ                          | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| ccb51039 Augmentation et coefficient multiplicateur             | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 76f5f143 Diminution et coefficient multiplicateur               | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 8b59ca4b Coefficient multiplicateur d'une évolution répétée     | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| b73923a1 Choisir la méthode dans une figure usuelle             | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 9c7f7ef0 Produit scalaire par projection orthogonale            | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| d787d8c0 Produit scalaire avec les normes                       | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| fe407c88 Produit scalaire avec les coordonnées                  | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| f2cc01fc Orthogonaux ou non ?                                   | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 6058963e Produit scalaire : résoudre un problème géométrique    | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| bf5dadf6 Angle de deux vecteurs                                 | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 04b1cc7f Puissance d'un produit                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ?    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 

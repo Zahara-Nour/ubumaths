@@ -1,0 +1,574 @@
+{
+	"id": "f114cc04-91c1-45e7-ab55-5c51340ec1e9",
+	"rangement": {
+		"noeud": "Géométrie > Produit scalaire > expressions du produit scalaire",
+		"point": "1SPE-412"
+	},
+	"title": "Produit scalaire dans un parallélogramme",
+	"description": "Calculer le produit scalaire de deux côtés d'un parallélogramme avec l'angle en A (degrés ou radians) : même origine, angle supplémentaire, vecteurs égaux ou opposés",
+	"grades": ["1_SPE"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "$ABCD$ est un parallélogramme tel que $AB={{b}}$, $AD={{a}}$ et $\\widehat{BAD}={{t}}^\\circ$.\n\n```figure\nfenetre: -1 ; {{eval:round(100*(b+Xd+1))/100;d}} ; -1 ; {{eval:round(100*(Yd+1))/100;d}}\ntaille: moyenne\ndescription: Parallélogramme ABCD ; l'angle en A est marqué.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{b}}, 0, etiquette=\"bas-droite\")\nD = point({{eval:round(100*(Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-gauche\")\nC = point({{eval:round(100*(b+Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-droite\")\npolygone(A, B, C, D)\nangle(B, A, D)\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AD}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "4..8"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:30+15*j"
+				},
+				{
+					"name": "R",
+					"expression": "eval:a*b*cos(t*\\pi/180)"
+				},
+				{
+					"name": "Xd",
+					"expression": "{{eval:round(1000*a*cos(t*\\pi/180))/1000}}"
+				},
+				{
+					"name": "Yd",
+					"expression": "{{eval:round(1000*a*sin(t*\\pi/180))/1000}}"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*b}}",
+							"message": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs.",
+							"label": "Cosinus oublié"
+						},
+						{
+							"answer": "{{eval:a*b*sin(t*\\pi/180)}}",
+							"message": "Le produit scalaire utilise le cosinus de l'angle, pas son sinus.",
+							"label": "Sinus au lieu du cosinus"
+						},
+						{
+							"answer": "{{eval:-R}}",
+							"message": "Les deux vecteurs partent de $A$ : l'angle est $\\widehat{BAD}$, aigu, et son cosinus est positif.",
+							"label": "Signe faux"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=AB\\times AD\\times\\cos\\widehat{BAD}={{b}}\\times {{a}}\\times\\cos {{t}}^\\circ$.",
+					"$\\cos {{t}}^\\circ={{if:j==0|\\dfrac{\\sqrt{3}}{2}}}{{if:j==1|\\dfrac{\\sqrt{2}}{2}}}{{if:j==2|\\dfrac{1}{2}}}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=\\textcolor{{{color:primary.0}}}{ {{R}} }$."
+				]
+			},
+			"hint": "$\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})$ : l'angle est celui des deux vecteurs placés au même point."
+		},
+		{
+			"statement": "$ABCD$ est un parallélogramme tel que $AB={{b}}$, $AD={{a}}$ et $\\widehat{BAD}={{t}}^\\circ$.\n\n```figure\nfenetre: -1 ; {{eval:round(100*(b+Xd+1))/100;d}} ; -1 ; {{eval:round(100*(Yd+1))/100;d}}\ntaille: moyenne\ndescription: Parallélogramme ABCD ; l'angle en A est marqué.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{b}}, 0, etiquette=\"bas-droite\")\nD = point({{eval:round(100*(Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-gauche\")\nC = point({{eval:round(100*(b+Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-droite\")\npolygone(A, B, C, D)\nangle(B, A, D)\n```\n\nCalcule le produit scalaire ${{if:w==0|\\overrightarrow{BA}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{DA}\\cdot\\overrightarrow{DC}}}$. Donne sa valeur exacte.\n\n${{if:w==0|\\overrightarrow{BA}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{DA}\\cdot\\overrightarrow{DC}}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "4..8"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:30+15*j"
+				},
+				{
+					"name": "R",
+					"expression": "eval:a*b*cos(t*\\pi/180)"
+				},
+				{
+					"name": "Xd",
+					"expression": "{{eval:round(1000*a*cos(t*\\pi/180))/1000}}"
+				},
+				{
+					"name": "Yd",
+					"expression": "{{eval:round(1000*a*sin(t*\\pi/180))/1000}}"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{R}}",
+							"message": "Les vecteurs partent de ce sommet : l'angle à prendre est celui du sommet, supplémentaire de $\\widehat{BAD}$ (deux angles consécutifs d'un parallélogramme).",
+							"label": "Angle en A pris"
+						},
+						{
+							"answer": "{{eval:a*b}}",
+							"message": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs.",
+							"label": "Cosinus oublié"
+						},
+						{
+							"answer": "{{eval:-a*b*sin(t*\\pi/180)}}",
+							"message": "Le produit scalaire utilise le cosinus de l'angle, pas son sinus.",
+							"label": "Sinus au lieu du cosinus"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux vecteurs partent du même sommet : l'angle est ${{if:w==0|\\widehat{ABC}}}{{if:w==1|\\widehat{ADC}}}$.",
+					"Deux angles consécutifs d'un parallélogramme sont supplémentaires : ${{if:w==0|\\widehat{ABC}}}{{if:w==1|\\widehat{ADC}}}=180^\\circ-{{t}}^\\circ={{eval:180-t}}^\\circ$.",
+					"${{if:w==0|\\overrightarrow{BA}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{DA}\\cdot\\overrightarrow{DC}}}={{b}}\\times {{a}}\\times\\cos {{eval:180-t}}^\\circ={{b}}\\times {{a}}\\times\\left(-{{if:j==0|\\dfrac{\\sqrt{3}}{2}}}{{if:j==1|\\dfrac{\\sqrt{2}}{2}}}{{if:j==2|\\dfrac{1}{2}}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:-R}} }$."
+				]
+			},
+			"hint": "Dans un parallélogramme, deux angles consécutifs sont supplémentaires : $\\widehat{ABC}=180^\\circ-\\widehat{BAD}$."
+		},
+		{
+			"statement": "$ABCD$ est un parallélogramme tel que $AB={{b}}$, $AD={{a}}$ et $\\widehat{BAD}={{t}}^\\circ$.\n\n```figure\nfenetre: -1 ; {{eval:round(100*(b+Xd+1))/100;d}} ; -1 ; {{eval:round(100*(Yd+1))/100;d}}\ntaille: moyenne\ndescription: Parallélogramme ABCD ; l'angle en A est marqué.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{b}}, 0, etiquette=\"bas-droite\")\nD = point({{eval:round(100*(Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-gauche\")\nC = point({{eval:round(100*(b+Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-droite\")\npolygone(A, B, C, D)\nangle(B, A, D)\n```\n\nCalcule le produit scalaire ${{if:w==0|\\overrightarrow{AB}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{AB}\\cdot\\overrightarrow{CB}}}{{if:w==2|\\overrightarrow{AD}\\cdot\\overrightarrow{DC}}}{{if:w==3|\\overrightarrow{CD}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}\\cdot\\overrightarrow{BA}}}{{if:w==5|\\overrightarrow{BA}\\cdot\\overrightarrow{AD}}}$. Donne sa valeur exacte.\n\n${{if:w==0|\\overrightarrow{AB}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{AB}\\cdot\\overrightarrow{CB}}}{{if:w==2|\\overrightarrow{AD}\\cdot\\overrightarrow{DC}}}{{if:w==3|\\overrightarrow{CD}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}\\cdot\\overrightarrow{BA}}}{{if:w==5|\\overrightarrow{BA}\\cdot\\overrightarrow{AD}}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "4..8"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:30+15*j"
+				},
+				{
+					"name": "R",
+					"expression": "eval:a*b*cos(t*\\pi/180)"
+				},
+				{
+					"name": "Xd",
+					"expression": "{{eval:round(1000*a*cos(t*\\pi/180))/1000}}"
+				},
+				{
+					"name": "Yd",
+					"expression": "{{eval:round(1000*a*sin(t*\\pi/180))/1000}}"
+				},
+				{
+					"name": "w",
+					"expression": "0..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(-1)^w"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-s*R}}",
+							"message": "Remplace chaque vecteur par un vecteur égal qui part de $A$ : un vecteur dans l'autre sens change le signe.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:s*a*b}}",
+							"message": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs.",
+							"label": "Cosinus oublié"
+						},
+						{
+							"answer": "{{eval:s*a*b*sin(t*\\pi/180)}}",
+							"message": "Le produit scalaire utilise le cosinus de l'angle, pas son sinus.",
+							"label": "Sinus au lieu du cosinus"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le parallélogramme, ${{if:w==0|\\overrightarrow{BC}=\\overrightarrow{AD}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==1|\\overrightarrow{CB}=-\\overrightarrow{AD}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{CB}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==2|\\overrightarrow{DC}=\\overrightarrow{AB}$, donc $\\overrightarrow{AD}\\cdot\\overrightarrow{DC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==3|\\overrightarrow{CD}=-\\overrightarrow{AB}$, donc $\\overrightarrow{CD}\\cdot\\overrightarrow{AD}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}=-\\overrightarrow{AD}$ et $\\overrightarrow{BA}=-\\overrightarrow{AB}$, donc $\\overrightarrow{DA}\\cdot\\overrightarrow{BA}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==5|\\overrightarrow{BA}=-\\overrightarrow{AB}$, donc $\\overrightarrow{BA}\\cdot\\overrightarrow{AD}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=AB\\times AD\\times\\cos\\widehat{BAD}={{b}}\\times {{a}}\\times {{if:j==0|\\dfrac{\\sqrt{3}}{2}}}{{if:j==1|\\dfrac{\\sqrt{2}}{2}}}{{if:j==2|\\dfrac{1}{2}}}={{R}}$.",
+					"${{if:w==0|\\overrightarrow{AB}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{AB}\\cdot\\overrightarrow{CB}}}{{if:w==2|\\overrightarrow{AD}\\cdot\\overrightarrow{DC}}}{{if:w==3|\\overrightarrow{CD}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}\\cdot\\overrightarrow{BA}}}{{if:w==5|\\overrightarrow{BA}\\cdot\\overrightarrow{AD}}}=\\textcolor{{{color:primary.0}}}{ {{eval:s*R}} }$."
+				]
+			},
+			"hint": "Dans le parallélogramme, $\\overrightarrow{BC}=\\overrightarrow{AD}$ et $\\overrightarrow{DC}=\\overrightarrow{AB}$ : remplace chaque vecteur par un vecteur égal qui part de $A$."
+		},
+		{
+			"statement": "$ABCD$ est un parallélogramme tel que $AB={{b}}$, $AD={{a}}$ et $\\widehat{BAD}={{if:j==0|\\dfrac{\\pi}{6}}}{{if:j==1|\\dfrac{\\pi}{4}}}{{if:j==2|\\dfrac{\\pi}{3}}}$.\n\n```figure\nfenetre: -1 ; {{eval:round(100*(b+Xd+1))/100;d}} ; -1 ; {{eval:round(100*(Yd+1))/100;d}}\ntaille: moyenne\ndescription: Parallélogramme ABCD ; l'angle en A est marqué.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{b}}, 0, etiquette=\"bas-droite\")\nD = point({{eval:round(100*(Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-gauche\")\nC = point({{eval:round(100*(b+Xd))/100;d}}, {{eval:round(100*(Yd))/100;d}}, etiquette=\"haut-droite\")\npolygone(A, B, C, D)\nangle(B, A, D)\n```\n\nCalcule le produit scalaire ${{if:w==0|\\overrightarrow{AB}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{AB}\\cdot\\overrightarrow{CB}}}{{if:w==2|\\overrightarrow{AD}\\cdot\\overrightarrow{DC}}}{{if:w==3|\\overrightarrow{CD}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}\\cdot\\overrightarrow{BA}}}{{if:w==5|\\overrightarrow{BA}\\cdot\\overrightarrow{AD}}}$. Donne sa valeur exacte.\n\n${{if:w==0|\\overrightarrow{AB}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{AB}\\cdot\\overrightarrow{CB}}}{{if:w==2|\\overrightarrow{AD}\\cdot\\overrightarrow{DC}}}{{if:w==3|\\overrightarrow{CD}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}\\cdot\\overrightarrow{BA}}}{{if:w==5|\\overrightarrow{BA}\\cdot\\overrightarrow{AD}}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "4..8"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:30+15*j"
+				},
+				{
+					"name": "R",
+					"expression": "eval:a*b*cos(t*\\pi/180)"
+				},
+				{
+					"name": "Xd",
+					"expression": "{{eval:round(1000*a*cos(t*\\pi/180))/1000}}"
+				},
+				{
+					"name": "Yd",
+					"expression": "{{eval:round(1000*a*sin(t*\\pi/180))/1000}}"
+				},
+				{
+					"name": "w",
+					"expression": "0..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(-1)^w"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-s*R}}",
+							"message": "Remplace chaque vecteur par un vecteur égal qui part de $A$ : un vecteur dans l'autre sens change le signe.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:s*a*b}}",
+							"message": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs.",
+							"label": "Cosinus oublié"
+						},
+						{
+							"answer": "{{eval:s*a*b*sin(t*\\pi/180)}}",
+							"message": "Le produit scalaire utilise le cosinus de l'angle, pas son sinus.",
+							"label": "Sinus au lieu du cosinus"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le parallélogramme, ${{if:w==0|\\overrightarrow{BC}=\\overrightarrow{AD}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==1|\\overrightarrow{CB}=-\\overrightarrow{AD}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{CB}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==2|\\overrightarrow{DC}=\\overrightarrow{AB}$, donc $\\overrightarrow{AD}\\cdot\\overrightarrow{DC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==3|\\overrightarrow{CD}=-\\overrightarrow{AB}$, donc $\\overrightarrow{CD}\\cdot\\overrightarrow{AD}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}=-\\overrightarrow{AD}$ et $\\overrightarrow{BA}=-\\overrightarrow{AB}$, donc $\\overrightarrow{DA}\\cdot\\overrightarrow{BA}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}{{if:w==5|\\overrightarrow{BA}=-\\overrightarrow{AB}$, donc $\\overrightarrow{BA}\\cdot\\overrightarrow{AD}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AD}}}$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=AB\\times AD\\times\\cos\\widehat{BAD}={{b}}\\times {{a}}\\times {{if:j==0|\\dfrac{\\sqrt{3}}{2}}}{{if:j==1|\\dfrac{\\sqrt{2}}{2}}}{{if:j==2|\\dfrac{1}{2}}}={{R}}$.",
+					"${{if:w==0|\\overrightarrow{AB}\\cdot\\overrightarrow{BC}}}{{if:w==1|\\overrightarrow{AB}\\cdot\\overrightarrow{CB}}}{{if:w==2|\\overrightarrow{AD}\\cdot\\overrightarrow{DC}}}{{if:w==3|\\overrightarrow{CD}\\cdot\\overrightarrow{AD}}}{{if:w==4|\\overrightarrow{DA}\\cdot\\overrightarrow{BA}}}{{if:w==5|\\overrightarrow{BA}\\cdot\\overrightarrow{AD}}}=\\textcolor{{{color:primary.0}}}{ {{eval:s*R}} }$."
+				]
+			},
+			"hint": "Dans le parallélogramme, $\\overrightarrow{BC}=\\overrightarrow{AD}$ et $\\overrightarrow{DC}=\\overrightarrow{AB}$ : remplace chaque vecteur par un vecteur égal qui part de $A$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB = 5, AD = 3, 30° : 15√3/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{15\\sqrt{3}}{2}"]
+		},
+		{
+			"description": "cosinus oublié : 15",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs."
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "sinus : 15/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le produit scalaire utilise le cosinus de l'angle, pas son sinus."
+			},
+			"answers": ["\\frac{15}{2}"]
+		},
+		{
+			"description": "signe faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux vecteurs partent de $A$ : l'angle est $\\widehat{BAD}$, aigu, et son cosinus est positif."
+			},
+			"answers": ["-\\frac{15\\sqrt{3}}{2}"]
+		},
+		{
+			"description": "AB = 6, AD = 4, 60° : 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"j": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "BA·BC, 45° : −12√2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"j": "1",
+				"w": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-12\\sqrt{2}"]
+		},
+		{
+			"description": "angle en A : 12√2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"j": "1",
+				"w": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les vecteurs partent de ce sommet : l'angle à prendre est celui du sommet, supplémentaire de $\\widehat{BAD}$ (deux angles consécutifs d'un parallélogramme)."
+			},
+			"answers": ["12\\sqrt{2}"]
+		},
+		{
+			"description": "cosinus oublié : 24",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"j": "1",
+				"w": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs."
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "DA·DC, 30° : −15√3/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0",
+				"w": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{15\\sqrt{3}}{2}"]
+		},
+		{
+			"description": "sinus : −15/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0",
+				"w": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le produit scalaire utilise le cosinus de l'angle, pas son sinus."
+			},
+			"answers": ["-\\frac{15}{2}"]
+		},
+		{
+			"description": "AB·CB, 60° : −12",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"j": "2",
+				"w": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-12"]
+		},
+		{
+			"description": "AB·CB : signe faux 12",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"j": "2",
+				"w": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Remplace chaque vecteur par un vecteur égal qui part de $A$ : un vecteur dans l'autre sens change le signe."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "AB·CB : cosinus oublié −24",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "6",
+				"j": "2",
+				"w": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs."
+			},
+			"answers": ["-24"]
+		},
+		{
+			"description": "DA·BA, 30° : 15√3/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0",
+				"w": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{15\\sqrt{3}}{2}"]
+		},
+		{
+			"description": "DA·BA : sinus 15/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"j": "0",
+				"w": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le produit scalaire utilise le cosinus de l'angle, pas son sinus."
+			},
+			"answers": ["\\frac{15}{2}"]
+		},
+		{
+			"description": "CD·AD, π/4 : −10√2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"j": "1",
+				"w": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-10\\sqrt{2}"]
+		},
+		{
+			"description": "CD·AD : signe faux",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"j": "1",
+				"w": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Remplace chaque vecteur par un vecteur égal qui part de $A$ : un vecteur dans l'autre sens change le signe."
+			},
+			"answers": ["10\\sqrt{2}"]
+		},
+		{
+			"description": "AB·BC, π/3 : 12",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "8",
+				"j": "2",
+				"w": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "AB·BC : cosinus oublié 24",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "8",
+				"j": "2",
+				"w": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs : il manque le cosinus de l'angle entre les vecteurs."
+			},
+			"answers": ["24"]
+		}
+	]
+}

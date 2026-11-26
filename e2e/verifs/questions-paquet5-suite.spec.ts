@@ -263,8 +263,19 @@ async function readLine(line: Locator): Promise<LineReading> {
 function expectLine(reading: LineReading, start: number, end: number, expected: Interval[]): void {
 	const count = end - start + 1;
 	expect(reading.ticks, 'une graduation par entier').toHaveLength(count);
-	expect(reading.labels, 'chaque graduation est écrite').toEqual(
-		Array.from({ length: count }, (_, i) => String(start + i))
+	// Au téléphone, les nombres trop serrés ne sont écrits qu'un sur deux (ou sur trois…), comptés
+	// depuis 0 (E63, tranché par David le 2026-11-24, #3146) ; les traits restent tous
+	// Hors téléphone, tous les nombres sont exigés ; au téléphone, le pas se lit sur les deux premiers
+	const onPhone = test.info().project.use.isMobile === true;
+	const stride =
+		onPhone && reading.labels.length >= 2
+			? Number(reading.labels[1]) - Number(reading.labels[0])
+			: 1;
+	expect(reading.labels.length, 'au moins un nombre écrit').toBeGreaterThan(0);
+	expect(reading.labels, 'chaque graduation écrite, ou une sur `stride` comptée depuis 0').toEqual(
+		Array.from({ length: count }, (_, i) => start + i)
+			.filter((value) => value % stride === 0)
+			.map(String)
 	);
 	expect(reading.ticks[0]).toBeCloseTo(reading.axis.x1, 0);
 	expect(reading.ticks[count - 1]).toBeCloseTo(reading.axis.x2, 0);

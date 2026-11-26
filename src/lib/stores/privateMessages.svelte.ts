@@ -50,10 +50,11 @@ export interface SentMessage {
 	}>;
 }
 
+/** Une ligne de `get_allowed_recipients` : la personne est désignée par `user_id` */
 export interface MessageRecipient {
-	id: string;
 	user_id: string;
-	full_name: string;
+	/** Nom affiché (nom complet, sinon « prénom nom ») ; vide si le compte n'a ni l'un ni l'autre */
+	full_name: string | null;
 	avatar_url: string | null;
 	role: string;
 	relationship: string;
@@ -118,6 +119,7 @@ export interface ThreadMessage {
 	parent_message_id: string | null;
 	level: number;
 	attachments: MessageAttachment[] | null;
+	recipients: Array<{ id: string; name: string | null }> | null;
 }
 
 class PrivateMessagesStore {

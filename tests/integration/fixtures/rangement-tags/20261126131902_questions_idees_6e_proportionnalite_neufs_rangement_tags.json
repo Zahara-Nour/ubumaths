@@ -1,0 +1,51 @@
+{
+	"migration": "supabase/migrations/20261126131902_questions_idees_6e_proportionnalite_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "3cfccd63-1627-4ba5-9243-033aabb651a0",
+			"title": "Résoudre un problème par le retour à l'unité",
+			"fichier": "n1-retour-a-l-unite.json",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sousNotion": "quatrième proportionnelle",
+			"point": "6-191"
+		},
+		{
+			"id": "057a1424-a50a-41d2-9164-a67e721d3f40",
+			"title": "Résoudre un problème par la linéarité additive",
+			"fichier": "n2-linearite-additive.json",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sousNotion": "quatrième proportionnelle",
+			"point": "6-191"
+		},
+		{
+			"id": "33d2cad7-dbc4-43e5-80df-a95fd7bd6e48",
+			"title": "Compléter un tableau de proportionnalité",
+			"fichier": "n3-completer-tableau-proportionnalite.json",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sousNotion": "quatrième proportionnelle",
+			"point": "6-192"
+		},
+		{
+			"id": "376e7768-db5f-4631-9824-2769b6dec423",
+			"title": "Reconnaître les grandeurs d'une situation",
+			"fichier": "n4-reconnaitre-les-grandeurs.json",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sousNotion": "caractérisation",
+			"point": "6-189"
+		},
+		{
+			"id": "5600e665-fd64-41e6-94d9-a51f638d2fd1",
+			"title": "Peut-on le calculer ?",
+			"fichier": "n5-peut-on-le-calculer.json",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sousNotion": "caractérisation",
+			"point": "6-190"
+		}
+	],
+	"niveaux": []
+}

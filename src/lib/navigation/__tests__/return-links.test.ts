@@ -9,6 +9,8 @@ import {
 	studentFollowUpReturn,
 	evaluationResultsHref,
 	evaluationResultsReturn,
+	studentExerciseHref,
+	studentExerciseReturnHref,
 	studentJournalHref,
 	studentJournalReturn,
 	studySessionHref,
@@ -220,6 +222,31 @@ describe('aperçu « vue élève » d’une affectation (D6)', () => {
 		expect(assignmentPreviewReturn(W, A, params('depuis=signalement'))).toEqual(fiche);
 		expect(assignmentPreviewReturn(W, A, params('depuis=signalement&signalement=../../x'))).toEqual(
 			fiche
+		);
+	});
+});
+
+describe('exercice hors fiche (élève)', () => {
+	const chapterId = '11111111-2222-4333-8444-555555555555';
+
+	it('ouvert depuis « Mon travail » : on y revient', () => {
+		expect(studentExerciseHref('e1')).toBe('/dashboard/student/exercises/e1');
+		expect(studentExerciseReturnHref(params(''))).toBe('/dashboard/student/work');
+	});
+
+	it('ouvert depuis un chapitre de cours : retour au chapitre', () => {
+		expect(studentExerciseHref('e1', chapterId)).toBe(
+			`/dashboard/student/exercises/e1?depuis=cours&chapitre=${chapterId}`
+		);
+		expect(studentExerciseReturnHref(params(`depuis=cours&chapitre=${chapterId}`))).toBe(
+			`/dashboard/student/cours/${chapterId}`
+		);
+	});
+
+	it('chapitre absent ou mal formé : retour à « Mon travail »', () => {
+		expect(studentExerciseReturnHref(params('depuis=cours'))).toBe('/dashboard/student/work');
+		expect(studentExerciseReturnHref(params('depuis=cours&chapitre=../../admin'))).toBe(
+			'/dashboard/student/work'
 		);
 	});
 });

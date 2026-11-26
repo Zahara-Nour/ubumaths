@@ -328,15 +328,14 @@ test.describe('#2716 — Programmes de calcul 4e / 3e', () => {
 		await expect.poll(() => nomsDeVariables(page)).toEqual([]);
 	});
 
-	test('#2716 — écart : créer `x` puis `X` est refusé par la boîte de Blockly (« Une variable nommée « x » existe déjà. »), pas par le message rouge sous les blocs que dit la ligne', async ({
+	test('#2716 — créer `x` puis `X` est refusé par la boîte de Blockly (« Une variable nommée « x » existe déjà. ») (E74, tranché le 2026-11-24)', async ({
 		page
 	}) => {
 		await ouvrirCalcul(page);
 		await choisirNiveau(page, '4e');
 		await creerVariable(page, 'x');
-		const refus = page.locator('.calcul-nom-refuse');
 
-		// Le symptôme : une boîte de Blockly annonce que la variable existe déjà, rien n'est créé
+		// Une boîte de Blockly annonce que la variable existe déjà, rien n'est créé
 		await page.getByText('Créer une variable…').click();
 		const boite = page.locator('dialog.blocklyDialog');
 		await boite.locator('input').fill('X');
@@ -344,10 +343,6 @@ test.describe('#2716 — Programmes de calcul 4e / 3e', () => {
 		await expect(page.getByText('Une variable nommée « x » existe déjà.')).toBeVisible();
 		await page.getByRole('button', { name: 'OK' }).click();
 		expect(await nomsDeVariables(page)).toEqual(['x']);
-
-		// L'attendu de la ligne : le message rouge sous les blocs (celui de « résultat »)
-		test.fail();
-		await expect(refus).toBeVisible({ timeout: 3000 });
 	});
 
 	test('#2716 — « mettre x à nombre × 2 ; si x > 10 alors afficher x − 10 sinon afficher x » : Essayer avec 7 → 4, avec 3 → 6', async ({

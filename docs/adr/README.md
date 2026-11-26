@@ -53,6 +53,7 @@ contourner en silence.
 | 0042 | [Texte coloré dans la prose : `[texte]{.nom}`, les 12 noms de la palette](0042-texte-colore-dans-la-prose.md)                            | 2026-11-20 |
 | 0043 | [Noms anglais des nœuds de l'arbre](0043-noms-anglais-des-noeuds-de-l-arbre.md)                                                          | 2026-11-23 |
 | 0044 | [Versions d'un exercice : un historique, la fiche choisit la sienne](0044-versions-d-un-exercice.md)                                     | 2026-11-25 |
+| 0045 | [Figures de l'espace qui tournent : moteur maison en SVG, cavalière au repos](0045-figures-de-l-espace-qui-tournent.md)                  | 2026-11-26 |
 
 ## Écrire un ADR
 

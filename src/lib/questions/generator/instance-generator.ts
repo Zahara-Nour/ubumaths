@@ -31,6 +31,7 @@ import type {
 	ValidationRule,
 	BuildKind
 } from '../types';
+import { collectEvalWarnings, replayEvalWarnings } from '#lib/mathAST/eval/eval-warnings.ts';
 import { buildKindName, getQuestionType, isPlaceKind } from '../types';
 import type { ResolvedMarkdown, TemplateMarkdown } from '#lib/ubumark/index.ts';
 import {
@@ -698,11 +699,20 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let trousCollisions = 0;
 		/** Dernier tirage rejeté pour un robot impossible : repris si aucun ne convient */
 		let robotFallback: ResolvedVariable[] | undefined;
+		// Avertissements d'écriture des `{{eval}}` (question:specs) : ceux du tirage RETENU
+		// seulement, un tirage rejeté par une condition n'a rien à signaler
+		let candidateWarnings: string[] = [];
+		let retainedWarnings: string[] = [];
+		let robotFallbackWarnings: string[] = [];
 		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
 			// Nouvel essai : la source continue, les tirages sont donc neufs
 			let candidate: ResolvedVariable[];
 			try {
-				candidate = resolveVariables(resolvedVariation.variables || [], random);
+				const collected = collectEvalWarnings(() =>
+					resolveVariables(resolvedVariation.variables || [], random)
+				);
+				candidate = collected.result;
+				candidateWarnings = collected.warnings;
 			} catch (error) {
 				// Faute d'écriture du modèle : la même à chaque tirage, inutile de relancer
 				if (error instanceof AuthorExpressionError) {
@@ -763,9 +773,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				)
 			) {
 				robotFallback = candidate;
+				robotFallbackWarnings = candidateWarnings;
 				continue;
 			}
 			resolvedVariables = candidate;
+			retainedWarnings = candidateWarnings;
 			break;
 		}
 
@@ -790,7 +802,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// Robot à produire impossible à chaque tirage : le dernier passe, la case dira pourquoi
 		if (resolvedVariables === undefined && robotFallback !== undefined) {
 			resolvedVariables = robotFallback;
+			retainedWarnings = robotFallbackWarnings;
 		}
+		replayEvalWarnings(retainedWarnings);
 
 		if (resolvedVariables === undefined && rangerCollisions > 0) {
 			return {
