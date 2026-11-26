@@ -3,7 +3,7 @@ scripts/questions/idees-1re-produit-scalaire-neufs/.
 
 Phase 0 : David, le 2026-11-26, « je valide tout » (page à cocher
 https://claude.ai/artifact/Pq3pagc1h93TH99Lo5hgze, fiches
-docs/wip/idees-1re-produit-scalaire-fiches.md) : N1 à N5 comme décrits, F5 avec l'étape
+docs/archive/wip/idees-1re-produit-scalaire/idees-1re-produit-scalaire-fiches.md) : N1 à N5 comme décrits, F5 avec l'étape
 « AB·HC = 0 » gardée.
 
 Rangement (migration générée après la création en brouillon), nœuds « Géométrie > Produit

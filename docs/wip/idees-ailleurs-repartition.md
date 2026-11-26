@@ -40,7 +40,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Variations                        | 1AN2  | 5         | publiée (2026-11-26) | `idees-1re-variations`       |
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle`    |
 | Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`            |
-| Produit scalaire                  | 1G1   | 10        | prise (2026-11-26)   | `idees-1re-produit-scalaire` |
+| Produit scalaire                  | 1G1   | 10        | publiée (2026-11-26) | `idees-1re-produit-scalaire` |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                              |
 | Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`      |
 | Variables aléatoires réelles      | 1P2   | 1         | libre                |                              |
@@ -91,9 +91,9 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 
 ### Technologique
 
-| Rubrique | Codes | Exercices | État               | Sujet / session            |
-| -------- | ----- | --------- | ------------------ | -------------------------- |
-| Analyse  | TTE   | 12        | prise (2026-11-26) | `idees-tle-techno-analyse` |
+| Rubrique | Codes | Exercices | État                 | Sujet / session            |
+| -------- | ----- | --------- | -------------------- | -------------------------- |
+| Analyse  | TTE   | 12        | phase 0 (2026-11-26) | `idees-tle-techno-analyse` |
 
 ## Sixième
 
@@ -160,34 +160,34 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| ccb51039 Augmentation et coefficient multiplicateur          | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| 76f5f143 Diminution et coefficient multiplicateur            | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| 8b59ca4b Coefficient multiplicateur d'une évolution répétée  | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| b73923a1 Choisir la méthode dans une figure usuelle          | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 9c7f7ef0 Produit scalaire par projection orthogonale         | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| d787d8c0 Produit scalaire avec les normes                    | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| fe407c88 Produit scalaire avec les coordonnées               | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| f2cc01fc Orthogonaux ou non ?                                | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 6058963e Produit scalaire : résoudre un problème géométrique | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| bf5dadf6 Angle de deux vecteurs                              | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                        | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| --------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 52b884ee Résoudre une équation aˣ = b ou xᵃ = b avec log        | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| 10bd7075 Résoudre une inéquation aˣ < b ou xᵃ < b avec log      | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| af24839d Transformer des expressions avec le logarithme décimal | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| dc269779 Logarithme décimal : définition                        | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| f84e23a3 Calculer un taux d'évolution moyen                     | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| 94b1dbf6 Courbe de x ↦ aˣ sur ℝ                                 | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| f6805041 Sens de variation de x ↦ k·aˣ                          | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
+| ccb51039 Augmentation et coefficient multiplicateur             | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 76f5f143 Diminution et coefficient multiplicateur               | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 8b59ca4b Coefficient multiplicateur d'une évolution répétée     | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 04b1cc7f Puissance d'un produit                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ?    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 

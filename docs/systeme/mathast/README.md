@@ -250,7 +250,10 @@ actives avec `enableTrig` (lycée par défaut). Un angle en degrés est lu tel q
 il reste écrit. `tidy` ne calcule aucune valeur (une ligne tapée seule garde `cos(π/3)`).
 `.solve` écrit en degrés, période comprise, une famille périodique venue d'un angle tapé en degrés
 (`cos(x) = cos(20°)` → `−20° + k·360° ; 20° + k·360°` ; `familyInDegrees`, `cli/core/angle-radians.ts`,
-`degreeMembers`, `cli/commands/solve-latex.ts` ; détail dans [atelier.md](../atelier.md)).
+`degreeMembers`, `cli/commands/solve-latex.ts` ; détail dans [atelier.md](../atelier.md)) ; le
+solveur trigonométrique rend l'angle lui-même pour ± sin, cos, tan d'un angle connu
+(`cos(x) = cos(π/5)` → `±π/5 + 2kπ`, `inverseOfKnownAngle`, `solve/solvers/transcendental.ts`), et
+`dans [0;360]` se lit en degrés quand la réponse est en degrés.
 `developper` n'a pas de phase A : `explainExpansion` calcule d'abord les valeurs
 (`generateRemarkableValueSteps`, `pipeline.ts`, qui ne garde rien si aucune valeur n'est
 atteinte), puis développe — `(x + cos(π/3))²` → étape de valeur, puis `x² + x + 1/4` ; l'atelier

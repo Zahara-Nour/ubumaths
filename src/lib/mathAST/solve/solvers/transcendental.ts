@@ -51,7 +51,7 @@ import {
 } from '../../factory';
 import { canonicalForm } from '../../normal';
 import { getVariables } from '../../eval/substitute';
-import { isDivision, isFunction, isOpposite } from '../../guards';
+import { isDivision, isFunction, isOpposite, isUnit } from '../../guards';
 import { findNodes } from '../../transforms';
 import { nodesEqual } from '../../normal/hash';
 import { extractLinearForm } from '../../analysis/coefficient-utils';
@@ -373,8 +373,101 @@ export function extractTrigEquation(
  * Returns simplified MathNode, or the raw arcfunc(constant) if no simplification.
  */
 export function simplifyInverseTrig(inverseFuncName: string, constantNode: MathNode): MathNode {
+	const known = inverseOfKnownAngle(inverseFuncName, constantNode);
+	if (known !== null) return known;
 	const arcNode = func(inverseFuncName, [constantNode]);
 	return canonicalForm(arcNode);
+}
+
+/** π/2. */
+const HALF_PI: MathNode = divide(PI, number('2'), 'fraction');
+
+/**
+ * Un angle θ, écrit avec c, dont le sin, cos ou tan (`target`) vaut `sign`·`name`(c) :
+ * cos θ = −cos c pour θ = π − c, sin θ = cos c pour θ = π/2 − c… `null` quand
+ * il n'y en a pas d'écriture simple (tan face à sin ou cos).
+ */
+function angleWithSameValue(
+	target: string,
+	name: string,
+	negative: boolean,
+	c: MathNode
+): MathNode | null {
+	if (target === 'tan' || name === 'tan') {
+		if (target !== name) return null;
+		return negative ? opposite(c) : c;
+	}
+	if (target === name) {
+		// cos θ = −cos c : θ = π − c ; sin θ = −sin c : θ = −c
+		if (!negative) return c;
+		return target === 'cos' ? subtract(PI, c) : opposite(c);
+	}
+	if (target === 'cos') {
+		// cos θ = sin c : θ = π/2 − c ; cos θ = −sin c : θ = π/2 + c
+		return negative ? subtract(HALF_PI, opposite(c)) : subtract(HALF_PI, c);
+	}
+	// sin θ = cos c : θ = π/2 − c ; sin θ = −cos c : θ = c − π/2
+	return negative ? subtract(c, HALF_PI) : subtract(HALF_PI, c);
+}
+
+/**
+ * arccos(cos(c)), arcsin(sin(c)), arctan(tan(c)) pour un angle c CONNU : sa
+ * valeur exacte, écrite avec c (V128, David, 2026-11-26 : `cos(x) = cos(π/5)`
+ * répond ±π/5 + 2kπ, pas ±arccos(cos(π/5)) + 2kπ). L'angle est ramené dans
+ * l'intervalle de l'arc — arccos(cos(11π/5)) = π/5, arcsin(sin(3π/5)) = 2π/5 —,
+ * le signe et la fonction croisée sont lus (−cos c = cos(π − c), cos c =
+ * sin(π/2 − c)).
+ *
+ * `null` pour tout autre second membre (`2cos(π/5) − 1`, `1/3`), pour un angle
+ * à paramètre, et pour un angle MESURÉ (`20 °`) : l'évaluation lit sa mesure
+ * comme un nombre de radians — à l'appelant de le donner en radians.
+ */
+function inverseOfKnownAngle(inverseFuncName: string, constantNode: MathNode): MathNode | null {
+	const target =
+		inverseFuncName === 'arcsin'
+			? 'sin'
+			: inverseFuncName === 'arccos'
+				? 'cos'
+				: inverseFuncName === 'arctan'
+					? 'tan'
+					: null;
+	if (target === null) return null;
+	const negative = isOpposite(constantNode);
+	const call = negative ? constantNode.operand : constantNode;
+	if (!isFunction(call) || call.args.length !== 1) return null;
+	if (call.name !== 'sin' && call.name !== 'cos' && call.name !== 'tan') return null;
+	const [c] = call.args;
+	if (getVariables(c).size > 0 || findNodes(c, isUnit).length > 0) return null;
+	const angle = angleWithSameValue(target, call.name, negative, c);
+	if (angle === null) return null;
+	const value = tryNumeric(angle);
+	if (value === null || !Number.isFinite(value)) return null;
+
+	// Le nombre de tours (de demi-tours pour tan) à retirer : le reste est dans
+	// [−π ; π] (dans [−π/2 ; π/2] pour tan)
+	const turn: MathNode = target === 'tan' ? PI : TWO_PI;
+	const turnValue = target === 'tan' ? Math.PI : 2 * Math.PI;
+	const turns = Math.round(value / turnValue);
+	const rest = value - turns * turnValue;
+	const removed = multiply(number(String(Math.abs(turns))), turn, 'implicit');
+	const within: MathNode =
+		turns === 0 ? angle : subtract(angle, turns < 0 ? opposite(removed) : removed);
+
+	let principal: MathNode;
+	if (target === 'tan') {
+		principal = within;
+	} else if (target === 'cos') {
+		// arccos est dans [0 ; π] : cos est paire
+		principal = rest < 0 ? opposite(within) : within;
+	} else if (rest > Math.PI / 2) {
+		// arcsin est dans [−π/2 ; π/2] : sin(π − r) = sin(r)
+		principal = subtract(PI, within);
+	} else if (rest < -Math.PI / 2) {
+		principal = subtract(opposite(PI), within);
+	} else {
+		principal = within;
+	}
+	return canonicalForm(principal);
 }
 
 /**

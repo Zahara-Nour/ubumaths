@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après la mise en prod v0.112.0._
+_Mis à jour le 2026-11-26, après #3194._
 
-- **État** : PR 1 (#3150) et PR 2 (#3154) en prod : migration `20261125183550` jouée par David, `deploy:prod` v0.112.0 fait le 2026-11-26 (54 chemins publics répondent).
-- **Prochaine action** : PR 3 (la fiche : menu de version à l'import, « une version plus récente existe »), phase 0 d'abord.
-- **En attente de David** : rien.
-- **Pièges en cours** : base locale de dev : fonctions de la PR 2 redéfinies à la main pendant la session, identiques au fichier final.
-- **Worktree / branche** : aucun ; PR 3 → `../ubumaths-wt-versions-exercices-fiche`.
+- **État** : PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0). PR 3 (la fiche, #3194) mergée, **pas encore en prod**.
+- **Prochaine action** : PR 4 (destructive : retrait des anciennes colonnes de contenu d'`exercises`), seulement après le `deploy:prod` qui livre la PR 3, et avec le go de David. Phase 0 d'abord (grep des usages + réconciliation des données).
+- **En attente de David** : `deploy:prod` (livre #3194), puis go pour la PR 4.
+- **Pièges en cours** : bouton d'annulation de `ConfirmDialog` = « Renoncer » (lore). Le merge d'une PR destructive ne se fait pas avant le go (un `db push` d'une autre session la jouerait).
+- **Worktree / branche** : aucun (celui de la PR 3 retiré) ; PR 4 → nouveau worktree depuis `origin/main`.
 
 ## Décisions (2026-11-25)
 
@@ -110,6 +110,35 @@ pas `db:migrate` seule : elle prévient David, qui demande `db:migrate` + `deplo
 
 - Formulaire d'exercice : carte « Variations » et toasts « Variation ajoutee », « Maximum 10
   variations autorisees » (mot contraire à CONTEXT.md, accents manquants) → PR 2.
+
+## PR 3 — fait (2026-11-26)
+
+- Lecture : `loadWorksheetVersionChoices` (lignes dont l'exercice a ≥ 2 versions, affectations `active`). Écriture : `setLineVersion` + route `PUT /api/worksheets/[id]/exercises/[ligne]/version` (fiche archivée → 400, version d'un autre exercice ou disparue → 400, ligne absente → 404). Garde d'accès extraite dans `worksheet-line-access.ts`. Aucune migration.
+- UI : `LineVersionControl` sous le titre de la ligne (menu vN · note · date, « une version plus récente existe », « Passer à la vN »), confirmation si affectation en cours ; Échap, clic dehors et « Renoncer » remettent le menu.
+- Tests : 9 unitaires (`line-version.test.ts`), 9 d'intégration (`versions-exercices-fiche.test.ts`), 2 à l'écran (`e2e/verifs/versions-exercices-fiche.spec.ts`, verts). Doc : `fiches-et-pdf.md`, `base-de-donnees.md`.
+- Revues : `code-reviewer` (Échap/clic dehors et ordre rechargement → corrigés ; pagination commentée ; affectation active mais close comptée, voulu). `security-auditor` : aucun finding bloquant, personne ne gagne d'accès ; 2 tests ajoutés (élève en PostgREST direct, clé composée 23503).
+- Piège : le bouton d'annulation de `ConfirmDialog` s'appelle « Renoncer » (lore), pas « Annuler ».
+
+## Phase 0 de la PR 3 — la fiche (validée le 2026-11-26 : « je valide »)
+
+Mesures (prod, 2026-11-26) : aucun exercice à plusieurs versions ; aucune ligne de fiche vers
+l'exercice d'un autre auteur ; 10 fiches publiées sur 12 ont des affectations, **1 brouillon aussi**
+(dépubliée après affectation) → « distribuée » = a des affectations, pas « publiée ». Les exercices
+d'une fiche publiée ne se modifient plus (ajout, retrait, ordre) : brouillon seulement.
+
+- Ligne d'exercice : une seule version → rien de nouveau (Q3). Plusieurs → étiquette « v2 » ; pas
+  la dernière → « une version plus récente existe (v3) » + bouton « Passer à la v3 ». L'étiquette
+  ouvre un menu de toutes les versions (numéro, note, date), retour en arrière permis.
+- Changer : sans affectation → direct, toast « Exercice 4 : version 3 » ; avec affectation(s) →
+  confirmation « N affectations en cours : les élèves verront la nouvelle rédaction à leur prochaine
+  ouverture ». Permis sur brouillon ET publiée, pas archivée (Q1).
+- Ajout : dernière version, comme aujourd'hui ; le choix se fait sur la ligne après l'ajout, pas de
+  menu dans la fenêtre d'ajout (Q2, écart assumé au texte du point 5 de l'ADR).
+- Signalements déjà faits : gardent leur version.
+- Erreurs : version d'un autre exercice → 400 (la base refuse déjà) ; version supprimée entre-temps
+  → message, liste rechargée ; prof non auteur de la fiche → 403.
+- Base : aucune migration prévue (les policies couvrent la mise à jour d'une ligne de fiche), à
+  prouver par un test d'intégration. Accès : personne ne gagne de lecture.
 
 ## Phase 0 de la PR 2 — éditeur de versions (validée le 2026-11-25 : « je suis tes recos »)
 
