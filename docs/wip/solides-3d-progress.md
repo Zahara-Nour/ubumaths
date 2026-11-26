@@ -2,23 +2,26 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, noms tenus pendant la rotation (PR ouverte, § 7)._
+_Mis à jour le 2026-11-27, après #3211._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
   du § 3) ; **lots 1 et 2 mergés** (#3195 moteur de vue ; #3200 clé `tourner: oui` sur les polyèdres, § 6) ;
-  **noms tenus pendant la rotation** (§ 7) : PR ouverte depuis `feat/solides-3d-lot3`. Rien n'est en prod.
-- **Prochaine action** : merger la PR des noms (CI verte), puis lot 3 — cylindre, cône, boule qui tournent
-  (§ 4), dans une PR à part, revue `code-reviewer` en opus.
-- **En attente de David** : son essai au doigt des noms tenus (lien de `pnpm lien`, page
-  `/aide-ecriture/blocs/solide`, compte prof) ; il ne bloque pas le merge.
+  **noms tenus pendant la rotation mergés** (#3211, § 7). Rien n'est en prod.
+- **Prochaine action** : lot 3 — cylindre, cône, boule qui tournent (§ 4), une PR à part (accord de David
+  par son choix du 2026-11-26, § 7), revue `code-reviewer` en opus. Leur vue tournée et leur contour sont à
+  concevoir : comportements à écrire et à faire valider avant de coder.
+- **En attente de David** : son essai au doigt des noms tenus (page `/aide-ecriture/blocs/solide`, compte
+  prof). S'il n'aime pas : le glissement de 150 ms à l'arrêt et « arrêt au clavier = touche relâchée » sont
+  des choix de la session (§ 7).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`) : `labelOffsets` n'existe que dans une scène tournée ; jamais d'instantané de
-  flottants bruts ; cylindre, cône et boule sont dessinés « à plat » (ellipses, pas une vraie projection) :
-  leur vue tournée et leur contour sont à concevoir ; une ligne `tourner:` non suivie va dans
-  `rotationErrors`, jamais dans `errors` ; un `onclick` de Svelte est délégué à la racine ; « moins
-  d'animations » et le geste tactile réel n'ont pas de test.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot3`. Serveur d'essai sur
-  5176, lien du tailnet publié (`pnpm lien --stop` pour le retirer).
+  flottants bruts ; cylindre, cône et boule sont dessinés « à plat » (ellipses, pas une vraie projection) ;
+  une ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; un `onclick` de Svelte est
+  délégué à la racine ; « moins d'animations », le geste tactile réel et les enchaînements clavier des noms
+  tenus n'ont pas de test.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-ronds` (neuve, aucun
+  commit). Serveur d'essai laissé en marche sur 5176 pour l'essai de David, lien du tailnet publié
+  (`pnpm lien --stop` depuis le worktree pour le retirer).
 
 ## 1. D'où l'on part
 
