@@ -84,7 +84,7 @@ export function isNavigationAbortNoise(error: string, projectName: string): bool
 	}
 	return (
 		projectName.includes('firefox') &&
-		/Channel "user-notifications" error|The connection to ws:\/\/.* was interrupted while the page was loading/.test(
+		/Channel "user-notifications" error|The connection to ws:\/\/(localhost|127\.0\.0\.1)[^ ]* was interrupted while the page was loading/.test(
 			error
 		)
 	);

@@ -776,8 +776,12 @@ test.describe('Base locale — compte prof, lecture seule', () => {
 			  order by created_at desc limit 1`,
 			[ELEVE_MUET_ID]
 		);
+		expect(
+			muteDuSeed,
+			'le seed rend l’élève 12 muet (sinon : seed changé, test à revoir)'
+		).toBeDefined();
 		test.skip(
-			!muteDuSeed?.actif,
+			!muteDuSeed.actif,
 			'Le mute du seed (Élève 12) a expiré : à rejouer après `pnpm db:neuf`'
 		);
 		await expectText(session.page, ELEVE_MUET_NOM, 'élève muet du seed visible');
@@ -790,6 +794,7 @@ test.describe('Base locale — compte prof, lecture seule', () => {
 		// Les compteurs de la page = ceux de la base : les conversations du seed vieillissent
 		// (« Cette semaine » se vide) et d'autres vérifications en ajoutent. Période « Tout »,
 		// conversations rattachées à une classe du prof (règle de `/api/tutor/stats`).
+		// SQL sans RLS : toutes les classes sont celles du prof (mono-professeur).
 		await check(
 			'/dashboard/tutor-stats',
 			['Statistiques du Tuteur IA', /Score d'effort moyen/],
@@ -843,10 +848,10 @@ test.describe('Base locale — compte prof, lecture seule', () => {
 		await check(
 			'/dashboard/teacher/consent',
 			[
-				new RegExp(`${concernes.length} Galopins concernés`),
-				new RegExp(`${accordes} Consentements accordés`),
-				new RegExp(`${grace} En période de grâce`),
-				new RegExp(`${attente} En attente`)
+				new RegExp(`(^|\\s)${concernes.length} Galopins concernés`),
+				new RegExp(`(^|\\s)${accordes} Consentements accordés`),
+				new RegExp(`(^|\\s)${grace} En période de grâce`),
+				new RegExp(`(^|\\s)${attente} En attente`)
 			],
 			'consentements'
 		);
