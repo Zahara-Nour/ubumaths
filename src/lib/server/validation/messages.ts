@@ -257,7 +257,12 @@ export const threadMessageResponseSchema = z.object({
 	edited_at: z.string().datetime({ offset: true }).nullable(),
 	parent_message_id: z.string().uuid().nullable(),
 	level: z.number().int().nonnegative(),
-	attachments: z.array(z.record(z.string(), z.unknown())).nullable()
+	attachments: z.array(z.record(z.string(), z.unknown())).nullable(),
+	// Destinataires tels que get_message_details les rend à l'appelant
+	recipients: z
+		.array(z.object({ id: z.string().uuid(), name: z.string().nullable() }))
+		.max(500)
+		.nullable()
 });
 
 /**

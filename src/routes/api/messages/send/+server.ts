@@ -4,6 +4,7 @@ import { sendMessageSchema } from '#lib/server/validation/messages.ts';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { lore } from '#lib/config/lore.ts';
 
 const logger = createServerLogger('api/messages/send/+server');
 
@@ -61,7 +62,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (sendError) {
 			logger.error('Error sending message:', sendError);
-			throw error(500, sendError.message || "Erreur lors de l'envoi du message");
+			// Les refus de la base sont en anglais : jamais rendus tels quels
+			if (sendError.code === 'P0002') {
+				throw error(
+					400,
+					`Ce ${lore.entities.class} n'a aucun ${lore.entities.student} actif : personne à qui écrire.`
+				);
+			}
+			if (sendError.code === '42501' || sendError.message?.includes('do not have permission')) {
+				throw error(
+					403,
+					isGroupMessage
+						? `Vous ne pouvez pas écrire à ce ${lore.entities.class}.`
+						: 'Vous ne pouvez pas écrire à ce destinataire.'
+				);
+			}
+			throw error(500, "Erreur lors de l'envoi du message");
 		}
 
 		return Response.json({ success: true, messageId });
