@@ -1,0 +1,376 @@
+{
+	"id": "247fddd1-1467-46db-888a-0871b02617c5",
+	"title": "Évènement contraire",
+	"description": "Calculer la probabilité de l'évènement contraire : P(non A) = 1 − P(A), avec P(A) décimal ou en fraction",
+	"grades": ["4"],
+	"level": 1,
+	"delay": 45,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-a/100;d}}"
+				}
+			],
+			"statement": "La probabilité qu'il pleuve demain est estimée à ${{eval:a/100;d}}$.\n\nQuelle est la probabilité qu'il ne pleuve pas demain ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..89"
+				}
+			],
+			"conditions": ["mod(a,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"$$1 - {{eval:a/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b-a)/b}}"
+				}
+			],
+			"statement": "À un jeu, la probabilité de gagner est $\\dfrac{{{a}}}{{{b}}}$.\n\nQuelle est la probabilité de perdre ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..b"
+				}
+			],
+			"conditions": ["a<b", "gcd(a,b)==1"],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"« Perdre » est le contraire de « gagner ».",
+					"$$1 - \\frac{{{a}}}{{{b}}} = \\frac{{{b}}}{{{b}}} - \\frac{{{a}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n-1)/n}}"
+				}
+			],
+			"statement": "On lance un dé équilibré à ${{n}}$ faces, numérotées de $1$ à ${{n}}$.\n\nQuelle est la probabilité de ne pas obtenir le ${{m}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6|8|10|12|20"
+				},
+				{
+					"name": "m",
+					"expression": "1..n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"La probabilité d'obtenir le ${{m}}$ est $\\dfrac{1}{{{n}}}$.",
+					"$$1 - \\frac{1}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-r/(r+v+b)}}"
+				}
+			],
+			"statement": "Un sac contient ${{r}}$ jetons rouges, ${{v}}$ jetons verts et ${{b}}$ jetons bleus. On tire un jeton au hasard.\n\nQuelle est la probabilité de ne pas tirer un jeton rouge ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["r!=v", "v!=b", "r!=b"],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"Il y a ${{eval:r+v+b}}$ jetons : $P(\\text{rouge}) = \\dfrac{{{r}}}{{{eval:r+v+b}}}$.",
+					"$$P(\\text{non rouge}) = 1 - \\frac{{{r}}}{{{eval:r+v+b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une roulette de casino a $37$ cases numérotées de $0$ à $36$. On lance la bille : chaque case a la même probabilité de la recevoir. La probabilité que le numéro obtenu soit inférieur ou égal à ${{n}}$ est $\\dfrac{ {{eval:n+1}} }{37}$.\n\nQuelle est la probabilité que le numéro obtenu soit supérieur ou égal à ${{eval:n+1}}$ ? Donne le résultat sous la forme d'une fraction irréductible ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(36-n)/37}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(n+1)/37}}",
+							"message": "Tu as recopié la probabilité donnée : on demande celle de l'évènement contraire.",
+							"label": "P(A) recopiée"
+						},
+						{
+							"answer": "{{eval:(37-n)/37}}",
+							"message": "Tu as compté le numéro ${{n}}$ : « supérieur ou égal à ${{eval:n+1}}$ » commence à ${{eval:n+1}}$.",
+							"label": "Le numéro n compté"
+						},
+						{
+							"answer": "{{eval:(36-n)/36}}",
+							"message": "La roulette a $37$ cases, de $0$ à $36$ : le dénominateur reste $37$.",
+							"label": "36 cases"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"« Supérieur ou égal à ${{eval:n+1}}$ » est le contraire de « inférieur ou égal à ${{n}}$ ».",
+					"$$1-\\dfrac{ {{eval:n+1}} }{37}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$$"
+				]
+			},
+			"hint": "Quel est le contraire de « inférieur ou égal à ${{n}}$ » ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0,65"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "35"
+			},
+			"description": "0,35 → 0,65",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,75"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "35"
+			},
+			"description": "Erreur : 0,75 (retenue)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "8"
+			},
+			"description": "3/8 → 5/8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,625"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "8"
+			},
+			"description": "3/8 → 0,625 accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "8"
+			},
+			"description": "Erreur : inverse 8/3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "6",
+				"n": "6"
+			},
+			"description": "Dé à 6 : 5/6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "6",
+				"n": "6"
+			},
+			"description": "Erreur : 1/6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{9}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"b": "4",
+				"r": "3",
+				"v": "5"
+			},
+			"description": "3 R, 5 V, 4 B : 9/12 (ambre)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "4",
+				"r": "3",
+				"v": "5"
+			},
+			"description": "3 R, 5 V, 4 B : 3/4",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "4",
+				"r": "3",
+				"v": "5"
+			},
+			"description": "Erreur : 1/4 (rouge)",
+			"variationIndex": 3
+		},
+		{
+			"description": "Contraire roulette n=12",
+			"variationIndex": 4,
+			"variables": {
+				"n": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{24}{37}"]
+		},
+		{
+			"description": "Contraire roulette n=12 : recopiée",
+			"variationIndex": 4,
+			"variables": {
+				"n": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié la probabilité donnée : on demande celle de l'évènement contraire."
+			},
+			"answers": ["\\frac{13}{37}"]
+		},
+		{
+			"description": "Contraire roulette n=12 : n compté",
+			"variationIndex": 4,
+			"variables": {
+				"n": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté le numéro $12$ : « supérieur ou égal à $13$ » commence à $13$."
+			},
+			"answers": ["\\frac{25}{37}"]
+		},
+		{
+			"description": "Contraire roulette n=12 : 36",
+			"variationIndex": 4,
+			"variables": {
+				"n": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La roulette a $37$ cases, de $0$ à $36$ : le dénominateur reste $37$."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "Contraire roulette n=23",
+			"variationIndex": 4,
+			"variables": {
+				"n": "23"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{13}{37}"]
+		},
+		{
+			"description": "Contraire roulette n=23 : recopiée",
+			"variationIndex": 4,
+			"variables": {
+				"n": "23"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié la probabilité donnée : on demande celle de l'évènement contraire."
+			},
+			"answers": ["\\frac{24}{37}"]
+		},
+		{
+			"description": "Contraire roulette n=23 : n compté",
+			"variationIndex": 4,
+			"variables": {
+				"n": "23"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté le numéro $23$ : « supérieur ou égal à $24$ » commence à $24$."
+			},
+			"answers": ["\\frac{14}{37}"]
+		},
+		{
+			"description": "Contraire roulette n=23 : 36",
+			"variationIndex": 4,
+			"variables": {
+				"n": "23"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La roulette a $37$ cases, de $0$ à $36$ : le dénominateur reste $37$."
+			},
+			"answers": ["\\frac{13}{36}"]
+		}
+	]
+}
