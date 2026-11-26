@@ -14,7 +14,7 @@ en prod (MCP en lecture seule, 2026-11-26).
 | 3-068 | Appliquer une augmentation, cas simples, sans coefficient (120 € + 20 %) | 290dcf6f « Augmentation » (4 : prix ×10, t = 10, 20, 50, 100)      |
 | 3-069 | Appliquer une diminution, cas simples, sans coefficient (120 € − 20 %)   | 24f7a007 « Diminution » (4 : prix ×10, t = 10, 20, 30, 50)         |
 
-Bornes ([cycle4.md](../systeme/programmes/bornes/cycle4.md)) : 3-036 et 3-063, coefficient multiplicateur
+Bornes ([cycle4.md](../../../systeme/programmes/bornes/cycle4.md)) : 3-036 et 3-063, coefficient multiplicateur
 (1 + t/100) ou (1 − t/100) ; 3-068 et 3-069, cas simples sans coefficient. Ni évolutions successives ni
 évolution réciproque en 3e : elles sont de Seconde (2-377 à 2-379, 2-478).
 

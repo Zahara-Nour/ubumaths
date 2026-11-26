@@ -2,20 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3190._
+_Mis à jour le 2026-11-26 : rubrique publiée, chantier clos._
 
-- **État** : #3190 mergée (10 variations ajoutées : ccb51039 +4, 76f5f143 +4, 8b59ca4b +2 ;
-  migration de contenu `20261126185210_…_publies_contenu.sql`). 4 conditions de `db:migrate`
-  réunies (accès : personne ; preuve rouge ; `security-auditor` sans bloquant ; additive, rollback
-  écrit). Seule migration en attente au relevé `migration list --linked` du 2026-11-26.
-- **Prochaine action** : après le `db:migrate` de David, vérifier la prod par MCP (7, 7 et 4
-  variations), puis série de relecture des 3 modèles (`scripts/series/creer-serie.ts`), relue
-  dans `/dev/modeles`.
-- **En attente de David** : `! pnpm db:migrate` (écriture en prod refusée à la session).
-- **Pièges en cours** : ccb51039 et 76f5f143 portent aussi le niveau 4e (4-057, 4-080) : leurs
-  variations ajoutées sont vues en 4e (accepté, Q1). 8b59ca4b : réponse en puissance acceptée
-  (`acceptDecimal`, comme ses variations existantes).
-- **Worktree / branche** : aucun (retirés par `pr:merger`) ; la suite se fait depuis `main`.
+- **État** : 10 variations ajoutées (ccb51039 +4, 76f5f143 +4, 8b59ca4b +2 ; #3190, `db:migrate`
+  fait, prod vérifiée : 7, 7 et 4 variations). Séries de relecture `407d9009…` (3e) et
+  `5aeb1fbc…` (2de, 8b59ca4b n'est pas classé en 3e) (#3192). Relecture validée par David.
+  Rubrique « publiée » dans le tableau de répartition, réservations levées, journal et relevé
+  archivés.
+- **Reste** : rien.
+
+### 2026-11-26 — prod vérifiée, séries, relecture validée
+
+- `db:migrate` lancé par David ; MCP : ccb51039 7 variations, 76f5f143 7, 8b59ca4b 4.
+- Deux séries (le script refuse un modèle hors du niveau de la série) : simulation verte, `--publier`
+  lancé par David, identifiants commités (#3192).
+- David : « je valide les modèles ». Rubrique « publiée », réservations levées, archivage.
 
 ## Relevé (2026-11-26)
 
