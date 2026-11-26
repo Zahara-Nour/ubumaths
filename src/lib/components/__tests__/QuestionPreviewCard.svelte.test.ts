@@ -185,3 +185,35 @@ describe('QuestionPreviewCard — ligne des niveaux et des variations', () => {
 		expect(flip.getBoundingClientRect().height).toBe(2 * rem);
 	});
 });
+
+/** Chantier `automaths`, PR A : points de la revue (2026-11-26) */
+describe('QuestionPreviewCard — points de la revue', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
+	it('la tuile est un groupe nommé par le titre du modèle', async () => {
+		await renderTile();
+
+		const tile = page.getByRole('group', { name: TEMPLATE.title, exact: false });
+		await expect.element(tile).toBeInTheDocument();
+		await expect
+			.element(tile.getByRole('button', { name: 'Variation suivante' }))
+			.toBeInTheDocument();
+		await expect
+			.element(tile.getByRole('button', { name: 'Ajouter à ma série' }))
+			.toBeInTheDocument();
+	});
+
+	it('flèches des variations : zone de clic d’au moins 40 px', async () => {
+		await renderTile();
+
+		const arrow = page.getByRole('button', { name: 'Variation suivante' }).element();
+		const before = getComputedStyle(arrow, '::before');
+		const box = arrow.getBoundingClientRect();
+		const inset = -parseFloat(before.top);
+		expect(before.content).not.toBe('none');
+		expect(box.width + 2 * inset).toBeGreaterThanOrEqual(40);
+		expect(box.height + 2 * inset).toBeGreaterThanOrEqual(40);
+	});
+});

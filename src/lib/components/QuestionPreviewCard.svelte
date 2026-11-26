@@ -29,6 +29,8 @@
 		preview: QuestionInstance;
 	} = $props();
 
+	const titleId = $props.id();
+
 	let isInCart = $derived(questionCart.hasTemplate(template.id));
 
 	function handleCartClick() {
@@ -37,13 +39,19 @@
 	}
 </script>
 
-<div class="tile flex h-full flex-col gap-3" style:--tile-card-default={CATALOGUE_TILE_CARD_HEIGHT}>
+<!-- Groupe nommé par le titre : les boutons de toutes les tuiles portent le même nom -->
+<div
+	class="tile flex h-full flex-col gap-3"
+	style:--tile-card-default={CATALOGUE_TILE_CARD_HEIGHT}
+	role="group"
+	aria-labelledby={titleId}
+>
 	<!-- Intitulé : titre et description du modèle (branche, notion et sous-notion
 	     sont affichées par la page : liste des notions, section) -->
 	<!-- flex-1 : la zone s'étire, les cartes d'une même rangée commencent à la même hauteur -->
 	<div class="flex flex-1 items-start justify-between gap-2" data-tile-heading>
 		<div class="min-w-0">
-			<div class="tile-title">
+			<div class="tile-title" id={titleId}>
 				<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
 			</div>
 			<!-- Les modèles d'une même rubrique partagent souvent leur titre : la

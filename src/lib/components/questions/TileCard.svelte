@@ -36,12 +36,19 @@
 
 	let gradeBadge = $derived(formatGradeBadge(template.grades ?? []));
 	let list = $derived(allowedVariations(template, variations));
-	let previewIndex = $derived(preview.selectedVariationIndex ?? list[0]);
+	// Aperçu d'une variation que le prof n'a pas gardée → première variation gardée
+	let previewIndex = $derived(
+		preview.selectedVariationIndex !== undefined && list.includes(preview.selectedVariationIndex)
+			? preview.selectedVariationIndex
+			: list[0]
+	);
 	// Choix qui n'est plus permis (variations changées) → retour à l'aperçu
 	let current = $derived(chosen !== null && list.includes(chosen) ? chosen : previewIndex);
 	let position = $derived(Math.max(0, list.indexOf(current)));
 	let shown = $derived(
-		current === previewIndex ? preview : variationExample(template, current, generateInstance)
+		current === preview.selectedVariationIndex
+			? preview
+			: variationExample(template, current, generateInstance)
 	);
 
 	function step(delta: number) {
@@ -91,6 +98,7 @@
 
 <style>
 	.variation-arrow {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -98,6 +106,13 @@
 		height: 1.5rem;
 		border-radius: 9999px;
 		color: inherit;
+	}
+
+	/* Zone de clic de 40 px (au doigt) sans grossir la ligne fine */
+	.variation-arrow::before {
+		content: '';
+		position: absolute;
+		inset: -0.5rem;
 	}
 
 	.variation-arrow:hover {

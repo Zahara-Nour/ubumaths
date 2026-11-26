@@ -11,6 +11,7 @@ import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
 import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { variationExample } from '#lib/questions/series-draw.ts';
 import type { QuestionTemplate } from '#lib/questions/types.ts';
 import type { SeriesItem } from '#lib/validation/series.ts';
 import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
@@ -310,5 +311,56 @@ describe('CartQuestionCard — corbeille, niveaux, variations', () => {
 		);
 		const flip = page.getByRole('button', { name: 'Voir la correction' }).first().element();
 		expect(flip.getBoundingClientRect().width).toBe(2 * rem);
+	});
+});
+
+/** Chantier `automaths`, PR A : points de la revue (2026-11-26) */
+describe('CartQuestionCard — points de la revue', () => {
+	it('aperçu d’une variation que le prof n’a pas choisie : la carte montre une variation choisie', async () => {
+		// Aperçu tiré sur la variation 0, mais le prof n'a gardé que la 1 et la 2
+		const three = {
+			...TEMPLATE_WITH_ID,
+			variations: [
+				TEMPLATE_WITH_ID.variations[0],
+				TEMPLATE_WITH_ID.variations[1],
+				TEMPLATE_WITH_ID.variations[1]
+			]
+		};
+		const preview = variationExample(three, 0, generateInstance);
+		expect(preview?.selectedVariationIndex).toBe(0);
+		const props = {
+			template: three,
+			instance: preview!,
+			onIncrementQuantity: vi.fn(),
+			onDecrementQuantity: vi.fn(),
+			onUpdateQuantity: vi.fn(),
+			onUpdateDelay: vi.fn(),
+			onRemove: vi.fn()
+		};
+		const statement = (container: HTMLElement) =>
+			container.querySelector('.flip-card-front .statement-content')?.textContent ?? '';
+		const all = await render(CartQuestionCard, { ...props, item: ITEM });
+		const previewText = statement(all.container);
+		all.unmount();
+
+		const screen = await render(CartQuestionCard, {
+			...props,
+			item: { ...ITEM, variations: [1, 2] }
+		});
+
+		const counter = screen.container.querySelector<HTMLElement>('[data-tile-variations]');
+		expect(counter?.textContent).toContain('1/2');
+		await expect.poll(() => statement(screen.container)).not.toBe('');
+		expect(statement(screen.container)).not.toBe(previewText);
+	});
+
+	it('la tuile est un groupe nommé par le titre du modèle', async () => {
+		const screen = await renderCard();
+
+		const tile = screen.getByRole('group', { name: TEMPLATE.title, exact: false });
+		await expect.element(tile).toBeInTheDocument();
+		await expect
+			.element(tile.getByRole('button', { name: 'Retirer de ma série' }))
+			.toBeInTheDocument();
 	});
 });

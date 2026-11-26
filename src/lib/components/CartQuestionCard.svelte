@@ -77,6 +77,8 @@
 		distinctMax?: number | null;
 	} = $props();
 
+	const titleId = $props.id();
+
 	function handleIncrementDelay() {
 		const newDelay = item.delay + DELAY_STEP;
 		if (newDelay <= DELAY_MAX) onUpdateDelay(item.templateId, newDelay);
@@ -88,11 +90,19 @@
 	}
 </script>
 
-<div class="group flex flex-col gap-3">
+<!-- Groupe nommé par le titre : les boutons de toutes les tuiles portent le même nom -->
+<div
+	class="group flex flex-col gap-3"
+	role="group"
+	aria-labelledby={template ? titleId : undefined}
+	aria-label={template ? undefined : 'Modèle retiré'}
+>
 	<!-- Intitulé : titre et difficulté du modèle -->
 	{#if template}
 		<div class="flex items-start justify-between gap-2 text-sm font-medium">
-			<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
+			<div id={titleId}>
+				<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
+			</div>
 			<span class="shrink-0 text-xs text-muted-foreground" title="Difficulté">{template.level}</span
 			>
 		</div>
