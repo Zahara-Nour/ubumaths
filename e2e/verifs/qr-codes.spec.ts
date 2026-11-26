@@ -2,7 +2,14 @@ import { execFileSync } from 'node:child_process';
 import { readdir, readFile } from 'node:fs/promises';
 import type { Locator } from '@playwright/test';
 import { expect, test, type Page } from '@playwright/test';
-import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import {
+	assertLocalServerEnv,
+	login,
+	sql,
+	TEACHER,
+	withFirstVersion,
+	LATEST_VERSION_OF
+} from './helpers/carnet';
 import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 import { encodeQr, QR_BORDER, QR_COLORS } from '../../src/lib/qr/qr-code';
 import {
@@ -466,8 +473,10 @@ interface FicheDecor {
 async function createFicheDecor(): Promise<FicheDecor> {
 	const run = Date.now().toString(36);
 	const exercise = await sql<{ id: string }>(
-		`insert into exercises (title, created_by, is_public, slug, category, variations)
-		 values ('Verifs QR', $1, true, $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, created_by, is_public, slug, category, variations)
+			 values ('Verifs QR', $1, true, $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			'11111111-1111-4111-8111-111111111111',
 			`verifs-qr-${run}`,
@@ -486,7 +495,8 @@ async function createFicheDecor(): Promise<FicheDecor> {
 		['11111111-1111-4111-8111-111111111111']
 	);
 	await sql(
-		`insert into worksheet_exercises (worksheet_id, exercise_id, position) values ($1, $2, 1)`,
+		`insert into worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, position)
+		 values ($1, $2, ${LATEST_VERSION_OF('$2')}, 1)`,
 		[worksheet[0].id, exercise[0].id]
 	);
 	const assignment = await sql<{ id: string }>(

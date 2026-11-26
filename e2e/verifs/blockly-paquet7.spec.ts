@@ -1,5 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import {
+	ADMIN,
+	assertLocalServerEnv,
+	login,
+	sql,
+	TEACHER,
+	withFirstVersion
+} from './helpers/carnet';
 import {
 	createWorksheet,
 	pdfText,
@@ -797,8 +804,10 @@ const sourceExercices = (): string =>
 
 async function exercice(titre: string, enonce: string): Promise<{ id: string; title: string }> {
 	const rows = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			titre,
 			TEACHER_ID,

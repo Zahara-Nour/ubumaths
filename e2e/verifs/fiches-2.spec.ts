@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { assertLocalServerEnv, login, sql, TEACHER, withFirstVersion } from './helpers/carnet';
 import {
 	chooseOption,
 	createWorksheet,
@@ -98,8 +98,10 @@ async function createExercise2(
 	answers?: string
 ): Promise<FicheExercise> {
 	const rows = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ($1, 'verifs2', '{}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ($1, 'verifs2', '{}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			title,
 			TEACHER_ID,

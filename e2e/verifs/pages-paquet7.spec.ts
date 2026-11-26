@@ -14,7 +14,8 @@ import {
 	login,
 	sql,
 	TEACHER,
-	ADMIN
+	ADMIN,
+	withFirstVersion
 } from './helpers/carnet';
 import {
 	assignWorksheet,
@@ -76,8 +77,10 @@ async function exercice(
 	variables?: { name: string; expression: string }[]
 ): Promise<{ id: string; title: string }> {
 	const rows = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			titre,
 			TEACHER_ID,
