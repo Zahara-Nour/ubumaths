@@ -2,14 +2,32 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #2875 (et #3149, E73)._
+_Mis à jour le 2026-11-26, phase 0 « cartes + recherche » validée._
 
-- **État** : découpage initial livré (#2842, #2847, #2854, #2866, #2875) et en prod. 2026-11-25 : nouvelle demande de David (cartes + recherche), phase 0 EN COURS, rien codé, aucun worktree.
-- **Prochaine action** : obtenir les réponses de David (§ 2026-11-25 ci-dessous), puis 2 PR : (A) cartes (badge niveau, flèches de variations, bouton de retournement plus petit, hauteur × 1,5, corbeille dans Ma série) ; (B) recherche par rangs.
-- **En attente de David** : correction des questions dans le groupe replié (avec le programme) ? tags (`resource_tags`) sur les modèles = chantier à part, plus tard ?
-- **Tranché** : choix des QCM hors recherche ; badge « CM1–CM2 » si niveaux consécutifs, sinon « CM1 · 6e » ; difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points) ; vérification des niveaux face aux points = futur chantier à part (David, 2026-11-26), hors `automaths`.
-- **Pièges en cours** : séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
-- **Worktree / branche** : aucun (à créer : `../ubumaths-wt-automaths-cartes`, `feat/automaths-cartes`).
+- **État** : découpage initial livré et en prod. Phase 0 des PR A (cartes) et B (recherche) VALIDÉE par David le 2026-11-26 (§ ci-dessous). Rien codé, aucun worktree.
+- **Prochaine action** : PR A — `git worktree add -b feat/automaths-cartes ../ubumaths-wt-automaths-cartes origin/main`, tests rouges d'abord, puis PR B (`feat/automaths-recherche`).
+- **En attente de David** : rien.
+- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
+- **Worktree / branche** : aucun.
+
+### 2026-11-26 — phase 0 validée par David (« je valide »)
+
+PR A — cartes (tuile du catalogue `QuestionPreviewCard` et tuile de Ma série `CartQuestionCard`) :
+
+1. Ligne fine au-dessus de la carte : à gauche badge des niveaux (`grades`) : « CM1–CM2 » si niveaux consécutifs, sinon « CM1 · 6e » ; à droite « ‹ 2/5 › » si le modèle a au moins 2 variations, change seulement l'exemple affiché (rien dans la série).
+2. Difficulté (`level`) gardée telle quelle.
+3. Bouton de retournement 48 → 32 px dans les tuiles seulement (la carte de l'élève ne change pas).
+4. Hauteur des cartes × 1,5 : 12rem → 18rem, 9rem → 13,5rem sur téléphone (`TILE_CARD_HEIGHT`, `.tile`).
+5. Ma série : corbeille entre durée et répétitions, « Retirer de ma série », sans confirmation.
+
+PR B — recherche :
+
+1. Raccourci(s) en tête quand le mot cherché est le nom d'une notion ou sous-notion (3 au plus) → y aller.
+2. Bons résultats : mot dans le titre, la description ou l'énoncé (sans figures, formules, variables, ni choix des QCM). Plus le nom de sous-notion. Groupés par sous-notion, groupe le plus pertinent d'abord.
+3. Groupe replié en bas : mot seulement dans la correction ou le texte d'un point du programme.
+4. Singulier et pluriel confondus (-s, -x, -aux/-al).
+5. Consigne et coup de pouce : non (rien ou presque). Tags : futur chantier (avec la vérification des niveaux).
+6. Un prof tape aussi bien un thème qu'une compétence.
 
 ### 2026-11-25 — nouvelle demande de David, phase 0 en cours
 

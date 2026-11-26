@@ -7,7 +7,7 @@ _Mis à jour le 2026-11-26, lot écrit (aucune PR)._
 - **État** : phase 0 validée (« je valide », 2026-11-26) ; lot écrit et vert : 3 neufs (`scripts/questions/idees-1re-variations-neufs/`, sans id) et V1 ajoutée à 2b382069 (`…-publies/`) ; joué en base locale, rendu vu dans l'aperçu admin.
 - **Prochaine action** : quand David a lancé `create-questions --publier` en prod, commiter les ids, puis générer les migrations (`migration-rangement.ts` et `migration-contenu.ts --dir …`), `security-auditor`, ouvrir la PR.
 - **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-1re-variations-neufs --publier` depuis ce worktree (brouillons en prod).
-- **Pièges en cours** : choix + tableau à compléter dans une même variation = réponse du choix perdue ; flèche cachée près de `||` refusée (outils-manquants 59 et 62) ; pas d'erreur prévue dans une case de tableau ; ids locaux à retirer après un `--publier` local.
+- **Pièges en cours** : choix + tableau à compléter dans une même variation = réponse du choix perdue ; flèche cachée près de `||` refusée (outils-manquants 59 et 63) ; pas d'erreur prévue dans une case de tableau ; ids locaux à retirer après un `--publier` local.
 - **Worktree / branche** : `../ubumaths-wt-idees-1re-variations`, `feat/idees-1re-variations`.
 
 ## Historique
@@ -40,7 +40,7 @@ _Mis à jour le 2026-11-26, lot écrit (aucune PR)._
   - N1 V0 et V1 (homographiques) : case du numérateur de f′ (erreurs prévues : ad + bc, uv′ − u′v ;
     k seul, signe moins oublié) + choix parmi quatre phrases de variations ; le tableau est au
     corrigé. Une flèche ne se cache pas près d'une double barre, et un choix à côté d'un tableau à
-    compléter perd sa bonne réponse (outils-manquants 59, 62).
+    compléter perd sa bonne réponse (outils-manquants 59, 63).
   - N1 V2 (k/(x² + c)) : un seul choix « nature + valeur » (quatre options), pas de Oui / Non.
   - N1 V3 : tableau à 6 cases (signes et flèches extérieurs, f(x₁), f(x₂)) ; signes et flèches
     intérieurs visibles. Erreurs prévues refusées dans les cases de tableau : elles sont en V4.

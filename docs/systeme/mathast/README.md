@@ -442,6 +442,9 @@ celui que traduit l'atelier (`cli/web/french-errors.ts`). `INVALID_UNIT` n'exist
 `)`, `]` ou `}` attendu (`(1+2`, `5[m`). `MISSING_OPERATOR` : un nombre juste après un facteur, même périmètre dans le maison et le LaTeX
 (refus « nombre après un facteur ») : lettre, nombre, `)`, `]`, `}`, `|` (`x2`, `x 2`, `(1+x)2`, `x^2 3`,
 `|x|2`, `2[m] 3`, `\sqrt{2}3`).
+Ce refus se reconnaît à son texte par `numberAfterFactorIn` (`parser/number-after-factor.ts`), qui rend
+le nombre mis en cause : le juge des réponses s'en sert pour dire à l'élève quoi écrire
+([questions.md](../questions.md), étape « Valeur »).
 `LEADING_DECIMAL_POINT` (maison seul ; le LaTeX lit `.5` ; un `.` collé à un facteur, `1.2.3`, `x.5`,
 n'en est pas un) a un texte nouveau, « Missing zero before the
 decimal point (write 0.5) », traduit par l'atelier. `UNEXPECTED_TOKEN` reste en dernier recours.

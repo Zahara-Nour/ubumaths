@@ -396,28 +396,20 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
 
 ### Écarts connus
 
-Notés pendant le rangement (chantier demo-debug), pas traités :
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Contenu pédagogique encore géré par l'admin** : catalogue des cartes VIP
-  (`/dashboard/admin/vip-cards`, `api/admin/vip-cards/`, privilèges de classe) et lexique
-  (`/dashboard/admin/dictionnaire`, `api/admin/dictionnaire/`). Règle : au prof. David : « on le
-  fera plus tard ».
-- **`/dev/saisie-naturelle`** : prototype jetable dont le travail est fait (#1355), candidat à la
-  suppression ; à trancher par David.
-- **Scripts d'essai de constructions et brouillons de `/constructions`** : doublon possible, à
-  revoir.
-- **Images de 4 cartes VIP de Mathémo** (Voyelles Révélées, Multiplicateur x1.5, Lettre Bonus,
-  Retour en Arrière) : en prod, `image_path` en `/images/vip-cards/…`, dossier absent de
-  `static/` ; sans doute cassées, pas vérifié dans le navigateur.
-- **`angle_polaire` rend des degrés même en mode radians** (cos(3θ) faux dès qu'on combine les
-  deux) ; `dsl-builtins.md` dit « en radians », faux en mode degrés. Les courbes trigonométriques
-  de l'aide à l'écriture déclarent `unite_angle("radians")`, gardé par
-  `courbes-trigo-radians.test.ts`.
-- **Révisions espacées** : `calculateNewStability` (`src/lib/srs/fsrs.ts`) ignore la note après
-  la 1re révision ([srs.md](srs.md), futur chantier `fsrs`) ; `/demo/questions` n'affiche que la
-  1re, non touchée.
+### À savoir (voulu)
+
+- **`/dev/saisie-naturelle`** : prototype jetable dont le travail est fait (#1355), qui garde le
+  panneau « sous le capot » du champ qui sert l'Atelier ; sa suppression est à trancher par David.
+- **Scripts d'essai de constructions et brouillons de `/constructions`** : deux rôles distincts
+  (scripts DSL du prof seul pour `constructions/essais`, brouillons JSON/DSL enregistrés pour
+  `/constructions`).
+
+### Points non vérifiés
+
 - **Sur téléphone**, les flèches du `Deck` chevauchent parfois le bas d'une diapositive de
-  `/demo/diaporama` (comportement du Deck).
+  `/demo/diaporama` (comportement du Deck). Rendu non vérifié par l'audit du 2026-11-24.
 
 ---
 
@@ -443,10 +435,7 @@ faute d'y être.
 
 ### Écarts connus
 
-- **Le réglage admin ne s'applique qu'au navigateur de l'admin.** Le store se range dans
-  `localStorage` (clé `listNumberingConfig`), rien en base. Élèves et profs voient toujours
-  `DEFAULT_CONFIG`. La page de réglages ne le dit pas.
-- La prop `listNumberingOverride` de `MarkdownRenderer` n'a aucun appelant.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
 ---
 
@@ -510,30 +499,8 @@ faute d'y être.
 
 ### Écarts connus
 
-Exports sans appelant hors tests (`git grep -lw <nom> -- src`, `__tests__` exclus) :
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- `utils.ts` : `flyAndScale` ;
-- `format.ts` : `formatNumber` ;
-- `worksheet-constants.ts` : `formatDate` ;
-- `file-upload.ts` : `deleteChatAttachment`, `validateFileType`, `getFileIcon` (quatre fichiers
-  redéfinissent leur propre `getFileIcon`) ;
-- `filename.ts` : `getFilenameWithoutExtension` ;
-- `mathlive-fonts.ts` : `initMathFonts`, `preloadAllFonts` ;
-- `search.ts` : `sanitizeSearchQuery` (appelée seulement par `validateSearchQuery`, son export
-  ne sert pas) ;
-- `constants/deadlines.ts` : `MS_PER_DAY`, `RECENT_EXERCISES_LIMIT`, `MAX_SEARCH_LENGTH`,
-  `DEFAULT_PAGE_SIZE`, `MAX_PAGE_SIZE` (`almanach/calendar.ts`, `utils/class-sessions.ts` et
-  `/dashboard/student/materials` redéfinissent les leurs).
+### Points non vérifiés
 
-Fichiers morts : `JsonViewer.svelte`, `supabase-test.ts` (et donc `supabaseClient.ts`, son seul
-appelant), `src/lib/index.ts` (vide). `DynamicMathField`, `LoggerDemo`, `ToastDemo` ne vivent que
-pour `/dev/bancs-essai`.
-
-Doublons :
-
-- **`formatDate` défini 81 fois** (`git grep -n "function formatDate" -- src`, tests exclus) :
-  des copies locales dans les pages et composants, plus l'exemplaire exporté et inutilisé de
-  `worksheet-constants.ts` et celui de `templates/templateEngine.ts`.
-- `slugify` : `utils/string.ts` et une copie privée dans `exercises/slug-generator.ts`.
-- Trois enveloppes CodeMirror chargées à la demande, presque identiques : `CodeViewer`,
-  `LaTeXEditor`, `rich-text/MarkdownCodeEditor` (plus `constructions/components/JsonEditor`).
+- `DynamicMathField`, `LoggerDemo` et `ToastDemo` ne vivent que pour `/dev/bancs-essai`.

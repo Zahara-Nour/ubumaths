@@ -1,5 +1,8 @@
 # Recollecte des écarts : docs système contre `ecarts-a-trier.md` (2026-11-24)
 
+> **Archivé le 2026-11-26.** Ce fichier ne fait plus foi : depuis le 2026-11-24, un écart s'écrit dans
+> [docs/ecarts/registre.md](../../ecarts/registre.md) seul (`pnpm ecarts`). Gardé pour l'historique.
+
 Lecture seule, rien vérifié dans le code. Suivi = `docs/wip/ecarts-a-trier.md` + `ecarts-verifs-progress.md` (E1-E52) + `rgpd-securite-constats.md`.
 Nature : V bug visible · L bug latent · M code mort · C commentaire/doc périmée · D décision produit · T RGPD-sécurité (proposée, à confirmer).
 

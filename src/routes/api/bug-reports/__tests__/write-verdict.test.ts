@@ -293,17 +293,22 @@ describe('POST /api/bug-reports/[reportId]/screenshot', () => {
 		vi.resetModules();
 	});
 
-	function screenshotRequest(): Request {
+	const OLD_PATH = `${USER_ID}/${REPORT_A}/1700000000000.png`;
+
+	function screenshotRequest(fileName = 'capture.png'): Request {
 		const body = new FormData();
-		body.append('image', new File([PNG_BYTES], 'capture.png', { type: 'image/png' }));
+		body.append('image', new File([PNG_BYTES], fileName, { type: 'image/png' }));
 		return new Request('http://localhost', { method: 'POST', body });
 	}
 
-	function createClient(updatedRows: unknown[]) {
+	function createClient(updatedRows: unknown[], screenshotPath: string | null = null) {
 		return createWriteVerdictSupabase({
 			profiles: profile('student'),
 			bug_reports: {
-				single: { data: { id: REPORT_A, user_id: USER_ID, screenshot_path: null }, error: null },
+				single: {
+					data: { id: REPORT_A, user_id: USER_ID, screenshot_path: screenshotPath },
+					error: null
+				},
 				awaited: { data: updatedRows, error: null }
 			}
 		});
@@ -340,5 +345,51 @@ describe('POST /api/bug-reports/[reportId]/screenshot', () => {
 
 		expect(await response.json()).toMatchObject({ success: true });
 		expect(removedPaths).toEqual([]);
+	});
+
+	it('remplacement refusé → l’ancienne capture reste au bucket', async () => {
+		const { client, bucket, removedPaths } = createClient([], OLD_PATH);
+		const { POST } = await import('../[reportId]/screenshot/+server');
+
+		await expectHttpStatus(
+			() =>
+				POST({
+					params: { reportId: REPORT_A },
+					request: screenshotRequest(),
+					locals: createLocals(client)
+				} as never),
+			403
+		);
+
+		expect(removedPaths).toEqual([[bucket.upload.mock.calls[0]?.[0]]]);
+	});
+
+	it('remplacement réussi → l’ancienne capture part, après le rattachement', async () => {
+		const { client, removedPaths } = createClient([{ id: REPORT_A }], OLD_PATH);
+		const { POST } = await import('../[reportId]/screenshot/+server');
+
+		const response = await POST({
+			params: { reportId: REPORT_A },
+			request: screenshotRequest(),
+			locals: createLocals(client)
+		} as never);
+
+		expect(await response.json()).toMatchObject({ success: true });
+		expect(removedPaths).toEqual([[OLD_PATH]]);
+	});
+
+	it('nom de fichier forgé → l’extension vient du type, le chemin garde trois segments', async () => {
+		const { client, bucket } = createClient([{ id: REPORT_A }]);
+		const { POST } = await import('../[reportId]/screenshot/+server');
+
+		await POST({
+			params: { reportId: REPORT_A },
+			request: screenshotRequest('capture.a/b'),
+			locals: createLocals(client)
+		} as never);
+
+		expect(bucket.upload.mock.calls[0]?.[0]).toMatch(
+			new RegExp(`^${USER_ID}/${REPORT_A}/\\d+\\.png$`)
+		);
 	});
 });

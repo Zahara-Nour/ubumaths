@@ -221,9 +221,10 @@ spec archivée [sprint1-lexique-spec.md](../archive/wip/sprint1-lexique-spec.md)
 
 ## Écarts connus
 
-- Le journal du chiffrement est encore sous `docs/wip/` alors que les lots sont livrés : à archiver
-  comme ceux de l'Almanach et du Shtam (à confirmer par David : récits des dépêches à relire).
-- Shtam : 54 articles dans le dépôt, dont 6 parus au 2026-10-10 et 48 datés du futur (parution
-  programmée jusqu'au 2027-03-29).
-- « lexique » : le mot désigne le lore (`lore.ts`, `docs/Chiphres/lexique-pataphysique.md`), mais
-  le module des mots cliquables s'appelle `src/lib/dictionary/` (voir [dictionnaire.md](dictionnaire.md)).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
+- Le journal du chiffrement est encore sous `docs/wip/` alors que les lots sont livrés : à archiver comme ceux de l'Almanach et du Shtam (à confirmer par David : récits des dépêches à relire).
+- Shtam : 54 articles dans le dépôt, dont 6 parus au 2026-10-10 et 48 datés du futur (parution programmée jusqu'au 2027-03-29).
+- « lexique » : le mot désigne le lore (`lore.ts`, `docs/Chiphres/lexique-pataphysique.md`), mais le module des mots cliquables s'appelle `src/lib/dictionary/` (voir [dictionnaire.md](dictionnaire.md)).

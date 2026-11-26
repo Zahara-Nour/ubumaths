@@ -94,4 +94,4 @@ Rappeler au prof de supprimer le fichier de son poste une fois la saisie faite.
 
 ## Écarts connus
 
-Aucun.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

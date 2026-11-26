@@ -395,51 +395,16 @@ pendant un `@pause`, à la fin de la construction et après une erreur, 6).
 
 ## 9. Écarts et reste à faire
 
-Faits relevés dans le code le 2026-10-22.
+Les écarts de cette zone sont au [registre des écarts](../../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-### Fonctions manquantes
+### À savoir (voulu)
 
-| Point                                                                                                                        | Où                                          |
-| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| Contrainte `@mesure` : trois voies (`milieu`, `bissectrice`, `mediatrice`) ; pas `perpendiculaire` (au collège : `@equerre`) | `choreographies/types.ts:18`, `registry.ts` |
-| Sept builtins chorégraphiés seulement (`cercle`, `triangle_equilateral`… refusent les décorateurs)                           | `registry.ts`                               |
-| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                                           | `types.ts:83`                               |
+- La visibilité finale d'une instruction chorégraphiée s'applique au pas suivant ; le lecteur ne la force qu'en fin de lecture (`executor.ts`, `ConstructionPlayer.svelte`). Choix assumé : on veut voir le résultat complet avant le nettoyage.
+- Les marqueurs d'angle droit de la double perpendiculaire sont des traces de type `marker`, comme dans les autres chorégraphies : visibles par défaut en `@complet`, affichés en `@squelette +marqueurs` (`parallele.ts`, `visibility.ts`).
+- `starPairStems` (`parallele.ts`) pourrait aller jusqu'à Q\*/R\* si toutes les lettres de C à P sont prises : cas théorique.
+- Les journaux archivés `archive/wip/v1-choreographies-substeps-progress.md` (`ctx.sub` non implémenté, `cercle_circonscrit` en stub, `transporte` en 6 sous-étapes) et `archive/wip/constructions-v2/progress.md` (« les constructions JSON existantes fonctionnent toujours ») sont des historiques : aujourd'hui `ctx.sub` et `cercle_circonscrit` sont implémentés (§ 4), `transporte` a 7 sous-étapes, et `/constructions/[id]` affiche « n'est plus supporté ».
 
-### Comportements connus
-
-| Point                                                                                                                                                                                                                                                                                                                   | Où                                                                  |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| La visibilité finale d'une instruction chorégraphiée s'applique au pas suivant ; le lecteur ne la force qu'en fin de lecture                                                                                                                                                                                            | `executor.ts:235`, `:309-318` ; `ConstructionPlayer.svelte:202-215` |
-| Chaque changement de pas rejoue tout depuis le début, et `reset()` refait la pré-simulation entière : coût quadratique sur un long script                                                                                                                                                                               | `ConstructionPlayer.svelte:160-165` ; `executor.ts:576`             |
-| `PPU = 40` codé deux fois dans l'exécuteur, en double de `INITIAL_PPU`                                                                                                                                                                                                                                                  | `executor.ts:1203`, `:1322` ; `ConstructionCanvas.svelte:60`        |
-| Le genre `compass-measure` sert aussi de « déplacement sans tracé » de l'équerre et de la règle                                                                                                                                                                                                                         | `perpendiculaire.ts:973-1245`, `parallele.ts:437-811`, `:1200`      |
-| 3 constructions en prod (« Ajouter 19 », « Soustraire 99 », « Axes de symétrie… carré ») contiennent des `@cacher("T_3")`, `@cacher("arc_9")`… sans effet, écrits par l'ancien convertisseur : ce sont des identifiants IEP sans nom dans le script, aucune réécriture automatique possible (ré-import depuis leur XML) | table `constructions` (mesure du 2026-10-23)                        |
-
-Relevés pendant le chantier du 2026-10-22 → 24, restés ouverts :
-
-| Point                                                                                                                                                                                | Où                              |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| L'étiquette d'un segment nommé (`s = segment(A, B)`) s'affiche au milieu du segment, donc sur celle du milieu I. Aucun segment nommé en prod ; suite possible : `etiquette="aucune"` | rendu des étiquettes            |
-| `@arc_milieu` refuse l'angle plat (milieu de [A′B′] = V) et renvoie vers `@arcs_egaux` ou `@mesure` : écart à confirmer par David                                                    | `bissectrice.ts`                |
-| Les marqueurs d'angle droit de la double perpendiculaire ne sont visibles qu'en `@complet`                                                                                           | `parallele.ts`                  |
-| `mediatrice(s)` sur un segment nommé est refusé par le builtin ; un identifiant avec prime (`M'`) est refusé à la lecture                                                            | `builtins.ts`, analyseur du DSL |
-| `starPairStems` pourrait aller jusqu'à Q\*/R\* si toutes les lettres de C à P sont prises (théorique)                                                                                | `parallele.ts`                  |
-
-### Dette de code
-
-| Point                                                                       | Où                      |
-| --------------------------------------------------------------------------- | ----------------------- |
-| `applyTraceStyle` écrit dans la `Map` privée de `Figure` par un transtypage | `visibility.ts:107-121` |
-
-### Commentaires et docs périmés
-
-| Affirmation                                                                                                       | Réalité                                               |
-| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `archive/wip/v1-choreographies-substeps-progress.md:219` : `ctx.sub` non implémenté, `cercle_circonscrit` en stub | implémentés (§ 4)                                     |
-| même journal `:221` : `transporte` en 6 sous-étapes                                                               | 7                                                     |
-| `archive/wip/constructions-v2/progress.md:151` : « les constructions JSON existantes fonctionnent toujours »      | `/constructions/[id]` affiche « n'est plus supporté » |
-
-### Ce que l'ancien `src/lib/constructions/` fournit encore
+Ce que l'ancien `src/lib/constructions/` fournit encore :
 
 | Fourniture                                     | Utilisée par                                                                          |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -448,6 +413,4 @@ Relevés pendant le chantier du 2026-10-22 → 24, restés ouverts :
 | `ConstructionPlayer` JSON, `JsonEditor`        | `constructions/conversion/+page.svelte:21` ; `QuestionTemplateForm.svelte:212`        |
 | Instruments `Ruler`, `Protractor`, `SetSquare` | `whiteboard/components/InstrumentLayer.svelte:13-15`                                  |
 
-Les constructions au format JSON ne se jouent plus nulle part hors de l'aperçu de conversion, et
-l'API ne permet pas de changer `format` (`api/constructions/[id]/+server.ts:29-40`) ; la migration
-passe par `scripts/migrate-constructions-to-dsl.ts` (clé de service).
+L'API ne permet pas de changer `format` (`api/constructions/[id]/+server.ts:29-40`) ; la migration passe par `scripts/migrate-constructions-to-dsl.ts` (clé de service).

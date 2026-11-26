@@ -128,6 +128,10 @@ statiques de `MarkdownRenderer.svelte` et échoue si l'un mène à `isomorphic-d
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 - **`transformMathHtml`, `sanitizeHtmlWithMath`, `linkifyResourceReferences` — retirés le
   2026-11-08** : le HTML du cahier de texte (TipTap → `<math-field read-only>`, références en
   liens) n'avait plus de lecteur depuis le passage du cahier en ubumark (chantier cahier-ubumark,
@@ -160,30 +164,6 @@ est {{score}}.</p>` → `<p> .</p>` ; `$\sqrt{\frac{1}{2}}$ fin` → `$ fin` (ap
     commandes à attributs : chat (`RestrictedRichText`), signalements d'erreur (description),
     carnet d'élève lu par un autre (`isForeignStudentNotebook`), réponses d'élèves
     (`student-answer-safety.ts`), Atelier (`safe-latex.ts`).
-  - Restes faibles, notés par l'audit de #2488 : (1) le lien public du cahier
-    (`JournalContent`, lecteurs anonymes) rendait les formules du prof sans filtre — **corrigé le
-    2026-11-08** (décision de David, comme les vidéos) : formule à commande à attributs en texte,
-    bloc spécial qui en porte une remplacé (`neutralizeUnsafeBlocks`) ; (2) le rendu
-    restreint refuse par liste NOIRE (`UNSAFE_MATH_COMMANDS`) : une macro par défaut de MathLive
-    qui se développerait en commande à attributs n'est pas rattrapée par
-    `mathlive-commandes-a-valeur.test.ts`.
 - **Énigmes : HTML enregistré, lu comme du markdown — corrigé le 2026-11-08** (vu le
   2026-10-25) : `RiddleForm.svelte` écrit désormais en ubumark (chantier cahier-ubumark, PR 4).
   Les 2 énigmes de prod, des essais en HTML, n'ont pas été converties : David les a supprimées après le déploiement (v0.77.0, 2026-11-08).
-- **`isTrivialHtmlWrapper` n'est appelé nulle part** hors de ses tests
-  (`git grep -n isTrivialHtmlWrapper -- src` : la définition et `__tests__/markdown-paste.test.ts`).
-  `handlePaste` ne lit jamais `text/html` (`git log -S "text/html"` sur le fichier : aucun
-  commit) : l'en-tête du fichier promet de « préserver le collage HTML natif », mais un
-  copier depuis Google Docs dont le texte brut ressemble à du markdown est converti depuis ce
-  texte brut, la mise en forme HTML est perdue.
-- **Exports sans appelant hors tests** : `getDetectedPatterns` (`markdown-detection.ts`),
-  `RichTextEditorProps` (`types.ts`), `isAlreadyEscaped` et `escapeHtmlSafe`
-  (`html-escape.ts`), `NotificationSanitizeConfig` (`sanitize-configs.ts`).
-- **`containsDangerousHtml` existe deux fois** : `src/lib/utils/sanitize.ts` (sans appelant) et
-  `src/lib/server/sanitization.ts` (celle qu'on utilise). De même, `src/lib/utils/errorMonitoring.ts`
-  a sa propre `sanitizeUrl` locale, sans rapport avec celle de `sanitize-url.ts`.
-- **`escapeHtml` existe en cinq exemplaires** : `src/lib/utils/html-escape.ts`,
-  `src/lib/components/markdown/utils.ts`, `src/lib/email-templates/parental-consent.ts`,
-  `src/lib/components/geometry/GeometryCanvas.svelte`, `src/lib/whiteboard/core/pdf-export.ts`.
-- `config.ts` et `RichTextEditor.svelte` citent encore `FormRichTextEditor.svelte`, fusionné
-  dans `RichTextEditor` et absent du dépôt.

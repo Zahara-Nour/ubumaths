@@ -226,6 +226,10 @@ Historique : [canal privé du chat](../archive/wip/realtime-chat-prive-progress.
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
 - **`user_presence` n'est pas publiée** (gardé par `realtime-publication.test.ts` : la publier
   diffuserait l'UUID d'un compte supprimé). Réglé le 2026-11-03 (écart T1) : la présence des amis
   est relue toutes les 60 s, sans canal.
