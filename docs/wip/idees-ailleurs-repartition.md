@@ -160,48 +160,76 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| b73923a1 Choisir la méthode dans une figure usuelle                 | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 9c7f7ef0 Produit scalaire par projection orthogonale                | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| d787d8c0 Produit scalaire avec les normes                           | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| fe407c88 Produit scalaire avec les coordonnées                      | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| f2cc01fc Orthogonaux ou non ?                                       | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 6058963e Produit scalaire : résoudre un problème géométrique        | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| bf5dadf6 Angle de deux vecteurs                                     | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| d192da3e Espace : équation cartésienne d'un plan (calculer d)       | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| d6938108 Espace : coordonnées de vecteurs et de points              | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| ac94a453 Espace : décomposer un vecteur, vecteurs coplanaires       | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 33be404b Espace : lire une représentation paramétrique de droite    | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 2b240d8c Espace : trouver un vecteur directeur ou un vecteur normal | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| eae25eba Espace : projeté orthogonal d'un point sur une droite      | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 4f056eb3 Espace : distance d'un point à une droite                  | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| aaa16821 Espace : aire et volume en repère                          | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 31b49cdf Espace : distance d'un point à un plan                     | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| b28ed4fa Deux épreuves                                              | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| e73b947f Probabilité d'un évènement                                 | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| 247fddd1 Évènement contraire                                        | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| e0ccaf84 Résoudre un petit exercice de proportionnalité             | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 7981dab0 Repérer double, moitié, quadruple, quart et tiers          | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 52bf3fb9 Calculer la longueur réelle                                | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 5e4e5e9d Calculer la longueur sur une carte                         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 06df72fd Reconnaître des situations de proportionnalité             | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
-| 04b1cc7f Puissance d'un produit                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ?        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                                           | Session                                                                | Depuis     | Idées laissées par d'autres sessions |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------- | ------------------------------------ |
+| b73923a1 Choisir la méthode dans une figure usuelle                                | `idees-1re-produit-scalaire`                                           | 2026-11-26 |                                      |
+| 9c7f7ef0 Produit scalaire par projection orthogonale                               | `idees-1re-produit-scalaire`                                           | 2026-11-26 |                                      |
+| d787d8c0 Produit scalaire avec les normes                                          | `idees-1re-produit-scalaire`                                           | 2026-11-26 |                                      |
+| fe407c88 Produit scalaire avec les coordonnées                                     | `idees-1re-produit-scalaire`                                           | 2026-11-26 |                                      |
+| f2cc01fc Orthogonaux ou non ?                                                      | `idees-1re-produit-scalaire`                                           | 2026-11-26 |                                      |
+| 6058963e Produit scalaire : résoudre un problème géométrique                       | `idees-1re-produit-scalaire`                                           | 2026-11-26 |                                      |
+| bf5dadf6 Angle de deux vecteurs                                                    | `idees-1re-produit-scalaire`                                           | 2026-11-26 |                                      |
+| d192da3e Espace : équation cartésienne d'un plan (calculer d)                      | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| d6938108 Espace : coordonnées de vecteurs et de points                             | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| ac94a453 Espace : décomposer un vecteur, vecteurs coplanaires                      | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| 33be404b Espace : lire une représentation paramétrique de droite                   | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| 2b240d8c Espace : trouver un vecteur directeur ou un vecteur normal                | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| eae25eba Espace : projeté orthogonal d'un point sur une droite                     | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| 4f056eb3 Espace : distance d'un point à une droite                                 | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| aaa16821 Espace : aire et volume en repère                                         | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| 31b49cdf Espace : distance d'un point à un plan                                    | `idees-tle-geometrie-espace`                                           | 2026-11-26 |                                      |
+| b28ed4fa Deux épreuves                                                             | `idees-3e-probabilites`                                                | 2026-11-26 |                                      |
+| e73b947f Probabilité d'un évènement                                                | `idees-3e-probabilites`                                                | 2026-11-26 |                                      |
+| 247fddd1 Évènement contraire                                                       | `idees-3e-probabilites`                                                | 2026-11-26 |                                      |
+| 10a51999 Arrondir un nombre décimal                                                | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 17f35a67 Ajustement par changement de variable z = ln(y)                           | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 201e64fd Problème à données mélangées : retrouver P_A(B), puis P(B), puis inverser | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 22141fa4 Évolution exponentielle et suite géométrique                              | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 27d77564 Valeur d'un placement à intérêts composés                                 | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 2c116f4d Contrôle qualité : d'où vient la pièce défectueuse ?                      | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 35ad8891 Écart-type : valeur arrondie                                              | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 3a8ef5f7 Puissance d'exposant 1/n                                                  | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 4131bd94 Taux d'évolution entre deux années à partir des indices                   | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 52b884ee Résoudre une équation aˣ = b ou xᵃ = b avec log                           | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 70449b92 Problèmes avec la racine carrée                                           | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 721324f9 Al-Kashi : calculer une longueur                                          | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 727fb88a Calculer un terme d'une suite géométrique                                 | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 72b876d7 Moyenne géométrique de deux nombres positifs                              | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 7a37a3e1 Intercaler un point sur la courbe de x ↦ a^x                              | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| 80850db7 Ajustement affine après un changement de variable                         | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| a37968c5 Calculer un indice de base 100                                            | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| a3aa8f4a Loi binomiale : P(X = k), P(X ⩾ 1) à la calculatrice                      | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| a439df84 Taux d'évolution moyen de plusieurs évolutions successives                | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| a573d517 Droite de régression donnée par la calculatrice : estimer une valeur      | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| a9c71276 Test de dépistage                                                         | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| b14f7169 Puissance d'exposant négatif : a^(-x) = 1/a^x                             | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| b72fae4a Somme de termes consécutifs d'une suite géométrique                       | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| c6b5894c Loi exponentielle : probabilités                                          | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| cf51cb93 Calculer un terme d'une suite géométrique                                 | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| dc269779 Logarithme décimal : définition                                           | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| e4e65a69 Calculer une valeur de a^x (exposant non entier)                          | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| f84e23a3 Calculer un taux d'évolution moyen                                        | `idees-6e-proportionnalite` (zéros des arrondis, migration de contenu) | 2026-11-26 |                                      |
+| e0ccaf84 Résoudre un petit exercice de proportionnalité                            | `idees-6e-proportionnalite`                                            | 2026-11-25 |                                      |
+| 7981dab0 Repérer double, moitié, quadruple, quart et tiers                         | `idees-6e-proportionnalite`                                            | 2026-11-25 |                                      |
+| 52bf3fb9 Calculer la longueur réelle                                               | `idees-6e-proportionnalite`                                            | 2026-11-25 |                                      |
+| 5e4e5e9d Calculer la longueur sur une carte                                        | `idees-6e-proportionnalite`                                            | 2026-11-25 |                                      |
+| 06df72fd Reconnaître des situations de proportionnalité                            | `idees-6e-proportionnalite` (niveau 6e ajouté)                         | 2026-11-25 |                                      |
+| 04b1cc7f Puissance d'un produit                                                    | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée                           | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie                                   | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée                                     | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ?                       | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance                                | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                                                   | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                                            | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence                                 | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                                                | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                                                 | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                                         | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                                           | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue                                   | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                                      | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                                      | `ensembles-2de` (relecture de David, corrections possibles)            | 2026-11-20 |                                      |
 
 ## Idées en attente
 
