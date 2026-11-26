@@ -249,3 +249,66 @@ describe('CartQuestionCard — variations choisies (idée 2)', () => {
 		expect(screen.container.querySelector('[data-choix-variations]')).toBeNull();
 	});
 });
+
+/** Chantier `automaths`, PR A (phase 0 validée le 2026-11-26) */
+describe('CartQuestionCard — corbeille, niveaux, variations', () => {
+	it('corbeille entre la durée et les répétitions : retire la ligne sans confirmation', async () => {
+		const onRemove = vi.fn();
+		const screen = await renderCard({ onRemove });
+
+		const trash = screen.getByRole('button', { name: 'Retirer de ma série' });
+		await expect.element(trash).toBeVisible();
+		const duration = screen.getByTitle('Durée par question').element();
+		const repeats = screen.getByTitle('Nombre de répétitions').element();
+		const trashBox = trash.element().getBoundingClientRect();
+		expect(trashBox.left).toBeGreaterThan(duration.getBoundingClientRect().right);
+		expect(trashBox.right).toBeLessThan(repeats.getBoundingClientRect().left);
+
+		await trash.click();
+
+		expect(onRemove).toHaveBeenCalledWith(ITEM.templateId);
+		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
+		await expect.element(page.getByRole('alertdialog')).not.toBeInTheDocument();
+	});
+
+	it('badge des niveaux et flèches des variations au-dessus de la carte', async () => {
+		const screen = await renderCard();
+
+		expect(screen.container.querySelector('[data-tile-grades]')?.textContent?.trim()).toBe('CE1');
+		await expect
+			.element(screen.getByRole('button', { name: 'Variation suivante' }))
+			.toBeInTheDocument();
+	});
+
+	it('une seule variation choisie par le prof : pas de flèches', async () => {
+		const generatedFor = generateInstance(
+			{ ...TEMPLATE_WITH_ID, variations: [TEMPLATE_WITH_ID.variations[1]] },
+			PREVIEW_SEED
+		);
+		const screen = await render(CartQuestionCard, {
+			item: { ...ITEM, variations: [1] },
+			template: TEMPLATE_WITH_ID,
+			instance: generatedFor.success ? generatedFor.instance : instance,
+			onIncrementQuantity: vi.fn(),
+			onDecrementQuantity: vi.fn(),
+			onUpdateQuantity: vi.fn(),
+			onUpdateDelay: vi.fn(),
+			onRemove: vi.fn()
+		});
+
+		expect(screen.container.querySelector('[data-tile-grades]')).not.toBeNull();
+		expect(screen.container.querySelector('[data-tile-variations]')).toBeNull();
+	});
+
+	it('carte de 18rem, bouton de retournement de 32 px', async () => {
+		const screen = await renderCard();
+
+		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		await vi.waitFor(() => expect(screen.container.querySelector('.flip-card')).not.toBeNull());
+		expect(screen.container.querySelector('.flip-card')!.getBoundingClientRect().height).toBe(
+			18 * rem
+		);
+		const flip = page.getByRole('button', { name: 'Voir la correction' }).first().element();
+		expect(flip.getBoundingClientRect().width).toBe(2 * rem);
+	});
+});

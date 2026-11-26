@@ -8,13 +8,15 @@
 	 * sont affichées par la page : liste des notions, section). Un clic sur la tuile ne fait rien. En dessous, le
 	 * bouton de « Ma série » (la grille n'a ni durée ni répétitions) : « Ajouter »,
 	 * puis « Dans ma série », qui retire la question entière (répétitions et durée comprises).
+	 * Au-dessus de la carte (chantier `automaths`, 2026-11-26) : niveaux du modèle
+	 * et flèches des variations (`TileCard`).
 	 */
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
-	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import TileCard from '#lib/components/questions/TileCard.svelte';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
-	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
+	import { CATALOGUE_TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
 	import { Plus, Check } from '@lucide/svelte';
 	import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 	import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
@@ -35,7 +37,7 @@
 	}
 </script>
 
-<div class="tile flex h-full flex-col gap-3" style:--tile-card-default={TILE_CARD_HEIGHT}>
+<div class="tile flex h-full flex-col gap-3" style:--tile-card-default={CATALOGUE_TILE_CARD_HEIGHT}>
 	<!-- Intitulé : titre et description du modèle (branche, notion et sous-notion
 	     sont affichées par la page : liste des notions, section) -->
 	<!-- flex-1 : la zone s'étire, les cartes d'une même rangée commencent à la même hauteur -->
@@ -52,12 +54,12 @@
 				</div>
 			{/if}
 		</div>
-		<Badge variant="outline" class="shrink-0 text-xs" title="Niveau">{template.level}</Badge>
+		<Badge variant="outline" class="shrink-0 text-xs" title="Difficulté">{template.level}</Badge>
 	</div>
 
-	<!-- La flash-card elle-même -->
+	<!-- La flash-card, sous ses niveaux et ses variations -->
 	<!-- Plus basse sur téléphone (règle .tile ci-dessous) -->
-	<FlashCard instance={preview} interactive={false} size="sm" height="var(--tile-card-height)" />
+	<TileCard {template} {preview} height="var(--tile-card-height)" />
 
 	<!-- Ajout à « Ma série », ou retrait -->
 	<div class="flex justify-end">
@@ -81,14 +83,14 @@
 </div>
 
 <style>
-	/* Hauteur de la flash-card : celle des tuiles (12rem), 9rem sur téléphone (< 640 px) */
+	/* Hauteur de la flash-card : celle des tuiles (18rem), 13,5rem sur téléphone (< 640 px) */
 	.tile {
 		--tile-card-height: var(--tile-card-default);
 	}
 
 	@media (width < 40rem) {
 		.tile {
-			--tile-card-height: 9rem;
+			--tile-card-height: 13.5rem;
 		}
 	}
 
