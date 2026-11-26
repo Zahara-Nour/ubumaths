@@ -7,7 +7,7 @@ _Mis à jour le 2026-11-26, relevé et phase 0 écrits._
 - **État** : rubrique réservée, relevé écrit ([idees-3e-statistiques-releve.md](idees-3e-statistiques-releve.md)), fiches de phase 0 sur la page à cocher.
 - **Prochaine action** : lire les verdicts de David, puis réserver les modèles retenus et écrire le lot.
 - **En attente de David** : verdicts des fiches V1 à V3 et Q1.
-- **Pièges en cours** : aucun.
+- **Pièges en cours** : journal et relevé commités sur la branche (pas sur `main`, bloqué par un `deploy:prod` le 2026-11-26). Leurs copies **non suivies** restent dans le dépôt principal, sous `docs/wip/` : il faut demander à David avant de les retirer, sinon le `git pull` qui suivra le merge de la PR échouera.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-statistiques` · `feat/idees-3e-statistiques`.
 
 ## Relevé (2026-11-26)
