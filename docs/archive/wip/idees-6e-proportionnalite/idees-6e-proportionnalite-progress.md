@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3186 et `db:migrate`._
+_Mis à jour le 2026-11-26, chantier clos après #3186._
 
-- **État** : #3186 mergée ; ses 3 migrations jouées en prod et vérifiées par MCP : 5 neufs en brouillon rangés et tagués (6-189 à 6-192), 4 publiés avec leurs variations (8, 4, 7, 7), 06df72fd en {5, 6} avec 5-087 et 6-190, `updated_at` préservé.
-- **Prochaine action** : relecture des 5 neufs par David dans `/dev/modeles` (série de relecture), puis publication ; ensuite versement et clôture du chantier.
-- **En attente de David** : la relecture des 5 neufs dans `/dev/modeles`.
-- **Pièges en cours** : d'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 5 neufs y sont en brouillon sous d'autres ids.
-- **Worktree / branche** : aucun (retiré par `pr:merger`) ; un neuf pour la suite.
+- **État** : rubrique publiée : 5 modèles neufs (N1-N5) relus et validés par David (« je valide les modèles »), publiés par David, vérifiés au MCP (`published`, 6e) ; 4 publiés complétés de 6 variations et 06df72fd ouvert à la 6e (#3186, `db:migrate` le 2026-11-26) ; journal archivé.
+- **Prochaine action** : aucune.
+- **En attente de David** : rien.
+- **Pièges en cours** : d'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé).
+- **Worktree / branche** : aucun.
 
 ## Journal
 
@@ -157,3 +157,4 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - F4 à la main (`20261126131952_…_06df72fd_6e.sql`) : `array_append` de `6`, tag 6-190, `updated_at` préservé, rollback gardé. Preuve rouge : migration vidée (rollback gardé) → 4 échecs et suite principale tombée ; fichier restauré d'une copie, 12 verts.
 - `security-auditor` : aucun bloquant ; ajout de l'assertion « trigger de date réactivé » qu'il suggérait. Question d'accès : personne ne gagne ni ne perd d'accès.
 - #3186 mergée le 2026-11-26 ; `db:migrate` : seules ses 3 migrations étaient en attente (`migration list --linked`). Preuve rouge des 2 générées : corps vidés → 8 échecs, tous sur elles. État de la prod vérifié par MCP après coup.
+- 2026-11-26 : David relit et valide les 5 neufs (« je valide les modèles ») ; `publier-lot.ts` simulé (5 passent), lancé par David avec `--publier` ; MCP : 5/5 `published`, niveau 6. Rubrique publiée, réservations levées, journal archivé.

@@ -1,6 +1,6 @@
 """Écrit les modèles neufs du chantier idees-6e-proportionnalite dans scripts/questions/idees-6e-proportionnalite-neufs/.
 
-Phase 0 validée par David le 2026-11-25 (journal docs/wip/idees-6e-proportionnalite-progress.md) :
+Phase 0 validée par David le 2026-11-25 (journal docs/archive/wip/idees-6e-proportionnalite/idees-6e-proportionnalite-progress.md) :
 N1 à N5. On reprend l'idée de l'autre plateforme, pas sa forme ni son texte : retour à l'unité,
 linéarité additive, tableau à compléter sans la valeur pour 1, grandeurs d'une situation, et
 « peut-on le calculer ? » (situations proportionnelles ou non).
