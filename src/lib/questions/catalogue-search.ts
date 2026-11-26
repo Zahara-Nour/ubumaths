@@ -11,8 +11,8 @@
  * - bons résultats : titre, description, nom de la sous-notion et énoncé de
  *   chaque variation, sans blocs (figures, choix des QCM), formules ni
  *   variables (`{{…}}`) ; groupés par sous-notion (ou « Général » de la
- *   notion), le groupe le plus pertinent d'abord (titres, puis descriptions,
- *   puis le reste), à égalité dans l'ordre de l'arbre ; modèles hors de
+ *   notion), le groupe qui a le plus de titres d'abord, puis la somme des
+ *   pertinences (3 titre, 2 description, 1 ailleurs), à égalité dans l'ordre de l'arbre ; modèles hors de
  *   l'arbre en dernier, « Non classés » ;
  * - « aussi » (`others`) : mots trouvés seulement avec la correction (étapes
  *   écrites, retours) ou les intitulés des points du programme (`pointNames`) ;
@@ -365,8 +365,13 @@ export function searchCatalogue(
 	);
 	const groupScore = (group: SearchGroup) =>
 		group.templates.reduce((sum, template) => sum + scoreOf(template), 0);
-	// Tri stable : à pertinence égale, l'ordre de l'arbre
-	const groups = classified.sort((a, b) => groupScore(b) - groupScore(a));
+	const titleCount = (group: SearchGroup) =>
+		group.templates.filter((template) => scoreOf(template) === TITLE_SCORE).length;
+	// Le plus de titres d'abord (décision de David du 2026-11-26), puis la somme
+	// des pertinences ; tri stable : à égalité, l'ordre de l'arbre
+	const groups = classified.sort(
+		(a, b) => titleCount(b) - titleCount(a) || groupScore(b) - groupScore(a)
+	);
 	if (catalogue.unclassified.length > 0) {
 		groups.push({
 			id: UNCLASSIFIED_GROUP_ID,

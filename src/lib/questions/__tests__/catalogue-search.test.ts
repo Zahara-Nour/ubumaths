@@ -356,6 +356,27 @@ describe('PR B — groupe le plus pertinent d’abord', () => {
 		expect(resultat?.groups.map((g) => g.id)).toEqual(['s-disque', 's-developper']);
 	});
 
+	it('le groupe qui a le plus de titres passe devant, même face à plus d’énoncés (David, 2026-11-26)', () => {
+		const modeles = [
+			...[1, 2, 3, 4].map((i) =>
+				avecVariations(`enonce-${i}`, 's-developper', 'Question', [variation('Un cercle.')])
+			),
+			modele('titre', 's-disque', 'Le cercle')
+		];
+		const resultat = searchCatalogue(modeles, ARBRE, {}, 'cercle');
+		expect(resultat?.groups.map((g) => g.id)).toEqual(['s-disque', 's-developper']);
+	});
+
+	it('autant de titres : la somme des pertinences départage', () => {
+		const modeles = [
+			modele('titre-a', 's-developper', 'Le cercle'),
+			modele('titre-b', 's-disque', 'Un cercle'),
+			avecVariations('enonce', 's-disque', 'Question', [variation('Un cercle.')])
+		];
+		const resultat = searchCatalogue(modeles, ARBRE, {}, 'cercle');
+		expect(resultat?.groups.map((g) => g.id)).toEqual(['s-disque', 's-developper']);
+	});
+
 	it('dans un groupe, les titres d’abord', () => {
 		const modeles = [
 			avecVariations('enonce', 's-disque', 'Question', [variation('Un cercle.')]),
