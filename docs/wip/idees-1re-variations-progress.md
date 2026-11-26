@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR de rangement et de contenu ouverte._
+_Mis à jour le 2026-11-26, après #3162._
 
-- **État** : 3 brouillons en prod (80c43412, 8f08fca1, 61c4a8ed) ; migrations rangement `20261126072904` et contenu de 2b382069 `20261126072928` commitées, tests d'intégration verts, `security-auditor` sans finding bloquant ; PR ouverte (n° dans `gh pr list --head feat/idees-1re-variations`).
-- **Prochaine action** : CI verte → `pnpm pr:merger <n>` ; puis, depuis le dépôt principal à jour, `migration list --linked` (seules les deux du lot en attente) et `db:migrate` ; puis relecture par David dans `/dev/modeles?noeud=` (brouillons) et série de relecture pour 2b382069.
-- **En attente de David** : rien avant le merge ; ensuite, sa relecture dans `/dev/modeles`.
+- **État** : #3162 mergée ; `db:migrate` fait (rangement 20261126072904 et contenu 20261126072928, vérifiés par le MCP) : 3 brouillons rangés (80c43412 1SPE-283, 8f08fca1 et 61c4a8ed 1SPE-401), 2b382069 publié à 4 variations.
+- **Prochaine action** : lire les verdicts de David en base (`question_template_reviews`, `reviewed_at` postérieur au 2026-11-26 07:40), corriger, puis `publier-lot.ts --dir scripts/questions/idees-1re-variations-neufs` en simulation ; David le lance avec `--publier`.
+- **En attente de David** : relecture dans `/dev/modeles?noeud=2e77d4d9-646d-495e-b379-b662f7947a4f` (les 3 brouillons et 2b382069, variation 4).
 - **Pièges en cours** : choix + tableau à compléter dans une même variation = réponse du choix perdue ; flèche cachée près de `||` refusée (outils-manquants 59 et 63) ; pas d'erreur prévue dans une case de tableau.
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-variations`, `feat/idees-1re-variations`.
+- **Worktree / branche** : aucun (retiré par `pr:merger`) ; un nouveau worktree sur `origin/main` pour les corrections.
 
 ## Historique
 
@@ -60,3 +60,8 @@ _Mis à jour le 2026-11-26, PR de rangement et de contenu ouverte._
 - `security-auditor` : aucun finding bloquant ; notes : `disable/enable trigger` du générateur
   (verrou bref, sans effet sur les droits), en-tête « variation(s) ajoutée(s) : 4 » = numéro de la
   variation, pas un nombre.
+
+### 2026-11-26 — #3162 mergée, migrations en prod
+
+- CI verte, merge par `pr:merger`. `migration list --linked` : seules les deux du lot en attente ;
+  `db:migrate` ; état vérifié par le MCP (nœud, points, 4 variations pour 2b382069).
