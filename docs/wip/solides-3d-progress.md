@@ -2,22 +2,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3195._
+_Mis à jour le 2026-11-26, après #3200._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée par David
-  (§ 2, et Q1 à Q4 du § 3 selon les recommandations) ; **lot 1 mergé** (#3195 : moteur de vue
-  `utils/espace-vue.ts`, rien de branché à l'écran, § 5).
-- **Prochaine action** : lot 2 — clé `tourner:` du bloc ` ```solide ` pour les polyèdres (cube, pavé,
-  prisme, pyramide) : glisser, clavier, bouton « Vue de départ », catalogue et doc (§ 4).
-- **En attente de David** : rien.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
+  du § 3) ; **lots 1 et 2 mergés** (#3195 moteur de vue ; #3200 clé `tourner: oui` sur les polyèdres, § 6).
+  Rien n'est en prod.
+- **Prochaine action** : lot 3 — cylindre, cône, boule qui tournent (§ 4), revue `code-reviewer` en opus.
+- **En attente de David** : son avis après essai du lot 2 sur (1) la mention « Figure à tourner » sous la
+  figure au repos, ajoutée hors phase 0 ; (2) les noms des sommets, replacés à chaque angle, qui peuvent
+  sauter pendant la rotation. Il n'avait pas encore essayé au moment du merge.
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
-  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts (le cosinus diffère entre
-  le Mac et la CI) ; le cadre du dessin tourné (échelle fixe, pivot fixe, place réservée dès le
-  repos) est à concevoir au lot 2 ; cylindre, cône et boule sont dessinés « à plat » (pas une vraie
-  projection) : passage à la vue tournée à concevoir au lot 3 ; noms et cotes sont placés pour la
-  cavalière (cotes à la vue de départ seulement, Q1).
-- **Worktree / branche** : aucun (retirés au merge) ; lot 2 = nouveau worktree
-  `../ubumaths-wt-solides-3d`.
+  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; cylindre, cône et boule sont
+  dessinés « à plat » (ellipses, pas une vraie projection) : leur vue tournée et leur contour sont à
+  concevoir ; une ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; un `onclick`
+  de Svelte est délégué à la racine (écouteur posé sur la figure pour arrêter le clic après un glissement) ;
+  « moins d'animations » et le geste tactile réel n'ont pas de test.
+- **Worktree / branche** : aucun (retirés après #3200) ; lot 3 = nouveau worktree
+  `../ubumaths-wt-solides-3d`. Le lien `pnpm lien` du port 5177 est resté publié, serveur arrêté : le
+  retirer par `pnpm lien --stop` depuis le prochain worktree.
 
 ## 1. D'où l'on part
 
