@@ -14,7 +14,7 @@ _Mis à jour le 2026-11-26, lot écrit et migration générée (aucune PR encore
   push, PR, merge ; `db:migrate` = David · **En attente de David** : rien · **Pièges en cours** :
   variable `i` = imaginaire (F9 renommée `h`) ; `e1` évité (`w1`) ; `∛5` refusé par la forme (F6 :
   la consigne demande une puissance) ; messages des specs sous leur forme réécrite (`0.25`, `2 x`) ;
-  serveur de dev du worktree sur 5176 · **Worktree / branche** :
+  serveur de dev arrêté (le relancer sur 5176 pour `pnpm voir`) · **Worktree / branche** :
   `../ubumaths-wt-idees-tle-techno-analyse`, `docs/idees-tle-techno-analyse`.
 
 ## Journal
