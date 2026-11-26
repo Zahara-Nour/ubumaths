@@ -6,12 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3174._
+_Mis à jour le 2026-11-26, après #3174 et sa migration jouée en prod._
 
-- **État** : #3174 mergée (trigger d'index replié sur « prénom nom ») ; **migration `20261126094959` pas encore jouée en prod** : l'envoi d'un message y échoue toujours pour un élève sans nom complet.
-- **Prochaine action** : après le `pnpm db:migrate` de David, vérifier en prod (lecture seule) que le trigger porte le repli, inscrire V131 clos au registre, puis lui rendre son essai de la messagerie (compte prof, pas admin). Ensuite la PR suivante : pannes 1 à 3 de la section « Autres pannes », nouveau worktree.
-- **En attente de David** : (1) **`pnpm db:migrate`** depuis le dépôt principal : deux migrations partent ensemble, celle-ci et `20261126091954` (E78, chantier `ecarts-verifs`, additive, elle aussi en attente de lui) ; (2) le découpage de la suite et la **question d'accès** du point 3 : un élève qui reçoit un message de classe voit-il le prénom et le nom des autres destinataires (recommandé : non) ?
-- **Pièges en cours** : les comptes des tests ont tous un nom complet, pas ceux de la prod ; un élève ne peut ni voir ni écrire au compte admin (essai avec le compte prof) ; la preuve rouge d'une migration se prend avant de créer son fichier.
+- **État** : #3174 mergée, **migration `20261126094959` jouée en prod par David** (vérifié en lecture seule : le trigger porte le repli, `search_path` conservé) : l'envoi d'un message remarche pour un élève sans nom complet (V131 clos). Les pannes de la relecture sont au registre : V132 (message à une classe), V133 (« Répondre » s'écrit à soi-même), V134 (noms « Inconnu »), L128 à L130, T37.
+- **Prochaine action** : **PR suivante, validée par David le 2026-11-26 (« je suis tes recos »)** : V132, V133 et V134 dans une même PR, nouveau worktree (`ubumaths-wt-messagerie-nom-expediteur-suite`), tests rouges d'abord (envoi à une classe par `send_private_message` avec des élèves sans nom complet ; réponse depuis un fil ouvert par l'élève ; noms rendus par les cinq fonctions de lecture), migration additive, `code-reviewer` + `security-auditor`, rendu vérifié à l'écran (`pnpm voir`, parcours `e2e/verifs/messagerie.spec.ts` avec des comptes sans nom complet). L128 à L130 et T37 restent au registre.
+- **Décisions d'accès de David (2026-11-26, mes recommandations suivies)** : le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit le prénom et le nom du prof qui lui écrit ; **un élève qui reçoit un message envoyé à sa classe ne voit PAS le prénom ni le nom des autres destinataires** (afficher « ta classe » ou le nombre de destinataires) : vérifier d'abord ce que sa page affiche aujourd'hui (`get_message_details.recipients`).
+- **En attente de David** : son essai de la messagerie en prod (compte élève de test puis compte prof, pas admin) ; tant que la PR suivante n'est pas livrée, la page « Écrire » du prof liste « Inconnu (student) » et « Répondre » depuis le fil côté élève échoue. Le lien « Messages » du menu (V104, journal `ecarts-a-trier`) attend cet essai.
+- **Pièges en cours** : les comptes des tests ont tous un nom complet, pas ceux de la prod (la fabrique `TestData.profile()` en met un : le vider dans le test) ; la preuve rouge d'une migration se prend avant de créer son fichier ; `pnpm db:migrate` pousse toutes les migrations en attente, il est lancé par David ; V133 est du code d'application : il lui faut un `pnpm deploy:prod`, à la demande de David.
 - **Worktree / branche** : aucun (retirés au merge de #3174).
 
 ## Le constat (essai de David en prod, v0.113.0)
