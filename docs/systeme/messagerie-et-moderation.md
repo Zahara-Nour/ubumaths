@@ -241,7 +241,7 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - **Plus aucun code** : les modèles de message ne servaient à aucun envoi (la page d'écriture
   d'un message ne les lit pas). La page du prof a été retirée le 2026-11-25 (écarts E58 à E60),
   puis le reste le 2026-11-26 : pages admin (`dashboard/admin/message-templates/`), routes
-  `api/messages/templates/`, store, moteur de variables `src/lib/templates/`, composants
+  `api/messages/templates/`, store, moteur de variables (`templateEngine`, `advancedEngine`, `templateVariables`), composants
   `FiltersHelp` et `VariableAutocomplete`, types et validation.
 - **Restent en base** : la table `message_templates`, ses tables liées (versions, favoris,
   usages), ses règles d'accès et ses fonctions, couvertes par les tests d'intégration
