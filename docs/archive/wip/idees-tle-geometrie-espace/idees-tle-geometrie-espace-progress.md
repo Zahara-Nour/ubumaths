@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3184._
+_Mis à jour le 2026-11-26, chantier clos._
 
-- **État** : #3177 mergée ; ses 2 migrations jouées en prod le 2026-11-26 (`db:migrate --include-all`, par David), vérifiées (nœud et point des 3 brouillons 6c2e48c3, 35c6fad0, d2ad4df0). Modèles validés par David le 2026-11-26. #3184 mergée : la migration de contenu nomme un modèle absent (`raise notice '<id8> absent, saute'`) au lieu de le sauter en silence ; pas de garde « tous ou aucun » (base locale partielle : 26/28 pour `20261126095610`), choix de David.
-- **Prochaine action** : publication des 3 brouillons depuis `/dev/modeles` par David (je n'écris pas en prod) ; puis clôture du chantier (versement, archivage du journal).
-- **En attente de David** : la publication des 3 brouillons, s'il ne l'a pas déjà faite.
-- **Pièges en cours** : `shared.blankDefaults` de 2b240d8c (`vecteur` + `colineaire`) : le schéma refuse de surcharger `answerKind`, la case choix de V5 n'en est pas gênée. aaa16821 sans `cleanCoefficients` : équation par `equation_propre()`. Message d'erreur prévue sous sa forme réécrite (`$x = x_A + a t$`, `$\left( AB \right)$`). Fichier publié modifié → relancer `migration-contenu.ts` (retirer l'ancienne). Base locale : 3 neufs et 9 copies « [essai local] » laissés en brouillon.
-- **Worktree / branche** : aucun ; tout est sur `main`.
+- **État** : clos. Rubrique TSG2 publiée : 3 neufs (6c2e48c3 TSPE-365, 35c6fad0 TSPE-567,
+  d2ad4df0 TSPE-332) et +11 variations sur 9 publiés (#3177, migrées), modèles validés par David ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun
+  (outils notés en lignes 64 et 65 de `outils-manquants.md`) · **Worktree / branche** : aucun.
 
 ---
 
@@ -63,3 +62,9 @@ autre plateforme (`TSG2-10` à `TSG2-50`, 26 exercices sans les anciennes versio
   « [essai local] » ; aperçu admin vu par `pnpm voir` (N1, N2, N3 avec le cube, V3, V8) : rendu
   correct. Un tirage de V3 avait un leurre égal au bon point décalé de 1 (mêmes coefficients) :
   coefficients (V3) et paramètres (V4) désormais distincts d'un point à l'autre.
+
+## Publication et clôture (2026-11-26)
+
+- David a publié les 3 brouillons (`publier-lot.ts --publier`) ; vérifié en base : 3 `published`.
+- Tableau de répartition : TSG2 « publiée (2026-11-26) », réservations des 9 modèles levées.
+  Journal, relevé et fiches archivés ici. Chantier clos.
