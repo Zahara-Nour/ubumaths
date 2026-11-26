@@ -56,25 +56,38 @@ function base(marquage: Reponse) {
 		parent_notifications: { data: { id: 'journal-1' }, error: null },
 		parent_exception_episodes: marquage
 	};
+	const tablesMisesAJour: string[] = [];
 	const from = (table: string) => {
 		const reponse = parTable[table];
 		if (!reponse) throw new Error(`table inattendue : ${table}`);
-		const chaine: Record<string, unknown> = {};
-		for (const methode of ['select', 'insert', 'update', 'eq', 'in', 'is', 'single']) {
-			chaine[methode] = () => chaine;
-		}
-		chaine.then = (ok: (r: Reponse) => unknown) => Promise.resolve(reponse).then(ok);
+		const chaine = {
+			select: () => chaine,
+			insert: () => chaine,
+			update: () => {
+				tablesMisesAJour.push(table);
+				return chaine;
+			},
+			eq: () => chaine,
+			in: () => chaine,
+			is: () => chaine,
+			single: () => chaine,
+			then: (ok: (r: Reponse) => unknown) => Promise.resolve(reponse).then(ok)
+		};
 		return chaine;
 	};
 	const rpc = async (nom: string) => reponses[nom] ?? { data: [], error: null };
-	return { rpc, from } as never;
+	return { service: { rpc, from } as never, tablesMisesAJour };
 }
 
 describe('témoin : épisodes marqués après le courriel', () => {
 	it('le passage finit sans erreur, un courriel d’exception compté', async () => {
-		const rapport = await runCarnetDaily(base({ data: [{ id: EPISODE }], error: null }));
+		const { service, tablesMisesAJour } = base({ data: [{ id: EPISODE }], error: null });
+
+		const rapport = await runCarnetDaily(service);
 
 		expect(rapport.exceptions).toEqual({ sent: 1, failed: 0 });
+		// Le marquage passe bien par la table que les preuves font échouer
+		expect(tablesMisesAJour).toEqual(['parent_exception_episodes']);
 	});
 });
 
@@ -82,17 +95,21 @@ describe('L80 : épisodes non marqués après un courriel d’exception parti', 
 	// Sans marquage, le plan repropose l'épisode au bout de 6 jours et demi : le
 	// parent reçoit deux fois le même avertissement. Attendu ici : le passage le
 	// signale (il finit en erreur, que le cron journalise). Si la correction
-	// choisit plutôt d'empêcher la reproposition en base, ce test est à réécrire
-	// en test d'intégration sur `carnet_exception_plan`.
+	// choisit plutôt d'empêcher la reproposition en base, ou de compter l'échec
+	// au rapport sans lever, ce test est à réécrire (en intégration sur
+	// `carnet_exception_plan` dans le premier cas).
+	//
+	// La base simulée lève « table inattendue » pour toute table qu'elle ne
+	// connaît pas : une erreur de ce nom n'est pas le signalement attendu.
 	it('une panne de base au marquage fait finir le passage en erreur', async () => {
-		const passage = runCarnetDaily(base({ data: null, error: { message: 'panne' } }));
+		const { service } = base({ data: null, error: { message: 'panne' } });
 
-		await expect(passage).rejects.toThrow();
+		await expect(runCarnetDaily(service)).rejects.not.toThrow(/table inattendue/);
 	});
 
 	it('un marquage qui ne touche aucune ligne fait finir le passage en erreur', async () => {
-		const passage = runCarnetDaily(base({ data: [], error: null }));
+		const { service } = base({ data: [], error: null });
 
-		await expect(passage).rejects.toThrow();
+		await expect(runCarnetDaily(service)).rejects.not.toThrow(/table inattendue/);
 	});
 });

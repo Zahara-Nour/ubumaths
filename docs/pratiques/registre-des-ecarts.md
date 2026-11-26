@@ -122,7 +122,9 @@ disparu.
   Tant que l'écart est vrai, `it.fails` est vert en CI ; à la correction il devient rouge, et la
   PR qui corrige retire `.fails` et le marqueur. ⚠️ Un `it.fails` est vert dès que son corps lève,
   quelle qu'en soit la raison : la sonde tourne dans un `beforeAll`, le corps ne porte qu'une
-  affirmation, et un **témoin** (test ordinaire, même geste sur un cas permis) l'accompagne. Même
+  affirmation, et un **témoin** (test ordinaire, même geste sur un cas permis) l'accompagne. La
+  commande ferme aussi la ligne si le test est renommé ou supprimé sans correction : ne retirer
+  le marqueur qu'avec `.fails`. Même
   principe que les écarts E, marqués dans les specs de `e2e/verifs/`.
 - **Preuve cassée** : fichier absent, aucun test de ce nom, fichier qui ne se charge pas, commande
   introuvable. Une ligne n'est **jamais** fermée sur une preuve cassée ; elle sort à part dans le

@@ -48,3 +48,9 @@ L78 : commande `test -d src/lib/server/carnet && grep -rqE --exclude-dir=__tests
 L79, L82, L83, L84 : commande `f=tests/integration/ecarts-messagerie.test.ts; test -f "$f" && ! grep -q "écart L79" "$f"`
 L80 : test tests/ecarts/messagerie.test.ts › L80
 ```
+
+## Revue (code-reviewer, avant la PR)
+
+- Corrigé : les preuves de L80 acceptaient n'importe quelle erreur, y compris le « table inattendue » de la base simulée (vert à tort si la correction lit une autre table) ; elles refusent maintenant cette erreur, et le témoin affirme que le marquage passe par `parent_exception_episodes`.
+- Noté dans la doc : la commande sur marqueur ferme la ligne si le test est renommé ou supprimé sans correction.
+- Rien à signaler sur L79, L82, L83, L84 (code visé relu), ni sur le nettoyage.
