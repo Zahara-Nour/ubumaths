@@ -2,18 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot écrit, migration de contenu générée (PR à ouvrir)._
+_Mis à jour le 2026-11-26, après #3190._
 
-- **État** : phase 0 validée (V1 à V4, Q1 = oui). Lot écrit : 10 variations ajoutées à la fin
-  (ccb51039 +4, 76f5f143 +4, 8b59ca4b +2), specs vertes, essai local vu, migration de contenu
-  `20261126185210_…_publies_contenu.sql` générée, test d'intégration vert, preuve rouge faite.
-- **Prochaine action** : PR → CI verte → merge → `db:migrate` (4 conditions ; `migration list
---linked` d'abord) → série de relecture des 3 modèles dans `/dev/modeles` (David la publie).
-- **En attente de David** : rien.
+- **État** : #3190 mergée (10 variations ajoutées : ccb51039 +4, 76f5f143 +4, 8b59ca4b +2 ;
+  migration de contenu `20261126185210_…_publies_contenu.sql`). 4 conditions de `db:migrate`
+  réunies (accès : personne ; preuve rouge ; `security-auditor` sans bloquant ; additive, rollback
+  écrit). Seule migration en attente au relevé `migration list --linked` du 2026-11-26.
+- **Prochaine action** : après le `db:migrate` de David, vérifier la prod par MCP (7, 7 et 4
+  variations), puis série de relecture des 3 modèles (`scripts/series/creer-serie.ts`), relue
+  dans `/dev/modeles`.
+- **En attente de David** : `! pnpm db:migrate` (écriture en prod refusée à la session).
 - **Pièges en cours** : ccb51039 et 76f5f143 portent aussi le niveau 4e (4-057, 4-080) : leurs
   variations ajoutées sont vues en 4e (accepté, Q1). 8b59ca4b : réponse en puissance acceptée
   (`acceptDecimal`, comme ses variations existantes).
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-proportionnalite`, `feat/idees-3e-proportionnalite`.
+- **Worktree / branche** : aucun (retirés par `pr:merger`) ; la suite se fait depuis `main`.
 
 ## Relevé (2026-11-26)
 
@@ -95,3 +97,4 @@ déjà le coefficient à partir des deux prix en 4e. Recommandation : oui.
   facture, salaire et espèce protégée à deux cases, taux et coefficients ; 0 erreur de console.
 - `migration-contenu.ts` : +4, +4, +2 variations ; test d'intégration vert ; preuve rouge
   (migration vidée → 5 échecs, tous sur elle), fichier restauré d'une copie.
+- #3190 mergée le 2026-11-26 (CI verte). `db:migrate` refusé à la session (écriture en prod) : laissé à David.
