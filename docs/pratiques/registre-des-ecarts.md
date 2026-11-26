@@ -38,8 +38,11 @@ les écarts.
 | Chantier         | Rôle                                                                     | Effet sur le registre |
 | ---------------- | ------------------------------------------------------------------------ | --------------------- |
 | `verifs-auto`    | remplace les vérifications à la main par des tests qui ouvrent les pages | ajoute des écarts E   |
-| `ecarts-verifs`  | corrige les écarts E trouvés par ces tests                               | barre des E           |
+| `ecarts-verifs`  | clos le 2026-11-26 : a corrigé les écarts E1 à E87 trouvés par ces tests | a barré des E         |
 | `ecarts-a-trier` | trie et corrige tous les autres (V, L, M, C, D, T), par lots             | barre le reste        |
+
+Depuis la clôture d'`ecarts-verifs`, un nouvel écart E est inscrit au registre comme les autres et
+attend que David dise quel chantier le prend.
 
 Un lot de `ecarts-a-trier` peut avoir son propre journal (`ecarts-moderation`,
 `ecarts-valeurs-fausses`…) : c'est une PR ou une suite de PR sur un même sujet, clos dès que ses

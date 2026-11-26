@@ -69,6 +69,7 @@ export const SOLIDE_KEYS = [
 	'points',
 	'vecteurs',
 	'tracer',
+	'tourner',
 	'case'
 ] as const;
 
@@ -215,6 +216,11 @@ export interface SolideSpec {
 	vectors: SolideVector[];
 	/** Geste de l'élève (`tracer:`, chantier `solide-vecteur`, lot 2) ; absent : affichage seul */
 	task?: SolideTask;
+	/**
+	 * `tourner: oui` : l'élève peut faire tourner la figure à l'écran (chantier
+	 * `solides-3d`, ADR 0045) ; absent : figure fixe. Le PDF n'en tient pas compte.
+	 */
+	rotate?: true;
 }
 
 /**
@@ -375,6 +381,12 @@ export interface EspaceNode extends BaseNode {
 	spec: EspaceSpec | null;
 	/** Phrases pour l'AUTEUR (jamais montrées à l'élève), « Ligne N : … » */
 	errors: string[];
+	/**
+	 * Phrases pour l'AUTEUR sur `tourner:` (valeur mal écrite, forme ou réglage
+	 * que la rotation ne sait pas encore faire) : le bloc n'est PAS en erreur, la
+	 * figure se dessine, fixe (chantier `solides-3d`, lot 2)
+	 */
+	rotationErrors?: string[];
 	/** Geste dans une question : sa case, posée par le générateur (`case: N`) */
 	caseIndex?: number;
 }

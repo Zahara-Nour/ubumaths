@@ -250,13 +250,14 @@ export function trimHeights(heights: number[][]): number[][] {
  */
 export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'): EspaceNode {
 	if (genre === 'solide') {
-		const { spec, errors, caseIndex } = parseSolideContent(source);
+		const { spec, errors, caseIndex, rotationErrors } = parseSolideContent(source);
 		return {
 			type: 'espace',
 			genre,
 			source,
 			spec,
 			errors,
+			...(rotationErrors !== undefined && { rotationErrors }),
 			...(caseIndex !== undefined && { caseIndex })
 		};
 	}
