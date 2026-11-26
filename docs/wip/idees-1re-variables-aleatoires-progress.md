@@ -2,20 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3203 et la création du brouillon en prod._
+_Mis à jour le 2026-11-26, migration de rangement prête (PR à ouvrir)._
 
-- **État** : modèle neuf en prod en brouillon, id `505ee05a-b19a-4cd3-a409-509d51cf9fbd` (sans
-  nœud ni tag). Id commité et poussé sur la branche `docs/idees-1re-variables-aleatoires-rangement`.
-- **Prochaine action** : dans ce worktree, `pnpm install --prefer-offline` + `.env`/`.env.local`,
-  puis `pnpm tsx scripts/questions/migration-rangement.ts --dir
-scripts/questions/idees-1re-variables-aleatoires-neufs`, tests d'intégration, `security-auditor`,
-  PR, merge, `db:migrate` (4 conditions ; `migration list --linked` d'abord).
+- **État** : brouillon `505ee05a` en prod, sans nœud ni tag. Migration
+  `20261126205931_…_rangement_tags.sql` (1SPE-355) générée, intégration verte, rouge vérifiée.
+- **Prochaine action** : PR, merge, `db:migrate` depuis `main` (`migration list --linked` d'abord),
+  puis vérification en prod (MCP) et relecture dans `/dev/modeles` avant publication.
 - **En attente de David** : rien.
 - **Pièges en cours** : second tag 1TECHNO-095 non posé par `migration-rangement.ts`
   (`outils-manquants.md` n° 66) ; la saisie scriptée des cases d'un tableau dans l'aperçu
   n'active pas « Valider » (jugement vérifié par les specs seulement).
 - **Worktree / branche** : `../ubumaths-wt-idees-1re-variables-aleatoires-rangement`,
-  `docs/idees-1re-variables-aleatoires-rangement` (sans `.env` ni `node_modules` pour l'instant).
+  `docs/idees-1re-variables-aleatoires-rangement`.
 
 ## Historique
 
@@ -31,3 +29,6 @@ scripts/questions/idees-1re-variables-aleatoires-neufs`, tests d'intégration, `
   vu (`pnpm voir`), sans erreur de console. PR #3203 mergée (CI verte).
 - 2026-11-26 : David a créé le brouillon en prod (`505ee05a`, vérifié par MCP : brouillon, sans
   nœud). L'id, écrit dans le dépôt principal, a été déplacé sur la branche de rangement.
+- 2026-11-26 : migration de rangement générée (relevé en prod : `505ee05a` rangé sous « Probabilités >
+  Variables aléatoires > loi d'une variable aléatoire », 1SPE-355). `migrations-rangement-tags`
+  vert (145) ; rouge avec un corps vide (3 échecs d'assertion : nœud absent, gardes muettes).
