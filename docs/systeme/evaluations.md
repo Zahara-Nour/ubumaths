@@ -107,9 +107,10 @@ que le modèle de la ligne (le choix ne la restreint pas). Variations **« en QC
 erreurs prévues ([questions.md](questions.md), `choice-from-errors.ts`), sur la même graine ; le
 tirage le fait pour toutes les formes sauf les flash-cards (`choiceCases`), et pour l'évaluation,
 dont l'instance figée au démarrage garde la forme QCM (la régénération depuis la graine seule, repli
-des tentatives d'avant Q42, la redonnerait en saisie). Le prof les coche dans la fenêtre des
-variations (`VariationPicker`, case « En QCM » sous chaque variation qui le permet, prof seulement),
-dans le panier comme dans l'éditeur de série ; retirer une variation retire son QCM ; le panier garde
+des tentatives d'avant Q42, la redonnerait en saisie). Le prof les coche : dans le panier (Ma série),
+sur la carte même (`TileCard`, case « En QCM » de la variation affichée, chantier `automaths`) ; dans
+l'éditeur de série, dans la fenêtre des variations (`VariationPicker`, case sous chaque variation qui
+le permet) ; prof seulement ; retirer une variation retire son QCM ; le panier garde
 le choix à la fusion et par un lien, comme les variations choisies. Elle est tirée **à
 neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) donne à
 chaque ligne une graine neuve (sauf lien « Mêmes nombres pour tous », ci-dessous), d'où sortent les

@@ -212,7 +212,7 @@ if (process.argv[1] && resolve(process.argv[1]) === import.meta.filename) {
 	const ROOT = resolve(import.meta.dirname, '..');
 	const patterns = pathsFilter(ROOT);
 	const reached = await integrationClosure(ROOT);
-	// La liste des fichiers suivis dépasse 1 Mio (tampon par défaut de Node) depuis le 2026-11-26.
+	// La liste des fichiers suivis dépasse 1 Mo, le tampon par défaut (ENOBUFS le 2026-11-26)
 	const tracked = execFileSync('git', ['ls-files'], {
 		cwd: ROOT,
 		encoding: 'utf8',

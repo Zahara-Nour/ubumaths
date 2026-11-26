@@ -79,7 +79,18 @@ Cette zone couvre cinq choses :
     expéditeur `deleted_by_sender`, côté destinataire `message_inbox.deleted`) ;
   - `drafts/`, `drafts/[id]/` → table `message_drafts`.
 - Validation : `src/lib/server/validation/messages.ts` (`sendMessageSchema` : sujet 1-200,
-  contenu 1-10 000, 100 destinataires max ; `updateMessageSchema` en union discriminée).
+  100 destinataires max ; `updateMessageSchema` en union discriminée). Le **contenu** d'un envoi
+  est le document de l'éditeur riche (`{ type: 'doc', content: [...] }`, le jsonb de
+  `send_private_message`), jamais une chaîne : `messageDocumentProblem` le refuse s'il n'a pas
+  cette forme (« Message illisible », 20 niveaux d'emboîtement au plus), s'il dépasse 10 000
+  caractères de texte (« Message trop long »), 100 000 caractères une fois écrit en JSON
+  (« Message trop lourd »), ou
+  s'il ne montre rien (« Le message est vide » ; une formule seule compte). Tests :
+  `src/routes/api/messages/send/__tests__/send.test.ts` (le corps exact de la page) et le
+  parcours `e2e/verifs/messagerie.spec.ts` (l'élève écrit, le prof répond, l'élève lit ; un
+  brouillon repris part sans y toucher). La page n'envoie jamais le HTML d'un brouillon :
+  `RichTextEditor` rend le document dès qu'il pose un contenu venu de `htmlValue`
+  (`syncJsonFromHtml`).
 - Tables : `private_messages` (le message), `message_inbox` (une ligne par destinataire :
   lu, étoilé, dossier, statut).
 

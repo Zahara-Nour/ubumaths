@@ -114,6 +114,18 @@ disparu.
   tuée : preuve cassée, pas un rouge. ⚠️ Une négation peut être verte à tort : `! grep -q x f`
   sort en 0 si `f` n'existe plus (grep sort en 2). Toujours affirmer d'abord ce qui doit exister :
   `test -d src/lib && ! grep -rq "<nom>" src/lib`.
+- **Écart qui demande une vraie base** (RLS, fonction SQL, trigger) : le projet `ecarts` n'a pas
+  de base, donc la preuve est une **commande sur un marqueur**. Le test vit dans
+  `tests/integration/ecarts-<domaine>.test.ts`, en `it.fails`, et son nom porte le marqueur
+  « écart L82 » ; la ligne du registre dit
+  `` commande `f=tests/integration/ecarts-<domaine>.test.ts; test -f "$f" && ! grep -q "écart L82" "$f"` ``.
+  Tant que l'écart est vrai, `it.fails` est vert en CI ; à la correction il devient rouge, et la
+  PR qui corrige retire `.fails` et le marqueur. ⚠️ Un `it.fails` est vert dès que son corps lève,
+  quelle qu'en soit la raison : la sonde tourne dans un `beforeAll`, le corps ne porte qu'une
+  affirmation, et un **témoin** (test ordinaire, même geste sur un cas permis) l'accompagne. La
+  commande ferme aussi la ligne si le test est renommé ou supprimé sans correction : ne retirer
+  le marqueur qu'avec `.fails`. Même
+  principe que les écarts E, marqués dans les specs de `e2e/verifs/`.
 - **Preuve cassée** : fichier absent, aucun test de ce nom, fichier qui ne se charge pas, commande
   introuvable. Une ligne n'est **jamais** fermée sur une preuve cassée ; elle sort à part dans le
   bilan, à réparer.

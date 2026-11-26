@@ -269,9 +269,10 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   durée comprises). Au-dessus de la carte des deux tuiles, catalogue et Ma série (`TileCard`, phase 0 du
   2026-11-26) : une ligne fine, à gauche les niveaux du modèle (`formatGradeBadge`,
   `src/lib/utils/grade-badge.ts` : « CM1–CM2 » quand chaque niveau a le précédent pour prérequis direct,
-  sinon « CM1 · 6e »), à droite « ‹ 2/5 › » dès deux variations (dans Ma série, les seules variations
-  choisies) : les flèches changent l'exemple montré (`variationExample`, graine fixe ; l'aperçu du modèle
-  pour sa propre variation), jamais la série. La difficulté (`level`) reste dans l'intitulé, nommée
+  sinon « CM1 · 6e »), à droite « ‹ 2/5 › » dès deux variations : les flèches changent l'exemple
+  montré (`variationExample`, graine fixe ; l'aperçu du modèle pour sa propre variation). Dans le
+  catalogue, et dans Ma série pour un élève ou un visiteur, elles ne changent jamais la série (Ma série :
+  les seules variations choisies défilent). La difficulté (`level`) reste dans l'intitulé, nommée
   « Difficulté ». Bouton de retournement de 32 px dans ces tuiles (`compactFlip` de `FlashCard`) ; la
   carte de l'élève garde le sien. **« Ma série »** (PR 4, phase 0 du 2026-11-19) : à l'écran, le panier s'appelle
   « Ma série » partout (catalogue, page `/automaths/panier` « Ma série », « Retour à ma série » des
@@ -294,16 +295,22 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   avec « Passer à N », compte de `distinctLimit` (`series-draw.ts`, même tirage que la série à graine
   fixe, mis en cache par modèle : un modèle épuisé n'est plus recompté, une recherche plus loin va au
   moins deux fois plus loin ; une génération en échec n'avertit pas ; chantier `idees-format`) ;
-  pour un prof, le choix des variations de la ligne (`VariationPicker`, `components/series/`) :
-  « Toutes les variations (3) » ou « 2 variations sur 3 », qui ouvre une fenêtre où chaque variation
-  est montrée par un exemple (`variationExample`, graine fixe) à côté de sa case ; la dernière case
-  cochée ne se décoche pas ; un modèle à une variation n'affiche rien. Le compte de `distinctLimit`
-  et l'aperçu de la tuile suivent ce choix.
+  pour un prof, le choix des variations de la ligne SUR LA CARTE (`TileCard`, chantier `automaths`,
+  PR A2, phase 0 du 2026-11-26 ; plus de fenêtre `VariationPicker` dans Ma série) : les flèches
+  parcourent toutes les variations, retirées comprises ; le numéro « 2/3 » garde (vert) ou retire
+  (rouge et barré) la variation affichée, infobulle « Retirer cette variation de la série » /
+  « Remettre cette variation » ; la dernière gardée ne se retire pas (`aria-disabled`, l'infobulle le
+  dit) ; sous la ligne, « 2 variations sur 3 » quand il en manque et « 1 en QCM » quand des variations
+  gardées sont en QCM (« 2 variations sur 3 · 1 en QCM », PR A3) ; case « En QCM » sur la ligne quand
+  la variation affichée peut se poser en QCM (même test que la fenêtre : `mayBeChoice`, puis
+  `canBeChoice` sur l'exemple à graine fixe), retirer une variation retire son QCM. Le compte de
+  `distinctLimit` et l'aperçu de la tuile suivent ce choix.
   Ce contrôle vit dans le panier seulement : l'éditeur de série et le serveur n'en font pas, une
   ligne trop longue est raccourcie au tirage). L'éditeur de série
   (`/dashboard/teacher/series/[id]/edit`) affiche la durée de chaque ligne en lecture, avec la même
   marque et la même suggestion (appliquée à la copie de travail, écrite à l'enregistrement), et le
-  même choix des variations (`VariationPicker`, modèles publiés de la série lus sans leurs cas de
+  choix des variations dans une fenêtre (`VariationPicker`, `components/series/` : chaque variation
+  montrée par un exemple à côté de sa case, la dernière case cochée ne se décoche pas ; modèles publiés de la série lus sans leurs cas de
   test, colonnes partagées avec la liste du catalogue : `server/question-template-columns.ts`).
 - Stores (`src/lib/stores/`) :
   - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des lignes `SeriesItem`

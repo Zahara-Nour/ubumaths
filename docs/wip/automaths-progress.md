@@ -2,13 +2,38 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3164._
+_Mis à jour le 2026-11-26, après #3167._
 
-- **État** : PR A (cartes) mergée (#3164), worktree retiré. Phase 0 de la PR A2 et de la PR B validées (ci-dessous).
-- **Prochaine action** : PR A2 (variations choisies sur la carte, branche `feat/automaths-variations-carte`, worktree `../ubumaths-wt-automaths-variations`) ; puis PR B (`feat/automaths-recherche`).
+- **État** : PR A3 (« · 1 en QCM » sous la carte de Ma série) mergée (#3167), worktree retiré.
+- **Prochaine action** : PR B (recherche, branche `feat/automaths-recherche`), phase 0 validée.
 - **En attente de David** : rien.
-- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` (« seconde déjà prise ») rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
+- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; `aria-disabled` → Playwright refuse le clic (`click({ force: true })`) ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
 - **Worktree / branche** : aucun pour l'instant.
+
+### 2026-11-26 — PR A3 mergée (#3167) : « · 1 en QCM » sous la carte
+
+- `TileCard` : la ligne sous la ligne fine (prof) dit « 2 variations sur 3 · 1 en QCM » ; chaque partie seulement si elle dit quelque chose (« 1 en QCM » seul quand toutes sont gardées ; un QCM sur une variation retirée ne compte pas ; élève : rien).
+- 5 tests (`CartQuestionCard`, describe « PR A3 »), vus rouges puis verts ; 40/40 + 4/4 (éditeur de série) ; `check:incremental` 0 erreur ; cliquet tenu.
+- Vu à l'écran (Chromium, prof, `/automaths/panier`, base locale) : « 3 variations sur 4 · 1 en QCM » et « 1 en QCM », 0 erreur de console.
+- Revue : aucune (≈ 10 lignes d'affichage, CLAUDE.md § Planning point 4).
+
+### 2026-11-26 — décision de David après #3166 (PR A3)
+
+- « ajoute "1 en QCM" sous la carte » : dans Ma série (prof), sous la ligne fine de `TileCard`, dire combien de variations gardées sont en QCM (« 1 en QCM »), à côté de « 2 variations sur 3 » quand elle s'affiche (forme de l'ancienne fenêtre : « 2 variations sur 3 · 1 en QCM »). Aucune variation en QCM → rien.
+- Choix de la PR A2 que David n'a pas repris (acceptés) : case « En QCM » grisée sur une variation retirée ; infobulle de la dernière variation gardée.
+
+### 2026-11-26 — PR A2 mergée (#3166)
+
+- CI verte, mergée par `pnpm pr:merger`.
+
+### 2026-11-26 — PR A2, réalisation
+
+- `TileCard` : props `onvariationschange`, `choiceVariations`, `onchoicechange`. Avec `onvariationschange` (prof, Ma série) : flèches sur toutes les variations ; numéro = bouton (vert / rouge barré), infobulles validées, dernière gardée `aria-disabled` avec infobulle « Seule variation gardée : la dernière ne se retire pas » ; « 2 variations sur 3 » sous la ligne ; annonce `aria-live` sr-only. Case « En QCM » (`MyCheckbox`, nom « Variation k en QCM ») : `mayBeChoice` puis `canBeChoice` sur l'exemple à graine fixe, comme la fenêtre ; désactivée sur une variation retirée.
+- `CartQuestionCard` : plus de `VariationPicker` (il reste dans l'éditeur de série du prof).
+- Tests : 10 cas dans `CartQuestionCard.svelte.test.ts`, 9 rouges avant le code (le cas élève était déjà vert) ; 478 verts sur `components/series`, `components/questions`, `automaths` et la tuile.
+- Vu (Playwright, prof, ordi et téléphone, série en `localStorage`) : bug trouvé à l'écran, retirer la variation affichée faisait sauter la carte sur la première gardée → `chosen = current` au clic, test rouge puis vert. 0 erreur de console.
+- Doc : `questions.md`, `evaluations.md`.
+- Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : nom du bouton du numéro = texte visible d'abord (« 1/3, gardée », WCAG 2.5.3), raison du refus de la dernière variation dans le nom (l'infobulle ne se voit ni au tactile ni au clavier), annonce `aria-live` raccourcie. À dire à David (point 4) : le résumé « Toutes les variations (3) · 1 en QCM » de la fenêtre n'existe plus, il faut parcourir les variations pour voir lesquelles sont en QCM. Écartés (vérifiés) : réactivité après retrait, double appel QCM + variations (synchrone, comme la fenêtre), `inChoice` non filtré par `choosable` (le tirage retombe en saisie).
 
 ### 2026-11-26 — PR A mergée (#3164)
 
