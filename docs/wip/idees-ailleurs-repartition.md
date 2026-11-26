@@ -139,7 +139,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral`   |
 | Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
 | Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
-| Proportionnalité                         | 3P1       | 3         | prise (2026-11-26)                                         | `idees-3e-proportionnalite`  |
+| Proportionnalité                         | 3P1       | 3         | publiée (2026-11-26)                                       | `idees-3e-proportionnalite`  |
 | Statistiques                             | 3S1       | 3         | libre                                                      |                              |
 | Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
@@ -169,9 +169,6 @@ de contenu appliquée en prod.
 | f84e23a3 Calculer un taux d'évolution moyen                     | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
 | 94b1dbf6 Courbe de x ↦ aˣ sur ℝ                                 | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
 | f6805041 Sens de variation de x ↦ k·aˣ                          | `idees-tle-techno-analyse`                                  | 2026-11-26 |                                      |
-| ccb51039 Augmentation et coefficient multiplicateur             | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| 76f5f143 Diminution et coefficient multiplicateur               | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| 8b59ca4b Coefficient multiplicateur d'une évolution répétée     | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
 | 04b1cc7f Puissance d'un produit                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
