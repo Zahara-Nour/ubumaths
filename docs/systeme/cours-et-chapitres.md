@@ -116,6 +116,8 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   section en petite étiquette en majuscules, documents (et fiches publiques, exercices) en
   lignes compactes `ResourceRow` (pastille du type, titre tel que saisi, bouton de
   téléchargement), regroupées dans un même cadre par `groupPlanItems` (`plan-groups.ts`) ;
+  la ligne d'un exercice, côté élève connecté, mène à sa page avec `?depuis=cours&chapitre=<uuid>`
+  (`studentExerciseHref`) : « Quitter » y ramène au chapitre ;
   objectifs, séries et fiches de l'élève connecté restent des blocs. ⚠️ Le titre d'un document
   n'est pas un titre HTML : la règle globale `main h3` de `app.css` (`!important`) lui donnerait
   la taille d'une section. `DocumentCard` ne sert plus qu'au prof. Modèles :
