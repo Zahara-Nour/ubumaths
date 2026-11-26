@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, migration de rangement prête (PR à ouvrir)._
+_Mis à jour le 2026-11-26, après #3206._
 
-- **État** : brouillon `505ee05a` en prod, sans nœud ni tag. Migration
-  `20261126205931_…_rangement_tags.sql` (1SPE-355) générée, intégration verte, rouge vérifiée.
-- **Prochaine action** : PR, merge, `db:migrate` depuis `main` (`migration list --linked` d'abord),
-  puis vérification en prod (MCP) et relecture dans `/dev/modeles` avant publication.
-- **En attente de David** : rien.
-- **Pièges en cours** : second tag 1TECHNO-095 non posé par `migration-rangement.ts`
-  (`outils-manquants.md` n° 66) ; la saisie scriptée des cases d'un tableau dans l'aperçu
-  n'active pas « Valider » (jugement vérifié par les specs seulement).
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-variables-aleatoires-rangement`,
-  `docs/idees-1re-variables-aleatoires-rangement`.
+- **État** : #3206 mergée (migration `20261126205931`, rangement 1SPE-355 du brouillon `505ee05a`),
+  **pas encore jouée en prod**.
+- **Prochaine action** : `db:migrate` depuis `main`, seulement quand `migration list --linked` ne
+  montre plus que `20261126205931` en attente ; puis vérifier en prod (MCP : nœud + tag), relecture
+  dans `/dev/modeles`, publication.
+- **En attente de David** : `20261126200955_questions_idees_tle_techno_analyse_publies_contenu`
+  (autre session) attend aussi : à jouer par sa session, ou feu vert pour pousser les deux.
+- **Pièges en cours** : second tag 1TECHNO-095 non posé (`outils-manquants.md` n° 66) ; saisie
+  scriptée des cases d'un tableau dans l'aperçu : « Valider » inactif.
+- **Worktree / branche** : aucun (retiré après #3206).
 
 ## Historique
 
@@ -32,3 +32,5 @@ _Mis à jour le 2026-11-26, migration de rangement prête (PR à ouvrir)._
 - 2026-11-26 : migration de rangement générée (relevé en prod : `505ee05a` rangé sous « Probabilités >
   Variables aléatoires > loi d'une variable aléatoire », 1SPE-355). `migrations-rangement-tags`
   vert (145) ; rouge avec un corps vide (3 échecs d'assertion : nœud absent, gardes muettes).
+- 2026-11-26 : `security-auditor` sans finding bloquant ; #3206 mergée (CI verte). `db:migrate` non
+  lancé : une migration d'une autre session (`20261126200955`) partirait avec.
