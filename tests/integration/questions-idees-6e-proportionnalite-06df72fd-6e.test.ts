@@ -165,6 +165,14 @@ describe('idees-6e-proportionnalite F4 : 06df72fd ouvert à la 6e (migration de 
 		expect(apres.date).toBe(AVANT);
 	});
 
+	it('le trigger de date est réactivé après la migration et après le rollback', async () => {
+		const g = await pg.query<{ tgenabled: string }>(
+			'select tgenabled from pg_trigger where tgname = $1',
+			['update_question_templates_updated_at']
+		);
+		expect(g.rows[0]?.tgenabled).toBe('O');
+	});
+
 	it('le rollback rend l’état de départ (tag 5-087 compris)', () => {
 		expect(annule.codes).toEqual([CODE_5E]);
 		expect(annule.grades).toEqual(GRADES_RELEVES);

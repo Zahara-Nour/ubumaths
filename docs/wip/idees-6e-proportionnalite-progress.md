@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, brouillons créés en prod par David, ids commités._
+_Mis à jour le 2026-11-26, PR des migrations ouverte._
 
-- **État** : 5 neufs en brouillon en prod (vérifié par MCP : 6e, niveaux 4, 5, 6, 8, 9), ids commités sur `feat/idees-6e-proportionnalite-rangement` (poussée, pas de PR). Masse du père (N5 v2) validée par David.
-- **Prochaine action** : dans ce worktree, relever les niveaux en prod ; champ `rangement` → `migration-rangement.ts --dir scripts/questions/idees-6e-proportionnalite-neufs` ; `migration-contenu.ts --dir scripts/questions/idees-6e-proportionnalite-publies` (4 publiés, pas 06df72fd) ; F4 (06df72fd : niveau 6 + point 6-190) à la main ; question d'accès : personne ne gagne d'accès (rangement, variations) ; `security-auditor` ; PR ; `db:migrate` selon les 4 conditions (`migration list --linked` d'abord).
+- **État** : 3 migrations de données sur `feat/idees-6e-proportionnalite-rangement` : rangement et tags des 5 neufs (généré), variations des 4 publiés (généré), F4 06df72fd niveau 6 + tag 6-190 (à la main, test `questions-idees-6e-proportionnalite-06df72fd-6e.test.ts`, rouge sans la migration, 12 verts). `security-auditor` : aucun bloquant.
+- **Prochaine action** : CI verte → merge (`pnpm pr:merger`) ; puis `db:migrate` depuis la branche mergée si `migration list --linked` ne montre que ces 3 en attente ; vérifier par MCP ; publier les 5 neufs (relecture dans `/dev/modeles`) ; versement et clôture.
 - **En attente de David** : rien.
-- **Pièges en cours** : F4 = migration à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 4 publiés y portent déjà les variations (PATCH local), les 5 neufs y sont en brouillon sous d'autres ids.
+- **Pièges en cours** : d'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 5 neufs y sont en brouillon sous d'autres ids.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite-rangement` (`feat/idees-6e-proportionnalite-rangement`).
 
 ## Journal
@@ -149,3 +149,10 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - Retouche 5 : N4 relier, une série parmi cinq (éléphant, lettre, camion, récréation, vacances, marathon, crayon, cuillère…), une unité par sorte de grandeur dans chaque série.
 - Essai local : `create-questions --publier` en base locale (ids restaurés), variations des 4 publiés posées par PATCH local ; `pnpm voir` des aperçus N5 et N2 : rendu juste (« 13,30 € »), 0 erreur de console. Réponses justes et fausses jugées par les specs (même juge), pas rejouées à la main.
 - #3179 mergée le 2026-11-26. David valide « masse du père » (« je te suis »), puis lance `create-questions --publier` en prod : 5 brouillons (N1 3cfccd63, N2 057a1424, N3 33d2cad7, N4 376e7768, N5 5600e665), ids commités sur `feat/idees-6e-proportionnalite-rangement`.
+
+### 2026-11-26 : migrations de rangement, de contenu et F4
+
+- Relevé de la prod (MCP) : 06df72fd publié, grades {5}, rangé sur « caractérisation » (le nœud de 6-190), seul tag 5-087.
+- `migration-rangement.ts --dir …-neufs` : 5 rangés (6-191 ×2, 6-192, 6-189, 6-190). `migration-contenu.ts --dir …-publies` : 4 migrés (+1, +1, +2, +2 variations), 06df72fd inchangé.
+- F4 à la main (`20261126131952_…_06df72fd_6e.sql`) : `array_append` de `6`, tag 6-190, `updated_at` préservé, rollback gardé. Preuve rouge : migration vidée (rollback gardé) → 4 échecs et suite principale tombée ; fichier restauré d'une copie, 12 verts.
+- `security-auditor` : aucun bloquant ; ajout de l'assertion « trigger de date réactivé » qu'il suggérait. Question d'accès : personne ne gagne ni ne perd d'accès.
