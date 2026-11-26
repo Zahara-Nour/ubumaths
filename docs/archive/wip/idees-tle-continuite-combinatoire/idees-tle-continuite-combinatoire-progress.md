@@ -7,15 +7,13 @@ Page à cocher de la phase 0 : https://claude.ai/artifact/SmYJM9k1YCqeck3Qs98W4T
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3161._
+_Mis à jour le 2026-11-26, chantier clos._
 
-- **État** : série de relecture b15c9d00 enregistrée (3 publiés) ; David a validé les 7 modèles ;
-  `publier-lot.ts` en simulation vert sur les 4 brouillons · **Prochaine action** : vérifier en
-  base que les 4 sont publiés, puis finir (tableau de répartition : rubriques « publiées »,
-  réservations levées ; journal versé) · **En attente de David** : `publier-lot.ts --dir
-scripts/questions/idees-tle-continuite-combinatoire-neufs --publier` · **Pièges en cours** :
-  2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** : aucun
-  (#3161 mergée, worktree retiré ; la fin du chantier est de la doc, sur `main`).
+- **État** : clos. Rubriques TSA4 et TSG1 publiées : 4 neufs (a94acfec TSPE-425, bb7dc033
+  TSPE-430, 3603141b TSPE-427, c3f70ab6 TSPE-319) et +5 variations sur 3 publiés (#3153, migrées),
+  série de relecture b15c9d00 (#3161), modèles validés par David · **Prochaine action** : aucune ·
+  **En attente de David** : rien · **Pièges en cours** : aucun (refus de (π − 1)/2 → ligne 62 de
+  `outils-manquants.md`) · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -90,3 +88,6 @@ scripts/questions/idees-tle-continuite-combinatoire-neufs --publier` · **Piège
 - (π − 1)/2 refusé en N2 c : la forme de l'attendu (π/2 − 1/2) sert de modèle de forme
   (`checkForm`) ; ½(π − 1) et π/2 − 0,5 aussi refusés, vérifié au correcteur. Noté en ligne 62 de
   `outils-manquants.md` (72bfb100c) ; David publie le modèle tel quel.
+- David a publié les 4 brouillons (`publier-lot.ts --publier`) ; vérifié en base : 4 `published`.
+- Tableau de répartition : TSA4 et TSG1 « publiée (2026-11-26) », réservations de 2491dd75,
+  10393ff9, 0965c56c levées. Journal, relevé et fiches archivés ici. Chantier clos.

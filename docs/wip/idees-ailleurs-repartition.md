@@ -72,11 +72,11 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`                  |
 | Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`                 |
 | Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation`              |
-| Continuité des fonctions                                                       | TSA4        | 6         | prise (2026-11-25)   | `idees-tle-continuite-combinatoire` |
+| Continuité des fonctions                                                       | TSA4        | 6         | publiée (2026-11-26) | `idees-tle-continuite-combinatoire` |
 | Fonction logarithme népérien                                                   | TSA5        | 12        | publiée (2026-11-24) | `idees-tle-ln`                      |
 | Primitives et équations différentielles                                        | TSA7        | 7         | publiée (2026-11-25) | `idees-tle-integration`             |
 | Intégration                                                                    | TSA8        | 5         | publiée (2026-11-25) | `idees-tle-integration`             |
-| Combinatoire et dénombrement                                                   | TSG1        | 9         | prise (2026-11-25)   | `idees-tle-continuite-combinatoire` |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | publiée (2026-11-26) | `idees-tle-continuite-combinatoire` |
 | Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                                     |
 | Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`                  |
 
@@ -160,36 +160,33 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                        | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| --------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 2491dd75 TVI : nombre de solutions de f(x) = k                  | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
-| 10393ff9 Continuité lue sur une courbe : saut ou point anguleux | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
-| 0965c56c k-uplets d'éléments distincts : codes, bureaux…        | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
-| b28ed4fa Deux épreuves                                          | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| 2b382069 Intervalles où f est croissante, f′ trinôme            | `idees-1re-variations`                                      | 2026-11-26 |                                      |
-| e73b947f Probabilité d'un évènement                             | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| 247fddd1 Évènement contraire                                    | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| e0ccaf84 Résoudre un petit exercice de proportionnalité         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 7981dab0 Repérer double, moitié, quadruple, quart et tiers      | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 52bf3fb9 Calculer la longueur réelle                            | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 5e4e5e9d Calculer la longueur sur une carte                     | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 06df72fd Reconnaître des situations de proportionnalité         | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
-| 04b1cc7f Puissance d'un produit                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ?    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| b28ed4fa Deux épreuves                                       | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
+| 2b382069 Intervalles où f est croissante, f′ trinôme         | `idees-1re-variations`                                      | 2026-11-26 |                                      |
+| e73b947f Probabilité d'un évènement                          | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
+| 247fddd1 Évènement contraire                                 | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
+| e0ccaf84 Résoudre un petit exercice de proportionnalité      | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 7981dab0 Repérer double, moitié, quadruple, quart et tiers   | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 52bf3fb9 Calculer la longueur réelle                         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 5e4e5e9d Calculer la longueur sur une carte                  | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 06df72fd Reconnaître des situations de proportionnalité      | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
+| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 
