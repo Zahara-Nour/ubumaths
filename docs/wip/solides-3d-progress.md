@@ -17,9 +17,10 @@ _Mis à jour le 2026-11-26, après #3200._
   concevoir ; une ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; un `onclick`
   de Svelte est délégué à la racine (écouteur posé sur la figure pour arrêter le clic après un glissement) ;
   « moins d'animations » et le geste tactile réel n'ont pas de test.
-- **Worktree / branche** : aucun (retirés après #3200) ; lot 3 = nouveau worktree
-  `../ubumaths-wt-solides-3d`. Le lien `pnpm lien` du port 5177 est resté publié, serveur arrêté : le
-  retirer par `pnpm lien --stop` depuis le prochain worktree.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot3` (créés le
+  2026-11-26 pour l'essai de David, aucun commit du lot 3). Serveur d'essai sur le port 5177, lien
+  `pnpm lien` publié ; page d'essai `/aide-ecriture/blocs/solide`, compte prof. Le serveur ne survit
+  pas à la session : le relancer si David n'a pas fini d'essayer.
 
 ## 1. D'où l'on part
 
