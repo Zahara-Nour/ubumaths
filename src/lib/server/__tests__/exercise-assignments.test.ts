@@ -1140,3 +1140,57 @@ describe('validateAssignmentData', () => {
 		expect(result.valid).toBe(false);
 	});
 });
+
+describe('pickStudentAssignment — affectation montrée sur la page de l’exercice', () => {
+	const row = (
+		id: string,
+		assigned_to_type: string,
+		target: { student_id?: string; class_id?: string },
+		is_active = true
+	) => ({
+		id,
+		assigned_to_type,
+		student_id: target.student_id ?? null,
+		class_id: target.class_id ?? null,
+		is_active
+	});
+
+	it('rend l’affectation de l’élève', () => {
+		const rows = [row('a', 'student', { student_id: 'eleve-02' })];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', [])?.id).toBe('a');
+	});
+
+	it('rend celle de sa classe quand il n’en a pas en propre', () => {
+		const rows = [row('c', 'class', { class_id: 'classe-1' })];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', ['classe-1'])?.id).toBe('c');
+	});
+
+	it('préfère la sienne à celle de sa classe, quel que soit l’ordre', () => {
+		const rows = [
+			row('c', 'class', { class_id: 'classe-1' }),
+			row('a', 'student', { student_id: 'eleve-02' })
+		];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', ['classe-1'])?.id).toBe('a');
+	});
+
+	it('ignore l’affectation d’un autre élève et celle d’une autre classe', () => {
+		const rows = [
+			row('a', 'student', { student_id: 'eleve-03' }),
+			row('c', 'class', { class_id: 'classe-2' })
+		];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', ['classe-1'])).toBeNull();
+	});
+
+	it('ignore une affectation désactivée', () => {
+		const rows = [row('a', 'student', { student_id: 'eleve-02' }, false)];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', [])).toBeNull();
+	});
+
+	it('ignore une affectation « public »', () => {
+		expect(assignments.pickStudentAssignment([row('p', 'public', {})], 'eleve-02', [])).toBeNull();
+	});
+
+	it('rend null sans aucune ligne', () => {
+		expect(assignments.pickStudentAssignment([], 'eleve-02', ['classe-1'])).toBeNull();
+	});
+});

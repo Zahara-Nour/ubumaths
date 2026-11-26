@@ -1331,6 +1331,37 @@ export async function getStudentProgress(
 // ACCESS CONTROL FUNCTIONS
 // ============================================================================
 
+/** Ce qu'il faut d'une affectation pour savoir à qui elle s'adresse */
+interface AssignmentTarget {
+	assigned_to_type: string;
+	student_id: string | null;
+	class_id: string | null;
+	is_active: boolean;
+}
+
+/**
+ * L'affectation hors fiche à montrer à un élève sur la page de l'exercice : la
+ * sienne d'abord, sinon celle d'une de ses classes actives ; `null` sans l'une ni
+ * l'autre. Une affectation désactivée ou de type `public` n'est jamais retenue
+ * (elle n'ouvre pas la lecture de l'exercice, écart E78).
+ */
+export function pickStudentAssignment<T extends AssignmentTarget>(
+	rows: readonly T[],
+	studentId: string,
+	classIds: readonly string[]
+): T | null {
+	const active = rows.filter((row) => row.is_active);
+	const own = active.find(
+		(row) => row.assigned_to_type === 'student' && row.student_id === studentId
+	);
+	if (own) return own;
+	const byClass = active.find(
+		(row) =>
+			row.assigned_to_type === 'class' && row.class_id !== null && classIds.includes(row.class_id)
+	);
+	return byClass ?? null;
+}
+
 /**
  * Check if a student can access an exercise
  *
