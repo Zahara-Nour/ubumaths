@@ -53,7 +53,7 @@ interface LigneRendue {
 const MIGRATION = 'supabase/migrations/20261125163605_versions_exercices.sql';
 const MIGRATION_EDITEUR = 'supabase/migrations/20261125183550_versions_exercices_editeur.sql';
 const MIGRATION_RETRAIT =
-	'supabase/migrations/20261126203512_versions_exercices_retrait_ancien_contenu.sql';
+	'supabase/migrations/20261126221127_versions_exercices_retrait_ancien_contenu.sql';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =

@@ -2,7 +2,7 @@
  * Versions d'un exercice : retrait de l'ancien contenu d'`exercises` — (Supabase local requis)
  * =============================================================================================
  *
- * Migration `20261126203512_versions_exercices_retrait_ancien_contenu` (ADR 0044, chantier
+ * Migration `20261126221127_versions_exercices_retrait_ancien_contenu` (ADR 0044, chantier
  * versions-exercices, PR 4, destructive).
  *
  * Ce que le test prouve :
@@ -43,7 +43,7 @@ interface LigneDePartage {
 // ============================================================================
 
 const MIGRATION =
-	'supabase/migrations/20261126203512_versions_exercices_retrait_ancien_contenu.sql';
+	'supabase/migrations/20261126221127_versions_exercices_retrait_ancien_contenu.sql';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =

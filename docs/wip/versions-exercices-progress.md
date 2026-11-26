@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-26, PR 4 ouverte, **non mergée**._
 
 ## PR 4 — fait (2026-11-26)
 
-- Migration `20261126203512_versions_exercices_retrait_ancien_contenu` (destructive, rollback en
+- Migration `20261126221127_versions_exercices_retrait_ancien_contenu` (destructive, rollback en
   commentaire, éprouvé par deux tests) : 5 fonctions mortes, 2 index, 2 CHECK, 3 colonnes ;
   `get_exercise_by_share_token` en table explicite (mêmes champs, mêmes droits). Rouge prouvé
   sans elle (`versions-exercices-retrait.test.ts`).

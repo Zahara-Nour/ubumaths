@@ -286,7 +286,7 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
   numéro) ; dans une fiche, celle de `worksheet_exercises.exercise_version_id`. Toute lecture et
   écriture du contenu passe par `src/lib/server/exercise-versions.ts`. Reprise : chaque exercice
   existant est devenu sa v1. Les anciennes colonnes de contenu d'`exercises` sont supprimées
-  (`20261126203512`, PR 4, destructive : réconciliées avant, 428 exercices sur 428 identiques à
+  (`20261126221127`, PR 4, destructive : réconciliées avant, 428 exercices sur 428 identiques à
   leur v1), avec cinq fonctions mortes qui les lisaient (`get_my|teacher|all_exercise_assignments`,
   `exercise_has_multiple_variations`, `exercise_variation_count`). `get_exercise_by_share_token`
   rend une table explicite : la fiche d'identité et le contenu de la dernière version.
