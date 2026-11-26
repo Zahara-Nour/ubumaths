@@ -2,24 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3189 : David a VALIDÉ les modèles (5 neufs + 11 variations)._
+_Mis à jour le 2026-11-26, chantier clos après #3189._
 
-- **État** : #3189 mergée, 2 migrations jouées en prod et vérifiées ; **David a validé tous les
-  modèles le 2026-11-26** (aucun « À revoir » à corriger) · **Prochaine action** : `publier-lot.ts
---dir scripts/questions/<lot des neufs>` en simulation (bloquée par le classifieur la session
-  d'avant : la relancer, sinon donner la commande à David), puis David lance `--publier` ;
-  ensuite § 6 de la skill `idees-rubrique` (tableau de répartition « publiée », versement du
-  journal) · **En attente de David** : `--publier` du lot · **Pièges en cours** : la série
-  `scripts/series/1_SPE-relecture-produit-scalaire-publies.json` n'a pas été publiée et ne sert
-  plus (validation faite) : commitée sur la branche `-relecture`, demander à David s'il la garde ·
-  **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire-relecture`,
-  `chore/idees-1re-produit-scalaire-relecture`.
+- **État** : rubrique publiée : 5 modèles neufs (N1-N5) relus et validés par David (« je valide
+  les modèles »), publiés par David, vérifiés au MCP (5/5 `published`) ; 7 publiés complétés de
+  11 variations (#3189, `db:migrate --include-all` le 2026-11-26) ; journal archivé.
+- **Prochaine action** : aucune.
+- **En attente de David** : garder ou non la série de relecture jamais publiée
+  (`scripts/series/1_SPE-relecture-produit-scalaire-publies.json`, commitée sur la branche locale
+  `chore/idees-1re-produit-scalaire-relecture`, non poussée).
+- **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire-relecture` (pour la série seule).
 
 ## Journal
 
 ### 2026-11-26 : réservation, relevé, phase 0
 
-- Rubrique 1G1 (10 exercices) réservée dans [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md)
+- Rubrique 1G1 (10 exercices) réservée dans [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md)
   (`560dd0596`).
 - Relevé : 21 cas, 7 ✅, 10 🟡, 4 ❌. La 1re spé est bien couverte (25 modèles publiés sur les nœuds du
   produit scalaire, 1SPE-310 à 1SPE-436). Il manque des figures (parallélogramme, figure à points
@@ -71,3 +69,4 @@ _Mis à jour le 2026-11-26, après #3189 : David a VALIDÉ les modèles (5 neufs
   peut rester coupé que si le fichier était joué hors transaction (jamais par `db push`) ; 1SPE-436
   est sur la notion, admis par la règle. Personne ne gagne ni ne perd d'accès ; les élèves verront
   les 11 variations dès `db:migrate`, les 5 brouillons restent dans l'admin.
+- 2026-11-26 : David valide les 5 neufs et les variations (« je valide les modeles ») ; `publier-lot.ts` simulé (5 passent), garde des niveaux verte, lancé par David avec `--publier` ; MCP : 5/5 `published`. Rubrique publiée, réservations levées, journal archivé.

@@ -72,6 +72,8 @@
 	} from '#lib/worksheets/worksheet-outline.ts';
 	import { estOmbre } from '#lib/components/cours/teacher/section-dnd.ts';
 	import AnswerFrameLinesEditor from './AnswerFrameLinesEditor.svelte';
+	import LineVersionControl from './LineVersionControl.svelte';
+	import type { WorksheetVersionChoices } from '#lib/worksheets/line-version.ts';
 	import type {
 		AnswerFrameLines,
 		AnswerFrameMode,
@@ -100,6 +102,13 @@
 		language?: ContentLocale;
 		/** Délai avant sauvegarde des cadres (tests : 0) */
 		frameSaveDelayMs?: number;
+		/** Versions des exercices de la fiche (ADR 0044 point 6) ; absent : aucun menu */
+		versionChoices?: WorksheetVersionChoices;
+		/** Fiche archivée : la version se lit, ne se change pas (hors `readonly`, une fiche
+		 *  publiée change de version) */
+		versionsLocked?: boolean;
+		/** Après un changement de version (ou un refus) : recharger la fiche */
+		onVersionChange?: () => void | Promise<void>;
 	}
 
 	/** Ce que manipule une zone de dépose : un identifiant, rien d'autre. */
@@ -125,7 +134,10 @@
 		answersOnSheet = false,
 		answerFrameMode = 'question',
 		language = 'fr',
-		frameSaveDelayMs
+		frameSaveDelayMs,
+		versionChoices,
+		versionsLocked = false,
+		onVersionChange
 	}: Props = $props();
 
 	const isEnglishWorksheet = $derived(language === 'en');
@@ -605,6 +617,17 @@
 			<span class="truncate font-medium">
 				{exercise.exercise?.title || '(Sans titre)'}
 			</span>
+			{#if versionChoices?.lines[exercise.id]}
+				<LineVersionControl
+					{worksheetId}
+					lineId={exercise.id}
+					exerciseNumber={numberById.get(exercise.id)}
+					choice={versionChoices.lines[exercise.id]}
+					activeAssignments={versionChoices.active_assignments}
+					disabled={versionsLocked}
+					onchanged={onVersionChange}
+				/>
+			{/if}
 		</div>
 
 		<div class="shrink-0 text-sm text-muted-foreground">

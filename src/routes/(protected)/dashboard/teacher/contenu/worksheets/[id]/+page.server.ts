@@ -4,6 +4,10 @@ import { z } from 'zod';
 import { fetchWorksheetCitations } from '#lib/server/worksheets/citations.ts';
 import { listWorksheetStyles } from '#lib/server/worksheets/worksheet-styles.ts';
 import { loadActiveNodes } from '#lib/server/classification-nodes.ts';
+import { loadWorksheetVersionChoices } from '#lib/server/exercise-versions.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+
+const logger = createServerLogger('dashboard/teacher/contenu/worksheets/[id]/+page.server');
 
 // UUID validation schema
 const uuidSchema = z.string().uuid();
@@ -25,9 +29,16 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	// Les deux lectures sont indépendantes : les enchaîner faisait payer un
 	// aller-retour de plus à chaque ouverture de fiche.
-	const [response, citations] = await Promise.all([
+	const [response, citations, versionChoices] = await Promise.all([
 		fetch(`/api/worksheets/${params.id}`),
-		fetchWorksheetCitations(locals.supabase, idValidation.data)
+		fetchWorksheetCitations(locals.supabase, idValidation.data),
+		// Versions des exercices de la fiche (ADR 0044 point 6) : ici plutôt que dans l'API
+		// partagée, pour la même raison que `citations` ci-dessous. Illisibles : la fiche reste
+		// éditable, sans le menu des versions.
+		loadWorksheetVersionChoices(locals.supabase, idValidation.data).catch((cause: unknown) => {
+			logger.error('Versions des exercices illisibles :', cause);
+			return { active_assignments: 0, lines: {} };
+		})
 	]);
 
 	if (!response.ok) {
@@ -59,6 +70,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		// avec d'autres consommateurs — dont un schéma Zod qui laisserait tomber le
 		// champ en silence.
 		citations,
+		versionChoices,
 		// Le menu « Style » : ceux de Chiphre, puis ceux du prof (lot 3b)
 		styles,
 		nodes,

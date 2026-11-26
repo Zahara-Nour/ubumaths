@@ -40,7 +40,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Variations                        | 1AN2  | 5         | publiée (2026-11-26) | `idees-1re-variations`       |
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle`    |
 | Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`            |
-| Produit scalaire                  | 1G1   | 10        | prise (2026-11-26)   | `idees-1re-produit-scalaire` |
+| Produit scalaire                  | 1G1   | 10        | publiée (2026-11-26) | `idees-1re-produit-scalaire` |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                              |
 | Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`      |
 | Variables aléatoires réelles      | 1P2   | 1         | libre                |                              |
@@ -172,13 +172,6 @@ de contenu appliquée en prod.
 | ccb51039 Augmentation et coefficient multiplicateur             | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
 | 76f5f143 Diminution et coefficient multiplicateur               | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
 | 8b59ca4b Coefficient multiplicateur d'une évolution répétée     | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| b73923a1 Choisir la méthode dans une figure usuelle             | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 9c7f7ef0 Produit scalaire par projection orthogonale            | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| d787d8c0 Produit scalaire avec les normes                       | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| fe407c88 Produit scalaire avec les coordonnées                  | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| f2cc01fc Orthogonaux ou non ?                                   | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 6058963e Produit scalaire : résoudre un problème géométrique    | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| bf5dadf6 Angle de deux vecteurs                                 | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
 | 04b1cc7f Puissance d'un produit                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

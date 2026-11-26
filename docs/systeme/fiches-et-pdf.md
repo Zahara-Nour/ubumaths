@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03 ; labyrinthe (`labyrinthe) le 2026-11-24 ; noms anglais des notions au PDF anglais (ADR 0043) le 2026-11-24 ; titre d'exercice en anglais le 2026-11-25.
+> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03 ; labyrinthe (`labyrinthe) le 2026-11-24 ; noms anglais des notions au PDF anglais (ADR 0043) le 2026-11-24 ; titre d'exercice en anglais le 2026-11-25 ; version d'un exercice dans la fiche (ADR 0044, PR 3) le 2026-11-26.
 
 ## À quoi ça sert
 
@@ -240,6 +240,20 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   (`worksheet_exercises.exercise_version_id`, ADR 0044), jamais la dernière ; lu par la jointure
   `WORKSHEET_LINE_VERSION` + `withLineVersion` (`src/lib/server/exercise-versions.ts`), y compris
   par les deux liens de partage (cahier de texte, cours).
+- **Choisir la version** (ADR 0044 points 5 et 6, PR 3 du chantier `versions-exercices`) : un
+  exercice ajouté entre à sa **dernière** version (`POST /api/worksheets/[id]/exercises`). Dans
+  `ExerciseList`, un exercice à **plusieurs** versions a sous son titre `LineVersionControl.svelte`
+  (rien pour un exercice à une seule version) : menu de toutes les versions (numéro, note, date) et,
+  s'il n'est pas à la dernière, « une version plus récente existe (v3) » + « Passer à la v3 ».
+  Données : `loadWorksheetVersionChoices` (`exercise-versions.ts`), chargé par le `+page.server.ts`
+  de la page d'édition, pas par l'API partagée ; libellés et confirmation :
+  `src/lib/worksheets/line-version.ts`. Écriture : `PUT /api/worksheets/[id]/exercises/[ligne]/version`
+  (`setLineVersion`) — brouillon **et** fiche publiée, pas archivée (400) ; version d'un autre
+  exercice ou supprimée → 400. Fiche avec une affectation **en cours** (et non « publiée » : une
+  fiche dépubliée peut en garder) → confirmation « N affectations en cours : les élèves verront la
+  nouvelle rédaction à leur prochaine ouverture ». Aucune migration : la policy de
+  `worksheet_exercises` laisse déjà l'auteur de la fiche écrire la ligne. Tests :
+  `tests/integration/versions-exercices-fiche.test.ts`, `e2e/verifs/versions-exercices-fiche.spec.ts`.
 - Le **niveau de guidage** d'un exercice, choisi à l'affectation
   (`worksheet_assignments.guidance_level`, guidé par défaut), **jamais tiré** :
   `guidanceVariationIndex` (`src/lib/worksheets/student-copy.ts`) prend le niveau demandé, sinon le
