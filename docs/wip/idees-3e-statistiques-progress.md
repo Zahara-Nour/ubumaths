@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, relevé et phase 0 écrits._
+_Mis à jour le 2026-11-26, lot écrit, PR du contenu ouverte._
 
-- **État** : rubrique réservée, relevé écrit ([idees-3e-statistiques-releve.md](idees-3e-statistiques-releve.md)), fiches de phase 0 sur la page à cocher.
-- **Prochaine action** : lire les verdicts de David, puis réserver les modèles retenus et écrire le lot.
-- **En attente de David** : verdicts des fiches V1 à V3 et Q1.
+- **État** : phase 0 validée (« je te suis », 2026-11-26 : V1, V2, V3, R et Q1 comme recommandé). 96992ea8, c2497d96 et 21ebfb57 réservés (main 7accd349c3). 5 variations écrites dans `scripts/questions/idees-3e-statistiques-publies/`, migration de contenu `20261126222711` générée, test d'intégration vert.
+- **Prochaine action** : CI verte → merge → `db:migrate` (après `migration list --linked`) → série de relecture des 3 modèles dans `/dev/modeles`.
+- **En attente de David** : relecture dans `/dev/modeles` après la migration.
 - **Pièges en cours** : journal et relevé commités sur la branche (pas sur `main`, bloqué par un `deploy:prod` le 2026-11-26). Leurs copies **non suivies** restent dans le dépôt principal, sous `docs/wip/` : il faut demander à David avant de les retirer, sinon le `git pull` qui suivra le merge de la PR échouera.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-statistiques` · `feat/idees-3e-statistiques`.
 
@@ -59,3 +59,22 @@ refusées), trois erreurs prévues par case et un coup de pouce qui ne donne pas
 
 Les bornes mettent la moyenne pondérée en 4e et la fréquence en 5e. Les élèves de 3e ne voient ces
 variations que si le prof leur donne ces modèles. Recommandation : oui (pas de niveau 3e ajouté).
+
+## Lot (2026-11-26)
+
+Verdicts : David n'a rien coché sur la page ; il a répondu « je te suis » dans la session, soit toutes
+les recommandations (V1, V2, V3 oui ; R comme proposé ; Q1 oui, pas de niveau 3e ajouté).
+
+| Modèle   | Variations ajoutées | Contenu                                                                                                                                                                                                |
+| -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 96992ea8 | 3 et 4              | dé à six faces (effectifs de 7 à 45, N de 42 à 270) ; salaires d'une entreprise (5 salaires, dirigeant compris, 41 à 99 salariés). Médiane unique : aucun cumul égal à N/2.                            |
+| c2497d96 | 4                   | pointures d'un club de basket (5 pointures de 35 à 44, effectifs de 1 à 8, total de 10 à 30), moyenne arrondie au dixième, toujours arrondie vers le haut (la troncature diffère ainsi de la réponse). |
+| 21ebfb57 | 3 et 4              | parc animalier en diagramme en barres (6 espèces, effectifs de 2 à 12) : fréquence des girafes ; fréquence des oiseaux (flamants, autruches, perroquets), en % arrondi au dixième.                     |
+
+Chaque variation : trois erreurs prévues, un coup de pouce, des specs qui vérifient le message de
+chaque erreur prévue (`expectedErrorMessage`). `question:specs` : 19, 14 et 18 specs vertes,
+1 500 tirages réussis par modèle.
+
+À signaler à la relecture : sur un dé équilibré, la médiane tombe presque toujours sur 3 ou 4
+(10 fois 4, 4 fois 3, 1 fois 2 sur 15 tirages). Sur la page, les oiseaux sont toujours trois espèces
+fixes (la fiche disait 2 ou 3).

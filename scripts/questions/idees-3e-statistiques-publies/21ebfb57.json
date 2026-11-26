@@ -1,0 +1,542 @@
+{
+	"id": "21ebfb57-d44b-4be7-878e-d159fefda924",
+	"title": "Calculer une fréquence",
+	"description": "Calculer la fréquence d'une catégorie dans un tableau d'effectifs, en fraction, en nombre décimal ou en pourcentage (8 élèves sur 20 : 8/20 = 0,4 = 40 %)",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{a}}}{{{n}}}"
+				}
+			],
+			"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuelle est la fréquence des élèves qui viennent **à pied** ? Donne-la sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				},
+				{
+					"name": "d",
+					"expression": "eval:n-a-b-c"
+				}
+			],
+			"conditions": ["d>=2", "a!=b", "a!=c"],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+					"Fréquence : {{if:gcd(a,n)!=1|$\\dfrac{{{a}}}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)/(n)}}}$ (la fraction $\\dfrac{{{a}}}{{{n}}}$ est juste aussi)|$\\textcolor{{{color:primary.0}}}{\\dfrac{{{a}}}{{{n}}}}$}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/n;d}}"
+				}
+			],
+			"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuelle est la fréquence des élèves qui viennent **en bus** ? Donne-la sous forme de nombre décimal.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				},
+				{
+					"name": "d",
+					"expression": "eval:n-a-b-c"
+				}
+			],
+			"conditions": ["d>=2", "a!=b", "a!=c"],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+					"$\\dfrac{{{c}}}{{{n}}} = {{c}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:c/n;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*b/n;d}}"
+				}
+			],
+			"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuel **pourcentage** des élèves vient **à vélo** ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				},
+				{
+					"name": "d",
+					"expression": "eval:n-a-b-c"
+				}
+			],
+			"conditions": ["d>=2", "a!=b", "a!=c"],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+					"$\\dfrac{{{b}}}{{{n}}} = {{eval:b/n;d}} = \\dfrac{{{eval:100*b/n;d}}}{100}$ : cela fait $\\textcolor{{{color:primary.0}}}{{{eval:100*b/n;d}}~\\%}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(1000*(g)/N)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{g}}",
+							"message": "Tu as donné le nombre de girafes : la fréquence compare ce nombre à l'effectif total.",
+							"label": "L'effectif"
+						},
+						{
+							"answer": "{{eval:round(10*g/N)/10;d}}",
+							"message": "Tu as donné la fréquence en nombre décimal : on la demande en pourcentage.",
+							"label": "Sans × 100"
+						},
+						{
+							"answer": "{{eval:floor(1000*(g)/N)/10;d}}",
+							"message": "Tu as coupé après les dixièmes : pour arrondir, regarde le chiffre des centièmes.",
+							"label": "Troncature"
+						}
+					]
+				}
+			],
+			"statement": "Le diagramme donne le nombre d'animaux de chaque espèce dans un parc animalier.\n\n```barres\ntitre: Animaux du parc\naxes: Espèce ; Effectif\naxe: 0 à 14, de 2 en 2\nZèbres = {{z}}\nGirafes = {{g}}\nLions = {{l}}\nFlamants = {{f}}\nAutruches = {{au}}\nPerroquets = {{p}}\ndescription: Diagramme en barres du nombre d'animaux de chaque espèce.\n```\n\nQuelle est la fréquence des **girafes** parmi les animaux du parc ? Donne-la en pourcentage, arrondie au dixième.\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "2..12"
+				},
+				{
+					"name": "g",
+					"expression": "2..12"
+				},
+				{
+					"name": "l",
+					"expression": "2..12"
+				},
+				{
+					"name": "f",
+					"expression": "2..12"
+				},
+				{
+					"name": "au",
+					"expression": "2..12"
+				},
+				{
+					"name": "p",
+					"expression": "2..12"
+				},
+				{
+					"name": "N",
+					"expression": "eval:z+g+l+f+au+p"
+				}
+			],
+			"conditions": ["mod(1000*g,N)!=0", "round(1000*g/N)!=floor(1000*g/N)", "z!=g"],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$ ; en pourcentage, on la multiplie par $100$.",
+					"Effectif total : ${{z}} + {{g}} + {{l}} + {{f}} + {{au}} + {{p}} = {{N}}$.",
+					"$\\dfrac{ {{g}} }{ {{N}} } \\times 100 \\approx {{eval:floor(10000*g/N)/100;d}}\\ldots$ : arrondie au dixième, la fréquence est $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+				]
+			},
+			"hint": "Commence par calculer le nombre total d'animaux en additionnant toutes les barres."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(1000*(f+au+p)/N)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:f+au+p}}",
+							"message": "Tu as donné le nombre d'oiseaux : la fréquence compare ce nombre à l'effectif total.",
+							"label": "L'effectif des oiseaux"
+						},
+						{
+							"answer": "{{eval:round(1000*(f)/N)/10;d}}",
+							"message": "Tu n'as compté que les flamants : les autruches et les perroquets sont aussi des oiseaux.",
+							"label": "Une seule espèce"
+						},
+						{
+							"answer": "{{eval:floor(1000*(f+au+p)/N)/10;d}}",
+							"message": "Tu as coupé après les dixièmes : pour arrondir, regarde le chiffre des centièmes.",
+							"label": "Troncature"
+						}
+					]
+				}
+			],
+			"statement": "Le diagramme donne le nombre d'animaux de chaque espèce dans un parc animalier. Les flamants, les autruches et les perroquets sont des oiseaux.\n\n```barres\ntitre: Animaux du parc\naxes: Espèce ; Effectif\naxe: 0 à 14, de 2 en 2\nZèbres = {{z}}\nGirafes = {{g}}\nLions = {{l}}\nFlamants = {{f}}\nAutruches = {{au}}\nPerroquets = {{p}}\ndescription: Diagramme en barres du nombre d'animaux de chaque espèce.\n```\n\nQuelle est la fréquence des **oiseaux** parmi les animaux du parc ? Donne-la en pourcentage, arrondie au dixième.\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "2..12"
+				},
+				{
+					"name": "g",
+					"expression": "2..12"
+				},
+				{
+					"name": "l",
+					"expression": "2..12"
+				},
+				{
+					"name": "f",
+					"expression": "2..12"
+				},
+				{
+					"name": "au",
+					"expression": "2..12"
+				},
+				{
+					"name": "p",
+					"expression": "2..12"
+				},
+				{
+					"name": "N",
+					"expression": "eval:z+g+l+f+au+p"
+				}
+			],
+			"conditions": ["mod(1000*(f+au+p),N)!=0", "round(1000*(f+au+p)/N)!=floor(1000*(f+au+p)/N)"],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$ ; en pourcentage, on la multiplie par $100$.",
+					"Effectif total : ${{z}} + {{g}} + {{l}} + {{f}} + {{au}} + {{p}} = {{N}}$.",
+					"Oiseaux : ${{f}} + {{au}} + {{p}} = {{eval:f+au+p}}$.",
+					"$\\dfrac{ {{eval:f+au+p}} }{ {{N}} } \\times 100 \\approx {{eval:floor(10000*(f+au+p)/N)/100;d}}\\ldots$ : arrondie au dixième, la fréquence est $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+				]
+			},
+			"hint": "Additionne d'abord les effectifs des trois espèces d'oiseaux, puis compare au nombre total d'animaux."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{8}{20}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3",
+				"n": "20"
+			},
+			"description": "8 sur 20 : 8/20",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3",
+				"n": "20"
+			},
+			"description": "8 sur 20 : 2/5 simplifiée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{8}{12}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3",
+				"n": "20"
+			},
+			"description": "Erreur : 8/12 (sur le reste)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{20}{8}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3",
+				"n": "20"
+			},
+			"description": "Erreur : 20/8 (à l'envers)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,24"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "6",
+				"d": "6",
+				"n": "25"
+			},
+			"description": "Bus 6 sur 25 : 0,24",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "6",
+				"d": "6",
+				"n": "25"
+			},
+			"description": "Erreur : 6 (l'effectif)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "6",
+				"d": "6",
+				"n": "25"
+			},
+			"description": "Erreur : 24 (le pourcentage)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "10",
+				"d": "19",
+				"n": "50"
+			},
+			"description": "Vélo 9 sur 50 : 18 %",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,18"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "10",
+				"d": "19",
+				"n": "50"
+			},
+			"description": "Erreur : 0,18 (la fréquence)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "10",
+				"d": "19",
+				"n": "50"
+			},
+			"description": "Erreur : 9 (l'effectif)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["13,9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Girafes 5 sur 36 : 13,9 %",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de girafes : la fréquence compare ce nombre à l'effectif total."
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Erreur : l'effectif 5",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0,1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la fréquence en nombre décimal : on la demande en pourcentage."
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Erreur : fréquence décimale sans × 100",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["13,8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé après les dixièmes : pour arrondir, regarde le chiffre des centièmes."
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Erreur : troncature 13,8",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["55,6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Oiseaux 20 sur 36 : 55,6 %",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre d'oiseaux : la fréquence compare ce nombre à l'effectif total."
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Erreur : l'effectif des oiseaux",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["27,8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté que les flamants : les autruches et les perroquets sont aussi des oiseaux."
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Erreur : les flamants seuls",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["55,5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé après les dixièmes : pour arrondir, regarde le chiffre des centièmes."
+			},
+			"variables": {
+				"z": "8",
+				"g": "5",
+				"l": "3",
+				"f": "10",
+				"au": "4",
+				"p": "6"
+			},
+			"description": "Erreur : troncature 55,5",
+			"variationIndex": 4
+		}
+	]
+}
