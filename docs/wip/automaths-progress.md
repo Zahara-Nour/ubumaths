@@ -2,13 +2,34 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, phase 0 « cartes + recherche » validée._
+_Mis à jour le 2026-11-26, PR A (cartes) en cours._
 
-- **État** : découpage initial livré et en prod. Phase 0 des PR A (cartes) et B (recherche) VALIDÉE par David le 2026-11-26 (§ ci-dessous). Rien codé, aucun worktree.
-- **Prochaine action** : PR A — `git worktree add -b feat/automaths-cartes ../ubumaths-wt-automaths-cartes origin/main`, tests rouges d'abord, puis PR B (`feat/automaths-recherche`).
+- **État** : PR A codée sur `feat/automaths-cartes` (worktree `../ubumaths-wt-automaths-cartes`), commitée, PAS poussée : tests verts, rendu vu (catalogue ordi + téléphone, Ma série). Revue `code-reviewer` faite : aucun bloquant (§ ci-dessous).
+- **Prochaine action** : corriger les points 1, 3, 4 de la revue (tests d'abord), `git merge origin/main` (worktree en retard), push, PR, `pnpm pr:merger <n>` ; puis PR B (`feat/automaths-recherche`, phase 0 validée ci-dessous).
 - **En attente de David** : rien.
-- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`).
+- **Worktree / branche** : `../ubumaths-wt-automaths-cartes` · `feat/automaths-cartes`.
+
+### 2026-11-26 — PR A cartes, réalisation
+
+- `formatGradeBadge` (`src/lib/utils/grade-badge.ts`) : suites de niveaux = chacun a le précédent pour prérequis direct (CM1–CM2, 2nde–1ère Spé) ; deux filières d'une même année → « · ». Noms courts de `GRADES` (« 2nde », « 1ère Spé », « Term techno »).
+- `TileCard` (`components/questions/`) : ligne fine + flash-card, commune aux deux tuiles. Flèches en boucle ; exemple d'une autre variation = `variationExample` (graine fixe) ; sa propre variation = l'aperçu du modèle. Dans Ma série, seules les variations choisies par le prof défilent.
+- Hauteur : nouvelle constante `CATALOGUE_TILE_CARD_HEIGHT` (18rem) ; `TILE_CARD_HEIGHT` (12rem) inchangé, il sert aussi à la projection « En classe », au choix des variations et aux aperçus d'admin. Catalogue sur téléphone 13,5rem ; Ma série 18rem partout (12rem avant, aussi sur téléphone).
+- `FlashCard` : prop `compactFlip` (bouton 32 px, icône 16 px, marge du bas réduite).
+- Ma série : corbeille toujours visible (pas au survol), absente pour un modèle retiré (l'encadré a déjà son bouton).
+- Choix non écrits en phase 0 (à dire à David) : intitulé « Niveau » de la difficulté renommé « Difficulté » (infobulle) ; la position de départ des flèches est la variation de l'aperçu, et la graine fixe des aperçus tombe presque toujours sur la DERNIÈRE variation (« 2/2 », « 4/4 », « 8/8 » au départ).
+- Tests : `grade-badge.test.ts` (8), 5 cas dans `QuestionPreviewCard`, 4 dans `CartQuestionCard`, hauteurs de `catalogue-navigation` ; rouges 11/11 sur les fichiers d'origine (copie restaurée ensuite). 1 204 tests navigateur verts sur `components/` et `automaths/`.
+- Vu : `pnpm voir --chrome` (ordi, téléphone) et script Playwright sur `/automaths/panier` (série en `localStorage`) : flèche « 3/3 » → « 1/3 », corbeille 2 → 1 ligne, 0 erreur de console.
+
+### 2026-11-26 — PR A, revue `code-reviewer` (Sonnet) : aucun bloquant
+
+À corriger avant la PR :
+
+1. `TileCard` : `previewIndex` hors des variations permises → afficherait une variation non choisie, compteur faux. Prendre `list[0]` si `selectedVariationIndex` n'est pas dans `list` (+ test).
+2. Noms accessibles identiques d'une tuile à l'autre (« Variation suivante », « Retirer de ma série ») → y mettre le titre du modèle, ou nommer la tuile.
+3. Flèches des variations de 24 px : trop petites au doigt → zone de clic élargie (`::before`) ou plus grandes en `@media (hover: none)`.
+
+Écartés : 2 (`selectedVariationIndex` toujours rempli par `generateInstance`) ; 5 (`chosen` pas remis à zéro au changement de modèle : `{#each}` clés par id). À dire à David : Ma série reste à 18rem sur téléphone (le catalogue passe à 13,5rem).
 
 ### 2026-11-26 — phase 0 validée par David (« je valide »)
 
