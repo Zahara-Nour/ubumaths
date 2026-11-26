@@ -106,12 +106,17 @@ export function collectErrors(page: Page): { errors: string[] } {
 	page.on('console', (message) => {
 		// « Failed to load resource » : la ressource est dite (avec son adresse) par l'écoute des réponses
 		if (message.type() !== 'error' || message.text().startsWith('Failed to load resource')) return;
-		const index = bag.errors.push(`console : ${message.text()}`) - 1;
-		// Firefox écrit un objet passé à `console.error` « JSHandle@object » : on lit son texte
-		// (l'erreur est notée tout de suite, son texte complet remplace la ligne s'il arrive)
+		const line = `console : ${message.text()}`;
+		bag.errors.push(line);
+		// Firefox écrit un objet passé à `console.error` « JSHandle@object » : on lit son texte.
+		// L'erreur est notée tout de suite ; son texte complet remplace la ligne si elle est encore
+		// là (un test qui a vidé la liste entre-temps ne la voit pas revenir)
 		if (message.text().includes('JSHandle@')) {
 			void Promise.all(message.args().map(consoleArgText))
-				.then((parts) => (bag.errors[index] = `console : ${parts.join(' ')}`))
+				.then((parts) => {
+					const index = bag.errors.indexOf(line);
+					if (index !== -1) bag.errors[index] = `console : ${parts.join(' ')}`;
+				})
 				.catch(() => undefined);
 		}
 	});
