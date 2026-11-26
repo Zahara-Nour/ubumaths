@@ -5,6 +5,7 @@ couvre:
   - src/lib/validation/series.ts
   - src/lib/srs/generator.ts
   - src/lib/utils/answer-validator.ts
+  - src/lib/utils/grade-badge.ts
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
@@ -33,7 +34,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; recherche du catalogue Automaths le 2026-11-18 ; « Ma série » du catalogue le 2026-11-19 ; texte à trous (``trous) le 2026-11-14 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, bissectrice le 2026-11-06, cercle circonscrit le 2026-11-02, cercle de centre donné le 2026-11-08, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03, angle à mesurer (`mesure AOB`) le 2026-11-03, rapporteur déjà posé le 2026-11-04, triangle par un côté et deux angles ou deux côtés et l'angle compris (côté d'angle) le 2026-11-03, triangle rectangle (équerre, quadrillage) le 2026-11-08, segment de longueur donnée à la règle graduée le 2026-11-08, segment à mesurer (`mesure AB`) le 2026-11-12, carré et rectangle cotés sur papier uni le 2026-11-09 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03, somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; droite à représenter (``line, `representer:`) le 2026-11-03, réponse incomplète bloquée le 2026-11-03 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, solide à geste (`tracer: vecteur`) le 2026-11-03, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?`: cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne`sign-table`) le 2026-11-03 ; tableau de variations à compléter (valeur et flèche d'une ligne `variation:`, chantier `variations-a-completer`) le 2026-11-08 ; `series-trace.ts` le 2026-11-11 ; fin de question dans la copie d'un contrôle (`submission.ts`) le 2026-11-11 ; bloc associer le 2026-11-14, courbe dans un élément le 2026-11-14 ; programme tortue (carte, corrigé) le 2026-11-14, nombre maximal de blocs (`blocs:`) le 2026-11-15, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; durée trop courte dans le panier et l'éditeur de série le 2026-11-14, durée observée le 2026-11-15 ; programme de calcul (``calcul, PR 5a) le 2026-11-14, son corrigé (PR 5b) le 2026-11-14, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; robot à produire (``robot, `produire: oui`) le 2026-11-15, sa carte et son corrigé (PR 1b) le 2026-11-15 ; graine de série d'un lien (`memes-nombres`) le 2026-11-19 ; avertissement « N questions différentes » du panier le 2026-11-21 ; choix des variations dans l'éditeur de série le 2026-11-21 ; limite cachée d'un tableau de variations (juge des infinis, erreurs prévues, QCM) le 2026-11-23 ; labyrinthe (`labyrinthe) le 2026-11-24.
+> Vérifié contre le code le 2026-10-11 ; recherche du catalogue Automaths le 2026-11-18 ; « Ma série » du catalogue le 2026-11-19 ; ligne des niveaux et des variations des tuiles le 2026-11-26 ; texte à trous (``trous) le 2026-11-14 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, bissectrice le 2026-11-06, cercle circonscrit le 2026-11-02, cercle de centre donné le 2026-11-08, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03, angle à mesurer (`mesure AOB`) le 2026-11-03, rapporteur déjà posé le 2026-11-04, triangle par un côté et deux angles ou deux côtés et l'angle compris (côté d'angle) le 2026-11-03, triangle rectangle (équerre, quadrillage) le 2026-11-08, segment de longueur donnée à la règle graduée le 2026-11-08, segment à mesurer (`mesure AB`) le 2026-11-12, carré et rectangle cotés sur papier uni le 2026-11-09 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03, somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; droite à représenter (``line, `representer:`) le 2026-11-03, réponse incomplète bloquée le 2026-11-03 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, solide à geste (`tracer: vecteur`) le 2026-11-03, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?`: cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne`sign-table`) le 2026-11-03 ; tableau de variations à compléter (valeur et flèche d'une ligne `variation:`, chantier `variations-a-completer`) le 2026-11-08 ; `series-trace.ts` le 2026-11-11 ; fin de question dans la copie d'un contrôle (`submission.ts`) le 2026-11-11 ; bloc associer le 2026-11-14, courbe dans un élément le 2026-11-14 ; programme tortue (carte, corrigé) le 2026-11-14, nombre maximal de blocs (`blocs:`) le 2026-11-15, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; durée trop courte dans le panier et l'éditeur de série le 2026-11-14, durée observée le 2026-11-15 ; programme de calcul (``calcul, PR 5a) le 2026-11-14, son corrigé (PR 5b) le 2026-11-14, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; robot à produire (``robot, `produire: oui`) le 2026-11-15, sa carte et son corrigé (PR 1b) le 2026-11-15 ; graine de série d'un lien (`memes-nombres`) le 2026-11-19 ; avertissement « N questions différentes » du panier le 2026-11-21 ; choix des variations dans l'éditeur de série le 2026-11-21 ; limite cachée d'un tableau de variations (juge des infinis, erreurs prévues, QCM) le 2026-11-23 ; labyrinthe (`labyrinthe) le 2026-11-24.
 
 ## À quoi ça sert
 
@@ -218,8 +219,10 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   dépliée au départ. La notion (`CatalogueNotionSections`) montre ses sous-notions toutes dépliées,
   avec des pastilles à compteurs collées en haut qui y descendent (les sections du dessus sont
   d'abord calculées, pour que la cible ne glisse pas ; une fois la page immobile, la section est
-  recalée sous les pastilles, jamais pendant le défilement doux ni après un geste de l'élève). Cartes plus basses sur téléphone (9rem au
-  lieu de 12rem, variable `--tile-card-height` de `QuestionPreviewCard`, règle `@media`).
+  recalée sous les pastilles, jamais pendant le défilement doux ni après un geste de l'élève). Cartes de 18rem (12rem × 1,5 depuis le
+  2026-11-26, `CATALOGUE_TILE_CARD_HEIGHT` de `tile-card.ts`, que seules les tuiles du catalogue et de
+  Ma série lisent), plus basses sur téléphone (13,5rem, variable `--tile-card-height` de
+  `QuestionPreviewCard`, règle `@media`).
   Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
   notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans
   « Non classés » (jamais perdu). **Filtre par niveau** (`filterTemplatesByGrade`, appliqué avant le
@@ -263,7 +266,15 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
   `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus « Ajouter » — nom accessible
   « Ajouter à ma série » —, puis « Dans ma série » qui retire la question entière, répétitions et
-  durée comprises). **« Ma série »** (PR 4, phase 0 du 2026-11-19) : à l'écran, le panier s'appelle
+  durée comprises). Au-dessus de la carte des deux tuiles, catalogue et Ma série (`TileCard`, phase 0 du
+  2026-11-26) : une ligne fine, à gauche les niveaux du modèle (`formatGradeBadge`,
+  `src/lib/utils/grade-badge.ts` : « CM1–CM2 » quand chaque niveau a le précédent pour prérequis direct,
+  sinon « CM1 · 6e »), à droite « ‹ 2/5 › » dès deux variations : les flèches changent l'exemple
+  montré (`variationExample`, graine fixe ; l'aperçu du modèle pour sa propre variation). Dans le
+  catalogue, et dans Ma série pour un élève ou un visiteur, elles ne changent jamais la série (Ma série :
+  les seules variations choisies défilent). La difficulté (`level`) reste dans l'intitulé, nommée
+  « Difficulté ». Bouton de retournement de 32 px dans ces tuiles (`compactFlip` de `FlashCard`) ; la
+  carte de l'élève garde le sien. **« Ma série »** (PR 4, phase 0 du 2026-11-19) : à l'écran, le panier s'appelle
   « Ma série » partout (catalogue, page `/automaths/panier` « Ma série », « Retour à ma série » des
   formes de série) ; l'adresse et le code (`questionCart`) gardent « panier ». `MySeriesPreview`
   (aperçu : « 3 questions · environ 2 min 30 », chaque modèle avec ses répétitions « ×4 » et une
@@ -275,7 +286,8 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   droite ; barre en bas « Ma série · 3 questions · 2 min 30 » (téléphone, absente si la série est
   vide) → panneau du bas ; le catalogue garde un espace en bas, `pb-28`, pour que la dernière carte
   remonte au-dessus. `CartQuestionCard` (tuile d'un modèle de
-  la page détaillée, sous son titre : durée par pas de 5 s entre 5 et 300 s, nombre de questions ; modèle plus
+  la page détaillée, sous son titre : durée par pas de 5 s entre 5 et 300 s, corbeille « Retirer de ma
+  série » entre les deux, sans confirmation (2026-11-26), nombre de questions ; modèle plus
   publié → « Modèle retiré », avec « Retirer de ma série » ; pour un prof, la marque « Durée sans doute
   trop courte » à la durée choisie, puis la « Durée observée » chez ses élèves avec « Appliquer »
   (`ObservedDelayHint`), voir [evaluations.md](evaluations.md) ; plus de répétitions que de
@@ -283,16 +295,21 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   avec « Passer à N », compte de `distinctLimit` (`series-draw.ts`, même tirage que la série à graine
   fixe, mis en cache par modèle : un modèle épuisé n'est plus recompté, une recherche plus loin va au
   moins deux fois plus loin ; une génération en échec n'avertit pas ; chantier `idees-format`) ;
-  pour un prof, le choix des variations de la ligne (`VariationPicker`, `components/series/`) :
-  « Toutes les variations (3) » ou « 2 variations sur 3 », qui ouvre une fenêtre où chaque variation
-  est montrée par un exemple (`variationExample`, graine fixe) à côté de sa case ; la dernière case
-  cochée ne se décoche pas ; un modèle à une variation n'affiche rien. Le compte de `distinctLimit`
-  et l'aperçu de la tuile suivent ce choix.
+  pour un prof, le choix des variations de la ligne SUR LA CARTE (`TileCard`, chantier `automaths`,
+  PR A2, phase 0 du 2026-11-26 ; plus de fenêtre `VariationPicker` dans Ma série) : les flèches
+  parcourent toutes les variations, retirées comprises ; le numéro « 2/3 » garde (vert) ou retire
+  (rouge et barré) la variation affichée, infobulle « Retirer cette variation de la série » /
+  « Remettre cette variation » ; la dernière gardée ne se retire pas (`aria-disabled`, l'infobulle le
+  dit) ; « 2 variations sur 3 » sous la ligne quand il en manque ; case « En QCM » sur la ligne quand
+  la variation affichée peut se poser en QCM (même test que la fenêtre : `mayBeChoice`, puis
+  `canBeChoice` sur l'exemple à graine fixe), retirer une variation retire son QCM. Le compte de
+  `distinctLimit` et l'aperçu de la tuile suivent ce choix.
   Ce contrôle vit dans le panier seulement : l'éditeur de série et le serveur n'en font pas, une
   ligne trop longue est raccourcie au tirage). L'éditeur de série
   (`/dashboard/teacher/series/[id]/edit`) affiche la durée de chaque ligne en lecture, avec la même
   marque et la même suggestion (appliquée à la copie de travail, écrite à l'enregistrement), et le
-  même choix des variations (`VariationPicker`, modèles publiés de la série lus sans leurs cas de
+  choix des variations dans une fenêtre (`VariationPicker`, `components/series/` : chaque variation
+  montrée par un exemple à côté de sa case, la dernière case cochée ne se décoche pas ; modèles publiés de la série lus sans leurs cas de
   test, colonnes partagées avec la liste du catalogue : `server/question-template-columns.ts`).
 - Stores (`src/lib/stores/`) :
   - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des lignes `SeriesItem`

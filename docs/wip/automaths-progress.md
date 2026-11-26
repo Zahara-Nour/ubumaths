@@ -2,13 +2,75 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, phase 0 « cartes + recherche » validée._
+_Mis à jour le 2026-11-26, après #3166._
 
-- **État** : découpage initial livré et en prod. Phase 0 des PR A (cartes) et B (recherche) VALIDÉE par David le 2026-11-26 (§ ci-dessous). Rien codé, aucun worktree.
-- **Prochaine action** : PR A — `git worktree add -b feat/automaths-cartes ../ubumaths-wt-automaths-cartes origin/main`, tests rouges d'abord, puis PR B (`feat/automaths-recherche`).
+- **État** : PR A2 (variations choisies sur la carte de Ma série) mergée (#3166), worktree retiré.
+- **Prochaine action** : PR A3 (petite) : « · 1 en QCM » sous la carte de Ma série, à côté de « 2 variations sur 3 » (décision de David, 2026-11-26, ci-dessous) ; puis PR B (recherche, branche `feat/automaths-recherche`), phase 0 validée.
 - **En attente de David** : rien.
-- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; `aria-disabled` → Playwright refuse le clic (`click({ force: true })`) ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
+- **Worktree / branche** : aucun pour l'instant.
+
+### 2026-11-26 — décision de David après #3166 (PR A3)
+
+- « ajoute "1 en QCM" sous la carte » : dans Ma série (prof), sous la ligne fine de `TileCard`, dire combien de variations gardées sont en QCM (« 1 en QCM »), à côté de « 2 variations sur 3 » quand elle s'affiche (forme de l'ancienne fenêtre : « 2 variations sur 3 · 1 en QCM »). Aucune variation en QCM → rien.
+- Choix de la PR A2 que David n'a pas repris (acceptés) : case « En QCM » grisée sur une variation retirée ; infobulle de la dernière variation gardée.
+
+### 2026-11-26 — PR A2 mergée (#3166)
+
+- CI verte, mergée par `pnpm pr:merger`.
+
+### 2026-11-26 — PR A2, réalisation
+
+- `TileCard` : props `onvariationschange`, `choiceVariations`, `onchoicechange`. Avec `onvariationschange` (prof, Ma série) : flèches sur toutes les variations ; numéro = bouton (vert / rouge barré), infobulles validées, dernière gardée `aria-disabled` avec infobulle « Seule variation gardée : la dernière ne se retire pas » ; « 2 variations sur 3 » sous la ligne ; annonce `aria-live` sr-only. Case « En QCM » (`MyCheckbox`, nom « Variation k en QCM ») : `mayBeChoice` puis `canBeChoice` sur l'exemple à graine fixe, comme la fenêtre ; désactivée sur une variation retirée.
+- `CartQuestionCard` : plus de `VariationPicker` (il reste dans l'éditeur de série du prof).
+- Tests : 10 cas dans `CartQuestionCard.svelte.test.ts`, 9 rouges avant le code (le cas élève était déjà vert) ; 478 verts sur `components/series`, `components/questions`, `automaths` et la tuile.
+- Vu (Playwright, prof, ordi et téléphone, série en `localStorage`) : bug trouvé à l'écran, retirer la variation affichée faisait sauter la carte sur la première gardée → `chosen = current` au clic, test rouge puis vert. 0 erreur de console.
+- Doc : `questions.md`, `evaluations.md`.
+- Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : nom du bouton du numéro = texte visible d'abord (« 1/3, gardée », WCAG 2.5.3), raison du refus de la dernière variation dans le nom (l'infobulle ne se voit ni au tactile ni au clavier), annonce `aria-live` raccourcie. À dire à David (point 4) : le résumé « Toutes les variations (3) · 1 en QCM » de la fenêtre n'existe plus, il faut parcourir les variations pour voir lesquelles sont en QCM. Écartés (vérifiés) : réactivité après retrait, double appel QCM + variations (synchrone, comme la fenêtre), `inChoice` non filtré par `choosable` (le tirage retombe en saisie).
+
+### 2026-11-26 — PR A mergée (#3164)
+
+- CI : `garde-migrations-horodatage` rouge (dépend de l'heure, sans rapport), job relancé, vert. Mergée.
+
+### 2026-11-26 — PR A, revue corrigée
+
+- Point 1 : aperçu d'une variation non gardée → la carte part de la première variation gardée (exemple à graine fixe), compteur juste. Test rouge puis vert.
+- Point 3 : chaque tuile est un groupe (`role="group"`) nommé par le titre du modèle (`aria-labelledby`, `$props.id()`) ; modèle retiré : « Modèle retiré ». Tests rouges puis verts.
+- Point 4 : flèches des variations, zone de clic de 40 px (`::before`, `inset: -0.5rem`), ligne fine inchangée. Test rouge puis vert.
+- `git merge origin/main` ; 362 tests navigateur ciblés + 8 serveur verts ; `check:incremental` 0 erreur ; rendu revu (`pnpm voir --chrome`, 5e), 0 erreur de console.
+
+### 2026-11-26 — PR A cartes, réalisation
+
+- `formatGradeBadge` (`src/lib/utils/grade-badge.ts`) : suites de niveaux = chacun a le précédent pour prérequis direct (CM1–CM2, 2nde–1ère Spé) ; deux filières d'une même année → « · ». Noms courts de `GRADES` (« 2nde », « 1ère Spé », « Term techno »).
+- `TileCard` (`components/questions/`) : ligne fine + flash-card, commune aux deux tuiles. Flèches en boucle ; exemple d'une autre variation = `variationExample` (graine fixe) ; sa propre variation = l'aperçu du modèle. Dans Ma série, seules les variations choisies par le prof défilent.
+- Hauteur : nouvelle constante `CATALOGUE_TILE_CARD_HEIGHT` (18rem) ; `TILE_CARD_HEIGHT` (12rem) inchangé, il sert aussi à la projection « En classe », au choix des variations et aux aperçus d'admin. Catalogue sur téléphone 13,5rem ; Ma série 18rem partout (12rem avant, aussi sur téléphone).
+- `FlashCard` : prop `compactFlip` (bouton 32 px, icône 16 px, marge du bas réduite).
+- Ma série : corbeille toujours visible (pas au survol), absente pour un modèle retiré (l'encadré a déjà son bouton).
+- Choix non écrits en phase 0 (à dire à David) : intitulé « Niveau » de la difficulté renommé « Difficulté » (infobulle) ; la position de départ des flèches est la variation de l'aperçu, et la graine fixe des aperçus tombe presque toujours sur la DERNIÈRE variation (« 2/2 », « 4/4 », « 8/8 » au départ).
+- Tests : `grade-badge.test.ts` (8), 5 cas dans `QuestionPreviewCard`, 4 dans `CartQuestionCard`, hauteurs de `catalogue-navigation` ; rouges 11/11 sur les fichiers d'origine (copie restaurée ensuite). 1 204 tests navigateur verts sur `components/` et `automaths/`.
+- Vu : `pnpm voir --chrome` (ordi, téléphone) et script Playwright sur `/automaths/panier` (série en `localStorage`) : flèche « 3/3 » → « 1/3 », corbeille 2 → 1 ligne, 0 erreur de console.
+
+### 2026-11-26 — PR A2 « variations choisies sur la carte », phase 0 validée par David (« je valide »)
+
+Idée de David : dans Ma série, choisir les variations avec les flèches de la carte au lieu de la fenêtre de `VariationPicker`.
+
+1. Flèches « ‹ k/n › » sur la carte de Ma série : elles parcourent TOUTES les variations, retirées comprises (sinon on ne peut plus en remettre une). Remplace le « seules les variations gardées défilent » de la PR A.
+2. Toutes gardées par défaut, numéro en vert ; clic sur le numéro (prof seulement) → variation retirée : numéro en rouge ET barré (jamais la couleur seule), phrase « 2 variations sur 3 » sous la ligne. Nouveau clic → remise.
+3. Infobulle sur le numéro : « Retirer cette variation de la série » / « Remettre cette variation ».
+4. La dernière variation gardée ne se retire pas : clic sans effet, l'infobulle le dit.
+5. Case « En QCM » sur la ligne fine, visible seulement quand la variation affichée peut se poser en QCM (remplace celle de la fenêtre).
+6. Élève / visiteur : flèches seulement, numéro non cliquable.
+7. La fenêtre de `VariationPicker` disparaît de Ma série. PR à part, juste après la PR A.
+
+### 2026-11-26 — PR A, revue `code-reviewer` (Sonnet) : aucun bloquant
+
+À corriger avant la PR :
+
+- (point 1) `TileCard` : `previewIndex` hors des variations permises → afficherait une variation non choisie, compteur faux. Prendre `list[0]` si `selectedVariationIndex` n'est pas dans `list` (+ test).
+- (point 3) Noms accessibles identiques d'une tuile à l'autre (« Variation suivante », « Retirer de ma série ») → y mettre le titre du modèle, ou nommer la tuile.
+- (point 4) Flèches des variations de 24 px : trop petites au doigt → zone de clic élargie (`::before`) ou plus grandes en `@media (hover: none)`.
+
+Écartés : point 2 (`selectedVariationIndex` toujours rempli par `generateInstance`) ; point 5 (`chosen` pas remis à zéro au changement de modèle : `{#each}` clés par id). À dire à David : Ma série reste à 18rem sur téléphone (le catalogue passe à 13,5rem).
 
 ### 2026-11-26 — phase 0 validée par David (« je valide »)
 
