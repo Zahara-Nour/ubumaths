@@ -344,11 +344,14 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   niveaux, ~2 500) et ids des points de chaque modèle publié — liens lus en anonyme, policy
   `20261118204254` ; leur lecture en échec sert la liste sans eux, `points: []`,
   `templatePoints: {}`) gardée **5 min par Vercel**
-  (`s-maxage=300, stale-while-revalidate=300`) — un modèle publié ou dépublié l'est pour les
+  (`Vercel-CDN-Cache-Control: max-age=300, stale-while-revalidate=300`, en-tête que Vercel ne
+  transmet pas) — un modèle publié ou dépublié l'est pour les
   élèves en 5 à 10 min. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`),
   jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`
-  toute réponse qui pose un cookie. Vercel retire `s-maxage` de l'en-tête rendu au client (on y lit
-  `public, max-age=0`) : le cache se vérifie à `x-vercel-cache` (`MISS` puis `HIT`).
+  toute réponse qui pose un cookie. Le navigateur reçoit `Cache-Control: public, max-age=0` et
+  relit donc toujours, en local comme en prod (un `stale-while-revalidate` dans `Cache-Control`
+  lui resservait la liste périmée sur le serveur de dev, E85) : le cache de Vercel se vérifie à
+  `x-vercel-cache` (`MISS` puis `HIT`).
   Les modèles y sont **sans leurs cas de test** (`test_specs`, ~31 % du poids : 11 → 7,7 Mo bruts
   en novembre 2026) : colonnes listées dans le `+server.ts`, avec une garde de compilation qui
   échoue si une colonne ajoutée à `question_templates` n'y est pas rangée. Côté navigateur, la
