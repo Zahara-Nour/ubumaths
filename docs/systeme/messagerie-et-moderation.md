@@ -13,6 +13,7 @@ couvre:
   - 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts'
   - src/lib/server/message-attachments.ts
   - src/lib/utils/message-attachment-rules.ts
+  - src/lib/utils/message-reply.ts
   - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
   - src/lib/navigation/goto-notification.ts
