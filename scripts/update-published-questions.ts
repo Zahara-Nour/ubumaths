@@ -30,7 +30,7 @@
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
  *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
  *          blockly-5-106, variable-e, totaux-ce, horloges-ce-zeros, motifs-allumettes,
- *          cp-demi-droite, factoriser-impossible-1spe
+ *          cp-demi-droite, factoriser-impossible-1spe, quotient-simplifie-1spe
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -260,6 +260,12 @@ const FACTORISER_IMPOSSIBLE_1SPE: readonly string[] = [
 	'604f83b7-4ed3-4b0f-b393-85e60ac353b4' // 1re spé « Factoriser un trinôme à l'aide de ses racines »
 ];
 
+/** Écart E77 (chantier `ecarts-verifs`) : un quotient juste mais non simplifié
+ *  (`k^n(n+2) / (k^{n+1}(n+1))`) vaut ½ point au lieu de « Juste » */
+const QUOTIENT_SIMPLIFIE_1SPE: readonly string[] = [
+	'cdb5a1cf-f8df-4ab1-9305-4d1b5b790711' // 1re spé « Sens de variation par le quotient u(n+1)/u(n) »
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -310,6 +316,10 @@ const LOTS: Record<string, Lot> = {
 	'factoriser-impossible-1spe': {
 		dossier: 'scripts/questions/1spe-factoriser-impossible',
 		cibles: FACTORISER_IMPOSSIBLE_1SPE
+	},
+	'quotient-simplifie-1spe': {
+		dossier: 'scripts/questions/1spe-quotient-simplifie-existants',
+		cibles: QUOTIENT_SIMPLIFIE_1SPE
 	}
 };
 

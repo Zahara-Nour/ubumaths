@@ -1,0 +1,610 @@
+{
+	"id": "cdb5a1cf-f8df-4ab1-9305-4d1b5b790711",
+	"title": "Sens de variation par le quotient u(n+1)/u(n)",
+	"description": "Calculer u(n+1)/u(n) (n/kⁿ, a × qⁿ, (n+1)/kⁿ) ou conclure du quotient comparé à 1 pour une suite à termes positifs (pièges : quotient inversé, kⁿ/kⁿ⁺¹ simplifié en 1)",
+	"grades": ["1_SPE"],
+	"level": 5,
+	"delay": 75,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier $n\\geqslant1$, par $u_n=\\dfrac{n}{ {{k}}^n}$.\n\nExprime $\\dfrac{u_{n+1}}{u_n}$ en fonction de $n$, sous la forme d'un seul quotient simplifié.\n\n$\\dfrac{u_{n+1}}{u_n}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{n+1}{ {{k}}n}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{k}}n}{n+1}",
+							"message": "Tu as calculé $\\dfrac{u_n}{u_{n+1}}$ : c'est $u_{n + 1}$ qu'on divise par $u_n$.",
+							"label": "Quotient inversé"
+						},
+						{
+							"answer": "\\frac{n+1}{n}",
+							"message": "Tu as simplifié ${{k}}^n$ et ${{k}}^{n + 1}$ comme s'ils étaient égaux : leur quotient vaut ${{k}}$.",
+							"label": "Puissances simplifiées en 1"
+						},
+						{
+							"answer": "\\frac{ {{k}}(n+1)}{n}",
+							"message": "Tu as multiplié par ${{k}}$ au lieu de diviser : ${{k}}^{n + 1}$ est au dénominateur de $u_{n + 1}$.",
+							"label": "Multiplié au lieu de divisé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}=\\dfrac{n+1}{ {{k}}^{n+1}}$.",
+					"$\\dfrac{u_{n+1}}{u_n}=\\dfrac{n+1}{ {{k}}^{n+1}}\\times\\dfrac{ {{k}}^n}{n}$ et $\\dfrac{ {{k}}^n}{ {{k}}^{n+1}}=\\dfrac{1}{ {{k}} }$.",
+					"Donc $\\dfrac{u_{n+1}}{u_n}=\\textcolor{{{color:primary.0}}}{\\dfrac{n+1}{ {{k}}n}}$."
+				]
+			},
+			"hint": "Écris $u_{n+1}$ en remplaçant $n$ par $n+1$, puis multiplie-le par l'inverse de $u_n$ et simplifie les puissances."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}\\times{{eval:q10/10;d}}^n$.\n\nCalcule $\\dfrac{u_{n+1}}{u_n}$.\n\n$\\dfrac{u_{n+1}}{u_n}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "q10",
+					"expression": "4|6|8|12|15|25"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q10/10}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10/q10}}",
+							"message": "Tu as calculé $\\dfrac{u_n}{u_{n+1}}$ : c'est $u_{n + 1}$ qu'on divise par $u_n$.",
+							"label": "Quotient inversé"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Tu as gardé le coefficient ${{a}}$ : il est dans $u_{n + 1}$ et dans $u_n$, il se simplifie.",
+							"label": "Coefficient gardé"
+						},
+						{
+							"answer": "{{eval:a*q10/10;d}}",
+							"message": "Tu as calculé $u_1$, pas le quotient $\\dfrac{u_{n+1}}{u_n}$.",
+							"label": "Terme u₁ au lieu du quotient"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}={{a}}\\times{{eval:q10/10;d}}^{n+1}$.",
+					"$\\dfrac{u_{n+1}}{u_n}=\\dfrac{ {{a}}\\times{{eval:q10/10;d}}^{n+1}}{ {{a}}\\times{{eval:q10/10;d}}^n}={{eval:q10/10;d}}^{n+1-n}=\\textcolor{{{color:primary.0}}}{{{eval:q10/10;d}}}$."
+				]
+			},
+			"hint": "Écris $u_{n+1}$ en remplaçant $n$ par $n+1$, puis simplifie le quotient : le coefficient et les puissances se simplifient."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n=\\dfrac{n+1}{ {{k}}^n}$.\n\nExprime $\\dfrac{u_{n+1}}{u_n}$ en fonction de $n$, sous la forme d'un seul quotient simplifié.\n\n$\\dfrac{u_{n+1}}{u_n}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{n+2}{ {{k}}(n+1)}",
+					"requiredForm": {
+						"pattern": "($n+2)/v",
+						"acceptable": "u/v"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{k}}(n+1)}{n+2}",
+							"message": "Tu as calculé $\\dfrac{u_n}{u_{n+1}}$ : c'est $u_{n + 1}$ qu'on divise par $u_n$.",
+							"label": "Quotient inversé"
+						},
+						{
+							"answer": "\\frac{n+2}{n+1}",
+							"message": "Tu as simplifié ${{k}}^n$ et ${{k}}^{n + 1}$ comme s'ils étaient égaux : leur quotient vaut ${{k}}$.",
+							"label": "Puissances simplifiées en 1"
+						},
+						{
+							"answer": "\\frac{ {{k}}(n+2)}{n+1}",
+							"message": "Tu as multiplié par ${{k}}$ au lieu de diviser : ${{k}}^{n + 1}$ est au dénominateur de $u_{n + 1}$.",
+							"label": "Multiplié au lieu de divisé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}=\\dfrac{(n+1)+1}{ {{k}}^{n+1}}=\\dfrac{n+2}{ {{k}}^{n+1}}$.",
+					"$\\dfrac{u_{n+1}}{u_n}=\\dfrac{n+2}{ {{k}}^{n+1}}\\times\\dfrac{ {{k}}^n}{n+1}$ et $\\dfrac{ {{k}}^n}{ {{k}}^{n+1}}=\\dfrac{1}{ {{k}} }$.",
+					"Donc $\\dfrac{u_{n+1}}{u_n}=\\textcolor{{{color:primary.0}}}{\\dfrac{n+2}{ {{k}}(n+1)}}$."
+				]
+			},
+			"hint": "Écris $u_{n+1}$ en remplaçant $n$ par $n+1$, puis multiplie-le par l'inverse de $u_n$ et simplifie les puissances."
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_n>0$ et :\n\n$$\\dfrac{u_{n+1}}{u_n}=\\dfrac{n+{{a}}}{n+{{b}}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "sa",
+					"expression": "eval:min(max(a-b,0),1)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:1-sa"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes sont **positifs** : $u_{n+1}>u_n$ revient à $\\dfrac{u_{n+1}}{u_n}>1$, et $u_{n+1}<u_n$ à $\\dfrac{u_{n+1}}{u_n}<1$.",
+					"Pour tout $n$, $n+{{a}}{{if:sa==1|>|<}}n+{{b}}$ et $n+{{b}}>0$, donc $\\dfrac{u_{n+1}}{u_n}{{if:sa==1|>|<}}1$.",
+					"Donc $u_{n+1}{{if:sa==1|>|<}}u_n$ pour tout $n$ : la suite est $\\textcolor{{{color:primary.0}}}{\\text{ {{if:sa==1|croissante|décroissante}} }}$."
+				]
+			},
+			"hint": "Les termes sont positifs : compare le quotient $\\dfrac{u_{n+1}}{u_n}$ à $1$, pour tout $n$."
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_n>0$ et :\n\n$$\\dfrac{u_{n+1}}{u_n}=\\dfrac{ {{k}} }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes sont **positifs** : $u_{n+1}>u_n$ revient à $\\dfrac{u_{n+1}}{u_n}>1$, et $u_{n+1}<u_n$ à $\\dfrac{u_{n+1}}{u_n}<1$.",
+					"Pour $n=0$ : $\\dfrac{u_{n+1}}{u_n}={{k}}>1$, donc $u_1>u_0$.",
+					"Pour $n={{k}}$ : $\\dfrac{u_{ {{eval:k+1}} }}{u_{ {{k}} }}=\\dfrac{ {{k}} }{ {{eval:k+1}} }<1$, donc $u_{ {{eval:k+1}} }<u_{ {{k}} }$.",
+					"Le quotient passe de part et d'autre de $1$ : la suite est $\\textcolor{{{color:primary.0}}}{\\text{ni croissante, ni décroissante}}$."
+				]
+			},
+			"hint": "Les termes sont positifs : compare le quotient $\\dfrac{u_{n+1}}{u_n}$ à $1$, pour tout $n$."
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_n>0$ et :\n\n$$\\dfrac{u_{n+1}}{u_n}=1{{if:s==0|+|-}}\\dfrac{1}{n+{{k}}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes sont **positifs** : $u_{n+1}>u_n$ revient à $\\dfrac{u_{n+1}}{u_n}>1$, et $u_{n+1}<u_n$ à $\\dfrac{u_{n+1}}{u_n}<1$.",
+					"Pour tout $n$, $\\dfrac{1}{n+{{k}}}>0$, donc $\\dfrac{u_{n+1}}{u_n}{{if:s==0|>|<}}1$.",
+					"Donc $u_{n+1}{{if:s==0|>|<}}u_n$ pour tout $n$ : la suite est $\\textcolor{{{color:primary.0}}}{\\text{ {{if:s==0|croissante|décroissante}} }}$."
+				]
+			},
+			"hint": "Les termes sont positifs : compare le quotient $\\dfrac{u_{n+1}}{u_n}$ à $1$, pour tout $n$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_n = n/2ⁿ : (n+1)/(2n)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{n+1}{2n}"]
+		},
+		{
+			"description": "Autre écriture : (n+1)/2 × 1/n refusée (pas un seul quotient)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			},
+			"answers": ["\\frac{n+1}{2}\\times\\frac{1}{n}"]
+		},
+		{
+			"description": "Erreur prévue : quotient inversé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $\\dfrac{u_n}{u_{n+1}}$ : c'est $u_{n + 1}$ qu'on divise par $u_n$."
+			},
+			"answers": ["\\frac{2n}{n+1}"]
+		},
+		{
+			"description": "Erreur prévue : puissances simplifiées en 1",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as simplifié $2^n$ et $2^{n + 1}$ comme s'ils étaient égaux : leur quotient vaut $2$."
+			},
+			"answers": ["\\frac{n+1}{n}"]
+		},
+		{
+			"description": "Erreur prévue : multiplié par 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $2$ au lieu de diviser : $2^{n + 1}$ est au dénominateur de $u_{n + 1}$."
+			},
+			"answers": ["\\frac{2(n+1)}{n}"]
+		},
+		{
+			"description": "Non simplifié : produit de deux quotients",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			},
+			"answers": ["\\frac{n+1}{2^{n+1}}\\times\\frac{2^n}{n}"]
+		},
+		{
+			"description": "u_n = n/3ⁿ : (n+1)/(3n)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{n+1}{3n}"]
+		},
+		{
+			"description": "u_n = 3 × 1,5ⁿ : 1,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"q10": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,5"]
+		},
+		{
+			"description": "Autre écriture : 3/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"q10": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{2}"]
+		},
+		{
+			"description": "Erreur prévue : quotient inversé (2/3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"q10": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $\\dfrac{u_n}{u_{n+1}}$ : c'est $u_{n + 1}$ qu'on divise par $u_n$."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "Erreur prévue : coefficient gardé (3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"q10": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé le coefficient $3$ : il est dans $u_{n + 1}$ et dans $u_n$, il se simplifie."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur prévue : u₁ (4,5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"q10": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $u_1$, pas le quotient $\\dfrac{u_{n+1}}{u_n}$."
+			},
+			"answers": ["4,5"]
+		},
+		{
+			"description": "u_n = 5 × 0,8ⁿ : 0,8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q10": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,8"]
+		},
+		{
+			"description": "u_n = (n+1)/4ⁿ : (n+2)/(4(n+1))",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{n+2}{4(n+1)}"]
+		},
+		{
+			"description": "Autre écriture : (n+2)/(4n+4)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{n+2}{4n+4}"]
+		},
+		{
+			"description": "Non simplifié : puissances laissées dans le quotient, produits collés (perfectible)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{4^n(n+2)}{4^{n+1}(n+1)}"]
+		},
+		{
+			"description": "Non simplifié : numérateur et dénominateur multipliés par 2 (perfectible)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{2n+4}{8n+8}"]
+		},
+		{
+			"description": "Non simplifié : puissances laissées dans le quotient (perfectible)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products", "form"]
+			},
+			"answers": ["\\frac{(n+2)\\times4^n}{4^{n+1}\\times(n+1)}"]
+		},
+		{
+			"description": "Non simplifié : produit de deux quotients",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{n+2}{4^{n+1}}\\times\\frac{4^n}{n+1}"]
+		},
+		{
+			"description": "Erreur prévue : quotient inversé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $\\dfrac{u_n}{u_{n+1}}$ : c'est $u_{n + 1}$ qu'on divise par $u_n$."
+			},
+			"answers": ["\\frac{4(n+1)}{n+2}"]
+		},
+		{
+			"description": "Erreur prévue : puissances simplifiées en 1",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as simplifié $4^n$ et $4^{n + 1}$ comme s'ils étaient égaux : leur quotient vaut $4$."
+			},
+			"answers": ["\\frac{n+2}{n+1}"]
+		},
+		{
+			"description": "Erreur prévue : multiplié par 4",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $4$ au lieu de diviser : $4^{n + 1}$ est au dénominateur de $u_{n + 1}$."
+			},
+			"answers": ["\\frac{4(n+2)}{n+1}"]
+		},
+		{
+			"description": "(n+5)/(n+2) : croissante",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : décroissante",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "(n+1)/(n+3) : décroissante",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : ni l'une ni l'autre (le quotient dépend de n)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "4/(n+1) : ni l'une ni l'autre",
+			"variationIndex": 4,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : croissante (vu seulement n = 0)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : décroissante (le quotient décroît)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "1 + 1/(n+3) : croissante",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "1 − 1/(n+3) : décroissante",
+			"variationIndex": 5,
+			"variables": {
+				"s": "1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : croissante (quotient positif)",
+			"variationIndex": 5,
+			"variables": {
+				"s": "1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}

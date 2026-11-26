@@ -1297,10 +1297,18 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    ADR 0012) ou valeur numérique (`precision` : `decimal`, `significant`, `magnitude`,
    `tolerance`), grandeur, `angleModulo: '2pi'`. Arrondi : plus de chiffres que demandé mais bon
    arrondi → `bad_form` (contrainte `rounding`, non réglable, message « Arrondis au … ») ; moins de
-   décimales accepté si la valeur est exactement l'arrondi.
+   décimales accepté si la valeur est exactement l'arrondi. Réponse comptée fausse sans autre
+   message, dans une case de formule sans unité : si le parseur la refuse pour un nombre collé
+   derrière un facteur (`(n+2)4^n`, `x2` ; règle du 2026-10-08, `mathAST/parser/number-after-factor.ts`),
+   la carte le dit (`numberAfterFactorFeedback` : « Nombre « 4 » écrit après un facteur : écris le
+   nombre devant, ou mets un signe × entre les deux. »), en ordre fixé (`validateSingleBlank`)
+   comme en ordre libre ; le verdict reste faux (écart E76).
 4. **`requiredForm`** : `product`, `sum`, `additionOnly`, `fraction`, `power`, formes d'équation,
    formes complexes (`exponentielle`, `algebrique`), ou motif `{ pattern, acceptable? }`
    (motifs `mathAST/pattern`). Violée → `bad_form` ; forme `acceptable` → `unoptimal_form`.
+   Exemple, « un seul quotient simplifié » : `{ pattern: '($n+2)/v', acceptable: 'u/v' }`, le
+   quotient juste dont le numérateur n'est pas `n+2` (`4^n(n+2)/(4^{n+1}(n+1))`) vaut ½ point
+   (écart E77, modèle `cdb5a1cf`).
    Virgule nue (`0,5n`) décimale comme `0{,}5n`, sauf écriture à virgule séparatrice
    (`mathAST/decimal-comma`). Même relecture dans `correction-generator.ts` : une formule du modèle
    à virgule décimale nue (`0,6x^2-0,6`) que le parseur refuse est relue une seconde fois, sans toucher
