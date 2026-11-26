@@ -16,7 +16,7 @@ import { dev } from '$app/env';
 import { redirect } from '@sveltejs/kit';
 import { initEnv } from '#lib/server/env.ts';
 import { getUserProfile } from '#lib/server/auth.ts';
-import { mustStayPrivate, PRIVATE_NO_STORE } from '#lib/server/private-response.ts';
+import { makePrivate, mustStayPrivate } from '#lib/server/private-response.ts';
 import { csrfHandle } from '#lib/server/csrfHandle.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
@@ -379,9 +379,10 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 
 	// SECURITY (finding H2) : une page d'utilisateur connecté, ou toute réponse qui
 	// pose un cookie (session rafraîchie), porte des jetons : aucun cache partagé
-	// ne doit la garder, même si la route l'a déclarée publique.
+	// ne doit la garder, même si la route l'a déclarée publique (consignes des
+	// caches de CDN comprises : `Vercel-CDN-Cache-Control` passe avant).
 	if (mustStayPrivate(response.headers, Boolean(event.locals.user))) {
-		response.headers.set('Cache-Control', PRIVATE_NO_STORE);
+		makePrivate(response.headers);
 	}
 
 	return response;

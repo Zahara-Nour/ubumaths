@@ -19,3 +19,15 @@ export function mustStayPrivate(headers: Headers, signedIn: boolean): boolean {
 	if (headers.has('set-cookie')) return true;
 	return signedIn && (headers.get('content-type') ?? '').includes('text/html');
 }
+
+/**
+ * Consignes des caches de CDN : elles passent avant `Cache-Control` (doc de
+ * Vercel), un `private, no-store` seul ne les annulerait donc pas.
+ */
+const CDN_CACHE_HEADERS = ['cdn-cache-control', 'vercel-cdn-cache-control'];
+
+/** Rend la réponse privée : `private, no-store`, sans consigne de CDN */
+export function makePrivate(headers: Headers): void {
+	headers.set('cache-control', PRIVATE_NO_STORE);
+	for (const name of CDN_CACHE_HEADERS) headers.delete(name);
+}

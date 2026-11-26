@@ -11,8 +11,11 @@
  * (`templatePoints`, ids ; la recherche y lit leurs intitulés). Leur lecture en
  * échec ne prive pas du catalogue : il est servi sans eux.
  *
- * Gardée 5 min par Vercel (`s-maxage=300`), puis servie périmée pendant qu'il
- * la relit en arrière-plan : la base n'est plus relue à chaque visite. Un
+ * Gardée 5 min par Vercel (`Vercel-CDN-Cache-Control`), puis servie périmée
+ * pendant qu'il la relit en arrière-plan : la base n'est plus relue à chaque
+ * visite. Le navigateur, lui, la relit toujours (`max-age=0`, rien d'autre :
+ * un `stale-while-revalidate` dans `Cache-Control` lui resservait une liste
+ * périmée, E85 ; Vercel le retirait en prod, pas le serveur de dev). Un
  * modèle tout juste publié (ou dépublié) l'est pour les élèves en 5 à 10 min ;
  * l'onglet qui vient de l'éditer contourne le cache (`?frais=…`, cf.
  * `questionTemplatesCache.invalidate()`).
@@ -48,11 +51,15 @@ interface Programme {
 
 const logger = createServerLogger('api/questions/templates/all/+server');
 
+/** Navigateur : relit à chaque fois (le cache de Vercel répond vite) */
+const CACHE_CONTROL = 'public, max-age=0';
+
 /**
- * 5 min chez Vercel, puis servie périmée (5 min au plus) pendant la relecture :
- * un modèle dépublié (réponse fausse…) disparaît en 10 min au pire.
+ * Cache de Vercel seul (il ne transmet pas cet en-tête) : 5 min, puis servie
+ * périmée (5 min au plus) pendant la relecture ; un modèle dépublié (réponse
+ * fausse…) disparaît en 10 min au pire.
  */
-const CACHE_CONTROL = 'public, max-age=0, s-maxage=300, stale-while-revalidate=300';
+const VERCEL_CDN_CACHE_CONTROL = 'max-age=300, stale-while-revalidate=300';
 
 export const GET: RequestHandler = async ({ setHeaders }) => {
 	const supabase = createAnonymousSupabase();
@@ -95,7 +102,10 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 	const publishedIds = new Set(templates.flatMap((row: unknown) => rowId(row) ?? []));
 	const { points, templatePoints } = await readProgramme(supabase, publishedIds);
 
-	setHeaders({ 'cache-control': CACHE_CONTROL });
+	setHeaders({
+		'cache-control': CACHE_CONTROL,
+		'vercel-cdn-cache-control': VERCEL_CDN_CACHE_CONTROL
+	});
 	return Response.json({ templates, nodes, points, templatePoints });
 };
 
