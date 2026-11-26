@@ -35,3 +35,4 @@ Instantané de `question_templates` de la PRODUCTION, en lecture seule (service 
 - `question:specs --apercu 40` : 6/6 specs, 150/150 tirages, plus aucun avertissement ; aucun `--` dans les 40 aperçus.
 - Migration générée par `migration-contenu.ts` (lot `scripts/questions/specs-rouges-3170/`). Accès : aucune policy ne change, personne ne gagne ni ne perd d'accès. Additive (contenu d'un modèle), rollback écrit dans le fichier.
 - `migrations-contenu-publie.test.ts` : vert (257) ; corps remplacé par `select 1;` → 4 échecs, tous sur elle ; fichier restauré (`cmp` identique).
+- `security-auditor` : aucun finding ; une seule ligne écrite, sous garde du contenu exact, rollback symétrique, aucune donnée réelle.
