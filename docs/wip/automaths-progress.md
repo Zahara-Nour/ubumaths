@@ -2,13 +2,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3172._
+_Mis à jour le 2026-11-26, après #3176._
 
-- **État** : PR B (recherche : raccourcis, énoncés, groupe « aussi », pluriels) mergée (#3172), worktree retiré.
-- **Prochaine action** : aucune PR prévue ; attendre la réponse de David sur l'ordre des groupes.
-- **En attente de David** : ordre des groupes de résultats : SOMME des pertinences (4 énoncés passent devant 1 titre) ou les groupes qui ont le plus de titres d'abord ? Et les choix non écrits en phase 0 (entrée « réalisation » ci-dessous).
+- **État** : PR B (recherche, #3172) et PR C (ordre des groupes, #3176) mergées ; worktrees retirés. Recherche livrée au prochain `deploy:prod` (sur demande de David).
+- **Prochaine action** : aucune PR prévue sur le chantier ; attendre la suite de David.
+- **En attente de David** : accord pour supprimer le dossier `ubumaths-wt-automaths-recherche` (caches `.svelte-kit` / `.vite` seuls).
 - **Pièges en cours** : figure dans une variable (`{{if:k==1|```figure…}}`) → variables retirées AVANT les blocs ; mot mis au singulier par la recherche = mot entier ; capture WebKit d'une carte = miroir ; `garde-migrations-horodatage` rouge par hasard → `gh run rerun --failed`.
-- **Worktree / branche** : aucun (dossier `ubumaths-wt-automaths-recherche` : caches `.svelte-kit` / `.vite` seuls, non supprimés).
+- **Worktree / branche** : aucun.
+
+### 2026-11-26 — PR C mergée (#3176)
+
+- CI verte, mergée par `pnpm pr:merger`.
+
+### 2026-11-26 — PR C, ordre des groupes (décision de David : « je valide »)
+
+- Recos acceptées : groupes de résultats triés par nombre de TITRES, puis somme des pertinences, puis ordre de l'arbre. Les autres choix de la PR B sont gardés (ordre des raccourcis, vue « Notions » au raccourci, nom de notion retiré, intitulé « Aussi dans les corrigés et le programme »).
+- 2 tests (4 énoncés contre 1 titre, rouge avant ; départage par la somme). 40/40 ; `check:incremental` 0 erreur ; cliquet tenu.
+- Mesure (6e + inférieurs, 3 premiers groupes) : « triangle » → triangles · constructions · propriétés (propriétés était 1er) ; cercle, multiplication, fraction, angle droit inchangés.
+- Revue : aucune (≈ 5 lignes de tri, CLAUDE.md § Planning point 4). Doc : `questions.md`.
 
 ### 2026-11-26 — PR B mergée (#3172)
 

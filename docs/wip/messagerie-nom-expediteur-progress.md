@@ -50,3 +50,10 @@ Vérifiées dans le code et en prod pour les trois premières ; découpage et qu
 4. Supprimer un message envoyé l'efface chez le destinataire ; le compteur de non-lus garde un fantôme.
 5. Brouillon long : la limite de 10 000 caractères porte sur le HTML.
 6. Icône de fil jamais affichée dans la boîte, « Voir le fil » toujours affiché, sujet de 197 caractères ou plus refusé à la réponse.
+
+## Essai de David en prod après la migration (2026-11-26)
+
+- **L'envoi par un élève passe** : son message est arrivé chez le prof (V131 confirmé corrigé à l'écran).
+- **Détail du message côté prof** : « Expéditeur inconnu » à la place du nom de l'élève (V134, attendu), alors que le destinataire (le prof) porte son nom.
+- **Page de réponse du prof** (« En réponse à ») : « 1 destinataire sélectionné » et « Destinataire fixe pour la réponse », mais la liste ne montre que trois élèves, tous décochés, et pas l'élève à qui il répond. À regarder dans la PR de V134 : pourquoi trois élèves seulement (le prof en a bien plus), et afficher le destinataire de la réponse par son nom.
+- Vus aussi sur ces écrans, à traiter dans la même PR si c'est simple : le rôle affiché en anglais, « (student) », à côté de chaque nom.

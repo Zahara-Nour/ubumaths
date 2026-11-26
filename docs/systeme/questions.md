@@ -258,9 +258,9 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   sous-notion (`initialRubricId` de `CatalogueNotionSections`) ; **bons résultats** : titre,
   description, nom de la sous-notion et énoncé de chaque variation (`shared` compris) sans
   variables `{{…}}`, blocs (figures, choix des QCM), formules ni code (`plainMarkdownText`),
-  groupés par sous-notion, le groupe le plus pertinent d'abord (somme des pertinences : 3 si tous
-  les mots sont dans le titre, 2 avec la description, 1 sinon ; titres d'abord dans un groupe ; à
-  égalité, ordre de l'arbre ; « Non classés » en dernier) ; groupe replié **« Aussi dans les
+  groupés par sous-notion, le groupe qui a le plus de **titres** d'abord, puis la somme des
+  pertinences (3 si tous les mots sont dans le titre, 2 avec la description, 1 sinon) ; titres
+  d'abord dans un groupe ; à égalité, ordre de l'arbre ; « Non classés » en dernier ; groupe replié **« Aussi dans les
   corrigés et le programme »** (`others`) : mots trouvés seulement avec la correction écrite
   (étapes, retours) ou les intitulés des points du programme (`pointNames`, dérivés par le cache de
   `points` et `templatePoints`). Ni la consigne, ni le coup de pouce, ni les noms de notion et de
