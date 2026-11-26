@@ -2,13 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3209._
+_Mis à jour le 2026-11-26, après #3209 et #3210, migration appliquée._
 
-- **État** : phase 0 validée (« je te suis » : V1, V2, V3, R et Q1 comme recommandé). #3209 mergée : 5 variations ajoutées à 96992ea8, c2497d96 et 21ebfb57 (réservés, main 7accd349c3), migration de contenu `20261126222711` (test d'intégration vert, `security-auditor` sans finding bloquant), **pas encore appliquée en prod**.
-- **Prochaine action** : après l'accord de David sur les copies non suivies, `git pull --rebase` du dépôt principal, `migration list --linked` (aucune autre migration en attente, sinon stop), `pnpm db:migrate`, puis série de relecture des 3 modèles (`scripts/series/creer-serie.ts`) pour `/dev/modeles`.
-- **En attente de David** : accord pour supprimer les deux copies non suivies (voir le piège) ; ensuite, la relecture dans `/dev/modeles`.
-- **Pièges en cours** : deux copies **non suivies**, `docs/wip/idees-3e-statistiques-progress.md` et `-releve.md`, bloquent le `git pull` du dépôt principal. Leur contenu est déjà sur `main` : le journal est identique à f3422b6752, et le relevé ne diffère que par l'alignement des tableaux. Ne pas les retirer sans l'accord de David.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-statistiques` · `docs/idees-3e-statistiques-reprendre` (journal seul). La PR suivante (publication) se fait dans un nouveau worktree.
+- **État** : #3209 mergée, migration `20261126222711` **appliquée en prod** (db:migrate du 2026-11-26 : 5 variations par modèle, specs 19, 14, 18). Les deux copies non suivies du dépôt principal sont supprimées avec l'accord de David. Trois séries de relecture (une par niveau : 3, 4, 5) écrites dans `scripts/series/{3,4,5}-relecture-idees-3e-statistiques-publies.json`, simulation verte.
+- **Prochaine action** : quand David a lancé les trois `creer-serie.ts … --publier`, commiter les ids écrits en tête des fichiers, ouvrir la PR, puis lire les verdicts (`question_template_reviews`, `reviewed_at` postérieur au 2026-11-26) et corriger les « À revoir ».
+- **En attente de David** : publier les trois séries (commandes ci-dessous), puis relire dans `/dev/modeles`.
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-statistiques` · `chore/idees-3e-statistiques-relecture`.
+
+Commandes pour David, depuis ce worktree :
+
+```bash
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/3-relecture-idees-3e-statistiques-publies.json --publier
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/4-relecture-idees-3e-statistiques-publies.json --publier
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/5-relecture-idees-3e-statistiques-publies.json --publier
+```
 
 ## Relevé (2026-11-26)
 

@@ -1,0 +1,13 @@
+{
+	"title": "Relecture — statistiques, 1 modèle publié de 5e complété",
+	"grade": "5",
+	"description": "Relecture dans /dev/modeles du modèle publié auquel le chantier idees-3e-statistiques a ajouté la fréquence lue sur un diagramme en barres (une espèce, puis les oiseaux), variations 4 et 5, à la fin du modèle.",
+	"items": [
+		{
+			"modele": "Calculer une fréquence",
+			"templateId": "21ebfb57-d44b-4be7-878e-d159fefda924",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

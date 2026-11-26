@@ -1,0 +1,13 @@
+{
+	"title": "Relecture — statistiques, 1 modèle publié de 3e complété",
+	"grade": "3",
+	"description": "Relecture dans /dev/modeles du modèle publié auquel le chantier idees-3e-statistiques a ajouté la médiane à grands effectifs (dé lancé de nombreuses fois, salaires d'une entreprise), variations 4 et 5, à la fin du modèle.",
+	"items": [
+		{
+			"modele": "Médiane d'une série à effectifs",
+			"templateId": "96992ea8-a78f-433d-90e4-5824ed7afb45",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
