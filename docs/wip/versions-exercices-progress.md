@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-26, après #3202._
 
 - **État** : les 4 PR du découpage sont faites. PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0), PR 3 (#3194) en prod (v0.115.0). PR 4 (#3202) mergée, migration `20261126221127` jouée en prod : `exercises` n'a plus que `variables`, 0 fonction morte, 428 exercices / 428 avec version. La page publique `/exercice/<slug>` rend bien l'énoncé.
 - **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/exercices.md` et `base-de-donnees.md`, puis archiver ce journal). Seulement sur le go de David.
-- **En attente de David** : go pour clore. Le code de #3202 part au prochain `deploy:prod` ; le code en prod ne lit déjà plus les colonnes retirées (#3194).
+- **En attente de David** : `deploy:prod` qui livre #3202 — d'ici là, en prod, la **restauration d'une sauvegarde admin** (elle écrit encore `variations`/`shared`/`generic_functions` sur `exercises`) et le **fichier SQL de sauvegarde** (non rejouable) cassent ; rien d'autre ne lit les colonnes retirées. Puis go pour clore.
 - **Pièges en cours** : pas vus à l'écran, car ils demandent une connexion : le lien de partage et la sauvegarde admin, couverts par les tests d'intégration (`versions-exercices-retrait`, `versions-exercices-sauvegarde`).
 - **Worktree / branche** : aucun (retirés par `pr:merger`).
 
