@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: six PR mergées (#3115, #3125, #3132, #3140, #3143, #3147), migrations en prod ; PR 7 (T29 et T28, rapports de bug) en cours, ses deux migrations à jouer en prod par David après le merge
+status: sept PR mergées (#3115, #3125, #3132, #3140, #3143, #3147, #3158) ; les deux migrations de #3158 restent à jouer en prod par David
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR 7 (T29, T28) ouverte, pas encore mergée._
+_Mis à jour le 2026-11-26, après #3158 ; ses deux migrations ne sont PAS encore en prod._
 
-- **État** : six PR mergées (#3115 à #3147), toutes leurs migrations en prod (triggers de `messages` vérifiés le 2026-11-25). **PR 7 en cours** sur `fix/ecarts-moderation-rapports-bug` : T29 (l'auteur d'un rapport de bug n'écrit que titre, description et capture ; création forcément « en attente ») et T28 (règles du stockage des captures recopiées de la prod). Revues faites (`code-reviewer`, `security-auditor` : aucun bloquant), 61 tests d'intégration verts, rouges sans les migrations.
-- **Prochaine action** : (1) CI verte → `pnpm pr:merger <n>` (avant : `pnpm check:migrations --pr <n>`) ; (2) David joue `! pnpm db:migrate` depuis le dépôt principal (relire `pnpm exec supabase migration list --linked` juste avant : attendues `20261126060048` et `20261126060050` seulement, une autre → stop) ; (3) vérifier en prod, en lecture seule, `guard_bug_report_creation_trg` et `guard_bug_report_reecriture_trg` actifs sur `bug_reports`, et les 5 policies du bucket toujours là, sans doublon ; (4) sur `main` : barrer T28 et T29 au registre, y ajouter l'écart I1 de la section PR 7 ; (5) proposer la clôture du chantier à David (versement dans `docs/systeme/`, journal archivé).
-- **En attente de David** : jouer les deux migrations en prod après le merge ; dire si on clôt ensuite.
+- **État** : sept PR mergées (#3115 à #3158). Migrations en prod jusqu'à celles de #3147. **En attente en prod, celles de #3158 seulement** (`migration list --linked` relu après le merge : aucune autre) : `20261126060048_rapport_de_bug_non_reecrit.sql` (T29 : l'auteur d'un rapport de bug n'écrit que titre, description et capture) et `20261126060050_captures_rapports_de_bug_regles_de_stockage.sql` (T28 : règles du stockage recopiées de la prod). T28 et T29 barrés au registre, T34 ajouté (fichiers déposés hors rapport, non effacés à la suppression du compte). Le code de #3158 (route de capture) n'est pas déployé ; les migrations n'en dépendent pas.
+- **Prochaine action** : (1) David joue `! pnpm db:migrate` depuis le dépôt principal (relire `pnpm exec supabase migration list --linked` juste avant : une autre migration en attente → stop) ; (2) vérifier en prod, en lecture seule, `guard_bug_report_creation_trg` et `guard_bug_report_reecriture_trg` actifs sur `bug_reports` (fonctions non `SECURITY DEFINER`, `search_path` fixé), et les 5 policies du bucket `bug-report-screenshots` présentes, sans doublon ; (3) noter le résultat ici ; (4) proposer la clôture du chantier à David (versement dans `docs/systeme/`, journal archivé) ; restes hors chantier : T34, et M2 de la section PR 7.
+- **En attente de David** : jouer les deux migrations en prod ; dire si on clôt ensuite.
 - **Pièges en cours** : la garde est un trigger, pas un retrait de droits par colonne (qui masquerait le message de T31). Écrire `deleted_at` par l'API est refusé par la RLS : la suppression passe par `soft_delete_message`. Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Motif « policy UPDATE ou INSERT sans contrôle de colonnes » possible sur d'autres tables d'élèves (non prouvé).
-- **Worktree / branche** : `ubumaths-wt-ecarts-moderation-rapports-bug`, `fix/ecarts-moderation-rapports-bug` (la copie du journal de ce worktree fait foi jusqu'au merge).
+- **Worktree / branche** : aucun (worktree et branche de #3158 retirés). Ce journal, sur `main`, fait foi.
 
 ---
 
