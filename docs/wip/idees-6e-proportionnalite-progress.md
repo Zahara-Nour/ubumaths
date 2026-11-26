@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3175._
+_Mis à jour le 2026-11-26, après #3175 (migration jouée en prod)._
 
-- **État** : #3175 mergée : 28 modèles publiés à arrondi passent `round(…)/10^N;d` à `;aN` (zéros de l'arrondi écrits), specs périmées depuis #3170 remises à la règle (dont 10a51999). Migration `20261126095610_questions_contenu_arrondis_zeros_contenu.sql` **pas encore jouée en prod**.
-- **Prochaine action** : (1) `db:migrate` de 20261126095610 dès que `migration list --linked` ne montre plus qu'elle en attente (le 2026-11-26 : 20261126091954 `eleve_lit_exercice_assigne_hors_fiche` et 20261126094959 `message_search_index_nom_expediteur`, d'autres sessions, attendaient aussi → stop) ; puis vérifier en prod un modèle (ex. 4131bd94), retirer les 28 lignes « zéros des arrondis » du tableau de répartition. (2) Reprise du lot : worktree mis à jour (`git merge origin/main`), prix en grandeurs €, `zeros: off` des N1 à N3 et de e0ccaf84 à retirer s'il ne sert plus, retouches validées 3 à 5, essai en base locale.
-- **En attente de David** : jouer (ou faire jouer) les deux migrations des autres sessions, ou dire si `db:migrate` peut les pousser avec la mienne.
+- **État** : #3175 en prod : 28 modèles publiés à arrondi écrivent les zéros de l'arrondi (`;aN`), specs remises à la règle de #3170. Réservations « zéros des arrondis » retirées du tableau de répartition. Lot écrit et poussé sur `docs/idees-6e-proportionnalite`, prix encore écrits en texte (`7,2\,€`).
+- **Prochaine action** : reprise du lot : worktree mis à jour (`git merge origin/main`), prix en grandeurs €, `zeros: off` des N1 à N3 et de e0ccaf84 à retirer s'il ne sert plus, retouches validées 3 à 5, essai en base locale.
+- **En attente de David** : rien.
 - **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement. `round(x)` garde l'arrondi historique des moitiés négatives (−2,5 → −2), `round(x, 0)` donne −3. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé).
 - **Worktree / branche** : lot `../ubumaths-wt-idees-6e-proportionnalite` (`docs/idees-6e-proportionnalite`).
 
@@ -138,3 +138,4 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - 32 modèles à `precision` décimale relevés ; 27 touchés (5 à l'unité seulement ou sans `round…;d` : f7c15433, bf5dadf6, 245b4eb1, 5ec00b89, 10a51999). 126 écritures `;d` → `;aN`, valeur inchangée (le `round` reste), blocs `figure` exclus (60 coordonnées d'Al-Kashi).
 - 11 specs de 7 modèles assertaient l'ancienne règle (rouges en prod depuis #3170) : remises à la règle ; 10a51999 ajouté pour sa spec seule (28 modèles migrés).
 - `security-auditor` : aucun finding bloquant. Migration non jouée : deux autres migrations en attente.
+- Migration jouée en prod par David le 2026-11-26 (avec les deux autres en attente) ; vérifiée par MCP (aucun `round…;d` hors figures).
