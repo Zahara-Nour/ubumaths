@@ -4,6 +4,7 @@ import { expect, test, type Browser, type Locator, type Page } from '@playwright
 import { BLOCK_CATALOG } from '../../src/lib/block-catalog/index';
 import { OFFICIAL_PROGRAMMES } from '../../src/lib/programmes/official-programmes';
 import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { allowClipboard, readClipboard } from './helpers/atelier';
 import {
 	collectErrors,
 	expectNoHorizontalOverflow,
@@ -310,15 +311,11 @@ test('#1687 — /aide-ecriture : Géométrie et Cercle trigonométrique, retours
 test('#1764/#1767 — /aide-ecriture/blocs : les cartes du catalogue, chaque fiche (réglages, Copier, rendus, erreurs, Essayer)', async ({
 	page,
 	browser,
-	context,
 	isMobile
 }, testInfo) => {
 	test.setTimeout(480_000);
 	await openAs(browser, TEACHER, page);
-	// Le presse-papiers n'est lisible que sous Chromium
-	const canReadClipboard =
-		testInfo.project.name !== 'iphone' && !testInfo.project.name.includes('safari');
-	if (canReadClipboard) await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+	await allowClipboard(page);
 	await page.goto('/aide-ecriture/blocs');
 	const hrefs = await page
 		.locator('main ul a')
@@ -355,12 +352,7 @@ test('#1764/#1767 — /aide-ecriture/blocs : les cartes du catalogue, chaque fic
 		const source = (await first.locator('pre').first().textContent()) ?? '';
 		await first.getByRole('button', { name: 'Copier' }).click();
 		await expect(first.getByRole('button', { name: /Copié/ })).toBeVisible();
-		if (canReadClipboard) {
-			expect(
-				await page.evaluate(() => navigator.clipboard.readText()),
-				`${href} : presse-papiers`
-			).toBe(source);
-		}
+		expect(await readClipboard(page), `${href} : presse-papiers`).toBe(source);
 		// Erreurs fréquentes : leur message est situé (ligne dite)
 		const mistakes = page
 			.locator('section', { has: page.getByRole('heading', { name: 'Erreurs fréquentes' }) })

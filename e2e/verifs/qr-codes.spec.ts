@@ -10,6 +10,7 @@ import {
 	withFirstVersion,
 	LATEST_VERSION_OF
 } from './helpers/carnet';
+import { allowClipboard, readClipboard } from './helpers/atelier';
 import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 import { encodeQr, QR_BORDER, QR_COLORS } from '../../src/lib/qr/qr-code';
 import {
@@ -168,10 +169,9 @@ test.describe('#1539 liens courts : forme, élève, déconnecté, code inconnu',
 
 	for (const who of ['élève', 'déconnecté'] as const) {
 		test(`#1539 ${who} : au panier, le bouton QR est grisé « réservé aux profs », Copier le lien marche`, async ({
-			page,
-			context
+			page
 		}) => {
-			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+			await allowClipboard(page);
 			if (who === 'élève') await login(page, STUDENT.email, STUDENT.password);
 			await openCart(page);
 			const qrButton = page.getByRole('button', { name: /^QR code de/ });
@@ -182,7 +182,7 @@ test.describe('#1539 liens courts : forme, élève, déconnecté, code inconnu',
 
 			await page.getByRole('button', { name: 'Copier le lien' }).click();
 			await expect(page.getByText('Lien copié')).toBeVisible();
-			const copied = await page.evaluate(() => navigator.clipboard.readText());
+			const copied = await readClipboard(page);
 			expect(copied).toMatch(/^http:\/\/localhost:\d+\/automaths\/panier\?modeles=/);
 		});
 	}
