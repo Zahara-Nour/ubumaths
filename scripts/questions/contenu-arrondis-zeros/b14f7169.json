@@ -1,0 +1,367 @@
+{
+	"id": "b14f7169-969b-45cb-9830-02a543b3c839",
+	"title": "Puissance d'exposant négatif : a^(-x) = 1/a^x",
+	"description": "a^(−x) = 1/a^x : exposant, valeur exacte, 0,5^(−n), calculatrice, valeur passée d'un placement",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 45,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"statement": "On sait que ${{a}}^{ -{{x}} }=\\dfrac{1}{ {{a}}^y}$. Quelle est la valeur de $y$ ?\n\n$y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5|0.8"
+				},
+				{
+					"name": "x",
+					"expression": "0.5|1.5|2|2.5|3.2"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tout réel $x$ : $a^{-x}=\\dfrac{1}{a^x}$.",
+					"Donc ${{a}}^{ -{{x}} }=\\dfrac{1}{ {{a}}^{ {{x}} } }$ et $y=\\textcolor{{{color:primary.0}}}{{{x}}}$ : l'exposant négatif « passe au dénominateur » en changeant de signe."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{ {{eval:a^n}} }"
+				}
+			],
+			"statement": "Donne la valeur exacte de ${{a}}^{ -{{n}} }$.\n\n${{a}}^{ -{{n}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|4|5|10"
+				},
+				{
+					"name": "n",
+					"expression": "1|2|3"
+				}
+			],
+			"conditions": ["a^n <= 125"],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tout réel $x$ : $a^{-x}=\\dfrac{1}{a^x}$.",
+					"${{a}}^{ -{{n}} }=\\dfrac{1}{ {{a}}^{ {{n}} } }=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{eval:a^n}} }}$. Un exposant négatif ne rend pas le nombre négatif."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"statement": "Donne la valeur exacte de $0{,}5^{ -{{n}} }$.\n\n$0{,}5^{ -{{n}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tout réel $x$ : $a^{-x}=\\dfrac{1}{a^x}$.",
+					"$0{,}5^{ -{{n}} }=\\dfrac{1}{0{,}5^{ {{n}} } }=\\dfrac{1}{ {{eval:0.5^n;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$. Ici $0<a<1$ : l'exposant négatif donne un nombre plus grand que $1$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(100*a^(-x))/100;a2}}"
+				}
+			],
+			"statement": "Calcule ${{a}}^{ -{{x}} }$ à la calculatrice, arrondi au centième.\n\n${{a}}^{ -{{x}} }\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|0.8"
+				},
+				{
+					"name": "x",
+					"expression": "0.5|1.2|1.5|2.5"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tout réel $x$ : $a^{-x}=\\dfrac{1}{a^x}$. On peut taper directement l'exposant négatif, entre parenthèses.",
+					"${{a}}^{ -{{x}} }=\\dfrac{1}{ {{a}}^{ {{x}} } }\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*a^(-x))/100;a2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(100*c*(1+t/100)^(-y))/100;a2}}"
+				}
+			],
+			"statement": "Un capital placé à intérêts composés à ${{t}}~\\%$ par an vaut aujourd'hui ${{c}}~\\unit{€}$. Sa valeur, en euros, $x$ années après aujourd'hui est $V(x)={{c}}\\times{{eval:1+t/100;d}}^x$ ; pour une date passée, $x$ est négatif.\n\nQuelle était la valeur du capital il y a ${{y}}$ ans ? Arrondis au centime.\n\n$V(-{{y}})\\approx ?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2000|5000|8000"
+				},
+				{
+					"name": "t",
+					"expression": "2|3|4"
+				},
+				{
+					"name": "y",
+					"expression": "2|3|1.5|2.5"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Il y a ${{y}}$ ans : $x=-{{y}}$. $V(-{{y}})={{c}}\\times{{eval:1+t/100;d}}^{ -{{y}} }=\\dfrac{ {{c}} }{ {{eval:1+t/100;d}}^{ {{y}} } }$.",
+					"À la calculatrice : $V(-{{y}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*c*(1+t/100)^(-y))/100;a2}}}$ €. On divise par ${{eval:1+t/100;d}}$ pour chaque année passée, on ne retire pas ${{t}}~\\%$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"x": "2.5"
+			},
+			"description": "3^-2,5 = 1/3^y : y = 2,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"x": "2.5"
+			},
+			"description": "Erreur : −2,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"description": "2^-3 = 1/8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,125"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"description": "2^-3 = 0,125",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"description": "Erreur : −8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"description": "Erreur : −6",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"description": "Erreur : 1/6",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{100}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"n": "2"
+			},
+			"description": "10^-2 = 1/100",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "0,5^-3 = 8",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,125"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "Erreur : 0,125",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-1,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "Erreur : −1,5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,35"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"x": "1.5"
+			},
+			"description": "2^-1,5 ≈ 0,35",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-2,83"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"x": "1.5"
+			},
+			"description": "Erreur : −2,83",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"x": "1.5"
+			},
+			"description": "Erreur : −3",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1,75"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0.8",
+				"x": "2.5"
+			},
+			"description": "0,8^-2,5 ≈ 1,75",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["4712,98"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5000",
+				"t": "3",
+				"y": "2"
+			},
+			"description": "5000 × 1,03^-2 ≈ 4712,98",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["4700"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5000",
+				"t": "3",
+				"y": "2"
+			},
+			"description": "Erreur : 5000 − 6 % = 4700",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["5304,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5000",
+				"t": "3",
+				"y": "2"
+			},
+			"description": "Erreur : 5000 × 1,03^2 ≈ 5304,50",
+			"variationIndex": 4
+		}
+	]
+}
