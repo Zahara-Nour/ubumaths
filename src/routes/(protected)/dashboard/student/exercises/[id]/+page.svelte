@@ -2,6 +2,8 @@
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import { studentExerciseReturnHref } from '#lib/navigation/return-links.ts';
 	import ConsentButton from '#lib/components/ConsentButton.svelte';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
@@ -81,7 +83,7 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<!-- Header -->
-	<BackLink href="/dashboard/student/exercises" label="Quitter" kind="quit" />
+	<BackLink href={studentExerciseReturnHref(page.url.searchParams)} label="Quitter" kind="quit" />
 
 	<!-- Assignment info -->
 	{#if data.assignment}

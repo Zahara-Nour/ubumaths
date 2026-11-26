@@ -29,17 +29,9 @@
 	let classDeadline = $state<string>('');
 	let classNotes = $state<string>('');
 
-	// State for public assignment
-	let publicNotes = $state<string>('');
-
 	// Loading state
 	let loading = $state(false);
 	let assignmentsLoading = $state(false);
-
-	// Check if exercise is already public
-	let hasPublicAssignment = $derived(
-		data.assignments.some((a: { assigned_to_type: string }) => a.assigned_to_type === 'public')
-	);
 
 	// Confirm dialog state
 	let deleteDialogOpen = $state(false);
@@ -156,42 +148,6 @@
 	}
 
 	/**
-	 * Make exercise public
-	 */
-	async function makePublic() {
-		loading = true;
-
-		try {
-			const response = await fetch(`/api/exercises/${data.exercise.id}/assign`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					make_public: true,
-					notes: publicNotes || null
-				})
-			});
-
-			const result = await response.json();
-
-			if (!response.ok) {
-				throw new Error(result.error || 'Échec de publication');
-			}
-
-			toaster.success(`${lore.learning.exercise} rendue publique`);
-
-			// Reset form
-			publicNotes = '';
-
-			// Reload data
-			await refreshAll();
-		} catch (err) {
-			toaster.error(formatUserError(err));
-		} finally {
-			loading = false;
-		}
-	}
-
-	/**
 	 * Confirm delete assignment
 	 */
 	function confirmDeleteAssignment(assignmentId: string) {
@@ -265,7 +221,7 @@
 		<!-- Assignment Creation Panel -->
 		<div>
 			<Tabs.Root value="students">
-				<Tabs.List class="grid w-full grid-cols-3">
+				<Tabs.List class="grid w-full grid-cols-2">
 					<Tabs.Trigger value="students">
 						<User class="mr-2 h-4 w-4" />
 						{lore.entities.student}s
@@ -273,10 +229,6 @@
 					<Tabs.Trigger value="classes">
 						<Users class="mr-2 h-4 w-4" />
 						{lore.entities.class}s
-					</Tabs.Trigger>
-					<Tabs.Trigger value="public">
-						<Globe class="mr-2 h-4 w-4" />
-						Public
 					</Tabs.Trigger>
 				</Tabs.List>
 
@@ -442,52 +394,6 @@
 								{loading ? 'Assignation...' : `Assigner à ${selectedClasses.length} classe(s)`}
 							</Button>
 						</Card.Footer>
-					</Card.Root>
-				</Tabs.Content>
-
-				<!-- Public Tab -->
-				<Tabs.Content value="public">
-					<Card.Root>
-						<Card.Header>
-							<Card.Title>Rendre public</Card.Title>
-							<Card.Description>
-								Tous les {lore.entities.student}s de la plateforme pourront accéder à cette {lore
-									.learning.exercise}
-							</Card.Description>
-						</Card.Header>
-						<Card.Content>
-							{#if hasPublicAssignment}
-								<div
-									class="rounded-md bg-green-50 p-4 text-green-800 dark:bg-green-950 dark:text-green-100"
-								>
-									<div class="flex items-center gap-2">
-										<Globe class="h-5 w-5" />
-										<p class="font-medium">Cette {lore.learning.exercise} est déjà publique</p>
-									</div>
-								</div>
-							{:else}
-								<div class="space-y-4">
-									<div>
-										<Label for="public-notes" class="mb-2 block text-sm font-medium">
-											Notes pour les {lore.entities.student}s
-										</Label>
-										<Textarea
-											id="public-notes"
-											bind:value={publicNotes}
-											rows={3}
-											placeholder="Informations pour tous les {lore.entities.student}s..."
-										/>
-									</div>
-								</div>
-							{/if}
-						</Card.Content>
-						{#if !hasPublicAssignment}
-							<Card.Footer>
-								<Button onclick={makePublic} disabled={loading} class="w-full">
-									{loading ? 'Création...' : 'Rendre public'}
-								</Button>
-							</Card.Footer>
-						{/if}
 					</Card.Root>
 				</Tabs.Content>
 			</Tabs.Root>

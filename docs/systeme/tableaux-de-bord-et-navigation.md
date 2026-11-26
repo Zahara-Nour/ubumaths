@@ -118,7 +118,9 @@ Dans l'ordre :
    en cours, lus dans le cache élève (`studentCache`), chargé au montage.
 
 Les listes de l'espace élève absentes de la barre latérale ont chacune une entrée : fiches et
-contrôles depuis « Mon travail », énigmes depuis cet accueil.
+contrôles depuis « Mon travail », énigmes depuis cet accueil. Il n'y a plus de liste « Mes
+exercices » (`/dashboard/student/exercises`, retirée le 2026-11-26) : un exercice hors fiche
+s'ouvre par sa carte de « Mon travail » ou par un chapitre de cours.
 
 ### Prof (`TeacherDashboard.svelte`)
 

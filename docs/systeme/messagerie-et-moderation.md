@@ -246,7 +246,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 - `src/lib/server/student-inbox.ts` (`getStudentWorkInbox`) est la **boîte de travail** de
   l'élève : évaluations, exercices, fiches et Python à faire, rangés en cinq sections
-  (`late`, `thisWeek`, `later`, `noDeadline`, `doneRecently`). Rien à voir avec les messages.
+  (`late`, `thisWeek`, `later`, `noDeadline`, `doneRecently`). Une affectation d'exercice
+  `public` n'y figure pas (elle n'ouvre rien, cf. [exercices.md](exercices.md)). Rien à voir avec les messages.
   Composants `src/lib/components/student-inbox/` ; appelée par
   `src/routes/(protected)/dashboard/+page.server.ts` et `dashboard/student/work/+page.server.ts`.
 - `src/lib/stores/mentions.svelte.ts` et `hashtags.svelte.ts` alimentent les extensions
