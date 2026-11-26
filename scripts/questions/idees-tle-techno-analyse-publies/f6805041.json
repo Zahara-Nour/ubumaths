@@ -1,0 +1,353 @@
+{
+	"id": "f6805041-d456-422c-8560-31b9d3fe9f74",
+	"title": "Sens de variation de x ↦ k·a^x",
+	"description": "Sens de x ↦ k·aˣ sur ℝ dans les quatre cas : k > 0 ou k < 0, a > 1 ou 0 < a < 1",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|1.05"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|4|5|100"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|0.9|0.95"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|4|5|100"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|1.05"
+				},
+				{
+					"name": "k",
+					"expression": "-5|-4|-3|-2"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|0.9|0.95"
+				},
+				{
+					"name": "k",
+					"expression": "-5|-4|-3|-2"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{eval:k;d}}\\times\\left({{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}\\right)^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..7"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:h==1|3|{{if:h==2|5|{{if:h==3|2|{{if:h==4|1|{{if:h==5|1|{{if:h==6|6|1}}}}}}}}}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:h==1|2|{{if:h==2|4|{{if:h==3|3|{{if:h==4|3|{{if:h==5|2|{{if:h==6|5|4}}}}}}}}}}}}"
+				},
+				{
+					"name": "u",
+					"expression": "0.5|1.5|2.5|2|3|4|5|6"
+				},
+				{
+					"name": "sk",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "eval:sk*u"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-sk*sign(p-q))/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto\\left({{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}\\right)^x$ est {{if:p>q|croissante, car ${{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}>1$|décroissante, car $0<{{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}<1$}}.",
+					"$k={{eval:k;d}}{{if:sk==1|>0$ : même sens|<0$ : sens contraire}}, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:sk*sign(p-q)==1|croissante|décroissante}}}}$."
+				]
+			},
+			"hint": "Compare la base à $1$, puis regarde le signe du coefficient devant la puissance."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "3 × 2^x croissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "Erreur : décroissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0.5",
+				"k": "4"
+			},
+			"description": "4 × 0,5^x décroissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "0.5",
+				"k": "4"
+			},
+			"description": "Erreur : croissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"k": "-3"
+			},
+			"description": "−3 × 2^x décroissante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "-3"
+			},
+			"description": "Erreur : croissante (signe de k oublié)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0.8",
+				"k": "-2"
+			},
+			"description": "−2 × 0,8^x croissante",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "0.8",
+				"k": "-2"
+			},
+			"description": "Erreur : décroissante (signe de k oublié)",
+			"variationIndex": 3
+		},
+		{
+			"description": "F9 : 2 × (3/2)ˣ croissante",
+			"variationIndex": 4,
+			"variables": {
+				"h": "1",
+				"p": "3",
+				"q": "2",
+				"u": "2",
+				"sk": "1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9 : 2 × (3/2)ˣ, décroissante",
+			"variationIndex": 4,
+			"variables": {
+				"h": "1",
+				"p": "3",
+				"q": "2",
+				"u": "2",
+				"sk": "1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F9 : −1,5 × (2/3)ˣ croissante",
+			"variationIndex": 4,
+			"variables": {
+				"h": "3",
+				"p": "2",
+				"q": "3",
+				"u": "1.5",
+				"sk": "-1",
+				"k": "-1.5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9 : −1,5 × (2/3)ˣ, décroissante",
+			"variationIndex": 4,
+			"variables": {
+				"h": "3",
+				"p": "2",
+				"q": "3",
+				"u": "1.5",
+				"sk": "-1",
+				"k": "-1.5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F9 : −4 × 1,2ˣ décroissante",
+			"variationIndex": 4,
+			"variables": {
+				"h": "6",
+				"p": "6",
+				"q": "5",
+				"u": "4",
+				"sk": "-1",
+				"k": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F9 : 3 × 0,25ˣ décroissante",
+			"variationIndex": 4,
+			"variables": {
+				"h": "7",
+				"p": "1",
+				"q": "4",
+				"u": "3",
+				"sk": "1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		}
+	]
+}

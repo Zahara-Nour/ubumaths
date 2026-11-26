@@ -1522,7 +1522,7 @@ cône S, O ; cylindre O, O' ; boule O (un centre nommé reçoit un point). `marq
 (n'importe quel ordre) ou `face dessus` (places `devant | derriere | dessus | dessous | gauche | droite` de
 `topology.places`), `arete AE`, `sommet G` ; solides ronds : sommets seulement. `cotes: cm | mm | m | oui |
 non` ; `cachees: non` → tout en plein. Scène `utils/espace-solides.ts` (calcul pur, écran = PDF) : polyèdre →
-arête cachée (tirets) quand toutes ses faces tournent le dos à l'œil (`TOWARD_EYE`, normales sortantes) ;
+arête cachée (tirets) quand toutes ses faces tournent le dos à l'œil (normales sortantes) ; projection et arêtes cachées par le **moteur de vue** `utils/espace-vue.ts` ([ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md), chantier `solides-3d`, lot 1) : `VUE_DE_DEPART` = la cavalière, seule vue branchée pour l'instant (dessin inchangé, figé par `solide-scene-figee.test.ts`) ; `vueProjection(vue, pivot)` sait aussi tourner la figure autour de son centre (`yaw`, `pitch`) et passer à une vue droite (`oblique` 1 → 0, départ aux angles `VUE_DROITE_YAW` / `VUE_DROITE_PITCH` où les fuyantes tombent comme en cavalière), `hiddenEdges` recalcule les tirets d'un polyèdre convexe à chaque angle, `turnVue` borne la bascule (le haut reste en haut) — `espace-vue.test.ts` ;
 cylindre / cône / boule → ellipses **à plat** (`ELLIPSE_RATIO` 0,3, comme le CP), moitié arrière en tirets,
 génératrices du cône **tangentes** (`asin(ry / h)`) ; nom d'un sommet posé dans le plus grand angle libre
 entre ses arêtes (`freeDirection`), un centre à gauche, à la première place de `NAME_PLACES`

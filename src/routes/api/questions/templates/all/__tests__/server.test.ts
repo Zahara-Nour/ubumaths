@@ -225,15 +225,23 @@ describe('GET /api/questions/templates/all', () => {
 		);
 	});
 
-	it('gardée 5 min par Vercel, servie périmée pendant la relecture', async () => {
+	it('gardée 5 min par Vercel seul, servie périmée pendant la relecture', async () => {
 		const { setHeaders, event } = evenement();
 
 		await GET(event as never);
 
 		expect(setHeaders).toHaveBeenCalledTimes(1);
 		const entetes = setHeaders.mock.calls[0][0] as Record<string, string>;
-		expect(entetes['cache-control']).toContain('s-maxage=300');
-		expect(entetes['cache-control']).toContain('stale-while-revalidate');
+		expect(entetes['vercel-cdn-cache-control']).toBe('max-age=300, stale-while-revalidate=300');
+	});
+
+	it('le navigateur relit toujours (E85) : ni s-maxage ni stale-while-revalidate pour lui', async () => {
+		const { setHeaders, event } = evenement();
+
+		await GET(event as never);
+
+		const entetes = setHeaders.mock.calls[0][0] as Record<string, string>;
+		expect(entetes['cache-control']).toBe('public, max-age=0');
 	});
 
 	it.each(['question_templates', 'classification_nodes'])(

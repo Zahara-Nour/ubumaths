@@ -8,11 +8,12 @@
  * diverger. Chantier `solides`, lot 3 (§ 8 du journal), ADR 0034.
  *
  * Perspective : celle de ```cubes — face avant en vraie grandeur, fuyantes à
- * 45° vers le haut à droite, réduites de moitié. Polyèdres : une arête est
- * cachée (tirets) quand toutes ses faces tournent le dos à l'œil. Cylindre,
- * cône, boule : ellipses « à plat » (horizontales, comme le CP et les
- * manuels), moitié arrière en tirets ; les génératrices du cône sont
- * tangentes à l'ellipse.
+ * 45° vers le haut à droite, réduites de moitié. Polyèdres : projection et
+ * arêtes cachées par le moteur de vue (`espace-vue.ts`), à la vue de départ ;
+ * une arête est cachée (tirets) quand toutes ses faces tournent le dos à
+ * l'œil. Cylindre, cône, boule : ellipses « à plat » (horizontales, comme le
+ * CP et les manuels), moitié arrière en tirets ; les génératrices du cône
+ * sont tangentes à l'ellipse.
  *
  * Section (`section:`, lot 6) : le polygone de coupe, teinté, contour en
  * trait plein épais ; le plan n'est pas dessiné ; boule coupée : sans équateur.
@@ -30,6 +31,9 @@
 
 import type { SolideForm, SolidePoint, SolideSpec } from '../types/espace';
 import { ESPACE_STROKE, type EspacePoint } from './espace-scene';
+import { VUE_DE_DEPART, hiddenEdges, vueProjection, type Point3 } from './espace-vue';
+
+export type { Point3 } from './espace-vue';
 
 // ============================================================================
 // TYPES
@@ -148,12 +152,6 @@ export const SOLIDE_DOT_RADIUS = 0.06;
 
 /** Taille du texte des étiquettes, en cm */
 export const SOLIDE_LABEL_SIZE = 0.36;
-
-/** Déport des fuyantes pour une profondeur de 1 : 0,5 × arête, à 45° */
-const DEPTH_SHIFT = 0.5 * Math.SQRT1_2;
-
-/** Vers l'œil : les points (x, y, z) et (x − K, y − K, z + 1) se confondent au dessin */
-const TOWARD_EYE = { x: DEPTH_SHIFT, y: DEPTH_SHIFT, z: -1 };
 
 /** Aplatissement des ellipses « à plat » (petit axe / grand axe), celui du CP */
 const ELLIPSE_RATIO = 0.3;
@@ -334,18 +332,6 @@ export function solideTopology(form: SolideForm): SolideTopology {
 // GÉOMÉTRIE
 // ============================================================================
 
-export interface Point3 {
-	x: number;
-	y: number;
-	z: number;
-}
-
-/** Projection cavalière, y vers le HAUT (repère de calcul) */
-const project = (p: Point3): EspacePoint => ({
-	x: p.x + p.z * DEPTH_SHIFT,
-	y: p.y + p.z * DEPTH_SHIFT
-});
-
 /** Sommets 3D d'un polyèdre : x vers la droite, y vers le haut, z vers le fond */
 export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 	const p = (x: number, y: number, z: number): Point3 => ({ x, y, z });
@@ -410,28 +396,11 @@ export function solidePoints3(
 	return all;
 }
 
-const sub = (a: Point3, b: Point3): Point3 => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z });
-const dot = (a: Point3, b: Point3) => a.x * b.x + a.y * b.y + a.z * b.z;
-const cross = (a: Point3, b: Point3): Point3 => ({
-	x: a.y * b.z - a.z * b.y,
-	y: a.z * b.x - a.x * b.z,
-	z: a.x * b.y - a.y * b.x
-});
 const centroid = (points: Point3[]): Point3 => ({
 	x: points.reduce((s, p) => s + p.x, 0) / points.length,
 	y: points.reduce((s, p) => s + p.y, 0) / points.length,
 	z: points.reduce((s, p) => s + p.z, 0) / points.length
 });
-
-/** La face tourne-t-elle vers l'œil ? (normale sortante, de face ou par la tranche) */
-function facesEye(face: number[], vertices: Point3[], center: Point3): boolean {
-	const [a, b, c] = face.map((i) => vertices[i]);
-	let normal = cross(sub(b, a), sub(c, a));
-	if (dot(normal, sub(centroid(face.map((i) => vertices[i])), center)) < 0) {
-		normal = { x: -normal.x, y: -normal.y, z: -normal.z };
-	}
-	return dot(normal, TOWARD_EYE) > -1e-9;
-}
 
 /** Arc d'ellipse à plat (repère de calcul), de l'angle `from` à `to` */
 function arc(
@@ -497,14 +466,13 @@ const middle = (a: EspacePoint, b: EspacePoint): EspacePoint => ({
 function polyhedronDraft(spec: SolideSpec): Draft {
 	const topology = solideTopology(spec.form);
 	const points3 = polyhedronVertices(spec.form, spec.dims);
-	const center = centroid(points3);
+	// Vue de départ : la cavalière (le moteur de vue saura aussi tourner la figure, ADR 0045)
+	const view = vueProjection(VUE_DE_DEPART, centroid(points3));
+	const project = view.project;
 	const vertices = points3.map(project);
-	const seen = topology.faces.map((face) => facesEye(face, points3, center));
-	const lines = topology.edges.map(([a, b]) => {
-		const hidden = topology.faces.every(
-			(face, i) => !(face.includes(a) && face.includes(b)) || !seen[i]
-		);
-		const line = segment(vertices[a], vertices[b], spec.hidden && hidden);
+	const hiddenEdge = hiddenEdges(points3, topology.faces, topology.edges, view);
+	const lines = topology.edges.map(([a, b], k) => {
+		const line = segment(vertices[a], vertices[b], spec.hidden && hiddenEdge[k]);
 		const marked = spec.marks.some(
 			(m) => m.kind === 'arete' && m.vertices.includes(a) && m.vertices.includes(b)
 		);
@@ -574,7 +542,7 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				break;
 		}
 	}
-	const { section, sectionLabels } = boxSection(spec, topology, points3, lines, cotes);
+	const { section, sectionLabels } = boxSection(spec, topology, points3, lines, cotes, project);
 	const points = solidePoints3(spec.form, spec.dims, spec.points)
 		.slice(points3.length)
 		.map(project);
@@ -612,7 +580,8 @@ function boxSection(
 	topology: SolideTopology,
 	points3: Point3[],
 	lines: SolideLine[],
-	cotes: Cote[]
+	cotes: Cote[],
+	project: (p: Point3) => EspacePoint
 ): Pick<Draft, 'section' | 'sectionLabels'> {
 	const cut = spec.section;
 	if (cut?.kind !== 'face') return { section: null, sectionLabels: [] };

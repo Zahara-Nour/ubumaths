@@ -1,7 +1,7 @@
 """Ajoute les variations validées aux 3 modèles publiés exportés de prod dans
 scripts/questions/idees-3e-proportionnalite-publies/ (chantier idees-3e-proportionnalite).
 
-Phase 0 : fiches de docs/wip/idees-3e-proportionnalite-progress.md, validées par David le 2026-11-26 :
+Phase 0 : fiches de docs/archive/wip/idees-3e-proportionnalite/idees-3e-proportionnalite-progress.md, validées par David le 2026-11-26 :
 V1 (« de combien de pour cent ? » à partir des deux valeurs), V2 (appliquer une évolution hors des
 prix), V3 (taux à un chiffre et au-delà de 100 %, deux variations) sur ccb51039 « Augmentation et
 coefficient multiplicateur » (3-036) et 76f5f143 « Diminution et coefficient multiplicateur »

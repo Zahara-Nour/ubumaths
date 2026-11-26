@@ -1,0 +1,453 @@
+{
+	"id": "10bd7075-2ff9-4bf1-9161-1fb141ea4d0a",
+	"title": "Résoudre une inéquation aˣ < b ou xᵃ < b avec log",
+	"description": "aˣ < b et aˣ ⩾ b pour a > 1 ; aˣ > b pour 0 < a < 1 (le sens change) ; xᵃ ⩽ b pour x > 0 ; réponse en intervalle, bornes exactes",
+	"grades": ["T_TECHNO"],
+	"level": 3,
+	"delay": 120,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+				}
+			],
+			"statement": "Résous l'inéquation ${{a}}^x<{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "3|5|6|10|11|12|15|20|50"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{a}}^x<{{b}}\\iff x\\log({{a}})<\\log({{b}})\\iff x<\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{b}})}{\\log({{a}})}\\right[}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[\\dfrac{\\log({{b}})}{\\log({{a}})};+\\infty["
+				}
+			],
+			"statement": "Résous l'inéquation ${{a}}^x\\geqslant{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "3|5|6|10|11|12|15|20|50"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{a}}^x\\geqslant{{b}}\\iff x\\log({{a}})\\geqslant\\log({{b}})\\iff x\\geqslant\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[\\dfrac{\\log({{b}})}{\\log({{a}})}\\,;+\\infty\\right[}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+				}
+			],
+			"statement": "Résous l'inéquation ${{eval:a;d}}^x>{{eval:b;d}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.2|0.5|0.8|0.9"
+				},
+				{
+					"name": "b",
+					"expression": "0.1|0.3|0.05|0.01"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{eval:a;d}}^x>{{eval:b;d}}\\iff x\\log({{eval:a;d}})>\\log({{eval:b;d}})$.",
+					"Pour $a>1$, $\\log(a)>0$ ; pour $0<a<1$, $\\log(a)<0$ : diviser par $\\log(a)$ change alors le sens. Ici $\\log({{eval:a;d}})<0$ : $x<\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}\\right[}$ (borne environ ${{eval:round(100*x)/100;d}}$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]0;{{c}}]"
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $x^{ {{a}} }\\leqslant{{eval:c^a}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"$x>0$ : on prend le logarithme des deux membres, ce qui garde le sens.",
+					"$x^{ {{a}} }\\leqslant{{eval:c^a}}\\iff {{a}}\\log(x)\\leqslant\\log({{eval:c^a}})\\iff\\log(x)\\leqslant\\dfrac{\\log({{eval:c^a}})}{ {{a}} }=\\log({{c}})$, car ${{eval:c^a}}={{c}}^{ {{a}} }$.",
+					"$\\log$ est strictement croissante : $x\\leqslant{{c}}$. Avec $x>0$ : $S=\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{c}}\\right]}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$, sans calculatrice, l'inéquation ${{eval:c^p;d}}^x{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{eval:c^q;d}}$. Donne l'ensemble des solutions, borne sous la forme d'un entier ou d'une fraction simplifiée.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "p",
+					"expression": "-3|-2|-1|2|3|4|5"
+				},
+				{
+					"name": "q",
+					"expression": "-3..5"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				},
+				{
+					"name": "t",
+					"expression": "eval:1-mod(s,2)"
+				},
+				{
+					"name": "g",
+					"expression": "eval:mod(floor(s/2)+(1-sign(p))/2,2)"
+				}
+			],
+			"conditions": [
+				"q != 0",
+				"abs(q) != abs(p)",
+				"c != 3 || p > 0",
+				"c != 3 || q > 0",
+				"c^p <= 625",
+				"c^q <= 625"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:g==1|{{if:t==1|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==1|[|]}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:g==0|{{if:t==1|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==1|[|]}}}}",
+							"message": "{{if:p<0|À la fin, on divise par ${{p}}<0$ : le sens de l'inégalité change.|À la fin, on divise par ${{p}}>0$ : le sens de l'inégalité ne change pas.}}",
+							"label": "Sens de l'inégalité"
+						},
+						{
+							"answer": "{{if:g==1|{{if:t==0|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==0|[|]}}}}",
+							"message": "L'inégalité est {{if:t==1|stricte : la borne est exclue|large : la borne est incluse}}.",
+							"label": "Crochet"
+						},
+						{
+							"answer": "{{if:g==1|{{if:t==1|]|[}}{{eval:p/q}};+\\infty[|]-\\infty;{{eval:p/q}}{{if:t==1|[|]}}}}",
+							"message": "${{if:p==1||{{if:p==-1|-|{{p}}}}}}x{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{q}}$ : on divise ${{q}}$ par ${{p}}$, pas l'inverse.",
+							"label": "Borne renversée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:c^p;d}}={{c}}^{ {{p}} }$ et ${{eval:c^q;d}}={{c}}^{ {{q}} }$ : l'inéquation s'écrit ${{c}}^{ {{if:p==1||{{if:p==-1|-|{{p}}}}}}x}{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{c}}^{ {{q}} }$.",
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{if:p==1||{{if:p==-1|-|{{p}}}}}}x\\log({{c}}){{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{if:q==1||{{if:q==-1|-|{{q}}}}}}\\log({{c}})$, et $\\log({{c}})>0$ : ${{if:p==1||{{if:p==-1|-|{{p}}}}}}x{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{q}}$.",
+					"{{if:p<0|On divise par ${{p}}<0$ : le sens change|On divise par ${{p}}>0$ : le sens est conservé}}, $x{{if:g==1|{{if:t==1|>|\\geqslant}}|{{if:t==1|<|\\leqslant}}}}{{eval:q/p}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{ {{if:g==1|{{if:t==1|\\left]|\\left[}}{{eval:q/p}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:q/p}}{{if:t==1|\\right[|\\right]}}}} }$."
+				]
+			},
+			"hint": "Écris les deux nombres comme des puissances d'un même entier. À la fin, par quel nombre divises-tu, et quel est son signe ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "2^x < 5 : ]−∞ ; log 5/log 2[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]\\dfrac{\\log(5)}{\\log(2)};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : sens changé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;2,32["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : borne approchée (exacte demandée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : borne fermée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[\\dfrac{\\log(20)}{\\log(3)};+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "20"
+			},
+			"description": "3^x ⩾ 20 : [log 20/log 3 ; +∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[\\log(\\dfrac{20}{3});+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "20"
+			},
+			"description": "Erreur : log(20/3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\infty;\\dfrac{\\log(0.1)}{\\log(0.5)}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0.5",
+				"b": "0.1"
+			},
+			"description": "0,5^x > 0,1 : ]−∞ ; log 0,1/log 0,5[",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\dfrac{\\log(0.1)}{\\log(0.5)};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "0.5",
+				"b": "0.1"
+			},
+			"description": "Erreur : sens non changé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]0;4]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"c": "4"
+			},
+			"description": "x³ ⩽ 64 : ]0 ; 4]",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-\\infty;4]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"c": "4"
+			},
+			"description": "Erreur : x > 0 oublié",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]0;\\dfrac{64}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"c": "4"
+			},
+			"description": "Erreur : 64/3",
+			"variationIndex": 3
+		},
+		{
+			"description": "F2 : 0,25ˣ < 32 → ]−5/2 ; +∞[",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5",
+				"s": "0",
+				"t": "1",
+				"g": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\frac{5}{2};+\\infty["]
+		},
+		{
+			"description": "F2 : sens non changé",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5",
+				"s": "0",
+				"t": "1",
+				"g": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "À la fin, on divise par $-2 < 0$ : le sens de l'inégalité change."
+			},
+			"answers": ["]-\\infty;-\\frac{5}{2}["]
+		},
+		{
+			"description": "F2 : crochet",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5",
+				"s": "0",
+				"t": "1",
+				"g": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'inégalité est stricte : la borne est exclue."
+			},
+			"answers": ["[-\\frac{5}{2};+\\infty["]
+		},
+		{
+			"description": "F2 : borne renversée",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5",
+				"s": "0",
+				"t": "1",
+				"g": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-2 x < 5$ : on divise $5$ par $-2$, pas l'inverse."
+			},
+			"answers": ["]-\\frac{2}{5};+\\infty["]
+		},
+		{
+			"description": "F2 : 8ˣ ⩾ 4 → [2/3 ; +∞[",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"p": "3",
+				"q": "2",
+				"s": "3",
+				"t": "0",
+				"g": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[\\frac{2}{3};+\\infty["]
+		},
+		{
+			"description": "F2 : 8ˣ ⩾ 4, sens changé",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"p": "3",
+				"q": "2",
+				"s": "3",
+				"t": "0",
+				"g": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "À la fin, on divise par $3 > 0$ : le sens de l'inégalité ne change pas."
+			},
+			"answers": ["]-\\infty;\\frac{2}{3}]"]
+		},
+		{
+			"description": "F2 : 8ˣ ⩾ 4, crochet",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"p": "3",
+				"q": "2",
+				"s": "3",
+				"t": "0",
+				"g": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'inégalité est large : la borne est incluse."
+			},
+			"answers": ["]\\frac{2}{3};+\\infty["]
+		}
+	]
+}
