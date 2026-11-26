@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR du moteur écrite (relecture en cours)._
+_Mis à jour le 2026-11-26, après #3170._
 
-- **État** : lot écrit et poussé (`docs/idees-6e-proportionnalite`). PR du moteur écrite et commitée, pas encore ouverte : `;dN`, `;aN`, `;pN`, euro à deux décimales, `round(x, n)`, zéros utiles au juge. Tests verts (42 172 dans mathAST, questions, ubumark, utils), `check:incremental` 0, garde de doc verte.
-- **Prochaine action** : relecture `code-reviewer` (Opus), puis ouvrir la PR et `pnpm pr:merger`. Ensuite, migration de contenu des 32 modèles à arrondi (`round(k*x)/k;d` → `;aN`, liste du 2026-11-26), puis reprise du lot : prix en grandeurs €, retouches validées, essai en base locale.
+- **État** : moteur mergé (#3170) : `;dN`, `;aN`, `;pN`, euro à deux décimales, `round(x, n)`, zéros utiles au juge. Lot écrit et poussé sur `docs/idees-6e-proportionnalite`, prix encore écrits en texte (`7,2\,€`).
+- **Prochaine action** : (1) PR de contenu des 32 modèles à arrondi : vérifier leurs réservations dans le tableau de répartition, les exporter, passer `round(k*x)/k;d` à `;aN` (modèles à l'unité exclus), `migration-contenu.ts`. (2) Reprise du lot : worktree mis à jour (`git merge origin/main`), prix en grandeurs €, `zeros: off` des N1 à N3 et de e0ccaf84 à retirer s'il ne sert plus, retouches validées 3 à 5, essai en base locale.
 - **En attente de David** : rien.
-- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement.
-- **Worktree / branche** : lot `../ubumaths-wt-idees-6e-proportionnalite` (`docs/idees-6e-proportionnalite`) ; moteur `../ubumaths-wt-idees-6e-proportionnalite-moteur` (`feat/ecriture-nombres-arrondis`).
+- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Niveaux des neufs à relever en prod avant la migration de rangement. `round(x)` garde l'arrondi historique des moitiés négatives (−2,5 → −2), `round(x, 0)` donne −3.
+- **Worktree / branche** : lot `../ubumaths-wt-idees-6e-proportionnalite` (`docs/idees-6e-proportionnalite`).
 
 ## Journal
 
@@ -129,3 +129,6 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - Suite : les 32 modèles écrivent leur attendu `round(k*x)/k;d`, qui perd les zéros (« 0,3 » au
   centième). Une migration de contenu les passera à `;aN` après le merge (les modèles à l'unité ne
   changent pas).
+- #3170 mergée le 2026-11-26 (CI verte). Relecture Opus : aucun bug de correction ; corrigés avant
+  l'ouverture : avertissements des tirages rejetés, `;dN` signalé dans une case sans `precision`,
+  pas d'avertissement euro avec `;dN`.
