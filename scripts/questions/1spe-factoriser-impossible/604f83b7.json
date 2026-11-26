@@ -56,7 +56,7 @@
 					"requiredForm": {
 						"pattern": "u*($x+v)*($x+w)"
 					},
-					"expectedAnswer": "{{eval:a*(x-r)*(x-s)}}"
+					"expectedAnswer": "{{if:a>0|{{eval:a*(x-r)*(x-s)}}|{{eval:a*(x-s)*(x-r)}}}}"
 				}
 			],
 			"statement": "Factorise le polynôme $P(x)={{eval:ax^2+bx+c}}$ en calculant d'abord ses racines.\n\n$P(x)=?$",
