@@ -110,10 +110,11 @@ def dec(x):
 N = '(a+b+c+d)'
 
 
-def tableau(lignes, colonnes, coin, masquer=None):
+def tableau(lignes, colonnes, masquer=None):
+    # Sans `coin:` : la case du coin élargissait la première colonne (débord à 390 px)
     t = ('```tableau-croise\nlignes: ' + lignes[0] + ' ; ' + lignes[1] + '\ncolonnes: '
          + colonnes[0] + ' ; ' + colonnes[1] + '\n' + lignes[0] + ' = {{a}} ; {{b}}\n'
-         + lignes[1] + ' = {{c}} ; {{d}}\ncoin: ' + coin + '\n')
+         + lignes[1] + ' = {{c}} ; {{d}}\n')
     if masquer:
         t += 'masquer: ' + masquer + '\n'
     return t + '```'
@@ -149,7 +150,7 @@ ERR_TOTAL_LIGNE = ('Tu as compté toutes les perruches : il faut aussi que l\'oi
                    'c\'est la case « Perruches / Mâles ».')
 n1.append(variation(
     'Dans une volière, on a compté les oiseaux selon leur espèce et leur sexe.\n\n'
-    + tableau(['Perruches', 'Canaris'], ['Mâles', 'Femelles'], 'Espèce \\ Sexe') + '\n\n'
+    + tableau(['Perruches', 'Canaris'], ['Mâles', 'Femelles']) + '\n\n'
     'On choisit un oiseau de la volière au hasard. Quelle est la probabilité que ce soit une '
     'perruche **et** un mâle ? ' + REPONSE + '\n\n$$?$$',
     cases('3', '15'),
@@ -180,7 +181,7 @@ ERR_EXCLUSIF = ('Tu as oublié les roses rouges : une rose rouge est une rose, e
                 'rose ou une fleur rouge ».')
 n1.append(variation(
     'Un fleuriste a composé un bouquet de roses et de tulipes, rouges ou blanches.\n\n'
-    + tableau(['Roses', 'Tulipes'], ['Rouges', 'Blanches'], 'Fleur \\ Couleur') + '\n\n'
+    + tableau(['Roses', 'Tulipes'], ['Rouges', 'Blanches']) + '\n\n'
     'On tire une fleur du bouquet au hasard. Quelle est la probabilité que ce soit une rose **ou** '
     'une fleur rouge ? ' + REPONSE + '\n\n$$?$$',
     cases('3', '15'),
@@ -213,7 +214,7 @@ ERR_DOUBLE_G = ('Tu as additionné les voitures électriques et les voitures neu
                 'neuves sont comptées deux fois, alors qu\'elles sont exclues.')
 n1.append(variation(
     'Un garage a relevé le moteur et l\'état des voitures de son parc.\n\n'
-    + tableau(['Électriques', 'Essence'], ['Neuves', 'Occasion'], 'Moteur \\ État') + '\n\n'
+    + tableau(['Électriques', 'Essence'], ['Neuves', 'Occasion']) + '\n\n'
     'On choisit une voiture du parc au hasard. Quelle est la probabilité qu\'elle soit électrique '
     'ou neuve, **mais pas les deux** ? ' + REPONSE + '\n\n$$?$$',
     cases('100', '240'),
@@ -245,7 +246,7 @@ ERR_ET_C = ('Tu as compté les collégiens demi-pensionnaires seulement : « col
 n1.append(variation(
     'Une cité scolaire réunit un collège et un lycée. On a relevé le régime de ses élèves ; une '
     'case du tableau est masquée.\n\n'
-    + tableau(['Collégiens', 'Lycéens'], ['Demi-pensionnaires', 'Externes'], 'Élèves \\ Régime',
+    + tableau(['Collégiens', 'Lycéens'], ['Demi-pensionnaires', 'Externes'],
               'Lycéens/Demi-pensionnaires') + '\n\n'
     'On choisit un élève de la cité scolaire au hasard. Quelle est la probabilité que ce soit un '
     'collégien **ou** un demi-pensionnaire ? ' + REPONSE + '\n\n$$?$$',

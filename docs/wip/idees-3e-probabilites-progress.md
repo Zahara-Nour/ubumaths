@@ -2,13 +2,36 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, phase 0 validée (aucune PR encore)._
+_Mis à jour le 2026-11-26, gros lot écrit (PR des fichiers à ouvrir)._
 
-- **État** : relevé fait ([idees-3e-probabilites-releve.md](idees-3e-probabilites-releve.md)) ; **phase 0 validée en bloc par David le 2026-11-26** (« je valide », dans la conversation : toutes les fiches telles qu'écrites ci-dessous, Q1 = oui, N1 et N2 sur 3-033). La page à cocher n'a aucun verdict : c'est normal. b28ed4fa, e73b947f et 247fddd1 réservés dans le tableau de répartition (686483c9e).
-- **Prochaine action** : écrire le gros lot (skill `idees-rubrique` § 3) : scripts `docs/wip/questions/idees-3e-probabilites-<x>.py` pour N1 et N2 ; export des trois modèles publiés dans `scripts/questions/idees-3e-probabilites-publies/` et variations V1 à V3 ajoutées à la fin ; `testSpecs`, trois erreurs prévues et un coup de pouce par variation ; essai en base locale. Renommer la branche en `feat/…` avant le premier commit de code.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites`, `docs/idees-3e-probabilites` (à renommer en `feat/…` avant le lot si besoin).
+- **État** : lot écrit et essayé en base locale (§ « Lot » ci-dessous) : N1 et N2 dans `scripts/questions/idees-3e-probabilites-neufs/`, V1 à V3 ajoutées à la fin des trois modèles exportés de prod dans `scripts/questions/idees-3e-probabilites-publies/`. Specs toutes vertes, `create-questions` en simulation vert.
+- **Prochaine action** : PR des fichiers (revue : aucune, contenu), CI verte, merge. Puis **David** lance `create-questions --dir scripts/questions/idees-3e-probabilites-neufs --publier` (brouillons en prod) ; je commite les ids, puis PR des migrations générées : rangement (`migration-rangement.ts`, champ `rangement` déjà écrit) et contenu des trois publiés (`migration-contenu.ts --dir …-publies`), avec `security-auditor`.
+- **En attente de David** : rien avant le merge ; ensuite son `--publier`.
+- **Pièges en cours** : les fichiers `…-publies` repartent de l'export de prod du 2026-11-26 : relancer `migration-contenu.ts` lit la prod, et refuse si un modèle a changé entre-temps.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites`, `feat/idees-3e-probabilites`.
+
+## Lot (2026-11-26)
+
+Scripts : `docs/wip/questions/idees-3e-probabilites-neufs.py` et `…-publies.py`.
+
+- **N1** « Probabilités dans un tableau d'effectifs » (3e, niveau 2, 4 variations, fractions non
+  réduites acceptées) et **N2** « Jeux à deux épreuves : évènements « et », « ou » » (3e, niveau
+  3, 4 variations). Rangement : nœud « Probabilités > Expériences aléatoires > événements » (celui
+  de cd2ffd9b, niveau 1 en prod le 2026-11-26), point 3-033.
+- **Écart à la fiche N1** : effectifs de 100 à **240** (et non 500) pour le garage et la cité
+  scolaire : le total reste sous 1 000, sans espace à écrire dans les grands nombres (énoncé,
+  corrigé, réponse). Coin du tableau retiré (débord à 390 px).
+- **N2, variation dé à 4 et dé à 6** : la réponse ne prend que deux valeurs (1/4, 3/4), comme la
+  fiche le donne (parité seule).
+- **V1** (b28ed4fa, variations 5 à 8) : urne avec remise, pièce qui choisit l'urne, deux dés sans
+  tableau (somme, produit, écart ; ⩽ < ⩾ >), dé à 4 et dé à 6 (cinq évènements). Les dénombrements
+  des deux dés sont calculés par formules dans les variables, contrôlées par force brute dans le
+  script sur tous les tirages. **V2** (e73b947f, variation 5) et **V3** (247fddd1, variation 5) :
+  roulette.
+- Trois erreurs prévues par case et un coup de pouce par variation, partout.
+- Essai en base locale : les cinq modèles créés en brouillon (les trois publiés en copie
+  « (essai local) »), rendus vus dans `/dev/modeles` à 390 px (tableaux, case masquée, `{{if}}`).
+  Le jugement des réponses est vérifié par les specs, pas en saisissant dans l'aperçu.
 
 ## Relevé (2026-11-25)
 

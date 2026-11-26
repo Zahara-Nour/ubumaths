@@ -21,7 +21,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Dans une volière, on a compté les oiseaux selon leur espèce et leur sexe.\n\n```tableau-croise\nlignes: Perruches ; Canaris\ncolonnes: Mâles ; Femelles\nPerruches = {{a}} ; {{b}}\nCanaris = {{c}} ; {{d}}\ncoin: Espèce \\ Sexe\n```\n\nOn choisit un oiseau de la volière au hasard. Quelle est la probabilité que ce soit une perruche **et** un mâle ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"statement": "Dans une volière, on a compté les oiseaux selon leur espèce et leur sexe.\n\n```tableau-croise\nlignes: Perruches ; Canaris\ncolonnes: Mâles ; Femelles\nPerruches = {{a}} ; {{b}}\nCanaris = {{c}} ; {{d}}\n```\n\nOn choisit un oiseau de la volière au hasard. Quelle est la probabilité que ce soit une perruche **et** un mâle ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
 			"variables": [
 				{
 					"name": "a",
@@ -73,7 +73,7 @@
 			"hint": "Compte les oiseaux qui ont **les deux** caractères à la fois, puis divise par le nombre total d'oiseaux."
 		},
 		{
-			"statement": "Un fleuriste a composé un bouquet de roses et de tulipes, rouges ou blanches.\n\n```tableau-croise\nlignes: Roses ; Tulipes\ncolonnes: Rouges ; Blanches\nRoses = {{a}} ; {{b}}\nTulipes = {{c}} ; {{d}}\ncoin: Fleur \\ Couleur\n```\n\nOn tire une fleur du bouquet au hasard. Quelle est la probabilité que ce soit une rose **ou** une fleur rouge ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"statement": "Un fleuriste a composé un bouquet de roses et de tulipes, rouges ou blanches.\n\n```tableau-croise\nlignes: Roses ; Tulipes\ncolonnes: Rouges ; Blanches\nRoses = {{a}} ; {{b}}\nTulipes = {{c}} ; {{d}}\n```\n\nOn tire une fleur du bouquet au hasard. Quelle est la probabilité que ce soit une rose **ou** une fleur rouge ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
 			"variables": [
 				{
 					"name": "a",
@@ -125,7 +125,7 @@
 			"hint": "« $A$ ou $B$ » : au moins l'un des deux. $P(A \\text{ ou } B)=P(A)+P(B)-P(A \\text{ et } B)$."
 		},
 		{
-			"statement": "Un garage a relevé le moteur et l'état des voitures de son parc.\n\n```tableau-croise\nlignes: Électriques ; Essence\ncolonnes: Neuves ; Occasion\nÉlectriques = {{a}} ; {{b}}\nEssence = {{c}} ; {{d}}\ncoin: Moteur \\ État\n```\n\nOn choisit une voiture du parc au hasard. Quelle est la probabilité qu'elle soit électrique ou neuve, **mais pas les deux** ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"statement": "Un garage a relevé le moteur et l'état des voitures de son parc.\n\n```tableau-croise\nlignes: Électriques ; Essence\ncolonnes: Neuves ; Occasion\nÉlectriques = {{a}} ; {{b}}\nEssence = {{c}} ; {{d}}\n```\n\nOn choisit une voiture du parc au hasard. Quelle est la probabilité qu'elle soit électrique ou neuve, **mais pas les deux** ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
 			"variables": [
 				{
 					"name": "a",
@@ -177,7 +177,7 @@
 			"hint": "« L'un ou l'autre, mais pas les deux » : compte les cases où **un seul** des deux caractères est présent."
 		},
 		{
-			"statement": "Une cité scolaire réunit un collège et un lycée. On a relevé le régime de ses élèves ; une case du tableau est masquée.\n\n```tableau-croise\nlignes: Collégiens ; Lycéens\ncolonnes: Demi-pensionnaires ; Externes\nCollégiens = {{a}} ; {{b}}\nLycéens = {{c}} ; {{d}}\ncoin: Élèves \\ Régime\nmasquer: Lycéens/Demi-pensionnaires\n```\n\nOn choisit un élève de la cité scolaire au hasard. Quelle est la probabilité que ce soit un collégien **ou** un demi-pensionnaire ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"statement": "Une cité scolaire réunit un collège et un lycée. On a relevé le régime de ses élèves ; une case du tableau est masquée.\n\n```tableau-croise\nlignes: Collégiens ; Lycéens\ncolonnes: Demi-pensionnaires ; Externes\nCollégiens = {{a}} ; {{b}}\nLycéens = {{c}} ; {{d}}\nmasquer: Lycéens/Demi-pensionnaires\n```\n\nOn choisit un élève de la cité scolaire au hasard. Quelle est la probabilité que ce soit un collégien **ou** un demi-pensionnaire ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
 			"variables": [
 				{
 					"name": "a",
