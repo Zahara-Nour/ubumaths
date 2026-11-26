@@ -50,8 +50,8 @@ export interface SentMessage {
 	}>;
 }
 
+/** Une ligne de `get_allowed_recipients` : la personne est désignée par `user_id` */
 export interface MessageRecipient {
-	id: string;
 	user_id: string;
 	full_name: string;
 	avatar_url: string | null;
