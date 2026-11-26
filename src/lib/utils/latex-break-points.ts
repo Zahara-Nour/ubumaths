@@ -1,7 +1,7 @@
 /**
  * Les endroits où une formule peut passer à la ligne : après un `=` ou un `+`
  * écrits hors de toute accolade, de tout `\left … \right` et de tout
- * environnement (E52 de `docs/wip/ecarts-verifs-progress.md` : une étape longue
+ * environnement (E52 de `docs/archive/wip/ecarts-verifs/ecarts-verifs-progress.md` : une étape longue
  * d'une démonstration à ranger était coupée au bord de son étiquette, à 360 px).
  *
  * Chaque morceau garde son opérateur au bout, suivi de l'espace que MathLive

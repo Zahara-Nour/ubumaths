@@ -1,6 +1,6 @@
 /**
  * Noms qui ne se chevauchent pas sur les figures des constructions (E4,
- * `docs/wip/ecarts-verifs-progress.md`).
+ * `docs/archive/wip/ecarts-verifs/ecarts-verifs-progress.md`).
  *
  * Chaque script est joué pas à pas comme sur la page d'essais (cadre de
  * 500 × 450 px, 40 px par unité, origine au centre). À chaque pas, les noms
