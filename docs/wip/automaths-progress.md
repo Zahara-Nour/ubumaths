@@ -5,10 +5,15 @@
 _Mis à jour le 2026-11-26, après #3166._
 
 - **État** : PR A2 (variations choisies sur la carte de Ma série) mergée (#3166), worktree retiré.
-- **Prochaine action** : PR B (recherche, branche `feat/automaths-recherche`, worktree `../ubumaths-wt-automaths-recherche`), phase 0 validée (section du 2026-11-26 ci-dessous).
-- **En attente de David** : dire si le résumé « · k en QCM » de l'ancienne fenêtre doit revenir sous la carte (point 4 de la revue de la PR A2).
+- **Prochaine action** : PR A3 (petite) : « · 1 en QCM » sous la carte de Ma série, à côté de « 2 variations sur 3 » (décision de David, 2026-11-26, ci-dessous) ; puis PR B (recherche, branche `feat/automaths-recherche`), phase 0 validée.
+- **En attente de David** : rien.
 - **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; `aria-disabled` → Playwright refuse le clic (`click({ force: true })`) ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
 - **Worktree / branche** : aucun pour l'instant.
+
+### 2026-11-26 — décision de David après #3166 (PR A3)
+
+- « ajoute "1 en QCM" sous la carte » : dans Ma série (prof), sous la ligne fine de `TileCard`, dire combien de variations gardées sont en QCM (« 1 en QCM »), à côté de « 2 variations sur 3 » quand elle s'affiche (forme de l'ancienne fenêtre : « 2 variations sur 3 · 1 en QCM »). Aucune variation en QCM → rien.
+- Choix de la PR A2 que David n'a pas repris (acceptés) : case « En QCM » grisée sur une variation retirée ; infobulle de la dernière variation gardée.
 
 ### 2026-11-26 — PR A2 mergée (#3166)
 
