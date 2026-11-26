@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, avant la PR._
+_Mis à jour le 2026-11-26, après #3174._
 
-- **État** : migration écrite (trigger replié sur « prénom nom »), 4 tests vus rouges sans elle puis 26 verts avec ; revues sans finding bloquant ; PR ouverte.
-- **Prochaine action** : merge à CI verte, puis `db:migrate` après le merge et `pnpm deploy:prod` seulement si David le demande (la migration seule répare l'envoi : aucun code d'application ne change).
-- **En attente de David** : rien pour la migration (question d'accès tranchée le 2026-11-26) ; son essai de la messagerie reprend une fois la migration jouée en prod.
-- **Pièges en cours** : la preuve rouge se prend **avant** de créer le fichier de migration (la pile de test joue les migrations de la branche) ; les comptes des tests ont tous un nom complet, pas ceux de la prod.
-- **Worktree / branche** : `ubumaths-wt-messagerie-nom-expediteur` / `fix/messagerie-nom-expediteur`.
+- **État** : #3174 mergée (trigger d'index replié sur « prénom nom ») ; **migration `20261126094959` pas encore jouée en prod** : l'envoi d'un message y échoue toujours pour un élève sans nom complet.
+- **Prochaine action** : après le `pnpm db:migrate` de David, vérifier en prod (lecture seule) que le trigger porte le repli, inscrire V131 clos au registre, puis lui rendre son essai de la messagerie (compte prof, pas admin). Ensuite la PR suivante : pannes 1 à 3 de la section « Autres pannes », nouveau worktree.
+- **En attente de David** : (1) **`pnpm db:migrate`** depuis le dépôt principal : deux migrations partent ensemble, celle-ci et `20261126091954` (E78, chantier `ecarts-verifs`, additive, elle aussi en attente de lui) ; (2) le découpage de la suite et la **question d'accès** du point 3 : un élève qui reçoit un message de classe voit-il le prénom et le nom des autres destinataires (recommandé : non) ?
+- **Pièges en cours** : les comptes des tests ont tous un nom complet, pas ceux de la prod ; un élève ne peut ni voir ni écrire au compte admin (essai avec le compte prof) ; la preuve rouge d'une migration se prend avant de créer son fichier.
+- **Worktree / branche** : aucun (retirés au merge de #3174).
 
 ## Le constat (essai de David en prod, v0.113.0)
 
