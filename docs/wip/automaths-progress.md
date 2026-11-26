@@ -2,13 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR B en cours._
+_Mis à jour le 2026-11-26, après #3172._
 
-- **État** : PR B (recherche) codée, revue corrigée, tests verts, vue à l'écran ; PR ouverte.
-- **Prochaine action** : PR B ouverte → CI → merge.
-- **En attente de David** : rien (choix non écrits en phase 0 listés plus bas, à lui dire).
-- **Pièges en cours** : figure dans une variable (`{{if:k==1|```figure…}}`) → retirer les variables AVANT les blocs ; choix QCM DANS l'énoncé ; séparateur de `rubrique` = « > » ; `aria-disabled` → `click({ force: true })` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed`.
-- **Worktree / branche** : `ubumaths-wt-automaths-recherche` / `feat/automaths-recherche` (serveur 5177).
+- **État** : PR B (recherche : raccourcis, énoncés, groupe « aussi », pluriels) mergée (#3172), worktree retiré.
+- **Prochaine action** : aucune PR prévue ; attendre la réponse de David sur l'ordre des groupes.
+- **En attente de David** : ordre des groupes de résultats : SOMME des pertinences (4 énoncés passent devant 1 titre) ou les groupes qui ont le plus de titres d'abord ? Et les choix non écrits en phase 0 (entrée « réalisation » ci-dessous).
+- **Pièges en cours** : figure dans une variable (`{{if:k==1|```figure…}}`) → variables retirées AVANT les blocs ; mot mis au singulier par la recherche = mot entier ; capture WebKit d'une carte = miroir ; `garde-migrations-horodatage` rouge par hasard → `gh run rerun --failed`.
+- **Worktree / branche** : aucun (dossier `ubumaths-wt-automaths-recherche` : caches `.svelte-kit` / `.vite` seuls, non supprimés).
+
+### 2026-11-26 — PR B mergée (#3172)
+
+- CI verte, mergée par `pnpm pr:merger`.
 
 ### 2026-11-26 — PR B recherche, réalisation
 
