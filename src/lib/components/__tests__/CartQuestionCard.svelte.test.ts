@@ -525,6 +525,50 @@ describe('CartQuestionCard — variations choisies sur la carte (PR A2)', () => 
 		expect(onUpdateVariations).toHaveBeenCalledWith(CALCULS.id, [1, 2]);
 	});
 
+	describe('nombre de variations en QCM sous la carte (PR A3)', () => {
+		const line = (screen: Awaited<ReturnType<typeof renderTeacher>>['screen']) =>
+			screen.container.querySelector<HTMLElement>('[data-variations-gardees]');
+
+		it('variations choisies et une en QCM : « 2 variations sur 3 · 1 en QCM »', async () => {
+			const { screen } = await renderTeacher({
+				item: { variations: [0, 1], choiceVariations: [0] }
+			});
+
+			expect(line(screen)?.textContent?.trim()).toBe('2 variations sur 3 · 1 en QCM');
+		});
+
+		it('toutes gardées et une en QCM : « 1 en QCM » seul', async () => {
+			const { screen } = await renderTeacher({ item: { choiceVariations: [0] } });
+
+			expect(line(screen)?.textContent?.trim()).toBe('1 en QCM');
+		});
+
+		it('QCM sur une variation retirée seulement : il ne compte pas', async () => {
+			const { screen } = await renderTeacher({
+				item: { variations: [1, 2], choiceVariations: [0] }
+			});
+
+			expect(line(screen)?.textContent?.trim()).toBe('2 variations sur 3');
+		});
+
+		it('une variation passe en QCM : la ligne apparaît', async () => {
+			const { screen } = await renderTeacher();
+
+			expect(line(screen)).toBeNull();
+			await screen.rerender({ item: { ...CALCULS_ITEM, choiceVariations: [0] } });
+			await expect.poll(() => line(screen)?.textContent?.trim()).toBe('1 en QCM');
+		});
+
+		it('élève : rien, même avec une variation en QCM', async () => {
+			const { screen } = await renderTeacher({
+				teacher: false,
+				item: { choiceVariations: [0] }
+			});
+
+			expect(line(screen)).toBeNull();
+		});
+	});
+
 	it('élève : flèches seulement, numéro non cliquable, pas de case « En QCM »', async () => {
 		const { screen } = await renderTeacher({ teacher: false });
 

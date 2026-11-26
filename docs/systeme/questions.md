@@ -300,7 +300,8 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   parcourent toutes les variations, retirées comprises ; le numéro « 2/3 » garde (vert) ou retire
   (rouge et barré) la variation affichée, infobulle « Retirer cette variation de la série » /
   « Remettre cette variation » ; la dernière gardée ne se retire pas (`aria-disabled`, l'infobulle le
-  dit) ; « 2 variations sur 3 » sous la ligne quand il en manque ; case « En QCM » sur la ligne quand
+  dit) ; sous la ligne, « 2 variations sur 3 » quand il en manque et « 1 en QCM » quand des variations
+  gardées sont en QCM (« 2 variations sur 3 · 1 en QCM », PR A3) ; case « En QCM » sur la ligne quand
   la variation affichée peut se poser en QCM (même test que la fenêtre : `mayBeChoice`, puis
   `canBeChoice` sur l'exemple à graine fixe), retirer une variation retire son QCM. Le compte de
   `distinctLimit` et l'aperçu de la tuile suivent ce choix.

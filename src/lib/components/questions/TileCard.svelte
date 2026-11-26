@@ -16,6 +16,10 @@
 	 * barré, jamais la couleur seule) ; la dernière gardée ne se retire pas. Avec
 	 * `onchoicechange`, case « En QCM » pour la variation affichée quand elle
 	 * peut se poser en QCM. Remplace la fenêtre de `VariationPicker` dans Ma série.
+	 *
+	 * PR A3 (2026-11-26) : sous la ligne fine, « 2 variations sur 3 · 1 en QCM »
+	 * (variations gardées en QCM seulement) ; chaque partie seulement si elle dit
+	 * quelque chose.
 	 */
 	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
 	import FlashCard from '#lib/components/questions/FlashCard.svelte';
@@ -98,6 +102,18 @@
 	});
 	// En QCM et encore gardées (une variation retirée ne compte plus)
 	let inChoice = $derived((choiceVariations ?? []).filter((index) => kept.includes(index)));
+	// Ligne sous la carte (prof) : « 2 variations sur 3 · 1 en QCM » ; chaque partie
+	// seulement quand elle dit quelque chose (PR A3, décision de David du 2026-11-26)
+	let summary = $derived(
+		[
+			kept.length < count
+				? `${kept.length} variation${kept.length > 1 ? 's' : ''} sur ${count}`
+				: '',
+			inChoice.length > 0 ? `${inChoice.length} en QCM` : ''
+		]
+			.filter(Boolean)
+			.join(' · ')
+	);
 
 	function toggleKept() {
 		if (!onvariationschange || isLastKept) return;
@@ -187,9 +203,9 @@
 			{/if}
 		</div>
 	</div>
-	{#if editable && kept.length < count}
+	{#if editable && summary}
 		<div class="text-right text-xs text-muted-foreground" data-variations-gardees>
-			{kept.length} variation{kept.length > 1 ? 's' : ''} sur {count}
+			{summary}
 		</div>
 	{/if}
 
