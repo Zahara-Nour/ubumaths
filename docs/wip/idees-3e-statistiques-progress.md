@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot écrit, PR du contenu ouverte._
+_Mis à jour le 2026-11-26, après #3209._
 
-- **État** : phase 0 validée (« je te suis », 2026-11-26 : V1, V2, V3, R et Q1 comme recommandé). 96992ea8, c2497d96 et 21ebfb57 réservés (main 7accd349c3). 5 variations écrites dans `scripts/questions/idees-3e-statistiques-publies/`, migration de contenu `20261126222711` générée, test d'intégration vert.
-- **Prochaine action** : CI verte → merge → `db:migrate` (après `migration list --linked`) → série de relecture des 3 modèles dans `/dev/modeles`.
-- **En attente de David** : relecture dans `/dev/modeles` après la migration.
-- **Pièges en cours** : journal et relevé commités sur la branche (pas sur `main`, bloqué par un `deploy:prod` le 2026-11-26). Leurs copies **non suivies** restent dans le dépôt principal, sous `docs/wip/` : il faut demander à David avant de les retirer, sinon le `git pull` qui suivra le merge de la PR échouera.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-statistiques` · `feat/idees-3e-statistiques`.
+- **État** : phase 0 validée (« je te suis » : V1, V2, V3, R et Q1 comme recommandé). #3209 mergée : 5 variations ajoutées à 96992ea8, c2497d96 et 21ebfb57 (réservés, main 7accd349c3), migration de contenu `20261126222711` (test d'intégration vert, `security-auditor` sans finding bloquant), **pas encore appliquée en prod**.
+- **Prochaine action** : après l'accord de David sur les copies non suivies, `git pull --rebase` du dépôt principal, `migration list --linked` (aucune autre migration en attente, sinon stop), `pnpm db:migrate`, puis série de relecture des 3 modèles (`scripts/series/creer-serie.ts`) pour `/dev/modeles`.
+- **En attente de David** : accord pour supprimer les deux copies non suivies (voir le piège) ; ensuite, la relecture dans `/dev/modeles`.
+- **Pièges en cours** : deux copies **non suivies**, `docs/wip/idees-3e-statistiques-progress.md` et `-releve.md`, bloquent le `git pull` du dépôt principal. Leur contenu est déjà sur `main` : le journal est identique à f3422b6752, et le relevé ne diffère que par l'alignement des tableaux. Ne pas les retirer sans l'accord de David.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-statistiques` · `docs/idees-3e-statistiques-reprendre` (journal seul). La PR suivante (publication) se fait dans un nouveau worktree.
 
 ## Relevé (2026-11-26)
 
