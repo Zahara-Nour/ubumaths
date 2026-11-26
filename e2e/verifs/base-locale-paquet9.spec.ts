@@ -936,18 +936,8 @@ test.describe('Base locale — compte prof, lecture seule', () => {
 			}
 			expect(text, `onglet ${onglet.source}`).not.toMatch(/Aucune donnée|Aucun élève/i);
 		}
-		// ÉCART : la liste des alertes anti-fraude (onglet Surveillance) répond 500 — la route lit
-		// `profiles(first_name, last_name)` alors que les colonnes s'appellent `firstname`, `lastname`
-		const erreurs = realErrors(session);
-		expect(
-			erreurs.some((e) => /^HTTP 500 .*anti-fraud\/flags/.test(e)),
-			`symptôme attendu (HTTP 500 sur anti-fraud/flags) ; vu : ${JSON.stringify(erreurs)}`
-		).toBe(true);
-		test.fail(
-			true,
-			'GET /api/teacher/classes/[classId]/anti-fraud/flags répond 500 (colonnes first_name/last_name)'
-		);
-		expect(erreurs, 'erreurs de la page analytics').toEqual([]);
+		// E79 (corrigé) : la liste des signalements de l'onglet Surveillance répondait 500
+		expect(realErrors(session), 'erreurs de la page analytics').toEqual([]);
 	});
 
 	test('#2980 : résultats du contrôle « Essai évaluation » — 12 assignés, bilan par question', async () => {

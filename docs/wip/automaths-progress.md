@@ -2,14 +2,32 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #2875 (et #3149, E73)._
+_Mis à jour le 2026-11-26, phase 0 « cartes + recherche » validée._
 
-- **État** : découpage initial livré (#2842, #2847, #2854, #2866, #2875) et en prod. 2026-11-25 : nouvelle demande de David (cartes + recherche), phase 0 EN COURS, rien codé, aucun worktree.
-- **Prochaine action** : obtenir les réponses de David (§ 2026-11-25 ci-dessous), puis 2 PR : (A) cartes (badge niveau, flèches de variations, bouton de retournement plus petit, hauteur × 1,5, corbeille dans Ma série) ; (B) recherche par rangs.
-- **En attente de David** : (1) les 5 points de la recherche + groupe « Aussi dans le programme » replié ou retiré + ce que tape un prof ; (2) badge « CM1–CM2 » ou « CM1 · CM2 » ; (3) suite à donner aux incohérences niveaux / points (relevé ci-dessous).
-- **Tranché** : difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points).
-- **Pièges en cours** : séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
-- **Worktree / branche** : aucun (à créer : `../ubumaths-wt-automaths-cartes`, `feat/automaths-cartes`).
+- **État** : découpage initial livré et en prod. Phase 0 des PR A (cartes) et B (recherche) VALIDÉE par David le 2026-11-26 (§ ci-dessous). Rien codé, aucun worktree.
+- **Prochaine action** : PR A — `git worktree add -b feat/automaths-cartes ../ubumaths-wt-automaths-cartes origin/main`, tests rouges d'abord, puis PR B (`feat/automaths-recherche`).
+- **En attente de David** : rien.
+- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
+- **Worktree / branche** : aucun.
+
+### 2026-11-26 — phase 0 validée par David (« je valide »)
+
+PR A — cartes (tuile du catalogue `QuestionPreviewCard` et tuile de Ma série `CartQuestionCard`) :
+
+1. Ligne fine au-dessus de la carte : à gauche badge des niveaux (`grades`) : « CM1–CM2 » si niveaux consécutifs, sinon « CM1 · 6e » ; à droite « ‹ 2/5 › » si le modèle a au moins 2 variations, change seulement l'exemple affiché (rien dans la série).
+2. Difficulté (`level`) gardée telle quelle.
+3. Bouton de retournement 48 → 32 px dans les tuiles seulement (la carte de l'élève ne change pas).
+4. Hauteur des cartes × 1,5 : 12rem → 18rem, 9rem → 13,5rem sur téléphone (`TILE_CARD_HEIGHT`, `.tile`).
+5. Ma série : corbeille entre durée et répétitions, « Retirer de ma série », sans confirmation.
+
+PR B — recherche :
+
+1. Raccourci(s) en tête quand le mot cherché est le nom d'une notion ou sous-notion (3 au plus) → y aller.
+2. Bons résultats : mot dans le titre, la description ou l'énoncé (sans figures, formules, variables, ni choix des QCM). Plus le nom de sous-notion. Groupés par sous-notion, groupe le plus pertinent d'abord.
+3. Groupe replié en bas : mot seulement dans la correction ou le texte d'un point du programme.
+4. Singulier et pluriel confondus (-s, -x, -aux/-al).
+5. Consigne et coup de pouce : non (rien ou presque). Tags : futur chantier (avec la vérification des niveaux).
+6. Un prof tape aussi bien un thème qu'une compétence.
 
 ### 2026-11-25 — nouvelle demande de David, phase 0 en cours
 
@@ -22,7 +40,11 @@ Constats (prod, lecture seule) :
 - Pastille : la descente prend ~2 s et passe devant les sections du dessus ; un geste pendant ce temps l'arrête (pas la cause du constat de David).
 - Mesures de la recherche (6e + inférieurs, titre / notion seule / point seul) : triangle 45/0/13, nombres décimaux 16/0/31 (titres au singulier), multiplication 67/84/8, fraction 148/9/0. Script : rejouer sur `/api/questions/templates/all`.
 
-Proposition recherche (non validée) : 1. raccourci vers la sous-notion/notion dont le nom correspond ; 2. résultats titre/description/sous-notion, groupe le plus pertinent d'abord ; 3. point du programme seul → groupe replié « Aussi dans le programme » ; 4. singulier/pluriel confondus ; 5. pas de recherche dans l'énoncé.
+Réponses de David (2026-11-26) : bons résultats = titre + description + énoncé + choix (pas le nom de sous-notion, couvert par le raccourci) ; idée d'un champ en plus dans le format du modèle ; « Aussi dans le programme » replié ; un prof tape aussi bien un thème qu'une compétence. Mesure (6e + inférieurs) : l'énoncé SANS les choix ajoute peu (cercle 1, triangle 8, angle droit 5) ; les choix ajoutent les distracteurs (« Décrire une figure » sort pour « cercle » par « Je suis un cercle »).
+
+Champs existants mesurés (tous niveaux, en plus de titre + description + énoncé) : consigne 0 (19 modèles en ont une), indice ~0, correction : pythagore +5, produit en croix +4 (quatrième proportionnelle…), discriminant +9, cercle +19 (bruit : symétrie centrale, cône, trigo). Tags `resource_tags` : 140 tags, 429 liens (exercices, Python, fiches), aucun sur les modèles.
+
+Proposition recherche (version du 2026-11-25) : 1. raccourci vers la sous-notion/notion dont le nom correspond ; 2. résultats titre/description/sous-notion, groupe le plus pertinent d'abord ; 3. point du programme seul → groupe replié « Aussi dans le programme » ; 4. singulier/pluriel confondus ; 5. pas de recherche dans l'énoncé.
 
 Niveaux d'un modèle (`grades`) et points : deux informations voulues séparées. Garde `scripts/lib/niveaux-des-tags.ts` (à la publication) : niveau d'un point ⊂ `grades`, 12 exceptions décidées, 0 écart restant. Sens inverse non vérifié. Relevé du 2026-11-26 :
 

@@ -47,7 +47,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.eq('resolved', false);
 
 	if (error) {
-		return Response.json({ error: error.message }, { status: 500 });
+		// Le message de la base reste dans le journal du serveur.
+		logger.error('Comptage des signalements impossible :', error);
+		return Response.json({ error: 'Impossible de compter les signalements' }, { status: 500 });
 	}
 
 	return Response.json({ count: count ?? 0 });
