@@ -1,0 +1,5356 @@
+{
+	"migration": "supabase/migrations/20261126193659_questions_idees_tle_techno_analyse_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "10bd7075-2ff9-4bf1-9161-1fb141ea4d0a",
+			"title": "Résoudre une inéquation aˣ < b ou xᵃ < b avec log",
+			"fichier": "10bd7075.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+							}
+						],
+						"statement": "Résous l'inéquation ${{a}}^x<{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|3|5|7"
+							},
+							{
+								"name": "b",
+								"expression": "3|5|6|10|11|12|15|20|50"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{a}}^x<{{b}}\\iff x\\log({{a}})<\\log({{b}})\\iff x<\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{b}})}{\\log({{a}})}\\right[}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[\\dfrac{\\log({{b}})}{\\log({{a}})};+\\infty["
+							}
+						],
+						"statement": "Résous l'inéquation ${{a}}^x\\geqslant{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|3|5|7"
+							},
+							{
+								"name": "b",
+								"expression": "3|5|6|10|11|12|15|20|50"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{a}}^x\\geqslant{{b}}\\iff x\\log({{a}})\\geqslant\\log({{b}})\\iff x\\geqslant\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left[\\dfrac{\\log({{b}})}{\\log({{a}})}\\,;+\\infty\\right[}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+							}
+						],
+						"statement": "Résous l'inéquation ${{eval:a;d}}^x>{{eval:b;d}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0.2|0.5|0.8|0.9"
+							},
+							{
+								"name": "b",
+								"expression": "0.1|0.3|0.05|0.01"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{eval:a;d}}^x>{{eval:b;d}}\\iff x\\log({{eval:a;d}})>\\log({{eval:b;d}})$.",
+								"Pour $a>1$, $\\log(a)>0$ ; pour $0<a<1$, $\\log(a)<0$ : diviser par $\\log(a)$ change alors le sens. Ici $\\log({{eval:a;d}})<0$ : $x<\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}$.",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}\\right[}$ (borne environ ${{eval:round(100*x)/100;d}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]0;{{c}}]"
+							}
+						],
+						"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $x^{ {{a}} }\\leqslant{{eval:c^a}}$.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..4"
+							},
+							{
+								"name": "c",
+								"expression": "2..5"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"$x>0$ : on prend le logarithme des deux membres, ce qui garde le sens.",
+								"$x^{ {{a}} }\\leqslant{{eval:c^a}}\\iff {{a}}\\log(x)\\leqslant\\log({{eval:c^a}})\\iff\\log(x)\\leqslant\\dfrac{\\log({{eval:c^a}})}{ {{a}} }=\\log({{c}})$, car ${{eval:c^a}}={{c}}^{ {{a}} }$.",
+								"$\\log$ est strictement croissante : $x\\leqslant{{c}}$. Avec $x>0$ : $S=\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{c}}\\right]}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "2^x < 5 : ]−∞ ; log 5/log 2[",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]\\dfrac{\\log(5)}{\\log(2)};+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : sens changé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;2,32["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : borne approchée (exacte demandée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : borne fermée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[\\dfrac{\\log(20)}{\\log(3)};+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "3^x ⩾ 20 : [log 20/log 3 ; +∞[",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[\\log(\\dfrac{20}{3});+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "Erreur : log(20/3)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;\\dfrac{\\log(0.1)}{\\log(0.5)}["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0.5",
+							"b": "0.1"
+						},
+						"description": "0,5^x > 0,1 : ]−∞ ; log 0,1/log 0,5[",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]\\dfrac{\\log(0.1)}{\\log(0.5)};+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "0.5",
+							"b": "0.1"
+						},
+						"description": "Erreur : sens non changé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]0;4]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"c": "4"
+						},
+						"description": "x³ ⩽ 64 : ]0 ; 4]",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]-\\infty;4]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"c": "4"
+						},
+						"description": "Erreur : x > 0 oublié",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]0;\\dfrac{64}{3}]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"c": "4"
+						},
+						"description": "Erreur : 64/3",
+						"variationIndex": 3
+					}
+				],
+				"description": "aˣ < b et aˣ ⩾ b pour a > 1 ; aˣ > b pour 0 < a < 1 (le sens change) ; xᵃ ⩽ b pour x > 0 ; réponse en intervalle, bornes exactes"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+							}
+						],
+						"statement": "Résous l'inéquation ${{a}}^x<{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|3|5|7"
+							},
+							{
+								"name": "b",
+								"expression": "3|5|6|10|11|12|15|20|50"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{a}}^x<{{b}}\\iff x\\log({{a}})<\\log({{b}})\\iff x<\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{b}})}{\\log({{a}})}\\right[}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[\\dfrac{\\log({{b}})}{\\log({{a}})};+\\infty["
+							}
+						],
+						"statement": "Résous l'inéquation ${{a}}^x\\geqslant{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|3|5|7"
+							},
+							{
+								"name": "b",
+								"expression": "3|5|6|10|11|12|15|20|50"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{a}}^x\\geqslant{{b}}\\iff x\\log({{a}})\\geqslant\\log({{b}})\\iff x\\geqslant\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left[\\dfrac{\\log({{b}})}{\\log({{a}})}\\,;+\\infty\\right[}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+							}
+						],
+						"statement": "Résous l'inéquation ${{eval:a;d}}^x>{{eval:b;d}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0.2|0.5|0.8|0.9"
+							},
+							{
+								"name": "b",
+								"expression": "0.1|0.3|0.05|0.01"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{eval:a;d}}^x>{{eval:b;d}}\\iff x\\log({{eval:a;d}})>\\log({{eval:b;d}})$.",
+								"Pour $a>1$, $\\log(a)>0$ ; pour $0<a<1$, $\\log(a)<0$ : diviser par $\\log(a)$ change alors le sens. Ici $\\log({{eval:a;d}})<0$ : $x<\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}$.",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}\\right[}$ (borne environ ${{eval:round(100*x)/100;d}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]0;{{c}}]"
+							}
+						],
+						"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $x^{ {{a}} }\\leqslant{{eval:c^a}}$.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..4"
+							},
+							{
+								"name": "c",
+								"expression": "2..5"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"$x>0$ : on prend le logarithme des deux membres, ce qui garde le sens.",
+								"$x^{ {{a}} }\\leqslant{{eval:c^a}}\\iff {{a}}\\log(x)\\leqslant\\log({{eval:c^a}})\\iff\\log(x)\\leqslant\\dfrac{\\log({{eval:c^a}})}{ {{a}} }=\\log({{c}})$, car ${{eval:c^a}}={{c}}^{ {{a}} }$.",
+								"$\\log$ est strictement croissante : $x\\leqslant{{c}}$. Avec $x>0$ : $S=\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{c}}\\right]}$."
+							]
+						}
+					},
+					{
+						"statement": "Résous dans $\\mathbb{R}$, sans calculatrice, l'inéquation ${{eval:c^p;d}}^x{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{eval:c^q;d}}$. Donne l'ensemble des solutions, borne sous la forme d'un entier ou d'une fraction simplifiée.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "2|3|5"
+							},
+							{
+								"name": "p",
+								"expression": "-3|-2|-1|2|3|4|5"
+							},
+							{
+								"name": "q",
+								"expression": "-3..5"
+							},
+							{
+								"name": "s",
+								"expression": "0..3"
+							},
+							{
+								"name": "t",
+								"expression": "eval:1-mod(s,2)"
+							},
+							{
+								"name": "g",
+								"expression": "eval:mod(floor(s/2)+(1-sign(p))/2,2)"
+							}
+						],
+						"conditions": [
+							"q != 0",
+							"abs(q) != abs(p)",
+							"c != 3 || p > 0",
+							"c != 3 || q > 0",
+							"c^p <= 625",
+							"c^q <= 625"
+						],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:g==1|{{if:t==1|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==1|[|]}}}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:g==0|{{if:t==1|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==1|[|]}}}}",
+										"message": "{{if:p<0|${{eval:c^p;d}}<1$, donc $\\log({{eval:c^p;d}})<0$ : diviser par $\\log({{eval:c^p;d}})$ change le sens de l'inégalité.|${{eval:c^p;d}}>1$, donc $\\log({{eval:c^p;d}})>0$ : diviser par $\\log({{eval:c^p;d}})$ ne change pas le sens de l'inégalité.}}",
+										"label": "Sens de l'inégalité"
+									},
+									{
+										"answer": "{{if:g==1|{{if:t==0|]|[}}{{eval:q/p}};+\\infty[|]-\\infty;{{eval:q/p}}{{if:t==0|[|]}}}}",
+										"message": "L'inégalité est {{if:t==1|stricte : la borne est exclue|large : la borne est incluse}}.",
+										"label": "Crochet"
+									},
+									{
+										"answer": "{{if:g==1|{{if:t==1|]|[}}{{eval:p/q}};+\\infty[|]-\\infty;{{eval:p/q}}{{if:t==1|[|]}}}}",
+										"message": "${{if:p==1||{{if:p==-1|-|{{p}}}}}}x{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{q}}$ : on divise ${{q}}$ par ${{p}}$, pas l'inverse.",
+										"label": "Borne renversée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:c^p;d}}={{c}}^{ {{p}} }$ et ${{eval:c^q;d}}={{c}}^{ {{q}} }$ : l'inéquation s'écrit ${{c}}^{ {{if:p==1||{{if:p==-1|-|{{p}}}}}}x}{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{c}}^{ {{q}} }$.",
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{if:p==1||{{if:p==-1|-|{{p}}}}}}x\\log({{c}}){{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{if:q==1||{{if:q==-1|-|{{q}}}}}}\\log({{c}})$, et $\\log({{c}})>0$ : ${{if:p==1||{{if:p==-1|-|{{p}}}}}}x{{if:s==0|<|{{if:s==1|\\leqslant|{{if:s==2|>|\\geqslant}}}}}}{{q}}$.",
+								"{{if:p<0|On divise par ${{p}}<0$ : le sens change|On divise par ${{p}}>0$ : le sens est conservé}}, $x{{if:g==1|{{if:t==1|>|\\geqslant}}|{{if:t==1|<|\\leqslant}}}}{{eval:q/p}}$.",
+								"$S=\\textcolor{{{color:primary.0}}}{ {{if:g==1|{{if:t==1|\\left]|\\left[}}{{eval:q/p}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:q/p}}{{if:t==1|\\right[|\\right]}}}} }$."
+							]
+						},
+						"hint": "Écris les deux nombres comme des puissances d'un même entier. Quel est le signe de $\\log({{eval:c^p;d}})$ ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "2^x < 5 : ]−∞ ; log 5/log 2[",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]\\dfrac{\\log(5)}{\\log(2)};+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : sens changé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;2,32["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : borne approchée (exacte demandée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : borne fermée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[\\dfrac{\\log(20)}{\\log(3)};+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "3^x ⩾ 20 : [log 20/log 3 ; +∞[",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[\\log(\\dfrac{20}{3});+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "Erreur : log(20/3)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;\\dfrac{\\log(0.1)}{\\log(0.5)}["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0.5",
+							"b": "0.1"
+						},
+						"description": "0,5^x > 0,1 : ]−∞ ; log 0,1/log 0,5[",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]\\dfrac{\\log(0.1)}{\\log(0.5)};+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "0.5",
+							"b": "0.1"
+						},
+						"description": "Erreur : sens non changé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]0;4]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"c": "4"
+						},
+						"description": "x³ ⩽ 64 : ]0 ; 4]",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]-\\infty;4]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"c": "4"
+						},
+						"description": "Erreur : x > 0 oublié",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]0;\\dfrac{64}{3}]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"c": "4"
+						},
+						"description": "Erreur : 64/3",
+						"variationIndex": 3
+					},
+					{
+						"description": "F2 : 0,25ˣ < 32 → ]−5/2 ; +∞[",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5",
+							"s": "0",
+							"t": "1",
+							"g": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["]-\\frac{5}{2};+\\infty["]
+					},
+					{
+						"description": "F2 : sens non changé",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5",
+							"s": "0",
+							"t": "1",
+							"g": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$0.25 < 1$, donc $\\log(0.25)<0$ : diviser par $\\log(0.25)$ change le sens de l'inégalité."
+						},
+						"answers": ["]-\\infty;-\\frac{5}{2}["]
+					},
+					{
+						"description": "F2 : crochet",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5",
+							"s": "0",
+							"t": "1",
+							"g": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L'inégalité est stricte : la borne est exclue."
+						},
+						"answers": ["[-\\frac{5}{2};+\\infty["]
+					},
+					{
+						"description": "F2 : borne renversée",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5",
+							"s": "0",
+							"t": "1",
+							"g": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$-2 x < 5$ : on divise $5$ par $-2$, pas l'inverse."
+						},
+						"answers": ["]-\\frac{2}{5};+\\infty["]
+					},
+					{
+						"description": "F2 : 8ˣ ⩾ 4 → [2/3 ; +∞[",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"p": "3",
+							"q": "2",
+							"s": "3",
+							"t": "0",
+							"g": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[\\frac{2}{3};+\\infty["]
+					},
+					{
+						"description": "F2 : 8ˣ ⩾ 4, sens changé",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"p": "3",
+							"q": "2",
+							"s": "3",
+							"t": "0",
+							"g": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$8 > 1$, donc $\\log(8)>0$ : diviser par $\\log(8)$ ne change pas le sens de l'inégalité."
+						},
+						"answers": ["]-\\infty;\\frac{2}{3}]"]
+					},
+					{
+						"description": "F2 : 8ˣ ⩾ 4, crochet",
+						"variationIndex": 4,
+						"variables": {
+							"c": "2",
+							"p": "3",
+							"q": "2",
+							"s": "3",
+							"t": "0",
+							"g": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L'inégalité est large : la borne est incluse."
+						},
+						"answers": ["]\\frac{2}{3};+\\infty["]
+					}
+				],
+				"description": "aˣ < b et aˣ ⩾ b pour a > 1 ; aˣ > b pour 0 < a < 1 (le sens change) ; xᵃ ⩽ b pour x > 0 ; réponse en intervalle, bornes exactes"
+			},
+			"changements": {
+				"ajoutees": [5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "52b884ee-9347-4f87-b878-971caa286535",
+			"title": "Résoudre une équation aˣ = b ou xᵃ = b avec log",
+			"fichier": "52b884ee.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\log({{b}})"
+							}
+						],
+						"statement": "Résous l'équation $10^x={{b}}$. Donne la valeur exacte.\n\n$x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "2|3|5|7|15|40|0.3"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $10^x=b$ a une unique solution : $x=\\log(b)$.",
+								"$10^x={{eval:b;d}}\\iff x=\\textcolor{{{color:primary.0}}}{\\log({{eval:b;d}})}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{\\log({{b}})}{\\log({{a}})}"
+							}
+						],
+						"statement": "Résous l'équation ${{a}}^x={{b}}$. Donne la valeur exacte.\n\n$x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|3|5|7"
+							},
+							{
+								"name": "b",
+								"expression": "3|5|6|10|11|12|15|20|50"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{a}}^x={{b}}\\iff x\\log({{a}})=\\log({{b}})\\iff x=\\textcolor{{{color:primary.0}}}{\\dfrac{\\log({{b}})}{\\log({{a}})}}$ (environ ${{eval:round(100*x)/100;a2}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+							}
+						],
+						"statement": "Résous l'équation ${{k}}\\times{{a}}^x={{b}}$. Donne une valeur approchée de la solution au centième.\n\n$x\\approx ?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..5"
+							},
+							{
+								"name": "a",
+								"expression": "2|3|5"
+							},
+							{
+								"name": "b",
+								"expression": "30..90"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b/k)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001", "abs(b/k-round(b/k)) > 0.001"],
+						"correction": {
+							"steps": [
+								"On isole d'abord la puissance : ${{a}}^x=\\dfrac{ {{b}} }{ {{k}} }$.",
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"$x=\\dfrac{\\log\\left(\\frac{ {{b}} }{ {{k}} }\\right)}{\\log({{a}})}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+							}
+						],
+						"statement": "Un capital placé à intérêts composés au taux annuel de ${{t}}\\,\\%$ est multiplié par ${{eval:1+t/100;d}}^x$ au bout de $x$ années.\n\nRésous l'équation ${{eval:1+t/100;d}}^x=2$ pour trouver la durée au bout de laquelle le capital a doublé. Donne une valeur approchée au centième.\n\n$x\\approx ?$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "2..8"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(2)/log(1+t/100)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.01"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"$x=\\dfrac{\\log(2)}{\\log({{eval:1+t/100;d}})}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$ : le capital double entre ${{eval:floor(x)}}$ et ${{eval:floor(x)+1}}$ ans."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+							}
+						],
+						"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $x^{ {{a}} }={{b}}$. Donne une valeur approchée de la solution au centième.\n\n$x\\approx ?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "3|4|5"
+							},
+							{
+								"name": "b",
+								"expression": "10..90"
+							},
+							{
+								"name": "x",
+								"expression": "eval:10^(log(b)/a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"$x>0$ et ${{b}}>0$ : on prend le logarithme des deux membres.",
+								"$\\log\\left(x^{ {{a}} }\\right)=\\log({{b}})\\iff {{a}}\\log(x)=\\log({{b}})\\iff \\log(x)=\\dfrac{\\log({{b}})}{ {{a}} }$.",
+								"$x=10^{\\frac{\\log({{b}})}{ {{a}} }}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$ (c'est aussi ${{b}}^{\\frac{1}{ {{a}} }}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 1
+								},
+								"expectedAnswer": "{{eval:round(1000*(x-1))/10;a1}}"
+							}
+						],
+						"statement": "Le prix d'un article a augmenté de ${{p}}\\,\\%$ en ${{n}}$ ans. On cherche le taux d'évolution annuel moyen $t$, tel que $(1+t)^{ {{n}} }={{eval:1+p/100;d}}$.\n\nDonne ce taux en pourcentage, arrondi au dixième.\n\n$t\\approx ?\\,\\%$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "20|30|40|50|60|80"
+							},
+							{
+								"name": "n",
+								"expression": "3..8"
+							},
+							{
+								"name": "x",
+								"expression": "eval:10^(log(1+p/100)/n)"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"On pose $X=1+t>0$ : $X^{ {{n}} }={{eval:1+p/100;d}}\\iff {{n}}\\log(X)=\\log({{eval:1+p/100;d}})$.",
+								"$X=10^{\\frac{\\log({{eval:1+p/100;d}})}{ {{n}} }}\\approx{{eval:round(10000*x)/10000;a4}}$, donc $t\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(1000*(x-1))/10;a1}}}\\,\\%$ par an.",
+								"Ce n'est pas ${{p}}\\div{{n}}$ : les hausses successives se multiplient."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\log(7)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "10^x = 7 : x = log 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\log 7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "log 7 sans parenthèses",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\dfrac{7}{10}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "Erreur : 7/10",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\dfrac{\\log(5)}{\\log(2)}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "2^x = 5 : log 5 / log 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\log 5}{\\log 2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "2^x = 5 : \\frac sans parenthèses",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2,32"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : valeur approchée 2,32 (exacte demandée)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\log\\left(\\dfrac{5}{2}\\right)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : log(5/2)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\dfrac{5}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : 5/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4,06"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "50",
+							"k": "3"
+						},
+						"description": "3 × 2^x = 50 : 4,06",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2,18"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "50",
+							"k": "3"
+						},
+						"description": "Erreur : log(50)/log(6) ≈ 2,18",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["17,67"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "4"
+						},
+						"description": "1,04^x = 2 : 17,67",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1,92"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "4"
+						},
+						"description": "Erreur : 2/1,04 ≈ 1,92",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2,71"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "x^3 = 20 : 2,71",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["6,67"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "Erreur : 20/3 ≈ 6,67",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["8,4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"p": "50"
+						},
+						"description": "+50 % en 5 ans : 8,4 %",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"p": "50"
+						},
+						"description": "Erreur : 50/5 = 10",
+						"variationIndex": 5
+					}
+				],
+				"description": "10ˣ = b ; aˣ = b en valeur exacte ; k·aˣ = b au centième ; capital doublé (durée réelle) ; xᵃ = b, x > 0 ; taux d'évolution annuel moyen"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\log({{b}})"
+							}
+						],
+						"statement": "Résous l'équation $10^x={{b}}$. Donne la valeur exacte.\n\n$x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "2|3|5|7|15|40|0.3"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $10^x=b$ a une unique solution : $x=\\log(b)$.",
+								"$10^x={{eval:b;d}}\\iff x=\\textcolor{{{color:primary.0}}}{\\log({{eval:b;d}})}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{\\log({{b}})}{\\log({{a}})}"
+							}
+						],
+						"statement": "Résous l'équation ${{a}}^x={{b}}$. Donne la valeur exacte.\n\n$x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|3|5|7"
+							},
+							{
+								"name": "b",
+								"expression": "3|5|6|10|11|12|15|20|50"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{a}}^x={{b}}\\iff x\\log({{a}})=\\log({{b}})\\iff x=\\textcolor{{{color:primary.0}}}{\\dfrac{\\log({{b}})}{\\log({{a}})}}$ (environ ${{eval:round(100*x)/100;a2}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+							}
+						],
+						"statement": "Résous l'équation ${{k}}\\times{{a}}^x={{b}}$. Donne une valeur approchée de la solution au centième.\n\n$x\\approx ?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..5"
+							},
+							{
+								"name": "a",
+								"expression": "2|3|5"
+							},
+							{
+								"name": "b",
+								"expression": "30..90"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(b/k)/log(a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001", "abs(b/k-round(b/k)) > 0.001"],
+						"correction": {
+							"steps": [
+								"On isole d'abord la puissance : ${{a}}^x=\\dfrac{ {{b}} }{ {{k}} }$.",
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"$x=\\dfrac{\\log\\left(\\frac{ {{b}} }{ {{k}} }\\right)}{\\log({{a}})}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+							}
+						],
+						"statement": "Un capital placé à intérêts composés au taux annuel de ${{t}}\\,\\%$ est multiplié par ${{eval:1+t/100;d}}^x$ au bout de $x$ années.\n\nRésous l'équation ${{eval:1+t/100;d}}^x=2$ pour trouver la durée au bout de laquelle le capital a doublé. Donne une valeur approchée au centième.\n\n$x\\approx ?$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "2..8"
+							},
+							{
+								"name": "x",
+								"expression": "eval:log(2)/log(1+t/100)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.01"],
+						"correction": {
+							"steps": [
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"$x=\\dfrac{\\log(2)}{\\log({{eval:1+t/100;d}})}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$ : le capital double entre ${{eval:floor(x)}}$ et ${{eval:floor(x)+1}}$ ans."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+							}
+						],
+						"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $x^{ {{a}} }={{b}}$. Donne une valeur approchée de la solution au centième.\n\n$x\\approx ?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "3|4|5"
+							},
+							{
+								"name": "b",
+								"expression": "10..90"
+							},
+							{
+								"name": "x",
+								"expression": "eval:10^(log(b)/a)"
+							}
+						],
+						"conditions": ["abs(x-round(x)) > 0.001"],
+						"correction": {
+							"steps": [
+								"$x>0$ et ${{b}}>0$ : on prend le logarithme des deux membres.",
+								"$\\log\\left(x^{ {{a}} }\\right)=\\log({{b}})\\iff {{a}}\\log(x)=\\log({{b}})\\iff \\log(x)=\\dfrac{\\log({{b}})}{ {{a}} }$.",
+								"$x=10^{\\frac{\\log({{b}})}{ {{a}} }}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$ (c'est aussi ${{b}}^{\\frac{1}{ {{a}} }}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 1
+								},
+								"expectedAnswer": "{{eval:round(1000*(x-1))/10;a1}}"
+							}
+						],
+						"statement": "Le prix d'un article a augmenté de ${{p}}\\,\\%$ en ${{n}}$ ans. On cherche le taux d'évolution annuel moyen $t$, tel que $(1+t)^{ {{n}} }={{eval:1+p/100;d}}$.\n\nDonne ce taux en pourcentage, arrondi au dixième.\n\n$t\\approx ?\\,\\%$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "20|30|40|50|60|80"
+							},
+							{
+								"name": "n",
+								"expression": "3..8"
+							},
+							{
+								"name": "x",
+								"expression": "eval:10^(log(1+p/100)/n)"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"On pose $X=1+t>0$ : $X^{ {{n}} }={{eval:1+p/100;d}}\\iff {{n}}\\log(X)=\\log({{eval:1+p/100;d}})$.",
+								"$X=10^{\\frac{\\log({{eval:1+p/100;d}})}{ {{n}} }}\\approx{{eval:round(10000*x)/10000;a4}}$, donc $t\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(1000*(x-1))/10;a1}}}\\,\\%$ par an.",
+								"Ce n'est pas ${{p}}\\div{{n}}$ : les hausses successives se multiplient."
+							]
+						}
+					},
+					{
+						"statement": "Résous dans $\\mathbb{R}$, sans calculatrice, l'équation ${{eval:c^p;d}}^x={{eval:c^q;d}}$. Donne la valeur exacte, sous la forme d'un entier ou d'une fraction simplifiée.\n\n$x=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "2|3|5"
+							},
+							{
+								"name": "p",
+								"expression": "-3|-2|-1|2|3|4|5"
+							},
+							{
+								"name": "q",
+								"expression": "-3..5"
+							}
+						],
+						"conditions": [
+							"q != 0",
+							"abs(q) != abs(p)",
+							"c != 3 || p > 0",
+							"c != 3 || q > 0",
+							"c^p <= 625",
+							"c^q <= 625"
+						],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:q/p}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:p/q}}",
+										"message": "${{if:p==1||{{if:p==-1|-|{{p}}}}}}x={{q}}$ : on divise ${{q}}$ par ${{p}}$, pas l'inverse.",
+										"label": "Fraction renversée"
+									},
+									{
+										"answer": "{{eval:-q/p}}",
+										"message": "Écris ${{eval:c^p;d}}={{c}}^{ {{p}} }$ et ${{eval:c^q;d}}={{c}}^{ {{q}} }$ : vérifie le signe des exposants.",
+										"label": "Signe"
+									},
+									{
+										"answer": "{{eval:c^q/c^p}}",
+										"message": "On ne divise pas ${{eval:c^q;d}}$ par ${{eval:c^p;d}}$ : écris les deux nombres comme des puissances de ${{c}}$.",
+										"label": "b/a"
+									}
+								],
+								"acceptDecimal": true
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:c^p;d}}={{c}}^{ {{p}} }$ et ${{eval:c^q;d}}={{c}}^{ {{q}} }$ : l'équation s'écrit $\\left({{c}}^{ {{p}} }\\right)^x={{c}}^{ {{q}} }$, soit ${{c}}^{ {{if:p==1||{{if:p==-1|-|{{p}}}}}}x}={{c}}^{ {{q}} }$.",
+								"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+								"${{if:p==1||{{if:p==-1|-|{{p}}}}}}x\\log({{c}})={{if:q==1||{{if:q==-1|-|{{q}}}}}}\\log({{c}})$, et $\\log({{c}})\\neq 0$ : ${{if:p==1||{{if:p==-1|-|{{p}}}}}}x={{q}}$, donc $x=\\textcolor{{{color:primary.0}}}{ {{eval:q/p}} }$."
+							]
+						},
+						"hint": "Écris les deux nombres comme des puissances d'un même entier."
+					},
+					{
+						"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $x^{ {{a}} }={{b}}$. Donne la valeur exacte : un entier si c'est possible, sinon une puissance de ${{b}}$.\n\n$x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "3..9"
+							},
+							{
+								"name": "w",
+								"expression": "0|0|1"
+							},
+							{
+								"name": "c",
+								"expression": "2|3"
+							},
+							{
+								"name": "r",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:w*c^a+(1-w)*r"
+							}
+						],
+						"conditions": [
+							"w + abs(r-a) > 0",
+							"w*c^a <= 1000",
+							"w + abs(r^(1/a)-round(r^(1/a))) > 0.001"
+						],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:w==1|{{c}}|{{b}}^{\\frac{1}{ {{a}} }}}}",
+								"expectedErrors": [
+									{
+										"answer": "\\frac{ {{b}} }{ {{a}} }",
+										"message": "$x^{ {{a}} }$ n'est pas ${{a}}x$ : on ne divise pas par ${{a}}$.",
+										"label": "b/a"
+									},
+									{
+										"answer": "{{b}}^{ {{a}} }",
+										"message": "Pour défaire la puissance ${{a}}$, on élève à la puissance $\\dfrac{1}{ {{a}} }$, pas à la puissance ${{a}}$.",
+										"label": "b puissance a"
+									},
+									{
+										"answer": "\\frac{\\log({{b}})}{ {{a}} }",
+										"message": "$\\dfrac{\\log({{b}})}{ {{a}} }$ est la valeur de $\\log(x)$, pas de $x$ : il reste à calculer $x=10^{\\log(x)}$.",
+										"label": "log(x) au lieu de x"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$x>0$ et ${{b}}>0$ : on prend le logarithme des deux membres.",
+								"${{a}}\\log(x)=\\log({{b}})\\iff\\log(x)=\\dfrac{\\log({{b}})}{ {{a}} }$, donc $x=10^{\\frac{\\log({{b}})}{ {{a}} }}={{b}}^{\\frac{1}{ {{a}} }}$.",
+								"{{if:w==1|Or ${{b}}={{c}}^{ {{a}} }$ : $x=\\textcolor{{{color:primary.0}}}{ {{c}} }$.|$x=\\textcolor{{{color:primary.0}}}{ {{b}}^{\\frac{1}{ {{a}} }} }$ (environ ${{eval:round(100*b^(1/a))/100;a2}}$).}}"
+							]
+						},
+						"hint": "Élève les deux membres à la puissance $\\dfrac{1}{ {{a}} }$, ou prends leur logarithme."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\log(7)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "10^x = 7 : x = log 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\log 7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "log 7 sans parenthèses",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\dfrac{7}{10}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "Erreur : 7/10",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\dfrac{\\log(5)}{\\log(2)}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "2^x = 5 : log 5 / log 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\log 5}{\\log 2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "2^x = 5 : \\frac sans parenthèses",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2,32"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : valeur approchée 2,32 (exacte demandée)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\log\\left(\\dfrac{5}{2}\\right)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : log(5/2)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\dfrac{5}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "5"
+						},
+						"description": "Erreur : 5/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4,06"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "50",
+							"k": "3"
+						},
+						"description": "3 × 2^x = 50 : 4,06",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2,18"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "50",
+							"k": "3"
+						},
+						"description": "Erreur : log(50)/log(6) ≈ 2,18",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["17,67"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "4"
+						},
+						"description": "1,04^x = 2 : 17,67",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1,92"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "4"
+						},
+						"description": "Erreur : 2/1,04 ≈ 1,92",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2,71"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "x^3 = 20 : 2,71",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["6,67"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "20"
+						},
+						"description": "Erreur : 20/3 ≈ 6,67",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["8,4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"p": "50"
+						},
+						"description": "+50 % en 5 ans : 8,4 %",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"p": "50"
+						},
+						"description": "Erreur : 50/5 = 10",
+						"variationIndex": 5
+					},
+					{
+						"description": "F1 : 0,25ˣ = 32 → −5/2",
+						"variationIndex": 6,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\frac{5}{2}"]
+					},
+					{
+						"description": "F1 : −2,5",
+						"variationIndex": 6,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-2.5"]
+					},
+					{
+						"description": "F1 : fraction renversée",
+						"variationIndex": 6,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$-2 x = 5$ : on divise $5$ par $-2$, pas l'inverse."
+						},
+						"answers": ["-\\frac{2}{5}"]
+					},
+					{
+						"description": "F1 : signe",
+						"variationIndex": 6,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Écris $0.25 = 2^{-2}$ et $32 = 2^5$ : vérifie le signe des exposants."
+						},
+						"answers": ["\\frac{5}{2}"]
+					},
+					{
+						"description": "F1 : b/a",
+						"variationIndex": 6,
+						"variables": {
+							"c": "2",
+							"p": "-2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "On ne divise pas $32$ par $0.25$ : écris les deux nombres comme des puissances de $2$."
+						},
+						"answers": ["128"]
+					},
+					{
+						"description": "F1 : 8ˣ = 4 → 2/3",
+						"variationIndex": 6,
+						"variables": {
+							"c": "2",
+							"p": "3",
+							"q": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{2}{3}"]
+					},
+					{
+						"description": "F1 : 8ˣ = 4, inverse",
+						"variationIndex": 6,
+						"variables": {
+							"c": "2",
+							"p": "3",
+							"q": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["\\frac{3}{2}"]
+					},
+					{
+						"description": "F6 : x³ = 5",
+						"variationIndex": 7,
+						"variables": {
+							"a": "3",
+							"w": "0",
+							"c": "2",
+							"r": "5",
+							"b": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["5^{\\frac{1}{3}}"]
+					},
+					{
+						"description": "F6 : racine cubique (la consigne demande une puissance)",
+						"variationIndex": 7,
+						"variables": {
+							"a": "3",
+							"w": "0",
+							"c": "2",
+							"r": "5",
+							"b": "5"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["\\sqrt[3]{5}"]
+					},
+					{
+						"description": "F6 : b/a",
+						"variationIndex": 7,
+						"variables": {
+							"a": "3",
+							"w": "0",
+							"c": "2",
+							"r": "5",
+							"b": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$x^3$ n'est pas $3 x$ : on ne divise pas par $3$."
+						},
+						"answers": ["\\frac{5}{3}"]
+					},
+					{
+						"description": "F6 : b puissance a",
+						"variationIndex": 7,
+						"variables": {
+							"a": "3",
+							"w": "0",
+							"c": "2",
+							"r": "5",
+							"b": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Pour défaire la puissance $3$, on élève à la puissance $\\dfrac{1}{3}$, pas à la puissance $3$."
+						},
+						"answers": ["5^{3}"]
+					},
+					{
+						"description": "F6 : log(x)",
+						"variationIndex": 7,
+						"variables": {
+							"a": "3",
+							"w": "0",
+							"c": "2",
+							"r": "5",
+							"b": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : il reste à calculer $x=10^{\\log(x)}$."
+						},
+						"answers": ["\\frac{\\log(5)}{3}"]
+					},
+					{
+						"description": "F6 : x³ = 27 → 3",
+						"variationIndex": 7,
+						"variables": {
+							"a": "3",
+							"w": "1",
+							"c": "3",
+							"r": "2",
+							"b": "27"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F6 : x³ = 27, b/a",
+						"variationIndex": 7,
+						"variables": {
+							"a": "3",
+							"w": "1",
+							"c": "3",
+							"r": "2",
+							"b": "27"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["9"]
+					}
+				],
+				"description": "10ˣ = b ; aˣ = b en valeur exacte ; k·aˣ = b au centième ; capital doublé (durée réelle) ; xᵃ = b, x > 0 ; taux d'évolution annuel moyen"
+			},
+			"changements": {
+				"ajoutees": [7, 8],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "94b1dbf6-b870-4430-8ea1-31830630449d",
+			"title": "Courbe de x ↦ a^x sur ℝ",
+			"fichier": "94b1dbf6.json",
+			"avant": {
+				"variations": [
+					{
+						"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[-3\\,;3]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1.2|1.5"
+							},
+							{
+								"name": "a2",
+								"expression": "2|2.5"
+							},
+							{
+								"name": "a3",
+								"expression": "0.5|0.6|0.8"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+								"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante, la moins rapide.",
+								"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, croissante, la plus rapide.",
+								"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante : elle monte quand $x$ diminue."
+							]
+						}
+					},
+					{
+						"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[-3\\,;3]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+						"variables": [
+							{
+								"name": "a3",
+								"expression": "0.5|0.25"
+							},
+							{
+								"name": "a2",
+								"expression": "1"
+							},
+							{
+								"name": "a1",
+								"expression": "eval:1/a3"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+								"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante.",
+								"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, constante : la droite horizontale d'équation $y=1$.",
+								"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante. Les courbes de $x\\mapsto{{a1}}^x$ et de $x\\mapsto{{a3}}^x$ sont symétriques par rapport à l'axe des ordonnées, car ${{a3}}^x=\\dfrac{1}{ {{a1}}^x}={{a1}}^{-x}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{1}{ {{a}} }"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nQuelle est l'ordonnée du point de sa courbe d'abscisse $-1$ ? Donne la valeur exacte.\n\n$f(-1)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|4|5|10"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et tout réel $x$ : $a^{-x}=\\dfrac{1}{a^x}$.",
+								"$f(-1)={{a}}^{-1}=\\dfrac{1}{ {{a}} }$ : le point $\\textcolor{{{color:primary.0}}}{\\left(-1\\,;\\dfrac{1}{ {{a}} }\\right)}$ est sur la courbe, sous la droite d'équation $y=1$ (la fonction est croissante)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$. Que peut-on dire de sa courbe représentative ?\n\n```choix\nmelanger: non\n- Elle est entièrement au-dessus de l'axe des abscisses.\n- Elle passe sous l'axe des abscisses pour $x<0$.\n- Elle passe par l'origine du repère.\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1.5|2|3|0.5|0.8"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $a>0$, $a^x>0$ pour **tout** réel $x$, même négatif : $a^{-x}=\\dfrac{1}{a^x}$ est l'inverse d'un nombre positif.",
+								"Elle passe par $(0\\,;1)$, pas par l'origine : la courbe est $\\textcolor{{{color:primary.0}}}{\\text{entièrement au-dessus de l'axe des abscisses}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2", "0", "1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "1.5",
+							"a2": "2",
+							"a3": "0.5"
+						},
+						"description": "Courbes bien reliées",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0", "2", "1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "1.5",
+							"a2": "2",
+							"a3": "0.5"
+						},
+						"description": "Erreur : courbes 1 et 2 échangées",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2", "0", "1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "2",
+							"a2": "1",
+							"a3": "0.5"
+						},
+						"description": "2^x, 1^x, 0,5^x bien reliées",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1", "0", "2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "2",
+							"a2": "1",
+							"a3": "0.5"
+						},
+						"description": "Erreur : 2^x et 0,5^x échangées",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "f(−1) = 1/2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "f(−1) = 0,5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : −2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : −1/2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Au-dessus de l'axe",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : sous l'axe pour x < 0",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : par l'origine",
+						"variationIndex": 3
+					}
+				],
+				"description": "Associer trois courbes sur [−3 ; 3] ; courbes de a^x et (1/a)^x ; point d'abscisse −1 ; courbe au-dessus de l'axe des abscisses"
+			},
+			"apres": {
+				"variations": [
+					{
+						"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[-3\\,;3]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1.2|1.5"
+							},
+							{
+								"name": "a2",
+								"expression": "2|2.5"
+							},
+							{
+								"name": "a3",
+								"expression": "0.5|0.6|0.8"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+								"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante, la moins rapide.",
+								"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, croissante, la plus rapide.",
+								"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante : elle monte quand $x$ diminue."
+							]
+						}
+					},
+					{
+						"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[-3\\,;3]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+						"variables": [
+							{
+								"name": "a3",
+								"expression": "0.5|0.25"
+							},
+							{
+								"name": "a2",
+								"expression": "1"
+							},
+							{
+								"name": "a1",
+								"expression": "eval:1/a3"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+								"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante.",
+								"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, constante : la droite horizontale d'équation $y=1$.",
+								"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante. Les courbes de $x\\mapsto{{a1}}^x$ et de $x\\mapsto{{a3}}^x$ sont symétriques par rapport à l'axe des ordonnées, car ${{a3}}^x=\\dfrac{1}{ {{a1}}^x}={{a1}}^{-x}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{1}{ {{a}} }"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nQuelle est l'ordonnée du point de sa courbe d'abscisse $-1$ ? Donne la valeur exacte.\n\n$f(-1)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|4|5|10"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et tout réel $x$ : $a^{-x}=\\dfrac{1}{a^x}$.",
+								"$f(-1)={{a}}^{-1}=\\dfrac{1}{ {{a}} }$ : le point $\\textcolor{{{color:primary.0}}}{\\left(-1\\,;\\dfrac{1}{ {{a}} }\\right)}$ est sur la courbe, sous la droite d'équation $y=1$ (la fonction est croissante)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$. Que peut-on dire de sa courbe représentative ?\n\n```choix\nmelanger: non\n- Elle est entièrement au-dessus de l'axe des abscisses.\n- Elle passe sous l'axe des abscisses pour $x<0$.\n- Elle passe par l'origine du repère.\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1.5|2|3|0.5|0.8"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $a>0$, $a^x>0$ pour **tout** réel $x$, même négatif : $a^{-x}=\\dfrac{1}{a^x}$ est l'inverse d'un nombre positif.",
+								"Elle passe par $(0\\,;1)$, pas par l'origine : la courbe est $\\textcolor{{{color:primary.0}}}{\\text{entièrement au-dessus de l'axe des abscisses}}$."
+							]
+						}
+					},
+					{
+						"statement": "La courbe ci-dessous représente une fonction $f:x\\mapsto a^x$, avec $a>0$. Elle passe par le point $A({{xA}}\\,;{{y}})$.\n\n```courbe\nx: -3.5 ; 3.5\ny: -0.5 ; 10.5\ngrille: 1 ; 1\nf(x) = {{if:sg==1|{{n}}^x|(1/{{n}})^x}} sur [-3 ; 3]   bleu\npoints: A({{xA}} ; {{y}})\ndescription: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A({{xA}} ; {{y}}).\n```\n\nDétermine $a$. Donne la valeur exacte.\n\n$a=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1|2"
+							},
+							{
+								"name": "sg",
+								"expression": "1|-1"
+							},
+							{
+								"name": "n",
+								"expression": "2..5"
+							},
+							{
+								"name": "xA",
+								"expression": "eval:sg*k"
+							},
+							{
+								"name": "y",
+								"expression": "eval:n^k"
+							}
+						],
+						"conditions": ["n^k <= 9"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:sg==1|{{n}}|\\frac{1}{ {{n}} }}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:sg==1|\\frac{1}{ {{n}} }|{{n}}}}",
+										"message": "$a^{ {{xA}} }={{y}}$ : {{if:sg==1|l'exposant est positif, $a$ est plus grand que $1$.|l'exposant est négatif, $a^{ {{xA}} }=\\dfrac{1}{{{if:k==1|a|a^{2}}}}$ : $a$ est plus petit que $1$.}}",
+										"label": "Inverse"
+									},
+									{
+										"answer": "{{if:k==2|{{y}}|{{eval:-y}}}}",
+										"message": "{{if:k==2|$a^{ {{xA}} }={{y}}$ : l'exposant est ${{xA}}$, il faut encore défaire la puissance.|$a>0$ : la base d'une fonction $x\\mapsto a^x$ est strictement positive.}}",
+										"label": "{{if:k==2|Ordonnée de A|Base négative}}"
+									},
+									{
+										"answer": "{{if:k==2|\\frac{ {{y}} }{2}|{{eval:-y}}}}",
+										"message": "{{if:k==2|$a^{2}$ n'est pas $2a$ : on prend la racine carrée, on ne divise pas par $2$.|$a>0$ : la base d'une fonction $x\\mapsto a^x$ est strictement positive.}}",
+										"label": "{{if:k==2|Divisé par 2|Base négative}}"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le point $A({{xA}}\\,;{{y}})$ est sur la courbe : $f({{xA}})={{y}}$, soit $a^{ {{xA}} }={{y}}$.",
+								"{{if:sg==1|{{if:k==1|$a={{y}}$.|$a^{2}={{y}}$ et $a>0$, donc $a=\\sqrt{ {{y}} }={{n}}$.}}|{{if:k==1|$a^{-1}=\\dfrac{1}{a}={{y}}$, donc $a=\\dfrac{1}{ {{y}} }$.|$a^{-2}=\\dfrac{1}{a^{2}}={{y}}$, donc $a^{2}=\\dfrac{1}{ {{y}} }$ et, comme $a>0$, $a=\\dfrac{1}{ {{n}} }$.}}}}",
+								"La fonction est $f:x\\mapsto{{if:sg==1|{{n}}^x|\\left(\\frac{1}{ {{n}} }\\right)^x}}$ : $a=\\textcolor{{{color:primary.0}}}{{{if:sg==1|{{n}}|\\frac{1}{ {{n}} }}}}$."
+							]
+						},
+						"hint": "Le point $A$ donne $f({{xA}})={{y}}$, donc $a^{ {{xA}} }={{y}}$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2", "0", "1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "1.5",
+							"a2": "2",
+							"a3": "0.5"
+						},
+						"description": "Courbes bien reliées",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0", "2", "1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "1.5",
+							"a2": "2",
+							"a3": "0.5"
+						},
+						"description": "Erreur : courbes 1 et 2 échangées",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2", "0", "1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "2",
+							"a2": "1",
+							"a3": "0.5"
+						},
+						"description": "2^x, 1^x, 0,5^x bien reliées",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1", "0", "2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "2",
+							"a2": "1",
+							"a3": "0.5"
+						},
+						"description": "Erreur : 2^x et 0,5^x échangées",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "f(−1) = 1/2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "f(−1) = 0,5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : −2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : −1/2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Au-dessus de l'axe",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : sous l'axe pour x < 0",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : par l'origine",
+						"variationIndex": 3
+					},
+					{
+						"description": "F8 : A(2 ; 9) → a = 3",
+						"variationIndex": 4,
+						"variables": {
+							"k": "2",
+							"sg": "1",
+							"n": "3",
+							"xA": "2",
+							"y": "9"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F8 : A(2 ; 9), ordonnée",
+						"variationIndex": 4,
+						"variables": {
+							"k": "2",
+							"sg": "1",
+							"n": "3",
+							"xA": "2",
+							"y": "9"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$a^2 = 9$ : l'exposant est $2$, il faut encore défaire la puissance."
+						},
+						"answers": ["9"]
+					},
+					{
+						"description": "F8 : A(2 ; 9), divisé par 2",
+						"variationIndex": 4,
+						"variables": {
+							"k": "2",
+							"sg": "1",
+							"n": "3",
+							"xA": "2",
+							"y": "9"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$a^2$ n'est pas $2 a$ : on prend la racine carrée, on ne divise pas par $2$."
+						},
+						"answers": ["\\frac{9}{2}"]
+					},
+					{
+						"description": "F8 : A(2 ; 9), inverse",
+						"variationIndex": 4,
+						"variables": {
+							"k": "2",
+							"sg": "1",
+							"n": "3",
+							"xA": "2",
+							"y": "9"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$a^2 = 9$ : l'exposant est positif, $a$ est plus grand que $1$."
+						},
+						"answers": ["\\frac{1}{3}"]
+					},
+					{
+						"description": "F8 : A(−1 ; 4) → a = 1/4",
+						"variationIndex": 4,
+						"variables": {
+							"k": "1",
+							"sg": "-1",
+							"n": "4",
+							"xA": "-1",
+							"y": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{1}{4}"]
+					},
+					{
+						"description": "F8 : A(−1 ; 4) → 0,25",
+						"variationIndex": 4,
+						"variables": {
+							"k": "1",
+							"sg": "-1",
+							"n": "4",
+							"xA": "-1",
+							"y": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,25"]
+					},
+					{
+						"description": "F8 : A(−1 ; 4), ordonnée (inverse)",
+						"variationIndex": 4,
+						"variables": {
+							"k": "1",
+							"sg": "-1",
+							"n": "4",
+							"xA": "-1",
+							"y": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$a^{-1} = 4$ : l'exposant est négatif, $a^{ -1 }=\\dfrac{1}{a}$ : $a$ est plus petit que $1$."
+						},
+						"answers": ["4"]
+					},
+					{
+						"description": "F8 : A(−1 ; 4), base négative",
+						"variationIndex": 4,
+						"variables": {
+							"k": "1",
+							"sg": "-1",
+							"n": "4",
+							"xA": "-1",
+							"y": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$a > 0$ : la base d'une fonction $x\\mapsto a^x$ est strictement positive."
+						},
+						"answers": ["-4"]
+					}
+				],
+				"description": "Associer trois courbes sur [−3 ; 3] ; courbes de a^x et (1/a)^x ; point d'abscisse −1 ; courbe au-dessus de l'axe des abscisses"
+			},
+			"changements": {
+				"ajoutees": [5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "af24839d-880d-46a5-a909-a3ef9283340c",
+			"title": "Transformer des expressions avec le logarithme décimal",
+			"fichier": "af24839d.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{p}}"
+							},
+							{
+								"expectedAnswer": "{{q}}"
+							}
+						],
+						"statement": "Écris $\\log({{eval:2^p*3^q}})$ en fonction de $\\log(2)$ et $\\log(3)$.\n\n$\\log({{eval:2^p*3^q}})=?\\log(2)+?\\log(3)$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "1..4"
+							},
+							{
+								"name": "q",
+								"expression": "1..3"
+							}
+						],
+						"conditions": ["p+q >= 3"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$. Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+								"${{eval:2^p*3^q}}={{if:p==1|2|2^{ {{p}} }}}\\times{{if:q==1|3|3^{ {{q}} }}}$, donc $\\log({{eval:2^p*3^q}})=\\log\\left({{if:p==1|2|2^{ {{p}} }}}\\right)+\\log\\left({{if:q==1|3|3^{ {{q}} }}}\\right)=\\textcolor{{{color:primary.0}}}{{{p}}}\\log(2)+\\textcolor{{{color:primary.0}}}{{{q}}}\\log(3)$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:m*b}}"
+							}
+						],
+						"statement": "Écris $A=\\log({{a}})+\\log({{b}})-\\log({{c}})$ sous la forme $\\log(n)$, avec $n$ entier.\n\n$A=\\log(?)$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "2..5"
+							},
+							{
+								"name": "m",
+								"expression": "2..5"
+							},
+							{
+								"name": "a",
+								"expression": "{{eval:c*m}}"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							}
+						],
+						"conditions": ["m*b != a+b-c"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$. Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$.",
+								"$A=\\log\\left(\\dfrac{ {{a}}\\times{{b}} }{ {{c}} }\\right)=\\log(\\textcolor{{{color:primary.0}}}{{{eval:m*b}}})$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{k}}"
+							}
+						],
+						"statement": "Pour tout réel $x>0$, complète.\n\n$\\log({{eval:10^k}}x)=?+\\log(x)$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..4"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$.",
+								"$\\log({{eval:10^k}}x)=\\log({{eval:10^k}})+\\log(x)=\\textcolor{{{color:primary.0}}}{{{k}}}+\\log(x)$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n+m}}"
+							}
+						],
+						"statement": "Pour tout réel $x>0$, écris $\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)$ sous la forme $k\\log(x)$.\n\n$\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)=?\\log(x)$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "2..5"
+							},
+							{
+								"name": "m",
+								"expression": "2..5"
+							}
+						],
+						"conditions": ["n*m != n+m"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+								"$\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)={{n}}\\log(x)+{{m}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{eval:n+m}}}\\log(x)$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{k}}"
+							},
+							{
+								"expectedAnswer": "{{n}}"
+							}
+						],
+						"statement": "Pour tout réel $x>0$, complète.\n\n$\\log\\left(\\dfrac{ {{eval:10^k}} }{x^{ {{n}} }}\\right)=?-?\\log(x)$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "n",
+								"expression": "2..4"
+							}
+						],
+						"conditions": ["k != n"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$. Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+								"$\\log\\left(\\dfrac{ {{eval:10^k}} }{x^{ {{n}} }}\\right)=\\log({{eval:10^k}})-\\log\\left(x^{ {{n}} }\\right)=\\textcolor{{{color:primary.0}}}{{{k}}}-\\textcolor{{{color:primary.0}}}{{{n}}}\\log(x)$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3", "2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "3",
+							"q": "2"
+						},
+						"description": "log 72 = 3 log 2 + 2 log 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2", "3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "3",
+							"q": "2"
+						},
+						"description": "Erreur : cases échangées",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "15",
+							"b": "4",
+							"c": "5",
+							"m": "3"
+						},
+						"description": "log 15 + log 4 − log 5 = log 12",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["14"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "15",
+							"b": "4",
+							"c": "5",
+							"m": "3"
+						},
+						"description": "Erreur : log 14 (somme et différence)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2"
+						},
+						"description": "log(100x) = 2 + log x",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["100"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2"
+						},
+						"description": "Erreur : 100",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "3",
+							"n": "2"
+						},
+						"description": "log x² + log x³ = 5 log x",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "3",
+							"n": "2"
+						},
+						"description": "Erreur : 6 (exposants multipliés)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["3", "2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "log(1000/x²) = 3 − 2 log x",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["1000", "2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "Erreur : 1000 et 2",
+						"variationIndex": 4
+					}
+				],
+				"description": "log(2ᵖ3^q) en fonction de log 2 et log 3 ; log a + log b − log c = log n ; expressions littérales : log(10ᵏx), log(xⁿ) + log(xᵐ), log(10ᵏ/xⁿ)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{p}}"
+							},
+							{
+								"expectedAnswer": "{{q}}"
+							}
+						],
+						"statement": "Écris $\\log({{eval:2^p*3^q}})$ en fonction de $\\log(2)$ et $\\log(3)$.\n\n$\\log({{eval:2^p*3^q}})=?\\log(2)+?\\log(3)$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "1..4"
+							},
+							{
+								"name": "q",
+								"expression": "1..3"
+							}
+						],
+						"conditions": ["p+q >= 3"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$. Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+								"${{eval:2^p*3^q}}={{if:p==1|2|2^{ {{p}} }}}\\times{{if:q==1|3|3^{ {{q}} }}}$, donc $\\log({{eval:2^p*3^q}})=\\log\\left({{if:p==1|2|2^{ {{p}} }}}\\right)+\\log\\left({{if:q==1|3|3^{ {{q}} }}}\\right)=\\textcolor{{{color:primary.0}}}{{{p}}}\\log(2)+\\textcolor{{{color:primary.0}}}{{{q}}}\\log(3)$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:m*b}}"
+							}
+						],
+						"statement": "Écris $A=\\log({{a}})+\\log({{b}})-\\log({{c}})$ sous la forme $\\log(n)$, avec $n$ entier.\n\n$A=\\log(?)$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "2..5"
+							},
+							{
+								"name": "m",
+								"expression": "2..5"
+							},
+							{
+								"name": "a",
+								"expression": "{{eval:c*m}}"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							}
+						],
+						"conditions": ["m*b != a+b-c"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$. Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$.",
+								"$A=\\log\\left(\\dfrac{ {{a}}\\times{{b}} }{ {{c}} }\\right)=\\log(\\textcolor{{{color:primary.0}}}{{{eval:m*b}}})$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{k}}"
+							}
+						],
+						"statement": "Pour tout réel $x>0$, complète.\n\n$\\log({{eval:10^k}}x)=?+\\log(x)$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..4"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$.",
+								"$\\log({{eval:10^k}}x)=\\log({{eval:10^k}})+\\log(x)=\\textcolor{{{color:primary.0}}}{{{k}}}+\\log(x)$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n+m}}"
+							}
+						],
+						"statement": "Pour tout réel $x>0$, écris $\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)$ sous la forme $k\\log(x)$.\n\n$\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)=?\\log(x)$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "2..5"
+							},
+							{
+								"name": "m",
+								"expression": "2..5"
+							}
+						],
+						"conditions": ["n*m != n+m"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+								"$\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)={{n}}\\log(x)+{{m}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{eval:n+m}}}\\log(x)$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{k}}"
+							},
+							{
+								"expectedAnswer": "{{n}}"
+							}
+						],
+						"statement": "Pour tout réel $x>0$, complète.\n\n$\\log\\left(\\dfrac{ {{eval:10^k}} }{x^{ {{n}} }}\\right)=?-?\\log(x)$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "n",
+								"expression": "2..4"
+							}
+						],
+						"conditions": ["k != n"],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$. Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+								"$\\log\\left(\\dfrac{ {{eval:10^k}} }{x^{ {{n}} }}\\right)=\\log({{eval:10^k}})-\\log\\left(x^{ {{n}} }\\right)=\\textcolor{{{color:primary.0}}}{{{k}}}-\\textcolor{{{color:primary.0}}}{{{n}}}\\log(x)$."
+							]
+						}
+					},
+					{
+						"statement": "Écris $\\log\\left({{if:w==1|\\dfrac{ {{a}}^{ {{n}} } }{ {{b}}^{ {{m}} } }|\\dfrac{ {{eval:a^n}} }{ {{eval:b^m}} }}}\\right)$ en fonction de $\\log({{a}})$ et $\\log({{b}})$.\n\n$\\log\\left({{if:w==1|\\dfrac{ {{a}}^{ {{n}} } }{ {{b}}^{ {{m}} } }|\\dfrac{ {{eval:a^n}} }{ {{eval:b^m}} }}}\\right)=?\\log({{a}})+?\\log({{b}})$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2|3|5"
+							},
+							{
+								"name": "b",
+								"expression": "2|3|5"
+							},
+							{
+								"name": "n",
+								"expression": "2..5"
+							},
+							{
+								"name": "m",
+								"expression": "2..5"
+							},
+							{
+								"name": "w",
+								"expression": "0|1"
+							}
+						],
+						"conditions": ["a != b", "n != m", "a^n <= 625", "b^m <= 625"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{n}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a^n}}",
+										"message": "On demande le coefficient devant $\\log({{a}})$ : écris ${{eval:a^n}}$ comme une puissance de ${{a}}$, l'exposant donne le coefficient.",
+										"label": "Nombre au lieu de l'exposant"
+									},
+									{
+										"answer": "{{m}}",
+										"message": "Le coefficient de $\\log({{a}})$ vient du numérateur, ${{a}}^{ {{n}} }$.",
+										"label": "Coefficients échangés"
+									},
+									{
+										"answer": "{{eval:n-m}}",
+										"message": "Chaque logarithme a son coefficient : $\\log({{a}})$ et $\\log({{b}})$ ne se regroupent pas.",
+										"label": "Tout dans une case"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:-m}}",
+								"expectedErrors": [
+									{
+										"answer": "{{m}}",
+										"message": "$\\log\\left(\\dfrac{A}{B}\\right)=\\log(A)-\\log(B)$ : le coefficient de $\\log({{b}})$ est négatif.",
+										"label": "Signe oublié"
+									},
+									{
+										"answer": "{{eval:-b^m}}",
+										"message": "On demande le coefficient devant $\\log({{b}})$ : écris ${{eval:b^m}}$ comme une puissance de ${{b}}$.",
+										"label": "Nombre au lieu de l'exposant"
+									},
+									{
+										"answer": "{{eval:-n}}",
+										"message": "Le coefficient de $\\log({{b}})$ vient du dénominateur, ${{b}}^{ {{m}} }$.",
+										"label": "Coefficients échangés"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$. Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+								"{{if:w==1||${{eval:a^n}}={{a}}^{ {{n}} }$ et ${{eval:b^m}}={{b}}^{ {{m}} }$, donc }}$\\log\\left({{if:w==1|\\dfrac{ {{a}}^{ {{n}} } }{ {{b}}^{ {{m}} } }|\\dfrac{ {{eval:a^n}} }{ {{eval:b^m}} }}}\\right)=\\log\\left({{a}}^{ {{n}} }\\right)-\\log\\left({{b}}^{ {{m}} }\\right)=\\textcolor{{{color:primary.0}}}{ {{n}} }\\log({{a}})\\textcolor{{{color:primary.0}}}{-{{m}}}\\log({{b}})$."
+							]
+						},
+						"hint": "Le logarithme d'un quotient est une différence de logarithmes."
+					},
+					{
+						"statement": "Pour tout réel $x>0$, écris $A={{if:a==1||{{if:a==-1|-|{{a}}}}}}\\log\\left({{if:k==1|x|x^{ {{k}} }}}\\right){{if:b==1|+|{{if:b==-1|-|{{b;+}}}}}}\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right){{if:c==1|+|{{if:c==-1|-|{{c;+}}}}}}\\log\\left({{if:m==1|x|x^{ {{m}} }}}\\right)$ sous la forme $k\\log(x)$.\n\n$A=?\\log(x)$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "j",
+								"expression": "2|3"
+							},
+							{
+								"name": "m",
+								"expression": "1..3"
+							},
+							{
+								"name": "r",
+								"expression": "eval:a*k-b*j+c*m"
+							}
+						],
+						"conditions": ["r != 0", "r != a-b+c", "a*k+b*j+c*m != a-b+c", "a-b+c != a*k-b+c*m"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*k+b*j+c*m}}",
+										"message": "$\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)=-{{j}}\\log(x)$ : ce terme change de signe.",
+										"label": "log(1/x^j) compté positif"
+									},
+									{
+										"answer": "{{eval:a-b+c}}",
+										"message": "$\\log\\left(x^{n}\\right)=n\\log(x)$ : l'exposant devient un coefficient.",
+										"label": "Exposants oubliés"
+									},
+									{
+										"answer": "{{eval:a*k-b+c*m}}",
+										"message": "$\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)=-{{j}}\\log(x)$, pas $-\\log(x)$ : l'exposant ${{j}}$ compte aussi.",
+										"label": "Exposant j oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour $x>0$ : $\\log\\left(x^n\\right)=n\\log(x)$ et $\\log\\left(\\dfrac{1}{x^n}\\right)=-n\\log(x)$.",
+								"$A={{eval:a*k}}\\log(x){{eval:-b*j;+}}\\log(x){{eval:c*m;+}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{if:r==1||{{if:r==-1|-|{{r}}}}}}\\log(x)}$."
+							]
+						},
+						"hint": "$\\log\\left(\\dfrac{1}{x^{ {{j}} }}\\right)=\\log(1)-\\log\\left(x^{ {{j}} }\\right)$, et $\\log(1)=0$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3", "2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "3",
+							"q": "2"
+						},
+						"description": "log 72 = 3 log 2 + 2 log 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2", "3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "3",
+							"q": "2"
+						},
+						"description": "Erreur : cases échangées",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "15",
+							"b": "4",
+							"c": "5",
+							"m": "3"
+						},
+						"description": "log 15 + log 4 − log 5 = log 12",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["14"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "15",
+							"b": "4",
+							"c": "5",
+							"m": "3"
+						},
+						"description": "Erreur : log 14 (somme et différence)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2"
+						},
+						"description": "log(100x) = 2 + log x",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["100"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2"
+						},
+						"description": "Erreur : 100",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "3",
+							"n": "2"
+						},
+						"description": "log x² + log x³ = 5 log x",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "3",
+							"n": "2"
+						},
+						"description": "Erreur : 6 (exposants multipliés)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["3", "2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "log(1000/x²) = 3 − 2 log x",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["1000", "2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "Erreur : 1000 et 2",
+						"variationIndex": 4
+					},
+					{
+						"description": "F3 : log(8/25) = 3 log 2 − 2 log 5",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "5",
+							"n": "3",
+							"m": "2",
+							"w": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3", "-2"]
+					},
+					{
+						"description": "F3 : nombre au lieu de l'exposant",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "5",
+							"n": "3",
+							"m": "2",
+							"w": "0"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "On demande le coefficient devant $\\log(2)$ : écris $8$ comme une puissance de $2$, l'exposant donne le coefficient."
+						},
+						"answers": ["8", "-2"]
+					},
+					{
+						"description": "F3 : signe oublié",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "5",
+							"n": "3",
+							"m": "2",
+							"w": "0"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\log\\left(\\dfrac{A}{B}\\right)=\\log(A)-\\log(B)$ : le coefficient de $\\log(5)$ est négatif."
+						},
+						"answers": ["3", "2"]
+					},
+					{
+						"description": "F3 : coefficients échangés",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "5",
+							"n": "3",
+							"m": "2",
+							"w": "0"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2", "-3"]
+					},
+					{
+						"description": "F3 : tout dans une case",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "5",
+							"n": "3",
+							"m": "2",
+							"w": "0"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1", "0"]
+					},
+					{
+						"description": "F4 : 2 log x³ + 3 log(1/x²) − log x = −log x",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"c": "-1",
+							"k": "3",
+							"j": "2",
+							"m": "1",
+							"r": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-1"]
+					},
+					{
+						"description": "F4 : log(1/x²) compté positif",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"c": "-1",
+							"k": "3",
+							"j": "2",
+							"m": "1",
+							"r": "-1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\log\\left(\\dfrac{1}{x^{ 2 }}\\right)=-2\\log(x)$ : ce terme change de signe."
+						},
+						"answers": ["11"]
+					},
+					{
+						"description": "F4 : exposants oubliés",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"c": "-1",
+							"k": "3",
+							"j": "2",
+							"m": "1",
+							"r": "-1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\log\\left(x^{n}\\right)=n\\log(x)$ : l'exposant devient un coefficient."
+						},
+						"answers": ["-2"]
+					},
+					{
+						"description": "F4 : exposant j oublié",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"c": "-1",
+							"k": "3",
+							"j": "2",
+							"m": "1",
+							"r": "-1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\log\\left(\\dfrac{1}{x^{ 2 }}\\right)=-2\\log(x)$, pas $-\\log(x)$ : l'exposant $2$ compte aussi."
+						},
+						"answers": ["2"]
+					}
+				],
+				"description": "log(2ᵖ3^q) en fonction de log 2 et log 3 ; log a + log b − log c = log n ; expressions littérales : log(10ᵏx), log(xⁿ) + log(xᵐ), log(10ᵏ/xⁿ)"
+			},
+			"changements": {
+				"ajoutees": [6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "dc269779-aaa4-44af-8e02-e17a55417c65",
+			"title": "Logarithme décimal : définition",
+			"fichier": "dc269779.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{n}}"
+							}
+						],
+						"statement": "Sans calculatrice, donne la valeur de $\\log\\left(10^{ {{n}} }\\right)$.\n\n$\\log\\left(10^{ {{n}} }\\right)=?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "-5|-4|-3|-2|2|3|4|5|6|7"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"$\\log\\left(10^{ {{n}} }\\right)$ est le réel $x$ tel que $10^x=10^{ {{n}} }$, donc $\\log\\left(10^{ {{n}} }\\right)=\\textcolor{{{color:primary.0}}}{{{n}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{n}}"
+							}
+						],
+						"statement": "Sans calculatrice, donne la valeur de $\\log({{eval:10^n;d}})$.\n\n$\\log({{eval:10^n;d}})=?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "-3|-2|-1|1|2|3"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"${{eval:10^n;d}}=10^{ {{n}} }$, donc $\\log({{eval:10^n;d}})=\\textcolor{{{color:primary.0}}}{{{n}}}$.{{if:n<0| Un logarithme négatif : le nombre est compris entre $0$ et $1$.|}}"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Quel est le réel $x$ tel que $10^x={{b}}$ ?\n\n```choix\n- $x=\\log({{b}})$\n- $x=\\dfrac{ {{b}} }{10}$\n- $x=10^{ {{b}} }$\n- $x=\\sqrt[10]{ {{b}} }$\n```",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "2|3|5|6|7|15|20|50"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"$10^x={{b}}$ a une unique solution : $x=\\textcolor{{{color:primary.0}}}{\\log({{b}})}$ (environ ${{eval:round(100*log(b))/100;a2}}$ à la calculatrice)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Sans calculatrice, donne la valeur de $10^{\\log({{b}})}$.\n\n$10^{\\log({{b}})}=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3|7|12|25|0.5|2.4|45"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"$\\log({{b}})$ est l'exposant qu'il faut donner à $10$ pour obtenir ${{b}}$ : $10^{\\log({{b}})}=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*log(b))/100;a2}}"
+							}
+						],
+						"statement": "À la calculatrice, donne une valeur approchée de $\\log({{b}})$ au centième.\n\n$\\log({{b}})\\approx ?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "2|3|7|15|42|250|0.4|0.06"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"La touche $\\log$ de la calculatrice donne le logarithme décimal.",
+								"$\\log({{b}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*log(b))/100;a2}}}$ : on vérifie que $10^{ {{eval:round(100*log(b))/100;a2}} }$ est proche de ${{b}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:k+1}}"
+							}
+						],
+						"statement": "Un entier naturel $N$ vérifie $\\log(N)\\approx{{eval:k+f;d}}$.\n\nCombien de chiffres a l'écriture décimale de $N$ ?\n\n$?$ chiffres",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "f",
+								"expression": "0.12|0.35|0.48|0.71|0.86"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"La fonction $\\log$ est définie et **strictement croissante** sur $\\left]0\\,;+\\infty\\right[$ : elle range les images dans le même ordre que les nombres.",
+								"${{k}}\\leqslant\\log(N)<{{eval:k+1}}$, donc $10^{ {{k}} }\\leqslant N<10^{ {{eval:k+1}} }$.",
+								"$10^{ {{k}} }$ s'écrit avec ${{eval:k+1}}$ chiffres (un $1$ suivi de ${{k}}$ zéros) et $10^{ {{eval:k+1}} }$ est le premier entier à ${{eval:k+2}}$ chiffres : $N$ a $\\textcolor{{{color:primary.0}}}{{{eval:k+1}}}$ chiffres."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "3"
+						},
+						"description": "log(10^3) = 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "3"
+						},
+						"description": "Erreur : 1000",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "-4"
+						},
+						"description": "log(10^-4) = −4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "-4"
+						},
+						"description": "Erreur : 4 (signe)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "2"
+						},
+						"description": "log(100) = 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "2"
+						},
+						"description": "Erreur : 10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "-2"
+						},
+						"description": "log(0,01) = −2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "-2"
+						},
+						"description": "Erreur : 2 (signe)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "5"
+						},
+						"description": "10^x = 5 : x = log(5)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "5"
+						},
+						"description": "Erreur : x = 5/10",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "5"
+						},
+						"description": "Erreur : x = 10^5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "10^(log 7) = 7",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["10000000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "Erreur : 10^7",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1,62"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "42"
+						},
+						"description": "log(42) ≈ 1,62",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["3,74"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "42"
+						},
+						"description": "Erreur : ln(42) ≈ 3,74",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-0,40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "0.4"
+						},
+						"description": "log(0,4) ≈ −0,40",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0.35",
+							"k": "5"
+						},
+						"description": "log N ≈ 5,35 : 6 chiffres",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0.35",
+							"k": "5"
+						},
+						"description": "Erreur : 5 (partie entière)",
+						"variationIndex": 5
+					}
+				],
+				"description": "log(10ⁿ) = n ; log de 100, 0,01… sans calculatrice ; 10ˣ = b donne x = log(b) ; 10^(log b) = b ; calculatrice ; nombre de chiffres d'un entier"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{n}}"
+							}
+						],
+						"statement": "Sans calculatrice, donne la valeur de $\\log\\left(10^{ {{n}} }\\right)$.\n\n$\\log\\left(10^{ {{n}} }\\right)=?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "-5|-4|-3|-2|2|3|4|5|6|7"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"$\\log\\left(10^{ {{n}} }\\right)$ est le réel $x$ tel que $10^x=10^{ {{n}} }$, donc $\\log\\left(10^{ {{n}} }\\right)=\\textcolor{{{color:primary.0}}}{{{n}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{n}}"
+							}
+						],
+						"statement": "Sans calculatrice, donne la valeur de $\\log({{eval:10^n;d}})$.\n\n$\\log({{eval:10^n;d}})=?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "-3|-2|-1|1|2|3"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"${{eval:10^n;d}}=10^{ {{n}} }$, donc $\\log({{eval:10^n;d}})=\\textcolor{{{color:primary.0}}}{{{n}}}$.{{if:n<0| Un logarithme négatif : le nombre est compris entre $0$ et $1$.|}}"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Quel est le réel $x$ tel que $10^x={{b}}$ ?\n\n```choix\n- $x=\\log({{b}})$\n- $x=\\dfrac{ {{b}} }{10}$\n- $x=10^{ {{b}} }$\n- $x=\\sqrt[10]{ {{b}} }$\n```",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "2|3|5|6|7|15|20|50"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"$10^x={{b}}$ a une unique solution : $x=\\textcolor{{{color:primary.0}}}{\\log({{b}})}$ (environ ${{eval:round(100*log(b))/100;a2}}$ à la calculatrice)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Sans calculatrice, donne la valeur de $10^{\\log({{b}})}$.\n\n$10^{\\log({{b}})}=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3|7|12|25|0.5|2.4|45"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+								"$\\log({{b}})$ est l'exposant qu'il faut donner à $10$ pour obtenir ${{b}}$ : $10^{\\log({{b}})}=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*log(b))/100;a2}}"
+							}
+						],
+						"statement": "À la calculatrice, donne une valeur approchée de $\\log({{b}})$ au centième.\n\n$\\log({{b}})\\approx ?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "2|3|7|15|42|250|0.4|0.06"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"La touche $\\log$ de la calculatrice donne le logarithme décimal.",
+								"$\\log({{b}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*log(b))/100;a2}}}$ : on vérifie que $10^{ {{eval:round(100*log(b))/100;a2}} }$ est proche de ${{b}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:k+1}}"
+							}
+						],
+						"statement": "Un entier naturel $N$ vérifie $\\log(N)\\approx{{eval:k+f;d}}$.\n\nCombien de chiffres a l'écriture décimale de $N$ ?\n\n$?$ chiffres",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "f",
+								"expression": "0.12|0.35|0.48|0.71|0.86"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"La fonction $\\log$ est définie et **strictement croissante** sur $\\left]0\\,;+\\infty\\right[$ : elle range les images dans le même ordre que les nombres.",
+								"${{k}}\\leqslant\\log(N)<{{eval:k+1}}$, donc $10^{ {{k}} }\\leqslant N<10^{ {{eval:k+1}} }$.",
+								"$10^{ {{k}} }$ s'écrit avec ${{eval:k+1}}$ chiffres (un $1$ suivi de ${{k}}$ zéros) et $10^{ {{eval:k+1}} }$ est le premier entier à ${{eval:k+2}}$ chiffres : $N$ a $\\textcolor{{{color:primary.0}}}{{{eval:k+1}}}$ chiffres."
+							]
+						}
+					},
+					{
+						"statement": "Sans calculatrice, calcule $A={{if:o==0|{{if:a==1||{{if:a==-1|-|{{a}}}}}}\\log\\left(10^{ {{n}} }\\right){{if:c==1|+|{{if:c==-1|-|{{c;+}}}}}}\\log({{eval:10^m;d}})|\\log\\left(10^{ {{n}} }\\right)\\times\\log({{eval:10^m;d}})}}$.\n\n$A=?$",
+						"variables": [
+							{
+								"name": "o",
+								"expression": "0|0|1"
+							},
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "n",
+								"expression": "1..5"
+							},
+							{
+								"name": "m",
+								"expression": "-3|-2|-1|1|2|3|4|5"
+							},
+							{
+								"name": "r",
+								"expression": "eval:(1-o)*(a*n+c*m)+o*n*m"
+							},
+							{
+								"name": "w1",
+								"expression": "eval:(1-o)*(a*n-c*m)-o*n*m"
+							},
+							{
+								"name": "w2",
+								"expression": "eval:(1-o)*(a*n+c*(m+1))+o*n*(m+1)"
+							},
+							{
+								"name": "w3",
+								"expression": "eval:(1-o)*a*c+o*(n+m)"
+							}
+						],
+						"conditions": ["r != w1", "r != w2", "r != w3", "w1 != w2", "w1 != w3", "w2 != w3"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}",
+								"expectedErrors": [
+									{
+										"answer": "{{w1}}",
+										"message": "${{eval:10^m;d}}=10^{ {{m}} }$, donc $\\log({{eval:10^m;d}})={{m}}$ : vérifie le signe.",
+										"label": "Signe"
+									},
+									{
+										"answer": "{{w2}}",
+										"message": "{{if:m<0|${{eval:10^m;d}}=10^{ {{m}} }$ : le $1$ est au rang ${{eval:-m}}$ après la virgule.|${{eval:10^m;d}}=10^{ {{m}} }$ : on compte les zéros, pas les chiffres.}}",
+										"label": "Exposant décalé de 1"
+									},
+									{
+										"answer": "{{w3}}",
+										"message": "{{if:o==0|Les coefficients ne suffisent pas : $\\log\\left(10^{n}\\right)=n$ donne la valeur de chaque logarithme.|C'est un produit : on multiplie les deux logarithmes.}}",
+										"label": "{{if:o==0|Exposants oubliés|Somme au lieu du produit}}"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour tout entier $n$, $\\log\\left(10^n\\right)=n$.",
+								"$\\log\\left(10^{ {{n}} }\\right)={{n}}$ et ${{eval:10^m;d}}=10^{ {{m}} }$, donc $\\log({{eval:10^m;d}})={{m}}$.",
+								"$A={{if:o==0|{{eval:a*n}}{{eval:c*m;+}}|{{n}}\\times{{if:m<0|({{m}})|{{m}}}}}}=\\textcolor{{{color:primary.0}}}{ {{r}} }$."
+							]
+						},
+						"hint": "Écris chaque nombre comme une puissance de $10$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "3"
+						},
+						"description": "log(10^3) = 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "3"
+						},
+						"description": "Erreur : 1000",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "-4"
+						},
+						"description": "log(10^-4) = −4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "-4"
+						},
+						"description": "Erreur : 4 (signe)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "2"
+						},
+						"description": "log(100) = 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "2"
+						},
+						"description": "Erreur : 10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "-2"
+						},
+						"description": "log(0,01) = −2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "-2"
+						},
+						"description": "Erreur : 2 (signe)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "5"
+						},
+						"description": "10^x = 5 : x = log(5)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "5"
+						},
+						"description": "Erreur : x = 5/10",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "5"
+						},
+						"description": "Erreur : x = 10^5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "10^(log 7) = 7",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["10000000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "7"
+						},
+						"description": "Erreur : 10^7",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1,62"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "42"
+						},
+						"description": "log(42) ≈ 1,62",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["3,74"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "42"
+						},
+						"description": "Erreur : ln(42) ≈ 3,74",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-0,40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "0.4"
+						},
+						"description": "log(0,4) ≈ −0,40",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0.35",
+							"k": "5"
+						},
+						"description": "log N ≈ 5,35 : 6 chiffres",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0.35",
+							"k": "5"
+						},
+						"description": "Erreur : 5 (partie entière)",
+						"variationIndex": 5
+					},
+					{
+						"description": "F5 : 3 log(10²) − 2 log(0,01) = 10",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"a": "3",
+							"c": "-2",
+							"n": "2",
+							"m": "-2",
+							"r": "10",
+							"w1": "2",
+							"w2": "8",
+							"w3": "-6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["10"]
+					},
+					{
+						"description": "F5 : signe de log(0,01)",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"a": "3",
+							"c": "-2",
+							"n": "2",
+							"m": "-2",
+							"r": "10",
+							"w1": "2",
+							"w2": "8",
+							"w3": "-6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$0.01 = 10^{-2}$, donc $\\log(0.01)=-2$ : vérifie le signe."
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F5 : zéros comptés après la virgule",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"a": "3",
+							"c": "-2",
+							"n": "2",
+							"m": "-2",
+							"r": "10",
+							"w1": "2",
+							"w2": "8",
+							"w3": "-6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$0.01 = 10^{-2}$ : le $1$ est au rang $2$ après la virgule."
+						},
+						"answers": ["8"]
+					},
+					{
+						"description": "F5 : exposants oubliés",
+						"variationIndex": 6,
+						"variables": {
+							"o": "0",
+							"a": "3",
+							"c": "-2",
+							"n": "2",
+							"m": "-2",
+							"r": "10",
+							"w1": "2",
+							"w2": "8",
+							"w3": "-6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Les coefficients ne suffisent pas : $\\log\\left(10^{n}\\right)=n$ donne la valeur de chaque logarithme."
+						},
+						"answers": ["-6"]
+					},
+					{
+						"description": "F5 : log(10³) × log(100) = 6",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"a": "1",
+							"c": "1",
+							"n": "3",
+							"m": "2",
+							"r": "6",
+							"w1": "-6",
+							"w2": "9",
+							"w3": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["6"]
+					},
+					{
+						"description": "F5 : somme au lieu du produit",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"a": "1",
+							"c": "1",
+							"n": "3",
+							"m": "2",
+							"r": "6",
+							"w1": "-6",
+							"w2": "9",
+							"w3": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est un produit : on multiplie les deux logarithmes."
+						},
+						"answers": ["5"]
+					},
+					{
+						"description": "F5 : chiffres comptés",
+						"variationIndex": 6,
+						"variables": {
+							"o": "1",
+							"a": "1",
+							"c": "1",
+							"n": "3",
+							"m": "2",
+							"r": "6",
+							"w1": "-6",
+							"w2": "9",
+							"w3": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$100 = 10^2$ : on compte les zéros, pas les chiffres."
+						},
+						"answers": ["9"]
+					}
+				],
+				"description": "log(10ⁿ) = n ; log de 100, 0,01… sans calculatrice ; 10ˣ = b donne x = log(b) ; 10^(log b) = b ; calculatrice ; nombre de chiffres d'un entier"
+			},
+			"changements": {
+				"ajoutees": [7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "f6805041-d456-422c-8560-31b9d3fe9f74",
+			"title": "Sens de variation de x ↦ k·a^x",
+			"fichier": "f6805041.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1.5|2|3|1.05"
+							},
+							{
+								"name": "k",
+								"expression": "2|3|4|5|100"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0.5|0.8|0.9|0.95"
+							},
+							{
+								"name": "k",
+								"expression": "2|3|4|5|100"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1.5|2|3|1.05"
+							},
+							{
+								"name": "k",
+								"expression": "-5|-4|-3|-2"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0.5|0.8|0.9|0.95"
+							},
+							{
+								"name": "k",
+								"expression": "-5|-4|-3|-2"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "3 × 2^x croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "Erreur : décroissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0.5",
+							"k": "4"
+						},
+						"description": "4 × 0,5^x décroissante",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "0.5",
+							"k": "4"
+						},
+						"description": "Erreur : croissante",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "-3"
+						},
+						"description": "−3 × 2^x décroissante",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "-3"
+						},
+						"description": "Erreur : croissante (signe de k oublié)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0.8",
+							"k": "-2"
+						},
+						"description": "−2 × 0,8^x croissante",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "0.8",
+							"k": "-2"
+						},
+						"description": "Erreur : décroissante (signe de k oublié)",
+						"variationIndex": 3
+					}
+				],
+				"description": "Sens de x ↦ k·aˣ sur ℝ dans les quatre cas : k > 0 ou k < 0, a > 1 ou 0 < a < 1"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1.5|2|3|1.05"
+							},
+							{
+								"name": "k",
+								"expression": "2|3|4|5|100"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0.5|0.8|0.9|0.95"
+							},
+							{
+								"name": "k",
+								"expression": "2|3|4|5|100"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1.5|2|3|1.05"
+							},
+							{
+								"name": "k",
+								"expression": "-5|-4|-3|-2"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0.5|0.8|0.9|0.95"
+							},
+							{
+								"name": "k",
+								"expression": "-5|-4|-3|-2"
+							}
+						],
+						"conditions": [],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+								"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+							]
+						}
+					},
+					{
+						"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{eval:k;d}}\\times\\left({{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}\\right)^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+						"variables": [
+							{
+								"name": "h",
+								"expression": "1..7"
+							},
+							{
+								"name": "p",
+								"expression": "{{if:h==1|3|{{if:h==2|5|{{if:h==3|2|{{if:h==4|1|{{if:h==5|1|{{if:h==6|6|1}}}}}}}}}}}}"
+							},
+							{
+								"name": "q",
+								"expression": "{{if:h==1|2|{{if:h==2|4|{{if:h==3|3|{{if:h==4|3|{{if:h==5|2|{{if:h==6|5|4}}}}}}}}}}}}"
+							},
+							{
+								"name": "u",
+								"expression": "0.5|1.5|2.5|2|3|4|5|6"
+							},
+							{
+								"name": "sk",
+								"expression": "1|-1"
+							},
+							{
+								"name": "k",
+								"expression": "eval:sk*u"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(1-sk*sign(p-q))/2}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+								"$x\\mapsto\\left({{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}\\right)^x$ est {{if:p>q|croissante, car ${{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}>1$|décroissante, car $0<{{if:h==6|1{,}2|{{if:h==7|0{,}25|\\dfrac{ {{p}} }{ {{q}} }}}}}<1$}}.",
+								"$k={{eval:k;d}}{{if:sk==1|>0$ : même sens|<0$ : sens contraire}}, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:sk*sign(p-q)==1|croissante|décroissante}}}}$."
+							]
+						},
+						"hint": "Compare la base à $1$, puis regarde le signe du coefficient devant la puissance."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "3 × 2^x croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "Erreur : décroissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0.5",
+							"k": "4"
+						},
+						"description": "4 × 0,5^x décroissante",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "0.5",
+							"k": "4"
+						},
+						"description": "Erreur : croissante",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "-3"
+						},
+						"description": "−3 × 2^x décroissante",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "-3"
+						},
+						"description": "Erreur : croissante (signe de k oublié)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0.8",
+							"k": "-2"
+						},
+						"description": "−2 × 0,8^x croissante",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "0.8",
+							"k": "-2"
+						},
+						"description": "Erreur : décroissante (signe de k oublié)",
+						"variationIndex": 3
+					},
+					{
+						"description": "F9 : 2 × (3/2)ˣ croissante",
+						"variationIndex": 4,
+						"variables": {
+							"h": "1",
+							"p": "3",
+							"q": "2",
+							"u": "2",
+							"sk": "1",
+							"k": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F9 : 2 × (3/2)ˣ, décroissante",
+						"variationIndex": 4,
+						"variables": {
+							"h": "1",
+							"p": "3",
+							"q": "2",
+							"u": "2",
+							"sk": "1",
+							"k": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F9 : −1,5 × (2/3)ˣ croissante",
+						"variationIndex": 4,
+						"variables": {
+							"h": "3",
+							"p": "2",
+							"q": "3",
+							"u": "1.5",
+							"sk": "-1",
+							"k": "-1.5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F9 : −1,5 × (2/3)ˣ, décroissante",
+						"variationIndex": 4,
+						"variables": {
+							"h": "3",
+							"p": "2",
+							"q": "3",
+							"u": "1.5",
+							"sk": "-1",
+							"k": "-1.5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F9 : −4 × 1,2ˣ décroissante",
+						"variationIndex": 4,
+						"variables": {
+							"h": "6",
+							"p": "6",
+							"q": "5",
+							"u": "4",
+							"sk": "-1",
+							"k": "-4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F9 : 3 × 0,25ˣ décroissante",
+						"variationIndex": 4,
+						"variables": {
+							"h": "7",
+							"p": "1",
+							"q": "4",
+							"u": "3",
+							"sk": "1",
+							"k": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					}
+				],
+				"description": "Sens de x ↦ k·aˣ sur ℝ dans les quatre cas : k > 0 ou k < 0, a > 1 ou 0 < a < 1"
+			},
+			"changements": {
+				"ajoutees": [5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "f84e23a3-36c0-4cb0-801f-3807134f307d",
+			"title": "Calculer un taux d'évolution moyen",
+			"fichier": "f84e23a3.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*(100*(m^(1/n)-1)))/100;a2}}"
+							}
+						],
+						"statement": "La population d'une ville est passée de ${{v}}$ à ${{w}}$ habitants en ${{n}}$ ans.\n\nCalcule le taux d'évolution annuel moyen de cette population, en pourcentage, arrondi au centième.\n\n$t_m\\approx ?~\\%$",
+						"variables": [
+							{
+								"name": "v",
+								"expression": "12000|25000|40000"
+							},
+							{
+								"name": "m",
+								"expression": "1.2|1.25|1.5|0.8|0.9"
+							},
+							{
+								"name": "n",
+								"expression": "3|4|5|8|10"
+							},
+							{
+								"name": "w",
+								"expression": "eval:v*m"
+							}
+						],
+						"conditions": ["round(100*(100*(m^(1/n)-1))) != round(100*(100*(m-1)/n))"],
+						"correction": {
+							"steps": [
+								"Si une grandeur passe de $V_0$ à $V_n$ en $n$ périodes, le taux moyen $t_m$ par période vérifie $V_0\\times(1+t_m)^n=V_n$, donc $1+t_m=\\left(\\dfrac{V_n}{V_0}\\right)^{\\frac{1}{n}}$.",
+								"Ici $\\dfrac{V_n}{V_0}=\\dfrac{ {{w}} }{ {{v}} }={{m}}$ et $n={{n}}$ : $1+t_m={{m}}^{\\frac{1}{ {{n}} }}$.",
+								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*(100*(m^(1/n)-1)))/100;a2}}}~\\%$ par an (et non le taux global divisé par ${{n}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*(100*((1+g/100)^(1/n)-1)))/100;a2}}"
+							}
+						],
+						"statement": "Le prix d'un logement a augmenté de ${{g}}~\\%$ en ${{n}}$ ans.\n\nCalcule le taux d'évolution annuel moyen de ce prix, en pourcentage, arrondi au centième.\n\n$t_m\\approx ?~\\%$",
+						"variables": [
+							{
+								"name": "g",
+								"expression": "20|30|50|60|80|100"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"conditions": ["round(100*(100*((1+g/100)^(1/n)-1))) != round(100*(g/n))"],
+						"correction": {
+							"steps": [
+								"Une hausse de ${{g}}~\\%$ correspond au coefficient multiplicateur global $CM=1+\\dfrac{ {{g}} }{100}={{eval:1+g/100;d}}$.",
+								"Le taux annuel moyen vérifie $(1+t_m)^{ {{n}} }={{eval:1+g/100;d}}$, donc $1+t_m={{eval:1+g/100;d}}^{\\frac{1}{ {{n}} }}$.",
+								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*(100*((1+g/100)^(1/n)-1)))/100;a2}}}~\\%$ par an (et non $\\dfrac{ {{g}} }{ {{n}} }$ : les hausses se multiplient, elles ne s'ajoutent pas)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 3
+								},
+								"expectedAnswer": "{{eval:round(1000*(100*((1+t/100)^(1/12)-1)))/1000;a3}}"
+							}
+						],
+						"statement": "Un placement rapporte ${{t}}~\\%$ par an, à intérêts composés.\n\nCalcule le taux mensuel équivalent, c'est-à-dire le taux qui, appliqué chaque mois pendant $12$ mois, donne la même évolution sur un an. Donne-le en pourcentage, arrondi au millième.\n\n$t_m\\approx ?~\\%$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "3|4|5|6|8|10|12"
+							}
+						],
+						"conditions": ["round(1000*(100*((1+t/100)^(1/12)-1))) != round(1000*(t/12))"],
+						"correction": {
+							"steps": [
+								"Sur un an, le coefficient multiplicateur est $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+								"Le taux mensuel $t_m$ vérifie $(1+t_m)^{12}={{eval:1+t/100;d}}$, donc $1+t_m={{eval:1+t/100;d}}^{\\frac{1}{12}}$.",
+								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(1000*(100*((1+t/100)^(1/12)-1)))/1000;a3}}}~\\%$ par mois (un peu moins que $\\dfrac{ {{t}} }{12}$)."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3,71"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "1.2",
+							"n": "5",
+							"v": "25000",
+							"w": "30000"
+						},
+						"description": "25 000 → 30 000 en 5 ans : 1,2^(1/5) − 1 ≈ 3,71 %",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "1.2",
+							"n": "5",
+							"v": "25000",
+							"w": "30000"
+						},
+						"description": "Erreur : taux global / n (4 %)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["148,83"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "1.2",
+							"n": "5",
+							"v": "25000",
+							"w": "30000"
+						},
+						"description": "Erreur : exposant n (1,2^5 − 1 ≈ 148,83 %)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5,43"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "0.8",
+							"n": "4",
+							"v": "40000",
+							"w": "32000"
+						},
+						"description": "40 000 → 32 000 en 4 ans : 0,8^(1/4) − 1 ≈ −5,43 %",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8,45"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"g": "50",
+							"n": "5"
+						},
+						"description": "+50 % en 5 ans : 1,5^(1/5) − 1 ≈ 8,45 %",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"g": "50",
+							"n": "5"
+						},
+						"description": "Erreur : 50 / 5 = 10 %",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["108,45"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"g": "50",
+							"n": "5"
+						},
+						"description": "Erreur : oubli du −1 (108,45)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0,487"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "6"
+						},
+						"description": "6 % par an : 1,06^(1/12) − 1 ≈ 0,487 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "6"
+						},
+						"description": "Erreur : 6 / 12 = 0,5 %",
+						"variationIndex": 2
+					}
+				],
+				"description": "Taux annuel moyen entre deux valeurs, à partir d'un taux global ; taux mensuel équivalent"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*(100*(m^(1/n)-1)))/100;a2}}"
+							}
+						],
+						"statement": "La population d'une ville est passée de ${{v}}$ à ${{w}}$ habitants en ${{n}}$ ans.\n\nCalcule le taux d'évolution annuel moyen de cette population, en pourcentage, arrondi au centième.\n\n$t_m\\approx ?~\\%$",
+						"variables": [
+							{
+								"name": "v",
+								"expression": "12000|25000|40000"
+							},
+							{
+								"name": "m",
+								"expression": "1.2|1.25|1.5|0.8|0.9"
+							},
+							{
+								"name": "n",
+								"expression": "3|4|5|8|10"
+							},
+							{
+								"name": "w",
+								"expression": "eval:v*m"
+							}
+						],
+						"conditions": ["round(100*(100*(m^(1/n)-1))) != round(100*(100*(m-1)/n))"],
+						"correction": {
+							"steps": [
+								"Si une grandeur passe de $V_0$ à $V_n$ en $n$ périodes, le taux moyen $t_m$ par période vérifie $V_0\\times(1+t_m)^n=V_n$, donc $1+t_m=\\left(\\dfrac{V_n}{V_0}\\right)^{\\frac{1}{n}}$.",
+								"Ici $\\dfrac{V_n}{V_0}=\\dfrac{ {{w}} }{ {{v}} }={{m}}$ et $n={{n}}$ : $1+t_m={{m}}^{\\frac{1}{ {{n}} }}$.",
+								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*(100*(m^(1/n)-1)))/100;a2}}}~\\%$ par an (et non le taux global divisé par ${{n}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								},
+								"expectedAnswer": "{{eval:round(100*(100*((1+g/100)^(1/n)-1)))/100;a2}}"
+							}
+						],
+						"statement": "Le prix d'un logement a augmenté de ${{g}}~\\%$ en ${{n}}$ ans.\n\nCalcule le taux d'évolution annuel moyen de ce prix, en pourcentage, arrondi au centième.\n\n$t_m\\approx ?~\\%$",
+						"variables": [
+							{
+								"name": "g",
+								"expression": "20|30|50|60|80|100"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"conditions": ["round(100*(100*((1+g/100)^(1/n)-1))) != round(100*(g/n))"],
+						"correction": {
+							"steps": [
+								"Une hausse de ${{g}}~\\%$ correspond au coefficient multiplicateur global $CM=1+\\dfrac{ {{g}} }{100}={{eval:1+g/100;d}}$.",
+								"Le taux annuel moyen vérifie $(1+t_m)^{ {{n}} }={{eval:1+g/100;d}}$, donc $1+t_m={{eval:1+g/100;d}}^{\\frac{1}{ {{n}} }}$.",
+								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*(100*((1+g/100)^(1/n)-1)))/100;a2}}}~\\%$ par an (et non $\\dfrac{ {{g}} }{ {{n}} }$ : les hausses se multiplient, elles ne s'ajoutent pas)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"precision": {
+									"type": "decimal",
+									"digits": 3
+								},
+								"expectedAnswer": "{{eval:round(1000*(100*((1+t/100)^(1/12)-1)))/1000;a3}}"
+							}
+						],
+						"statement": "Un placement rapporte ${{t}}~\\%$ par an, à intérêts composés.\n\nCalcule le taux mensuel équivalent, c'est-à-dire le taux qui, appliqué chaque mois pendant $12$ mois, donne la même évolution sur un an. Donne-le en pourcentage, arrondi au millième.\n\n$t_m\\approx ?~\\%$",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "3|4|5|6|8|10|12"
+							}
+						],
+						"conditions": ["round(1000*(100*((1+t/100)^(1/12)-1))) != round(1000*(t/12))"],
+						"correction": {
+							"steps": [
+								"Sur un an, le coefficient multiplicateur est $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+								"Le taux mensuel $t_m$ vérifie $(1+t_m)^{12}={{eval:1+t/100;d}}$, donc $1+t_m={{eval:1+t/100;d}}^{\\frac{1}{12}}$.",
+								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(1000*(100*((1+t/100)^(1/12)-1)))/1000;a3}}}~\\%$ par mois (un peu moins que $\\dfrac{ {{t}} }{12}$)."
+							]
+						}
+					},
+					{
+						"statement": "{{if:d==0|Le nombre de bactéries d'une culture augmente|Le nombre de bactéries d'une culture traitée par un antibiotique baisse}} de ${{x}}~\\%$ en ${{n}}$ heure{{if:n>1|s|}}.\n\nCalcule le taux d'évolution moyen **par minute**, en pourcentage, arrondi au centième{{if:d==1| (il est négatif pour une baisse)|}}.\n\n$t_m\\approx ?~\\%$",
+						"variables": [
+							{
+								"name": "d",
+								"expression": "0|1"
+							},
+							{
+								"name": "x",
+								"expression": "10..80"
+							},
+							{
+								"name": "n",
+								"expression": "1..3"
+							},
+							{
+								"name": "N",
+								"expression": "eval:60*n"
+							},
+							{
+								"name": "M",
+								"expression": "eval:1+(1-2*d)*x/100"
+							}
+						],
+						"conditions": [
+							"round(100*(100*(M^(1/N)-1))) != round(100*(1-2*d)*x/N)",
+							"round(100*(100*(M^(1/N)-1))) != round(100*(100*(M^(1/n)-1))/60)"
+						],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:round(100*(100*(M^(1/N)-1)))/100;a2}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:round(100*(1-2*d)*x/N)/100;a2}}",
+										"message": "Les évolutions successives se multiplient : on ne divise pas ${{x}}~\\%$ par ${{N}}$.",
+										"label": "Taux divisé"
+									},
+									{
+										"answer": "{{eval:round(100*(100*(M^(1/n)-1)))/100;a2}}",
+										"message": "C'est le taux moyen par heure : en ${{n}}$ heure{{if:n>1|s|}}, il y a ${{N}}$ minutes.",
+										"label": "Heures pas converties"
+									},
+									{
+										"answer": "{{eval:round(100*(100*(M^(1/n)-1)/60))/100;a2}}",
+										"message": "Le taux par heure ne se divise pas par $60$ : il faut la racine ${{N}}$-ième du coefficient global.",
+										"label": "Taux horaire divisé par 60"
+									}
+								],
+								"precision": {
+									"type": "decimal",
+									"digits": 2
+								}
+							}
+						],
+						"correction": {
+							"steps": [
+								"{{if:d==0|Une hausse|Une baisse}} de ${{x}}~\\%$ correspond au coefficient multiplicateur global $CM={{eval:M;d}}$.",
+								"En ${{n}}$ heure{{if:n>1|s|}}, il y a ${{N}}$ minutes : le taux moyen par minute vérifie $(1+t_m)^{ {{N}} }={{eval:M;d}}$, donc $1+t_m={{eval:M;d}}^{\\frac{1}{ {{N}} }}$.",
+								"À la calculatrice : $t_m\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(100*(100*(M^(1/N)-1)))/100;a2}} }~\\%$ par minute."
+							]
+						},
+						"hint": "Combien de minutes y a-t-il en ${{n}}$ heure{{if:n>1|s|}} ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3,71"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "1.2",
+							"n": "5",
+							"v": "25000",
+							"w": "30000"
+						},
+						"description": "25 000 → 30 000 en 5 ans : 1,2^(1/5) − 1 ≈ 3,71 %",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "1.2",
+							"n": "5",
+							"v": "25000",
+							"w": "30000"
+						},
+						"description": "Erreur : taux global / n (4 %)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["148,83"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "1.2",
+							"n": "5",
+							"v": "25000",
+							"w": "30000"
+						},
+						"description": "Erreur : exposant n (1,2^5 − 1 ≈ 148,83 %)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5,43"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "0.8",
+							"n": "4",
+							"v": "40000",
+							"w": "32000"
+						},
+						"description": "40 000 → 32 000 en 4 ans : 0,8^(1/4) − 1 ≈ −5,43 %",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8,45"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"g": "50",
+							"n": "5"
+						},
+						"description": "+50 % en 5 ans : 1,5^(1/5) − 1 ≈ 8,45 %",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"g": "50",
+							"n": "5"
+						},
+						"description": "Erreur : 50 / 5 = 10 %",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["108,45"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"g": "50",
+							"n": "5"
+						},
+						"description": "Erreur : oubli du −1 (108,45)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0,487"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"t": "6"
+						},
+						"description": "6 % par an : 1,06^(1/12) − 1 ≈ 0,487 %",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"t": "6"
+						},
+						"description": "Erreur : 6 / 12 = 0,5 %",
+						"variationIndex": 2
+					},
+					{
+						"description": "F7 : +50 % en 2 h → 0,34 %",
+						"variationIndex": 3,
+						"variables": {
+							"d": "0",
+							"x": "50",
+							"n": "2",
+							"N": "120",
+							"M": "1.5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,34"]
+					},
+					{
+						"description": "F7 : taux divisé",
+						"variationIndex": 3,
+						"variables": {
+							"d": "0",
+							"x": "50",
+							"n": "2",
+							"N": "120",
+							"M": "1.5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Les évolutions successives se multiplient : on ne divise pas $50~\\%$ par $120$."
+						},
+						"answers": ["0,42"]
+					},
+					{
+						"description": "F7 : heures pas converties",
+						"variationIndex": 3,
+						"variables": {
+							"d": "0",
+							"x": "50",
+							"n": "2",
+							"N": "120",
+							"M": "1.5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est le taux moyen par heure : en $2$ heures, il y a $120$ minutes."
+						},
+						"answers": ["22,47"]
+					},
+					{
+						"description": "F7 : taux horaire divisé par 60",
+						"variationIndex": 3,
+						"variables": {
+							"d": "0",
+							"x": "50",
+							"n": "2",
+							"N": "120",
+							"M": "1.5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le taux par heure ne se divise pas par $60$ : il faut la racine $120$-ième du coefficient global."
+						},
+						"answers": ["0,37"]
+					},
+					{
+						"description": "F7 : −40 % en 1 h → −0,85 %",
+						"variationIndex": 3,
+						"variables": {
+							"d": "1",
+							"x": "40",
+							"n": "1",
+							"N": "60",
+							"M": "0.6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-0,85"]
+					},
+					{
+						"description": "F7 : −40 %, taux divisé",
+						"variationIndex": 3,
+						"variables": {
+							"d": "1",
+							"x": "40",
+							"n": "1",
+							"N": "60",
+							"M": "0.6"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-0,67"]
+					}
+				],
+				"description": "Taux annuel moyen entre deux valeurs, à partir d'un taux global ; taux mensuel équivalent"
+			},
+			"changements": {
+				"ajoutees": [4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}
