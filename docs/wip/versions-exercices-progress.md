@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR 4 ouverte, **non mergée**._
+_Mis à jour le 2026-11-26, après #3202._
 
-- **État** : PR 1 (#3150), PR 2 (#3154) en prod (v0.112.0) ; PR 3 (#3194) mergée, **pas en prod**. PR 4 (retrait de l'ancien contenu d'`exercises`, destructive) ouverte, revues faites, **ne pas merger**.
-- **Prochaine action** : après le `deploy:prod` de #3194 ET le go de David : `pnpm check:migrations --pr <n>`, merge, `migration list --linked` (aucune autre en attente), `db:migrate` ; puis vérifier à l'écran (page d'exercice, lien de partage, sauvegarde admin).
-- **En attente de David** : `deploy:prod` (livre #3194), puis go pour merger la PR 4.
-- **Pièges en cours** : merge interdit avant le go (le `db push` d'une autre session la jouerait). Une migration plus récente arrivée sur `main` → renommer celle de la PR 4 (`pnpm migration:horodatage`), déjà fait une fois. `ConfirmDialog` : « Renoncer ».
-- **Worktree / branche** : `../ubumaths-wt-versions-exercices-retrait`, `feat/versions-exercices-retrait`.
+- **État** : les 4 PR du découpage sont faites. PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0), PR 3 (#3194) en prod (v0.115.0). PR 4 (#3202) mergée, migration `20261126221127` jouée en prod : `exercises` n'a plus que `variables`, 0 fonction morte, 428 exercices / 428 avec version. La page publique `/exercice/<slug>` rend bien l'énoncé.
+- **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/exercices.md` et `base-de-donnees.md`, puis archiver ce journal). Seulement sur le go de David.
+- **En attente de David** : go pour clore. Le code de #3202 part au prochain `deploy:prod` ; le code en prod ne lit déjà plus les colonnes retirées (#3194).
+- **Pièges en cours** : pas vus à l'écran, car ils demandent une connexion : le lien de partage et la sauvegarde admin, couverts par les tests d'intégration (`versions-exercices-retrait`, `versions-exercices-sauvegarde`).
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## PR 4 — fait (2026-11-26)
 
