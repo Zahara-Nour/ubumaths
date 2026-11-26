@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR 3 prête (revues faites, vérifiée à l'écran)._
+_Mis à jour le 2026-11-26, après #3194._
 
-- **État** : PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0). PR 3 (la fiche) ouverte, merge à la CI verte (voir « PR 3 — fait »).
-- **Prochaine action** : si la PR 3 n'est pas mergée, `pnpm pr:merger <n>` ; sinon PR 4 (destructive), seulement après le `deploy:prod` qui livre la PR 3 et le go de David.
-- **En attente de David** : rien.
-- **Pièges en cours** : base locale de dev : fonctions de la PR 2 redéfinies à la main pendant la session, identiques au fichier final.
-- **Worktree / branche** : `../ubumaths-wt-versions-exercices-fiche`, `feat/versions-exercices-fiche`.
+- **État** : PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0). PR 3 (la fiche, #3194) mergée, **pas encore en prod**.
+- **Prochaine action** : PR 4 (destructive : retrait des anciennes colonnes de contenu d'`exercises`), seulement après le `deploy:prod` qui livre la PR 3, et avec le go de David. Phase 0 d'abord (grep des usages + réconciliation des données).
+- **En attente de David** : `deploy:prod` (livre #3194), puis go pour la PR 4.
+- **Pièges en cours** : bouton d'annulation de `ConfirmDialog` = « Renoncer » (lore). Le merge d'une PR destructive ne se fait pas avant le go (un `db push` d'une autre session la jouerait).
+- **Worktree / branche** : aucun (celui de la PR 3 retiré) ; PR 4 → nouveau worktree depuis `origin/main`.
 
 ## Décisions (2026-11-25)
 
