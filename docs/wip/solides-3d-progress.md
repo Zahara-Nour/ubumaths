@@ -2,18 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3252 (bord en butée mergé)._
+_Mis à jour le 2026-11-27, lot 7c commité sur sa branche (pas encore de PR)._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6, 7a (droites), 7b
-  (plans) et bord en butée mergés** (#3195 à #3252, § 18 à 20), le bord en butée essayé par David (« c'est
-  bon »). Les lots 3 à 7b et le bord en butée ne sont pas en prod tant qu'un `deploy:prod` demandé par David
-  ne les a pas emportés (le vérifier avant de l'affirmer).
-- **Prochaine action** : **lot 7c** (repère du solide et points par coordonnées, § 17). Worktree et branche
-  neufs depuis `main`, tests d'abord.
-- **En attente de David** : il vérifie chaque morceau du lot 7 **avant le merge** (lien `pnpm lien`). Pas de
-  `deploy:prod` sans sa demande. Proposé, sans réponse : description des réglages sous le réglage dans la
-  page d'aide ; teinter les cases de saisie de `retrouver:`. Signalé, sans réponse : avec deux plans dans un
-  cube, « (Q) » de (BDE) est écrit sur la zone teintée de (P), contre son propre bord.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b et bord en
+  butée mergés (#3195 à #3252). **Lot 7c** (repère du solide, points par coordonnées, § 21) : écrit, testé
+  (31 tests, typecheck, cliquet, lint rapide, garde de doc verts), vu à l'écran, commité sur
+  `feat/solides-3d-repere`, **PR pas ouverte**. Les lots 3 à 7b ne sont pas en prod sans `deploy:prod`
+  demandé par David (le vérifier avant de l'affirmer).
+- **Prochaine action** : la revue `code-reviewer` (opus) lancée sur le commit du lot 7c n'a pas rendu son
+  rapport avant le `/clear` : **la relancer** (brief : parseur `readRepere` / `readPoints` / `frame`,
+  régressions de `points:`, `solidePoints3`, seuils), corriger, compléter le § 21 (ligne « Revue »), puis
+  ouvrir la PR en un seul push. Merge seulement après l'essai de David.
+- **En attente de David** : essai du lot 7c (lien `pnpm lien`, serveur du worktree sur 5176, à relancer s'il
+  est tombé ; page `/aide-ecriture/blocs/solide`, compte prof). Trois choix à confirmer (§ 21) : vecteurs du
+  repère qui partent tous de l'origine ; coordonnées décimales seulement (pas de fractions) ; point à
+  coordonnées accepté sur un sommet. Proposé, sans réponse : description des réglages sous le réglage dans
+  la page d'aide ; teinter les cases de saisie de `retrouver:`. Signalé, sans réponse : avec deux plans dans
+  un cube, « (Q) » de (BDE) est écrit sur la zone teintée de (P), contre son propre bord.
 - **Tranché par David le 2026-11-27 (lot 7b, « suis tes recos »)** : le nom « (P) » s'écrit à côté du plan
   quand il n'a pas la place dedans (fait, § 19) ; le bord d'un plan ou une droite posés sur une face vue par
   la tranche (butée de la vue de dessus) prennent l'état de l'arête : **petite PR à part, après le 7b, avant
@@ -35,8 +40,8 @@ _Mis à jour le 2026-11-27, après #3252 (bord en butée mergé)._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : aucun (retirés après #3252, serveur arrêté). À créer : `../ubumaths-wt-solides-3d`,
-  depuis `origin/main` ; le port 5176 peut être pris par une autre session.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-repere` (poussée, sans PR) ;
+  serveur de dev sur 5176, lien du tailnet publié par `pnpm lien`.
 
 ## 1. D'où l'on part
 
@@ -695,3 +700,38 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   141 120 arêtes, angles à 1e-15 près de la tranche compris. Tests neufs rejoués sur l'ancien code : rouges
   (sauf la diagonale du fond, qui garde le cas inverse). Rien de bloquant ; un commentaire de test corrigé.
 - **Essayé par David le 2026-11-27 : « c'est bon ».** Mergé (#3252).
+
+## 21. Lot 7c — repère du solide et points par coordonnées : ce qui est fait (2026-11-27)
+
+- **Clé** `repere: A ; AB, AD, AE` du bloc ` ```solide ` (`SolideSpec.repere`, `SolideRepere` : l'origine et
+  le bout de chacun des trois vecteurs), polyèdres à sommets nommés ; parenthèses autour facultatives.
+  Erreurs des comportements 82 et 83 (`readRepere`) : trois vecteurs dans un même plan, vecteur nul, point
+  inconnu, solide rond, `section:` ou `tracer:` dans le bloc.
+- **Points par coordonnées** : `points: M (1 ; 0,5 ; 1)` (`SolidePoint.coords`), à côté des milieux et des
+  centres ; le point sert ensuite comme un autre (milieu, vecteur, droite, plan). Les éléments de `points:`
+  se coupent aux virgules hors parenthèses (`splitItems`). Erreurs du comportement 81 : coordonnées sans
+  `repere:`, point hors du solide agrandi de la marge des droites (`DROITE_OVERHANG`, 18 % de la plus grande
+  dimension, sur la boîte du solide) ; plus : deux ou quatre coordonnées, coordonnée qui n'est pas un nombre,
+  plus de 3 décimales.
+- **Ordre de lecture** : le repère s'appuie sur les sommets et les points déclarés (milieu, centre) **avant
+  le premier point à coordonnées** ; il est lu à ce moment-là (`frame`), sinon après les points. Un repère
+  mal écrit ne donne qu'une erreur, la sienne.
+- **Scène** : les trois vecteurs du repère sont trois flèches de plus dans `SolideScene.arrows` (la scène de
+  `repere: A ; AB, AD, AE` est celle de `vecteurs: AB, AD, AE`) ; rien de neuf dans `Solide.svelte` ni dans le
+  PDF ; tout suit la rotation. Lecteur d'écran : « repère d'origine A », « point M de coordonnées
+  (1 ; 0,5 ; 1) ».
+- **Choix faits sans David, à lui montrer** : (1) chaque vecteur du repère **part de l'origine**
+  (`A ; AB, AD, AE` oui, `A ; AB, AD, BF` refusé avec une phrase) : les flèches vont ainsi d'un point nommé à
+  un autre ; (2) coordonnées **décimales seulement** (`0,5`, pas `1/2` ni `1/3`) : c'est l'écriture validée
+  (comportement 71) ; (3) un point à coordonnées posé sur un sommet (`M (1 ; 1 ; 1)` = G) est accepté, deux
+  noms au même endroit.
+- Catalogue (`block-catalog/solide.ts` : réglage `repere`, réglage `points` complété, exemple « Un repère du
+  cube et un point par ses coordonnées », erreurs « trois vecteurs dans un même plan » et « coordonnées sans
+  repère »), doc `docs/systeme/ubumark.md` (paragraphe « Repère du solide et points par coordonnées »).
+- Tests : `solide-repere.test.ts` (31, rouges avant le code : 27 sur 31), `Solide.svelte.test.ts` (+1).
+- Vu à l'écran par la session (captures Chromium du composant) : cube avec son repère ; cube avec M et (AM) ;
+  cube en repère (D ; DA, DC, DH) avec deux points et le plan (BDE) ; pavé avec I, M, J milieu de [IM] et le
+  vecteur u = AM ; pyramide en repère (O ; OA, OB, OS) ; prisme ; deux cubes tournés au clavier (flèches,
+  points et noms suivent). **Pas vu** : la fiche PDF imprimée (le Typst est testé, pas compilé), le thème
+  sombre, le doigt sur un vrai téléphone. Remarque : un point placé tout contre un sommet (N à 0,3 de B) a
+  son nom contre celui du sommet une fois la figure tournée — les noms sont tenus, comme pour les autres points.
