@@ -198,7 +198,8 @@ admin seul, textes en français : boutons qui provoquent des erreurs de test).
   tout, appelée par `clearWorkData` (déconnexion, suppression du compte, autre compte sur
   l'appareil) et par un onglet qui voit le compte changer ailleurs, avant de se recharger
   (voir [RGPD](conformite/rgpd.md)) ;
-- `getFreezeDetectionContext()` rend gels, actions et Web Vitals pour un signalement.
+- `getFreezeDetectionContext()` rend gels et actions pour un signalement (les mesures de
+  performance n'y figurent pas : elles vont à la table des mesures, M47).
 
 Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte`
 (`setFreezePromptCallback`, `setAutoReportCallback`). Ils consultent la configuration
