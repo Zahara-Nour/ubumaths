@@ -68,9 +68,9 @@ async function typeScript(page: Page, lines: string[]): Promise<void> {
 	const expected = lines.join('\n');
 	// L'éditeur se monte tard : on retape tant que son contenu n'est pas exactement le script
 	await expect(async () => {
-		await editor.click();
-		await page.keyboard.press('ControlOrMeta+a');
-		await page.keyboard.insertText(expected + '\n');
+		// `fill` remplace tout le contenu, au téléphone comme à l'ordinateur (⌘A puis frappe ne
+		// prenait pas sur l'iPhone et l'Android émulés : nuit du 2026-11-27)
+		await editor.fill(expected + '\n');
 		const content = await editor
 			.locator('.cm-line')
 			.evaluateAll((els) => els.map((el) => el.textContent ?? '').join('\n'));

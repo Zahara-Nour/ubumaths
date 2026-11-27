@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { assertLocalServerEnv, login, sql } from './helpers/carnet';
+import { gotoSettled } from './helpers/pages';
 
 /**
  * Modèles de chapitre et chapitres liés — base LOCALE
@@ -45,9 +46,12 @@ async function cleanup(): Promise<void> {
 	await sql(`delete from chapter_templates where title like 'Verifs%'`);
 }
 
-/** Ouvre une page et la laisse s'hydrater (un clic juste après un `goto` serait perdu). */
+/**
+ * Ouvre une page et la laisse s'hydrater (un clic juste après un `goto` serait perdu). Une page
+ * qui recharge encore ses données après un formulaire peut interrompre le `goto` : on le relance.
+ */
 async function open(page: Page, address: string): Promise<void> {
-	await page.goto(address);
+	await gotoSettled(page, address);
 	await page.waitForLoadState('networkidle');
 }
 
@@ -211,6 +215,9 @@ test('#1394 chapitre lié : Modèle, Masquer un document, Masquer une section, I
 	// La réafficher : son contenu revient, non publié
 	await page.getByRole('switch', { name: /Afficher ce qui est masqué/ }).click();
 	await page.getByRole('button', { name: `Réafficher la section ${sectionTitle}` }).click();
+	// Plus rien de masqué : l'interrupteur s'en va (sinon la ligne de A se voit aussi tant que
+	// l'interrupteur montre ce qui est masqué, et quitter la page coupait l'envoi sous Safari)
+	await expect(page.getByText(/Afficher ce qui est masqué/)).toHaveCount(0, { timeout: 15_000 });
 	await expect(planRow(page, DOC_A)).toBeVisible({ timeout: 15_000 });
 
 	// « Invisible des élèves » une seule fois, sur la carte du chapitre : page de la classe,

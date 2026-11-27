@@ -278,21 +278,21 @@ test('#1687 — /aide-ecriture : Géométrie et Cercle trigonométrique, retours
 	browser
 }, testInfo) => {
 	await openAs(browser, TEACHER, page);
-	await page.goto('/aide-ecriture');
+	await gotoSettled(page, '/aide-ecriture');
 	await expect(page.locator('main a[href="/aide-ecriture/geometrie"]')).toContainText('Géométrie');
 	await expect(page.locator('main a[href="/aide-ecriture/cercle-trigo"]')).toContainText(
 		'Cercle trigonométrique'
 	);
-	await page.goto('/aide-ecriture/geometrie');
+	await gotoSettled(page, '/aide-ecriture/geometrie');
 	await expect(page.getByRole('heading', { level: 1, name: 'Géométrie' })).toBeVisible();
 	await expect(page.getByRole('link', { name: /Retour à l’aide à l’écriture/ })).toHaveAttribute(
 		'href',
 		'/aide-ecriture'
 	);
-	await page.goto('/aide-ecriture/geometrie/sliders/koch');
+	await gotoSettled(page, '/aide-ecriture/geometrie/sliders/koch');
 	await page.waitForLoadState('networkidle');
 	await expect(page.getByRole('link', { name: /Retour aux sliders/ })).toBeVisible();
-	await page.goto('/aide-ecriture/cercle-trigo');
+	await gotoSettled(page, '/aide-ecriture/cercle-trigo');
 	await page.waitForLoadState('networkidle');
 	await expect(page.locator('svg.trig-circle-svg').first()).toBeVisible();
 	// #1695 (part prof) : l'exemple « Mode interactif » se dessine, plus de « figure non dessinée »
@@ -317,7 +317,7 @@ test('#1764/#1767 — /aide-ecriture/blocs : les cartes du catalogue, chaque fic
 	test.setTimeout(480_000);
 	await openAs(browser, TEACHER, page);
 	await allowClipboard(page);
-	await page.goto('/aide-ecriture/blocs');
+	await gotoSettled(page, '/aide-ecriture/blocs');
 	const hrefs = await page
 		.locator('main ul a')
 		.evaluateAll((els) => els.map((el) => el.getAttribute('href') ?? ''));
@@ -529,11 +529,12 @@ test('#1688 — BO (texte) 5e : le tableau « élection des délégués » ; CP 
 	browser
 }) => {
 	await openAs(browser, TEACHER, page);
-	await page.goto('/dashboard/teacher/programme?grade=5&vue=texte');
+	// La page réécrit son adresse en s'hydratant : sans attendre, le `goto` suivant est interrompu
+	await gotoSettled(page, '/dashboard/teacher/programme?grade=5&vue=texte');
 	const article = page.locator('article.bo-texte');
 	await expect(article).toContainText('élection des délégués');
 	await expect(article.locator('table').filter({ hasText: 'Alexis' }).first()).toBeVisible();
-	await page.goto('/dashboard/teacher/programme?grade=CE2&vue=texte');
+	await gotoSettled(page, '/dashboard/teacher/programme?grade=CE2&vue=texte');
 	const ce2 = page.locator('article.bo-texte');
 	await expect(ce2).toContainText('(Illustration : voir le PDF, page');
 	await expect(ce2).toContainText(/Exemples de réussite/);
