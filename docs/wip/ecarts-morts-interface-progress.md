@@ -1,16 +1,16 @@
 ---
 title: Chantier ecarts-morts-interface
 date: 2026-11-28
-status: en cours
+status: en cours (M48, M58 restants)
 ---
 
 # Chantier `ecarts-morts-interface`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR._
+_Mis à jour le 2026-11-28, après #3260._
 
-- **État** : M32, M33, M34, M47, M49, M52 corrigés sur la branche (preuves vertes) · **Prochaine action** : revue, PR, merge, puis M48 et M58 · **En attente de David** : rien · **Pièges en cours** : M58 (`FontSelector.svelte`) est déjà supprimé par la branche de `ecarts-morts-utilitaires` ; M48 (`isTrivialHtmlWrapper`) dépend de V118 (lot `interface-prof`), « la brancher ou la retirer » · **Worktree / branche** : `../ubumaths-wt-ecarts-morts-interface` · `chore/ecarts-morts-interface`
+- **État** : M32, M33, M34, M47, M49, M52 mergés (#3260) ; la tâche de nuit barrera leurs lignes (preuves vertes) · **Prochaine action** : M58 dès que la branche `ecarts-morts-utilitaires` est mergée (elle supprime `FontSelector.svelte` ; reste `stores/exerciseFont.svelte.ts` et la règle CSS), dans un worktree neuf `fix`/`chore/ecarts-morts-interface-2` · **En attente** : M48 attend V118 (lot `interface-prof`) : brancher ou retirer `isTrivialHtmlWrapper` · **Pièges en cours** : un module de `src/lib` importé nu doit être dans `scripts/side-effect-modules.ts`, sinon le build l'élague (rouge de CI de #3260) · **Worktree / branche** : aucun (retirés par `pr:merger`)
 
 ## Lot
 
