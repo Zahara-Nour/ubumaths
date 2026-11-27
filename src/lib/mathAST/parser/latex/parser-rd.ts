@@ -1375,6 +1375,15 @@ class RDParser {
 
 		// Single token argument
 		const arg = this.parsePrimary();
+
+		// Sans parenthèses, la puissance qui suit porte sur l'argument : `\ln 5^2` est
+		// ln(5²), `\sin x^2` est sin(x²), comme dans les manuels (V39, décision de David
+		// du 2026-11-03). `\ln(5)^2` et `\ln{5}^2` gardent leur lecture, (ln 5)².
+		if (this.check('CARET')) {
+			this.advance();
+			const exponent = this.parsePowerOperand();
+			return [this.applyColor(MathAST.superscript(arg, exponent))];
+		}
 		return [arg];
 	}
 
