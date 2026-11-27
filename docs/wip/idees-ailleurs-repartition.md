@@ -184,6 +184,7 @@ de contenu appliquée en prod.
 | 66f9abbf Périmètre d'un rectangle                            | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
 | ccb4f5e5 Formule du périmètre d'un disque                    | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
 | cfb4c692 Périmètre d'un disque                               | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| fdd849f5 Aire d'un rectangle (correction de la variation 7)  | `idees-6e-longueurs`                                        | 2026-11-28 |                                      |
 
 ## Idées en attente
 
