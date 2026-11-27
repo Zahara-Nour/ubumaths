@@ -41,8 +41,8 @@
  *   déclarés) depuis l'origine imposée, ou depuis aucun point si elle est libre.
  *   `case: N` y est posée par le générateur de questions.
  * - `tourner:` (facultatif, `oui` ou `non`, chantier `solides-3d`) : l'élève peut
- *   faire tourner la figure à l'écran. Polyèdres sans `section:`, `cotes:` ni
- *   `tracer:` pour l'instant. Une valeur mal écrite ou un réglage pas encore pris
+ *   faire tourner la figure à l'écran. Toutes les formes, sans `section:`,
+ *   `cotes:` ni `tracer:` pour l'instant. Une valeur mal écrite ou un réglage pas encore pris
  *   en charge ne met PAS le bloc en erreur : phrase pour l'auteur
  *   (`rotationErrors`), figure fixe.
  *
@@ -835,8 +835,7 @@ export function parseSolideContent(source: string): {
 		let problem: string | null = null;
 		if (value !== 'oui' && value !== 'non') problem = `tourner « ${turnEntry.value} » : oui ou non`;
 		else if (value === 'oui') {
-			if (topology.curved) problem = notYet(topology.indefinite);
-			else if (section !== null) problem = notYet('un solide coupé (section:)');
+			if (section !== null) problem = notYet('un solide coupé (section:)');
 			else if (cotes !== null) problem = notYet('un solide coté (cotes:)');
 			else if (task !== undefined) problem = notYet('un solide à geste (tracer:)');
 			else rotate = true;

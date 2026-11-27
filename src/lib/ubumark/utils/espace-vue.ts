@@ -46,6 +46,16 @@ export interface EspaceVue {
 	oblique: number;
 }
 
+/**
+ * Bascule que le dessin ajoute à celle de la vue (`pitch`), en radians : au
+ * repos (`oblique` 1) et dans la vue droite (`oblique` 0). `turnVue` s'en sert
+ * pour arrêter la figure à la vue de dessus et à la vue de dessous.
+ */
+export interface VueTilt {
+	atRest: number;
+	straight: number;
+}
+
 /** Une vue prête à l'emploi */
 export interface VueProjection {
 	/** Vers l'œil, dans le repère tourné : deux points alignés sur cette direction se confondent au dessin */
@@ -72,6 +82,9 @@ export const VUE_DE_DEPART: EspaceVue = { yaw: 0, pitch: 0, oblique: 1 };
  */
 export const VUE_DROITE_YAW = Math.asin(DEPTH_SHIFT);
 export const VUE_DROITE_PITCH = Math.asin(DEPTH_SHIFT / Math.cos(VUE_DROITE_YAW));
+
+/** Bascule des polyèdres : aucune en cavalière, celle de la vue droite ensuite */
+export const VUE_TILT: VueTilt = { atRest: 0, straight: VUE_DROITE_PITCH };
 
 // ============================================================================
 // FONCTIONS
@@ -119,12 +132,20 @@ export function vueProjection(vue: EspaceVue, pivot: Point3): VueProjection {
  * et à la vue de dessous : le haut reste en haut, dans la vue en cours comme
  * dans la vue droite vers laquelle elle passe (`oblique` qui descend vers 0
  * ajoute de la bascule vers le dessus). Le tour est ramené entre −π et π.
+ * `tilt` : la bascule que le dessin ajoute (polyèdres par défaut ; un solide
+ * rond a la sienne, `SOLIDE_ROUND_TILT`).
  */
-export function turnVue(vue: EspaceVue, dyaw: number, dpitch: number): EspaceVue {
+export function turnVue(
+	vue: EspaceVue,
+	dyaw: number,
+	dpitch: number,
+	tilt: VueTilt = VUE_TILT
+): EspaceVue {
 	const limit = Math.PI / 2;
+	const now = vue.oblique * tilt.atRest + (1 - vue.oblique) * tilt.straight;
 	const pitch = Math.max(
-		-limit - (1 - vue.oblique) * VUE_DROITE_PITCH,
-		Math.min(limit - VUE_DROITE_PITCH, vue.pitch + dpitch)
+		-limit - Math.min(now, tilt.straight),
+		Math.min(limit - Math.max(now, tilt.straight), vue.pitch + dpitch)
 	);
 	const yaw = vue.yaw + dyaw;
 	return { ...vue, yaw: Math.atan2(Math.sin(yaw), Math.cos(yaw)), pitch };
