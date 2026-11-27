@@ -6,7 +6,8 @@
  * de l'écart, que le registre retient par `› V35`.
  *
  * Sonde : le chemin de l'Atelier (`runInput`), sauf quand l'écart porte sur une
- * fonction du moteur (`tidy`, `solve`, `solveInequality`, le parseur).
+ * fonction du moteur (`tidy`, `solve`, `solveInequality`, `normalize`, `intersect`,
+ * `union`, le parseur).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -17,6 +18,9 @@ import { toCustom, toLatex } from '#lib/mathAST/index.ts';
 import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
 import { tidy } from '#lib/mathAST/tidy/index.ts';
+import { normalize } from '#lib/mathAST/normal/normalize.ts';
+import { containsValue, intersect, union } from '#lib/mathAST/domain/algebra.ts';
+import { cotDomain, tanDomain, UNIVERSAL_SET } from '#lib/mathAST/domain/factory.ts';
 import { solve } from '#lib/mathAST/solve/solve.ts';
 import { solveInequality } from '#lib/mathAST/solve/inequality/index.ts';
 import { isRelation } from '#lib/mathAST/guards.ts';
@@ -505,4 +509,167 @@ describe('L77 — limites de Terminale encore refusées', () => {
 			expect(latexOf(run(input)).endsWith(expected)).toBe(true);
 		});
 	}
+});
+
+describe('L117 — domaine : deux familles de valeurs interdites, ou une famille et un point', () => {
+	const REFERENCE = latexOf(run('.domaine \\frac{1}{\\sin(x)}'));
+
+	it('témoin : 1/sin x rend ℝ privé des kπ', () => {
+		expect(REFERENCE).toBe('D = \\mathbb{R}\\setminus\\left\\{k\\pi,\\ k\\in\\mathbb{Z}\\right\\}');
+	});
+
+	// Aujourd'hui : « Je ne sais pas encore déterminer ce domaine. » pour les trois.
+	it('1/(sin x cos 2x) : ℝ privé des kπ et des π/4 + kπ/2', () => {
+		const latex = latexOf(run('.domaine \\frac{1}{\\sin(x)\\cos(2x)}'));
+
+		expect(latex).toContain('\\setminus');
+		expect(latex).toContain('\\frac{\\pi}{4}');
+		// Les kπ, cherchés hors du kπ/2 de la seconde famille.
+		expect(latex.replaceAll('\\frac{k\\pi}{2}', '')).toContain('k\\pi');
+	});
+
+	it('1/((x − 1) cos x) : ℝ privé de 1 et des π/2 + kπ', () => {
+		const latex = latexOf(run('.domaine \\frac{1}{(x-1)\\cos(x)}'));
+
+		expect(latex).toContain('\\setminus');
+		expect(latex).toContain('\\frac{\\pi}{2}');
+		// Le point 1, écrit seul entre deux séparateurs de l'ensemble.
+		expect(latex).toMatch(/[{;,]\s*1\s*[;,}\\]/);
+	});
+
+	it('1/((x − π) sin x) : π est déjà un kπ, même réponse que 1/sin x', () => {
+		expect(latexOf(run('.domaine \\frac{1}{(x-\\pi)\\sin(x)}'))).toBe(REFERENCE);
+	});
+});
+
+describe('L118 — limite en 0 de x ln x + kx : l’énoncé de la réponse dit 0⁺', () => {
+	it('témoin : x ln x en 0 s’écrit x → 0⁺', () => {
+		expect(latexOf(run('.limite x\\ln x en 0'))).toContain('x\\to 0^+');
+	});
+
+	// Aujourd'hui `\lim\limits_{x\to 0} \left(x \ln(x) + k x\right) = 0`.
+	it('x ln x + kx en 0 s’écrit x → 0⁺', () => {
+		const latex = latexOf(run('.limite x\\ln x+kx en 0'));
+
+		expect(latex).toContain('x\\to 0^+');
+		expect(latex.endsWith('= 0')).toBe(true);
+	});
+});
+
+describe('L119 — intersect et union de deux familles périodiques', () => {
+	// ℝ privé des kπ, et ℝ privé des π/2 + kπ.
+	const withoutKPi = cotDomain();
+	const withoutHalfPi = tanDomain();
+
+	it('témoin : ℝ ∖ {kπ} coupé avec ℝ reste privé de 0 et garde π/2', () => {
+		const domain = intersect(withoutKPi, UNIVERSAL_SET);
+
+		expect(containsValue(domain, 0)).toBe(false);
+		expect(containsValue(domain, Math.PI / 2)).toBe(true);
+	});
+
+	// Aujourd'hui : la première famille seule, π/2 est encore dans l'intersection.
+	it('l’intersection est privée des deux familles', () => {
+		const domain = intersect(withoutKPi, withoutHalfPi);
+
+		expect(containsValue(domain, 0)).toBe(false);
+		expect(containsValue(domain, Math.PI / 2)).toBe(false);
+		expect(containsValue(domain, 1)).toBe(true);
+	});
+
+	it('témoin : ℝ ∖ {kπ} réuni avec lui-même reste privé de 0', () => {
+		expect(containsValue(union(withoutKPi, withoutKPi), 0)).toBe(false);
+	});
+
+	// Aujourd'hui : la première famille seule, 0 manque à la réunion (qui est ℝ).
+	it('la réunion de deux familles sans valeur commune est ℝ', () => {
+		const domain = union(withoutKPi, withoutHalfPi);
+
+		expect(containsValue(domain, 0)).toBe(true);
+		expect(containsValue(domain, Math.PI / 2)).toBe(true);
+	});
+});
+
+describe('L120 — normalize ne découpe pas √(4ab) en 2 √a √b', () => {
+	// √a √b n'existe pas pour a = b = −1, alors que √(ab) vaut 1.
+	it('témoin : √(ab) reste une seule racine', () => {
+		expect(normalize(parseLatex('\\sqrt{ab}')).hash).toBe('*(V(a),V(b))^1/2');
+	});
+
+	// Aujourd'hui `2*V(a)^1/2*V(b)^1/2`.
+	it('√(4ab) garde ab sous une seule racine', () => {
+		const hash = normalize(parseLatex('\\sqrt{4ab}')).hash;
+
+		// Que le 4 sorte de la racine ou non : ni √a ni √b seuls.
+		expect(hash).not.toContain('V(a)^1/2');
+		expect(hash).not.toContain('V(b)^1/2');
+	});
+});
+
+describe('L121 — refus à lever : une seule famille kπ/2, limite à droite avec une lettre', () => {
+	it('témoin : 1/(sin x cos x) rend ℝ privé des kπ/2', () => {
+		expect(latexOf(run('.domaine \\frac{1}{\\sin(x)\\cos(x)}'))).toContain('\\frac{k\\pi}{2}');
+	});
+
+	// Aujourd'hui : « Je ne sais pas encore déterminer ce domaine. » pour les deux.
+	for (const input of [
+		'.domaine \\frac{1}{\\sin(x)}+\\frac{1}{\\cos(x)}',
+		'.domaine \\frac{\\tan(x)}{\\sin(x)}'
+	]) {
+		it(`${input} rend ℝ privé des kπ/2`, () => {
+			expect(latexOf(run(input))).toContain('\\frac{k\\pi}{2}');
+		});
+	}
+
+	it('témoin : ln(x + k) en 0⁺ rend ln k, pour k > 0', () => {
+		expect(latexOf(run('.limite \\ln(x+k) en 0+'))).toContain('\\text{pour }k > 0');
+	});
+
+	// Aujourd'hui : « Je ne sais pas calculer cette limite : elle peut dépendre du signe de k. »
+	// x/(kx + x²) = 1/(k + x) : 1/k pour tout k ≠ 0 ; « k > 0 » (constat du registre)
+	// serait juste aussi, en plus étroit.
+	it('x/(kx + x²) en 0⁺ rend 1/k, avec sa condition sur k', () => {
+		const latex = latexOf(run('.limite \\frac{x}{kx+x^2} en 0+'));
+
+		expect(latex).toContain('= \\dfrac{1}{k}');
+		expect(latex).toMatch(/\\text\{pour \}k (>|\\neq) 0/);
+	});
+});
+
+describe('V124 — x² − a²bc = 0 : la solution 0 du cas a = 0', () => {
+	it('témoin : x² − ab = 0 rend ±√(ab) si ab ⩾ 0', () => {
+		const latex = latexOf(run('.résoudre x^2-ab=0'));
+
+		expect(latex).toContain('\\sqrt{a b}');
+		expect(latex).toContain('a b \\geqslant 0');
+	});
+
+	// Aujourd'hui `S = {√(bc)|a| ; −√(bc)|a|} si bc ⩾ 0` : rien pour a = 0 avec bc < 0,
+	// où 0 est pourtant solution. La forme de la réponse corrigée n'est pas tranchée :
+	// le test demande seulement que le cas a = 0 soit écrit.
+	it('la réponse annonce le cas a = 0', () => {
+		const latex = latexOf(run('.résoudre x^2-a^2bc=0'));
+
+		expect(latex).toContain('b c \\geqslant 0');
+		expect(latex).toMatch(/a\s*=\s*0/);
+	});
+});
+
+describe('V125 — limite à paramètre : k/k simplifié en 1', () => {
+	it('témoin : 1/(x² + k) en 0 rend 1/k, pour k ≠ 0', () => {
+		const latex = latexOf(run('.limite \\frac{1}{x^2+k} en 0'));
+
+		expect(latex).toContain('= \\dfrac{1}{k}');
+		expect(latex).toContain('\\text{pour }k \\neq 0');
+	});
+
+	// Aujourd'hui `… = \dfrac{k}{k}\text{,}\quad\text{pour }k \neq 0`.
+	it('(x + k)/(x² + k) en 0 rend 1, pour k ≠ 0', () => {
+		const latex = latexOf(run('.limite \\frac{x+k}{x^2+k} en 0'));
+
+		expect(latex).toContain('= 1');
+		expect(latex).not.toContain('\\dfrac{k}{k}');
+		// La condition reste : pour k = 0 l'expression est 1/x, sans limite en 0.
+		expect(latex).toContain('\\text{pour }k \\neq 0');
+	});
 });
