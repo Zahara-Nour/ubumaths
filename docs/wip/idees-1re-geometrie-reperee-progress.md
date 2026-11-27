@@ -51,7 +51,8 @@ _Mis à jour le 2026-11-27, PR de rangement en cours._
   projeté orthogonal (point sur la notion, admis par la règle). Test d'intégration vert (155),
   **rouge sans la migration** (5 échecs, fichier écarté le temps d'un passage puis remis depuis une
   copie, `cmp` identique) ; `garde-niveaux-tags` : aucun niveau manquant.
-- `security-auditor` sur la migration : **aucun finding bloquant** (aucune policy, grant ni `SECURITY
-DEFINER` ; additive ; rollback correct ; trigger toujours réactivé sous `db push` ; seule migration
-  en attente en prod). Non bloquant : `set local lock_timeout` peut rester sans effet hors bloc de
-  transaction (au pire une attente de verrou). Personne ne gagne ni ne perd d'accès.
+- `security-auditor` sur la migration : **aucun finding bloquant**. Aucune policy, aucun grant,
+  aucune fonction sûre (`SECURITY DEFINER`) ; additive ; rollback correct ; trigger toujours réactivé
+  sous `db push` ; seule migration en attente en prod. Non bloquant : `set local lock_timeout` peut
+  rester sans effet hors bloc de transaction (au pire une attente de verrou). Personne ne gagne ni
+  ne perd d'accès.
