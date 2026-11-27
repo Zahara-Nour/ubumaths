@@ -2,25 +2,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3241, lot 7a écrit et en attente de l'essai de David._
+_Mis à jour le 2026-11-27, après #3244 (lot 7a mergé)._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195, #3200,
-  #3211, #3216, #3222, #3227, #3229, #3235). Les lots 3 à 6 et #3229 ne sont pas en prod tant qu'un
+  #3211, #3216, #3222, #3227, #3229, #3235) ; **lot 7a (droites) mergé** (#3244, § 18), essayé au doigt par
+  David (« c'est bon »). Les lots 3 à 7a et #3229 ne sont pas en prod tant qu'un
   `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de l'affirmer). **Phase 0 du lot 7
   validée** (§ 17, « je te suis » : dans le bloc solide ; 7a droites, 7b plans, 7c repère du solide et points
   par coordonnées, une PR chacun ; 7d laissé ; tirets là où une face passe devant ; 7e point d'intersection
-  ensuite). **Lot 7a (droites) écrit, testé, vu à l'écran par la session** (§ 18), sur la
-  branche ; pas encore mergé.
-- **Prochaine action** : lot 7a — revue faite et corrigée (§ 18), PR ouverte ; **David veut essayer avant le
-  merge** : lui donner le lien
-  (`pnpm lien`, serveur 5176), attendre son « c'est bon », puis `pnpm pr:merger`. Ensuite lot 7b (plans),
-  même branche de travail neuve depuis `main`.
-- **En attente de David** : **son essai au doigt des lots 3 à 6 est fait, « c'est bon » (2026-11-27)**. Il n'a
-  pas demandé de `deploy:prod` : ne pas le lancer sans sa demande. Il veut vérifier lui-même le lot 7 : lui
-  donner le lien (`pnpm lien`, serveur 5176) dès que le 7a se voit à l'écran, avant de merger. **À lui montrer
-  dans le 7a** : un bout de droite encore derrière le solide reste en tirets (`(DC)`, `(DG)` d'un cube : la
-  droite ne ressort pas du cube sur le dessin) — l'allonger jusqu'à ce qu'elle ressorte serait un autre choix. Proposé, sans
-  réponse : mettre la description des réglages sous le réglage dans la page d'aide (tableau trop étroit sur
+  ensuite).
+- **Prochaine action** : **lot 7b (plans)** dans le bloc solide, selon le § 17 : worktree et branche neufs
+  depuis `main`, tests d'abord, même chaîne que le 7a (§ 18). Puis 7c.
+- **En attente de David** : **ses essais au doigt des lots 3 à 6 puis du 7a sont faits, « c'est bon »
+  (2026-11-27)**. Il n'a pas demandé de `deploy:prod` : ne pas le lancer sans sa demande. Il veut vérifier
+  lui-même chaque morceau du lot 7 **avant le merge** : lui donner le lien (`pnpm lien`, serveur 5176) dès
+  que le 7b se voit à l'écran, attendre son « c'est bon ». **Question posée deux fois, sans réponse (donc
+  rien de changé)** : un bout de droite encore derrière le solide reste en tirets (`(DC)`, `(DG)` d'un cube :
+  la droite ne ressort pas du cube sur le dessin) — l'allonger jusqu'à ce qu'elle ressorte serait un autre
+  choix. Proposé, sans réponse : mettre la description des réglages sous le réglage dans la page d'aide (tableau trop étroit sur
   téléphone) ; teinter les cases de saisie de `retrouver:`.
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
@@ -38,8 +37,8 @@ _Mis à jour le 2026-11-27, après #3241, lot 7a écrit et en attente de l'essai
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7` (neuve, depuis
-  `main` après #3235, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
+- **Worktree / branche** : aucun (retirés après #3244, serveur 5176 arrêté). À créer pour le 7b :
+  `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7b`, depuis `origin/main`.
 
 ## 1. D'où l'on part
 
