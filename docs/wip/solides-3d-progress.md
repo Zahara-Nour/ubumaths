@@ -347,3 +347,52 @@ valent tels quels ; ne sont écrits ici que ceux propres aux sections et aux cot
   `vecteurs:`, pendant le passage et déjà tournés : un nom de vecteur dépasse le cadre d'environ 0,08 cm
   (existe depuis le lot 2). Dessin fixe d'une boule coupée et cotée : « 1,5 cm » touche le nom du centre
   (dessin d'avant le chantier).
+
+## 12. Lot 5 — gestes sur figure tournée : comportements (À VALIDER par David, écrits le 2026-11-27)
+
+Exemple suivi : un pavé ABCDEFGH, « trace le vecteur AB + AD + AE » (`tracer: vecteur AB + AD + AE`), avec
+`tourner: oui`. La réponse juste est la flèche de A à G.
+
+### Nominal
+
+38. Sans `tourner:`, la figure à geste ne change pas : même dessin, mêmes boutons qu'aujourd'hui.
+39. Avec `tourner: oui`, elle s'ouvre comme aujourd'hui (cavalière, anneaux sur les points, boutons
+    « Origine », « Extrémité », « Effacer »).
+40. Toucher un point sans glisser (doigt posé puis levé au même endroit) : le point est posé, comme
+    aujourd'hui. La figure ne tourne pas.
+41. Glisser le doigt : la figure tourne, même si le doigt est parti d'un point. Rien n'est posé.
+42. Les anneaux, les points choisis et la flèche de l'élève suivent la rotation. La flèche déjà tracée reste
+    tracée : tourner ne l'efface pas et ne change pas la réponse.
+43. Tous les points restent touchables sous toutes les vues, même ceux de l'arrière du solide.
+44. « Vue de départ » apparaît à côté des boutons dès que la figure a tourné ; elle ramène la vue sans
+    effacer la flèche. « Effacer » efface la flèche sans ramener la vue.
+45. Au clavier : Tab va de point en point, Espace ou Entrée pose le point (comme aujourd'hui) ; les flèches
+    tournent la figure et Échap la ramène, que l'on soit sur la figure ou sur un point.
+46. La réponse reste « A/G » : la vue ne compte pas, n'est pas enregistrée. Fiche PDF : vue de départ.
+
+### Limites
+
+47. Après la correction, la figure de l'élève (verrouillée) et la figure « Correction » (flèche verte)
+    tournent encore, chacune de son côté ; plus rien ne se pose.
+48. Deux points l'un devant l'autre à l'écran (pavé vu de face : A cache E) : voir la question (a).
+49. Origine imposée (`depuis A`) : A reste posée d'office sous toutes les vues.
+50. Glisser sur la figure ne fait pas défiler la page ; « moins d'animations » : retour immédiat ; nouvelle
+    question : vue de départ et rien de posé.
+51. Lecteur d'écran : la description d'aujourd'hui (« …, points à toucher ») plus « figure que l'on peut
+    tourner ». Jamais le nom du solide ni la flèche attendue.
+
+### Erreurs
+
+52. `tourner: oui` avec `tracer:` : plus de message pour l'auteur, la figure tourne. `tourner:` mal écrit :
+    message pour l'auteur, figure à geste fixe (inchangé).
+
+### Questions pour David
+
+- **(a) Deux points au même endroit de l'écran** (pavé vu bien de face : A et E se superposent). Que pose le
+  toucher ? (1) le point de devant, celui qui est le plus près de l'œil ; (2) rien : il faut tourner un peu
+  pour les séparer. Recommandation : (1), avec des zones de toucher qui rétrécissent quand deux points se
+  rapprochent (comme aujourd'hui sur un pavé aplati).
+- **(b) La figure « Correction »** (flèche verte, sous la figure fausse) : elle tourne aussi (comportement 47),
+  ou elle reste fixe ? Recommandation : elle tourne, c'est là que voir AG dans l'espace sert le plus.
+- **(c) La petite PR de la boule coupée et cotée** (« 1,5 cm » qui touche le nom du centre, dessin fixe) :
+  avant ou après ce lot ?
