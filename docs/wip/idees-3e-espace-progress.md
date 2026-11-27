@@ -117,3 +117,6 @@ fin), migration `20261127223236_questions_idees_3e_espace_publies_contenu.sql` e
   entière devant π, comme les autres variations du modèle. Troisième erreur de F3 : volumes
   ajoutés (10r³/3 π) au lieu de « hauteur prise égale à r » (volume négatif, aucun élève ne le
   donnerait).
+- `security-auditor` (2026-11-27) : aucun finding. Cinq UPDATE de `question_templates` (variations,
+  specs, description) gardés par le contenu relevé en prod, rollback en commentaire ; personne ne
+  gagne ni ne perd d'accès.
