@@ -111,7 +111,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Longueurs                          | 6M1   | 16        | libre                |                             |
 | Aires                              | 6M2   | 17        | libre                |                             |
 | Volumes                            | 6M3   | 3         | libre                |                             |
-| Durées                             | 6M4   | 11        | prise (2026-11-27)   | `idees-6e-durees`           |
+| Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
@@ -162,7 +162,6 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 311bf024 Convertir des durées                                | `idees-6e-durees`                                           | 2026-11-27 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
