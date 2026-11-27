@@ -6,8 +6,8 @@ _Mis à jour le 2026-11-27, lot 7b écrit, pas encore mergé (dernier merge : #3
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 et 7a mergés**
   (#3195 à #3244). Les lots 3 à 7a ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a
-  pas emportés. **Lot 7b (plans) écrit sur la branche** (§ 19), tests verts, vu à l'écran par la session ;
-  **pas de PR ouverte**.
+  pas emportés. **Lot 7b (plans) écrit sur la branche** (§ 19), tests verts, vu à l'écran par la session,
+  **essayé par David (« c'est bon »)** ; PR ouverte, à merger dès la CI verte.
 - **Prochaine action** : attendre le « c'est bon » de David sur le 7b (lien `pnpm lien`, serveur **5177** :
   le 5176 est pris par une autre session), puis PR, CI, `pnpm pr:merger`. Ensuite la petite PR du bord en butée (ci-dessous), puis **lot 7c** (repère du
   solide et points par coordonnées, § 17), même chaîne.
@@ -667,4 +667,6 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   `PLAN_NAME_AWAY`, `PlanSpot`) ; il suit ce point du bord pendant la rotation, ramené dans le cadre. Vu à
   l'écran : cube avec (IG) et (BDE) (« (P) » à droite de [EB]), cube à deux plans, `pave 1 1 6` avec (EFG),
   `pave 5 3 2` avec (ABF), prisme coté avec (ABC), pyramide avec (SAC) ; les deux cubes tournés sous deux
-  angles. Le « À montrer à David » ci-dessus n'a plus lieu d'être. Tests : `solide-plans.test.ts` (32).
+  angles. Le « À montrer à David » ci-dessus n'a plus lieu d'être. Tests : `solide-plans.test.ts` (31).
+- **Essayé par David le 2026-11-27 : « c'est bon ».** Le nom à côté du plan a été écrit après la revue : il
+  n'a pas été relu par un agent (tests et captures seulement).
