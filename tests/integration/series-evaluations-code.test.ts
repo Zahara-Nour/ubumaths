@@ -42,9 +42,9 @@ import {
 	countAttempts,
 	getAssignmentWithEvaluation,
 	getEvaluationResults,
-	getStudentAssignments,
-	validateAttempt
+	getStudentAssignments
 } from '#lib/server/evaluations.ts';
+import { getAttemptsRemaining } from '#lib/types/evaluation.ts';
 
 // Types
 type Client = SupabaseClient<Database>;
@@ -210,17 +210,14 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		await studentSession(6);
 		const evaluation = (await getAssignmentWithEvaluation(student.client, assignmentId))!
 			.evaluation;
-		expect(await validateAttempt(student.client, evaluation, student.id)).toMatchObject({
-			can_attempt: true,
-			current_attempts: 1,
-			attempts_remaining: 1
-		});
+		// Le refus au départ (403) est testé par evaluation-notee-serveur (B7)
+		expect(evaluation.max_attempts, 'décor').toBe(2);
+		expect(await countAttempts(student.client, evaluationId, student.id)).toBe(1);
+		expect(getAttemptsRemaining(1, evaluation.max_attempts)).toBe(1);
 
 		await studentSession(8);
-		expect(await validateAttempt(student.client, evaluation, student.id)).toMatchObject({
-			can_attempt: false,
-			current_attempts: 2
-		});
+		expect(await countAttempts(student.client, evaluationId, student.id)).toBe(2);
+		expect(getAttemptsRemaining(2, evaluation.max_attempts)).toBe(0);
 	});
 
 	it('« Mes évaluations » : forme, série et meilleure note de l’élève', async () => {
@@ -303,9 +300,9 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		// Première tentative : acceptée
 		const found = await getAssignmentWithEvaluation(student.client, assignment!.id);
 		expect(found).not.toBeNull();
-		const first = await validateAttempt(student.client, found!.evaluation, student.id);
-		expect(first.can_attempt).toBe(true);
-		// Séance posée par le serveur (Q38) ; `validateAttempt` lit sous RLS
+		const first = await countAttempts(student.client, evaluation!.id, student.id);
+		expect(getAttemptsRemaining(first, found!.evaluation.max_attempts)).toBe(1);
+		// Séance posée par le serveur (Q38) ; `countAttempts` lit sous RLS
 		const { error: insertError } = await service.from('test_sessions').insert({
 			user_id: student.id,
 			mode: 'interactive',
@@ -318,8 +315,9 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		expect(insertError).toBeNull();
 
 		// Deuxième : refusée
-		const second = await validateAttempt(student.client, found!.evaluation, student.id);
-		expect(second).toMatchObject({ can_attempt: false, current_attempts: 1 });
+		const second = await countAttempts(student.client, evaluation!.id, student.id);
+		expect(second).toBe(1);
+		expect(getAttemptsRemaining(second, found!.evaluation.max_attempts)).toBe(0);
 	});
 
 	it('une série enregistrée par catégories (ancienne forme) est illisible : items vides, sans erreur', async () => {

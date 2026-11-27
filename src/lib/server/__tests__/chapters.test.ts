@@ -544,24 +544,6 @@ describe('Document Validation Schemas', () => {
 			expect(result.success).toBe(true);
 		});
 	});
-
-	describe('updateDocumentSchema', () => {
-		it('should validate title update', () => {
-			const data = {
-				title: 'Nouveau titre'
-			};
-
-			const result = validation.updateDocumentSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should reject empty update', () => {
-			const data = {};
-
-			const result = validation.updateDocumentSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-	});
 });
 
 // ============================================================================
@@ -902,30 +884,6 @@ describe('Chapter CRUD Functions', () => {
 			expect(result.error).toBeDefined();
 		});
 	});
-
-	describe('reorderChapters', () => {
-		// Skip these tests - they require complex mock setup with chained .eq().eq() calls
-		// Better suited for integration tests with a real database
-		it.skip('should reorder chapters', async () => {
-			const orderUpdates = [
-				{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', displayOrder: 2 },
-				{ id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', displayOrder: 0 },
-				{ id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', displayOrder: 1 }
-			];
-
-			const result = await chapters.reorderChapters(mockClassId, orderUpdates, supabase);
-
-			expect(result.error).toBeNull();
-		});
-
-		it.skip('should handle reorder error', async () => {
-			const orderUpdates = [{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', displayOrder: 1 }];
-
-			const result = await chapters.reorderChapters(mockClassId, orderUpdates, supabase);
-
-			expect(result.error).toBeDefined();
-		});
-	});
 });
 
 // ============================================================================
@@ -1002,24 +960,6 @@ describe('Document CRUD Functions', () => {
 			expect(result.error).toBeNull();
 			expect(result.data?.sourceType).toBe('google_drive');
 			expect(result.data?.googleFileId).toBe('abc123');
-		});
-	});
-
-	describe('updateChapterDocument', () => {
-		it('should update document title', async () => {
-			const updates = {
-				title: 'Nouveau titre'
-			};
-
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { ...mockDbDocument, title: 'Nouveau titre' },
-				error: null
-			});
-
-			const result = await chapters.updateChapterDocument(mockDocumentId, updates, supabase);
-
-			expect(result.error).toBeNull();
-			expect(result.data?.title).toBe('Nouveau titre');
 		});
 	});
 

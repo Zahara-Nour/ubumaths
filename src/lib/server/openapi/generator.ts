@@ -320,7 +320,7 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 					}
 				}
 			},
-			'/api/classes': {
+			'/api/teacher/classes': {
 				get: {
 					tags: ['Classes'],
 					summary: 'List classes',

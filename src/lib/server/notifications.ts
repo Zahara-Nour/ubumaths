@@ -812,28 +812,3 @@ export async function notifyAdminsOfNewBugReport(data: {
 		action_url: `/dashboard/admin/bug-reports?id=${data.reportId}`
 	});
 }
-
-/**
- * Hard delete expired notifications (cleanup job)
- */
-export async function cleanupExpiredNotifications(
-	supabase: SupabaseClientType
-): Promise<{ success: boolean; deletedCount?: number; error?: string }> {
-	try {
-		const { data, error } = await supabase
-			.from('notifications')
-			.delete()
-			.lt('expires_at', new Date().toISOString())
-			.select('id');
-
-		if (error) {
-			logger.error('Error cleaning up expired notifications:', error);
-			return { success: false, error: 'Erreur lors du nettoyage' };
-		}
-
-		return { success: true, deletedCount: data?.length || 0 };
-	} catch (error) {
-		logger.error('Error in cleanupExpiredNotifications:', error);
-		return { success: false, error: 'Erreur inattendue' };
-	}
-}

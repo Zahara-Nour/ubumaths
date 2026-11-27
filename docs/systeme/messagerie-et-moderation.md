@@ -197,9 +197,9 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   (l'ancienne adresse `/dashboard/teacher/warnings` est redirigée par `src/hooks.server.ts`).
 - Serveur : `src/lib/server/warnings.ts` — `getCurrentAcademicPeriod`, `getActiveSchoolYear`,
   `getSchoolYearPeriods` (lus aussi par `dashboard/teacher/+layout.server.ts`),
-  `getClassWarnings`, `addWarning`, `addWarningsBulk`, `removeWarningsBulk`.
-- API prof (`requireRoles(['teacher','admin'])`) : `src/routes/api/warnings/` (un ajout),
-  `warnings/bulk/` (`add_warnings_bulk`), `warnings/remove-bulk/` (`remove_warnings_bulk`,
+  `getClassWarnings`, `addWarningsBulk`, `removeWarningsBulk`.
+- API prof (`requireRoles(['teacher','admin'])`) : `src/routes/api/warnings/bulk/`
+  (`add_warnings_bulk`, un ajout ou plusieurs), `warnings/remove-bulk/` (`remove_warnings_bulk`,
   contexte `teacher` ou `vip_card`), `classes/[classId]/warnings/` (lecture par classe).
 - API élève : `src/routes/api/student/warnings/[periodId]/` — ses avertissements de la période.
   Affichés par `src/lib/components/RewardsBlock.svelte` (tableau de bord élève).

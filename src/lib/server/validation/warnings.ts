@@ -19,26 +19,6 @@ import { z } from 'zod';
 export const warningTypeSchema = z.enum(['C', 'M', 'R', 'T']);
 
 // ============================================================================
-// ADD WARNING SCHEMA
-// ============================================================================
-
-/**
- * Schema for adding a warning to a student
- * Validates student_id, class_id, academic_period_id, and warning_type
- */
-export const addWarningSchema = z.object({
-	student_id: z.string().uuid('ID élève invalide'),
-	class_id: z.string().uuid('ID classe invalide'),
-	academic_period_id: z.string().uuid('ID période académique invalide'),
-	warning_type: warningTypeSchema
-});
-
-/**
- * Inferred TypeScript type for add warning data
- */
-export type AddWarningData = z.infer<typeof addWarningSchema>;
-
-// ============================================================================
 // ADD WARNINGS BULK SCHEMA
 // ============================================================================
 

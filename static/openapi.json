@@ -1,17 +1,17 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "UbuMaths API",
+    "title": "Chiphre API",
     "version": "1.0.0",
-    "description": "# UbuMaths API Documentation\n\nEducational mathematics platform API with comprehensive Zod validation.\n\n## Features\n\n- **Assessments**: Create, manage, and grade assessments\n- **Exercises**: Mathematical exercises with solutions\n- **SRS (Spaced Repetition)**: Flashcard system with FSRS algorithm\n- **Messages**: Internal messaging system\n- **Questions**: Question template management\n- **Notifications**: User notification system\n- **Classes**: Class management for teachers\n- **Rewards**: Gamification with gidouilles currency\n- **Admin**: Administrative operations\n\n## Authentication\n\nAll endpoints require authentication via session cookies. Users must be logged in to access the API.\n\n## Rate Limiting\n\n- AI Chatbot: 5 requests per 15 minutes\n- General API: No rate limiting currently implemented\n\n## Error Handling\n\nAll errors follow a consistent format:\n\n```json\n{\n  \"error\": {\n    \"message\": \"Human-readable error message\",\n    \"code\": \"ERROR_CODE\",\n    \"details\": {}\n  }\n}\n```\n\n## Validation\n\nAll request bodies and query parameters are validated using Zod schemas. Invalid requests will return a 400 status code with detailed validation errors.",
+    "description": "# Chiphre API Documentation\n\nEducational mathematics platform API with comprehensive Zod validation.\n\n## Features\n\n- **Assessments**: séries et contrôles\n- **Exercises**: Mathematical exercises with solutions\n- **SRS (Spaced Repetition)**: Flashcard system with FSRS algorithm\n- **Classes**: Class management for teachers\n\n## Authentication\n\nAll endpoints require authentication via session cookies. Users must be logged in to access the API.\n\n## Rate Limiting\n\n- AI Chatbot: 5 requests per 15 minutes\n- General API: No rate limiting currently implemented\n\n## Error Handling\n\nAll errors follow a consistent format:\n\n```json\n{\n  \"error\": {\n    \"message\": \"Human-readable error message\",\n    \"code\": \"ERROR_CODE\",\n    \"details\": {}\n  }\n}\n```\n\n## Validation\n\nAll request bodies and query parameters are validated using Zod schemas. Invalid requests will return a 400 status code with detailed validation errors.",
     "contact": {
-      "name": "UbuMaths Team",
-      "url": "https://ubumaths.com"
+      "name": "Chiphre Team",
+      "url": "https://chiph.re"
     }
   },
   "servers": [
     {
-      "url": "https://ubumaths.com",
+      "url": "https://chiph.re",
       "description": "Production server"
     },
     {
@@ -26,7 +26,7 @@
   "tags": [
     {
       "name": "Assessments",
-      "description": "Assessment creation, management, and grading"
+      "description": "Séries et contrôles"
     },
     {
       "name": "Exercises",
@@ -37,32 +37,8 @@
       "description": "Spaced repetition system (flashcards) with FSRS algorithm"
     },
     {
-      "name": "Messages",
-      "description": "Internal messaging system for teachers and students"
-    },
-    {
-      "name": "Questions",
-      "description": "Question template management and generation"
-    },
-    {
-      "name": "Notifications",
-      "description": "User notification system"
-    },
-    {
       "name": "Classes",
       "description": "Class management for teachers"
-    },
-    {
-      "name": "Admin",
-      "description": "Administrative operations (admin role required)"
-    },
-    {
-      "name": "Rewards",
-      "description": "Gamification and gidouilles reward system"
-    },
-    {
-      "name": "Riddles",
-      "description": "Daily riddles and puzzles"
     },
     {
       "name": "Errors",
@@ -143,6 +119,69 @@
     }
   ],
   "paths": {
+    "/api/series": {
+      "post": {
+        "tags": [
+          "Assessments"
+        ],
+        "summary": "Enregistrer une série",
+        "description": "Enregistre le panier comme série (titre, niveau, description, 1 à 50 catégories). Prof et admin.",
+        "responses": {
+          "201": {
+            "description": "Série enregistrée"
+          },
+          "400": {
+            "description": "Corps invalide"
+          },
+          "403": {
+            "description": "Réservé aux professeurs et aux administrateurs"
+          }
+        }
+      }
+    },
+    "/api/evaluations/assignments/{id}/start": {
+      "post": {
+        "tags": [
+          "Assessments"
+        ],
+        "summary": "Démarrer ou reprendre un contrôle assigné",
+        "description": "Destinataire : le serveur crée (ou reprend) la tentative, tire les questions et rend leur version publique (ni réponse, ni correction, ni graine). Propriétaire ou admin : aperçu (catégories).",
+        "responses": {
+          "200": {
+            "description": "Tentative (questions publiques) ou aperçu"
+          },
+          "403": {
+            "description": "Date limite passée ou tentatives épuisées"
+          },
+          "404": {
+            "description": "Contrôle introuvable, non assigné ou brouillon"
+          }
+        }
+      }
+    },
+    "/api/evaluations/attempts/{id}/submit": {
+      "post": {
+        "tags": [
+          "Assessments"
+        ],
+        "summary": "Envoyer une tentative de contrôle",
+        "description": "Le serveur régénère les questions, corrige, applique le barème (1, ½ ou 0 point), enregistre réponses et note sur 20, et rend la correction complète.",
+        "responses": {
+          "200": {
+            "description": "Correction, points et note"
+          },
+          "400": {
+            "description": "Corps invalide"
+          },
+          "404": {
+            "description": "Tentative introuvable"
+          },
+          "409": {
+            "description": "Tentative déjà terminée"
+          }
+        }
+      }
+    },
     "/api/exercises": {
       "get": {
         "tags": [
@@ -311,182 +350,7 @@
         }
       }
     },
-    "/api/messages": {
-      "post": {
-        "tags": [
-          "Messages"
-        ],
-        "summary": "Send message",
-        "description": "Send a new message",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "subject",
-                  "content"
-                ],
-                "properties": {
-                  "recipientIds": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/UUID"
-                    },
-                    "maxItems": 100
-                  },
-                  "subject": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 200
-                  },
-                  "content": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 10000
-                  },
-                  "isGroupMessage": {
-                    "type": "boolean",
-                    "default": false
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Message sent successfully"
-          }
-        }
-      }
-    },
-    "/api/questions": {
-      "get": {
-        "tags": [
-          "Questions"
-        ],
-        "summary": "List question templates",
-        "description": "List question templates with filtering and pagination",
-        "responses": {
-          "200": {
-            "description": "List of question templates"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Questions"
-        ],
-        "summary": "Create question template",
-        "description": "Create a new question template",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "type",
-                  "title",
-                  "grades",
-                  "theme",
-                  "domain",
-                  "level"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "multiple_choice",
-                      "numerical",
-                      "algebraic",
-                      "fill_blanks",
-                      "ordering",
-                      "matrix",
-                      "true_false"
-                    ]
-                  },
-                  "title": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 200
-                  },
-                  "grades": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Grade"
-                    },
-                    "minItems": 1
-                  },
-                  "theme": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 100
-                  },
-                  "domain": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 100
-                  },
-                  "level": {
-                    "type": "integer",
-                    "minimum": 1
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Question template created successfully"
-          }
-        }
-      }
-    },
-    "/api/notifications": {
-      "get": {
-        "tags": [
-          "Notifications"
-        ],
-        "summary": "List notifications",
-        "description": "List notifications with pagination",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 50
-            }
-          },
-          {
-            "name": "unreadOnly",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of notifications"
-          }
-        }
-      }
-    },
-    "/api/classes": {
+    "/api/teacher/classes": {
       "get": {
         "tags": [
           "Classes"
@@ -496,89 +360,6 @@
         "responses": {
           "200": {
             "description": "List of classes"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Classes"
-        ],
-        "summary": "Create class",
-        "description": "Create a new class",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name",
-                  "grade",
-                  "school_year"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 100
-                  },
-                  "grade": {
-                    "$ref": "#/components/schemas/Grade"
-                  },
-                  "school_year": {
-                    "type": "string",
-                    "pattern": "^\\d{4}-\\d{4}$"
-                  },
-                  "description": {
-                    "type": "string",
-                    "maxLength": 500
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Class created successfully"
-          }
-        }
-      }
-    },
-    "/api/rewards/award": {
-      "post": {
-        "tags": [
-          "Rewards"
-        ],
-        "summary": "Award gidouilles",
-        "description": "Award gidouilles to a student",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "studentId",
-                  "amount"
-                ],
-                "properties": {
-                  "studentId": {
-                    "$ref": "#/components/schemas/UUID"
-                  },
-                  "amount": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 1000
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Gidouilles awarded successfully"
           }
         }
       }

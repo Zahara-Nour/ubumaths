@@ -42,7 +42,6 @@ import {
 import { POST as templateUploadUrl } from '../../src/routes/api/teacher/chapter-templates/[id]/document-upload-url/+server';
 import { POST as templateDocuments } from '../../src/routes/api/teacher/chapter-templates/[id]/documents/+server';
 import { GET as serveDocument } from '../../src/routes/api/documents/[id]/+server';
-import { DELETE as deleteChapterDocumentApi } from '../../src/routes/api/teacher/chapters/[id]/documents/[docId]/+server';
 import { actions as chapterActions } from '../../src/routes/(protected)/dashboard/teacher/cours/[classId]/[chapterId]/+page.server';
 
 // Le client service des modules serveur lit process.env (qui peut viser la prod
@@ -497,14 +496,6 @@ describe('ADR 0029, étape 3b — le serveur du modèle', () => {
 			} as never)) as { status?: number; data?: { error?: string } };
 			expect(viaPage.status).toBe(409);
 			expect(viaPage.data?.error).toMatch(/masquez/i);
-
-			const viaApi = await statusOf(() =>
-				deleteChapterDocumentApi({
-					locals: localsProf,
-					params: { id: chapA, docId: a.id }
-				} as never)
-			);
-			expect(viaApi).toBe(409);
 
 			expect(await lienDocument(chapA, docCours)).not.toBeNull();
 			expect(await existe(cheminCours())).toBe(true);

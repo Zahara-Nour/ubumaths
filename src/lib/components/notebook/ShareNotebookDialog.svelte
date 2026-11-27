@@ -77,7 +77,7 @@
 				await processClasses(cachedClasses);
 			} else {
 				// Fetch from API if cache is empty
-				const response = await fetch('/api/classes');
+				const response = await fetch('/api/teacher/classes');
 
 				if (!response.ok) {
 					throw new Error(`Erreur lors du chargement des ${lore.entities.class}s`);
