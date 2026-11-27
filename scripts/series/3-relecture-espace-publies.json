@@ -1,0 +1,20 @@
+{
+	"id": "53b58ed5-e579-44eb-89f8-20f402e1a2b7",
+	"title": "Relecture — espace, 2 modèles publiés complétés (3e)",
+	"grade": "3",
+	"description": "Relecture dans /dev/modeles des modèles publiés de 3e auxquels le chantier idees-3e-espace a ajouté une variation (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Sections de solides",
+			"templateId": "7bb95104-9256-4bdb-a481-bdd2aae66a67",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Volume d'une boule",
+			"templateId": "87f79961-03c8-44af-98b5-438165d2f689",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
