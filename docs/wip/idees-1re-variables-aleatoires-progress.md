@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3206 et sa migration jouée en prod._
+_Mis à jour le 2026-11-27, après la publication de `505ee05a`._
 
-- **État** : brouillon `505ee05a` rangé en prod (« loi d'une variable aléatoire », tag 1SPE-355),
-  vérifié par MCP ; toujours en brouillon.
-- **Prochaine action** : relecture par David dans `/dev/modeles` (série de relecture), puis
-  publication.
-- **En attente de David** : la relecture.
-- **Pièges en cours** : second tag 1TECHNO-095 non posé (`outils-manquants.md` n° 66) ; saisie
-  scriptée des cases d'un tableau dans l'aperçu : « Valider » inactif.
+- **État** : modèle `505ee05a` relu par David et publié en prod (`published`, vérifié par MCP).
+  Le seul modèle neuf de la rubrique est livré.
+- **Prochaine action** : clore le chantier (archiver le journal) sur le go de David.
+- **En attente de David** : le go pour clore.
+- **Pièges en cours** : second tag 1TECHNO-095 non posé (`outils-manquants.md` n° 66, hors chantier).
 - **Worktree / branche** : aucun.
 
 ## Historique
@@ -35,3 +33,5 @@ _Mis à jour le 2026-11-26, après #3206 et sa migration jouée en prod._
 
 - 2026-11-26 : migration `20261126205931` jouée en prod (avec `20261126200955` de la session Tle
   techno) ; `migration list --linked` sans écart ; nœud et tag vérifiés par MCP.
+- 2026-11-27 : relecture validée par David ; il a lancé `publier-lot.ts --publier` ; `505ee05a`
+  `published` en prod (vérifié par MCP).
