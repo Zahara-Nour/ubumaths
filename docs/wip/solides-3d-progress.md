@@ -745,3 +745,20 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   « déclare-le avant » à la place de la vraie erreur de `points:`. **Laissés** : `repere: (A ; AB, AD, AE`
   (parenthèse non fermée) et `[AB]` acceptés sans message ; `I(milieu AE)` dit « trois coordonnées ».
   Tests : `solide-repere.test.ts` (34).
+
+## 22. Petite PR d'après le 7c : description sous le réglage, cases de `retrouver:` teintées (2026-11-28)
+
+- **Page d'aide d'un bloc** (`BlockHelpPage.svelte`, les 30 fiches) : deux lignes par réglage — la clé, ses
+  valeurs, son défaut ; puis la description dessous, sur toute la largeur, en gris. La colonne « Effet »
+  disparaît (`tourner:` des cubes y tenait sur dix lignes ; sur téléphone, le tableau défilait de côté).
+- **` ```cubes ` + `retrouver:`** (`CubesGeste.svelte`) : les cases à remplir de la vue de dessus sont teintées
+  (14 % de `--color-primary` sur le fond) ; avant, rien ne les distinguait des carreaux blancs des vues
+  données. La grille de la correction reste blanche.
+- Tests (rouges avant le code) : `BlockHelpPage.svelte.test.ts` (2 lignes par réglage, description sous la
+  clé, plus de « Effet »), `CubesGeste.svelte.test.ts` (couleur rendue, clair et sombre).
+- Vu à l'écran par la session (`pnpm voir`, WebKit) : `/aide-ecriture/blocs/cubes` sur grand écran (tableau,
+  deux exemples `retrouver:`), `/aide-ecriture/blocs/solide` au format iPhone (le tableau tient dans la
+  largeur). **Pas vu** : le thème sombre à l'écran (la teinte y est lue par le test), une question
+  `retrouver:` côté élève.
+- « (Q) » sur la zone teintée de (P) : David n'en a rien dit, laissé.
+- Revue : aucune (correctif d'affichage, sans logique).

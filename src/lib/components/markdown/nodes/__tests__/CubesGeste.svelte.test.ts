@@ -157,6 +157,28 @@ describe('retrouver: — écrire les hauteurs', () => {
 		expect(root.textContent).toContain('Vue de dessus');
 	});
 
+	it('les cases à remplir sont teintées, pas celles de la correction (clair et sombre)', async () => {
+		const screen = await render(CubesGeste, {
+			target: mainElement(),
+			props: { node: retrouver(), answer: locked('2 1 1 / 1 0 2', false) }
+		});
+		const root = screen.container;
+		const input = heightInputs(root)[0];
+		const fixed = root.querySelector('.cubes-correction .cubes-saisie-case')!;
+		const page = { light: 'rgb(250, 250, 250)', dark: 'rgb(38, 38, 36)' };
+		try {
+			for (const mode of ['light', 'dark'] as const) {
+				document.documentElement.style.colorScheme = mode;
+				expect(getComputedStyle(fixed).backgroundColor).toBe(page[mode]);
+				const tint = getComputedStyle(input).backgroundColor;
+				expect(tint).not.toBe(page[mode]);
+				expect(tint).not.toBe('rgba(0, 0, 0, 0)');
+			}
+		} finally {
+			document.documentElement.style.colorScheme = '';
+		}
+	});
+
 	it('écrire une hauteur : la réponse suit, - pour une case vide', async () => {
 		const { probe, answer } = answerProbe();
 		const screen = await render(CubesGeste, {

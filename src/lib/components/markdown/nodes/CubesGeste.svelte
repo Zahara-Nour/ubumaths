@@ -10,8 +10,8 @@
 	  quadrillage (`00000/01000/01110/00000`, `drawingAnswer`), jugé à une
 	  translation près.
 	- `retrouver: face, droite` : PAS de perspective (elle donnerait la réponse) ;
-	  les vues données, et la vue de dessus en grille de saisie : une case à nombre
-	  sur chaque carreau. Réponse : les hauteurs (`2 1 - / 1 0 1`, `heightsAnswer`),
+	  les vues données, et la vue de dessus en grille de saisie : une case à nombre,
+	  teintée, sur chaque carreau. Réponse : les hauteurs (`2 1 - / 1 0 1`, `heightsAnswer`),
 	  jugée « mêmes vues ».
 	- Faux : les phrases de la correction et la solution dessous.
 	- Sans `answer` (aperçu du prof, cours) : le même geste, rien de jugé.
@@ -215,7 +215,7 @@
 						<div class="cubes-trou" aria-hidden="true"></div>
 					{:else if editable}
 						<input
-							class="cubes-saisie-entree h-full w-full border border-foreground bg-background text-center text-lg"
+							class="cubes-saisie-entree h-full w-full border border-foreground text-center text-lg"
 							inputmode="numeric"
 							maxlength="1"
 							autocomplete="off"
@@ -382,6 +382,14 @@
 	.cubes-carreau:focus-visible {
 		stroke: var(--color-ring);
 		stroke-width: 0.08;
+	}
+
+	/*
+	 * Cases à remplir : une teinte légère de l'accent, pour les distinguer des
+	 * carreaux blancs des vues données (et de la correction, qui reste blanche)
+	 */
+	.cubes-saisie-entree {
+		background: color-mix(in srgb, var(--color-primary) 14%, var(--color-background));
 	}
 
 	.cubes-saisie-entree:focus-visible {

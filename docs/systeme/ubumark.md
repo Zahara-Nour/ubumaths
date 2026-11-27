@@ -1507,7 +1507,8 @@ liste vide, vue répétée → erreur) → `{ kind: 'retrouver', views }`. `case
 (`drawingGridSize`), carreaux = boutons à bascule (« Carreau rangée 2, colonne 2, colorié », Espace / Entrée),
 couleur `--color-fig-orange` comme ``partage, bouton « Tout effacer » ; `retrouver:` → **pas de perspective**,
 la vue de dessus en grille de cases à nombre (1 à 6, « Nombre de cubes, rangée 1 (au fond), colonne 1 »,
-le trou sans case, « devant » dessous) et les vues listées, titrées. Réponses et juges (`utils/cubes-gestes.ts`,
+le trou sans case, « devant » dessous ; cases à remplir **teintées** d'un peu de `--color-primary`, pour ne
+pas les confondre avec les carreaux blancs des vues données — la grille de la correction reste blanche) et les vues listées, titrées. Réponses et juges (`utils/cubes-gestes.ts`,
 calcul pur) : `dessiner:` → le quadrillage, rangées de haut en bas séparées par `/`, `1` = colorié
 (`00000/01000/01110/00000`, `''` rien colorié), attendue la vue sans marge (`100/111`), juste **à une
 translation près** (`isDrawingCorrect`, carreaux recadrés) ; `retrouver:` → les hauteurs, écriture du bloc,
