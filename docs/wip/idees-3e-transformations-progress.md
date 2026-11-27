@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3248 et `db:migrate`._
+_Mis à jour le 2026-11-27, après la relecture de David._
 
-- **État** : 4 brouillons en prod, **rangés** (migration `20261127155302_…` jouée par David, vérifiée : nœuds
-  Rotations pour N1, N4 et Homothéties pour N2, N3, aucun tag).
-- **Prochaine action** : après la relecture de David, lire `question_template_reviews` (`reviewed_at` du
-  2026-11-27 ou après, ces 4 ids), corriger, `publier-lot.ts --dir scripts/questions/idees-3e-transformations-neufs`
-  en simulation.
-- **En attente de David** : relecture dans `/dev/modeles?noeud=e71ca26c-f980-45e8-8174-293b18b44262` (Rotations) et
-  `/dev/modeles?noeud=30509bf4-7b4c-4b9d-8dcb-523cd2293c4d` (Homothéties).
+- **État** : 4 brouillons en prod, rangés, **validés par David** (« je valide », 2026-11-27). Simulation de
+  `publier-lot.ts` : les 4 passent le contrôle.
+- **Prochaine action** : après la publication, relire le statut des 4 (`publier-lot.ts` en simulation : « publié »),
+  puis clore le chantier (versement, journal archivé).
+- **En attente de David** : `! pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/idees-3e-transformations-neufs --publier`.
 - **Pièges en cours** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
   ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
   annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
@@ -92,3 +91,7 @@ nomment B le point à placer ; N4 (c) a six configurations fixes, pavage numéro
 David a publié les brouillons (`create-questions --publier`) : 4c82bef9 (N1), a5e70b85 (N2), 277be356 (N3),
 bc6321ed (N4), `draft`, `grades` = 3, vérifiés en prod. Migration de rangement générée
 (`migration-rangement.ts`), sans tag, nœuds Rotations et Homothéties.
+
+## Relecture (2026-11-27)
+
+David : « je valide », les 4 sans correction. `publier-lot.ts` en simulation : 4 brouillons passent le contrôle.
