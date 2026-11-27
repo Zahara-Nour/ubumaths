@@ -5,23 +5,25 @@
 _Mis à jour le 2026-11-27, après #3211._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1 et 2 mergés** (#3195 moteur de vue ; #3200 clé `tourner: oui` sur les polyèdres, § 6) ;
-  **noms tenus pendant la rotation mergés** (#3211, § 7). Rien n'est en prod.
-- **Prochaine action** : lot 3 — cylindre, cône, boule qui tournent (§ 4), une PR à part (accord de David
-  par son choix du 2026-11-26, § 7), revue `code-reviewer` en opus. Leur vue tournée et leur contour sont à
-  concevoir : comportements à écrire et à faire valider avant de coder.
-- **En attente de David** : son essai au doigt des noms tenus (page `/aide-ecriture/blocs/solide`, compte
-  prof). S'il n'aime pas : le glissement de 150 ms à l'arrêt et « arrêt au clavier = touche relâchée » sont
-  des choix de la session (§ 7).
+  du § 3) ; **lots 1 et 2 mergés** (#3195, #3200) ; **noms tenus mergés** (#3211, § 7) ; **lot 3 (cylindre,
+  cône, boule) codé sur la branche**, comportements du § 8 validés par David (« je te suis », 2026-11-27),
+  détail au § 9. Rien n'est en prod.
+- **Prochaine action** : PR du lot 3 ouverte, revue `code-reviewer` opus faite (aucun bloquant, § 9) : suivre
+  la CI et merger (`pnpm pr:merger`). Ensuite lot 4 — sections et cotes sur figure tournée (Q1 du § 3),
+  nouvelle session, comportements à écrire d'abord.
+- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
+  noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
+  session) ; (2) les solides ronds (§ 9 : le point posé sur le sommet NOMMÉ du cône quand ses deux traits ont
+  disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
-  (`solide-scene-figee.test.ts`) : `labelOffsets` n'existe que dans une scène tournée ; jamais d'instantané de
-  flottants bruts ; cylindre, cône et boule sont dessinés « à plat » (ellipses, pas une vraie projection) ;
-  une ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; un `onclick` de Svelte est
-  délégué à la racine ; « moins d'animations », le geste tactile réel et les enchaînements clavier des noms
-  tenus n'ont pas de test.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-ronds` (neuve, aucun
-  commit). Serveur d'essai laissé en marche sur 5176 pour l'essai de David, lien du tailnet publié
-  (`pnpm lien --stop` depuis le worktree pour le retirer).
+  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; solides ronds : le dessin à plat
+  est la vraie vue d'un œil à asin 0,3 ≈ 17,5° au-dessus de l'horizontale, hauteurs non raccourcies —
+  `turnVue` doit recevoir `solideTilt(form)`, sinon la bascule s'arrête 5° avant la vue de dessus ; tourner
+  autour de l'axe ne change rien au dessin (Q5, accepté) : au lot 4, le rayon coté devra, lui, tourner ; une
+  ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; « moins d'animations » et le
+  geste tactile réel n'ont pas de test.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-ronds`. Serveur d'essai en
+  marche sur 5176, lien du tailnet publié (`pnpm lien --stop` depuis le worktree pour le retirer).
 
 ## 1. D'où l'on part
 
@@ -179,3 +181,84 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   — les noms restent tenus tant qu'il reste une flèche enfoncée. Restent sans test : ces enchaînements
   (touche relâchée, figure quittée au clavier, retour interrompu) ; un bloc qui change sous le doigt
   (éditeur du prof) laisse les noms sauter jusqu'à la fin de ce glissement.
+
+## 8. Lot 3 — cylindre, cône, boule : comportements (validés par David le 2026-11-27)
+
+Exemple suivi : un cylindre de rayon 2 et de hauteur 4, bloc ` ```solide ` avec `tourner: oui`. Les
+comportements 1 à 15 du § 2 valent tels quels (glisser, clavier, bouton, PDF, noms tenus du § 7) ; ne sont
+écrits ici que ceux propres aux solides ronds. Périmètre : les trois formes avec `sommets:` (noms des centres
+et du sommet du cône), `marquer: sommet` et `cachees:`. `section:` et `cotes:` restent au lot 4.
+
+### Nominal
+
+16. Au repos, le cylindre, le cône et la boule sont dessinés exactement comme aujourd'hui (ovales « à
+    plat »), à l'écran et sur la fiche.
+17. Dès que l'élève fait glisser le doigt, la figure passe en douceur à une vraie vue du solide. Ce passage
+    se voit à peine : le dessin d'aujourd'hui est déjà presque une vraie vue, regardée d'un peu au-dessus
+    (seule la hauteur raccourcit d'environ 5 %).
+18. Glisser vers le bas montre le dessus : les ovales du cylindre s'ouvrent jusqu'à devenir des cercles
+    (vue de dessus : un seul cercle). Glisser vers le haut montre le dessous.
+19. Cylindre : le bord caché est en tirets, recalculé à chaque angle. Vu de dessus, c'est la moitié arrière
+    du cercle du bas ; vu de dessous, la moitié arrière du cercle du haut ; de profil (œil à hauteur du
+    milieu), un rectangle.
+20. Cône : les deux traits qui montent au sommet restent collés à l'ovale de la base à chaque angle. Quand
+    on regarde assez de dessus (ou de dessous) pour que le sommet tombe à l'intérieur de l'ovale, ces deux
+    traits disparaissent : il ne reste que l'ovale, comme dans la réalité. Vu de dessus, l'ovale est en
+    trait plein ; vu de dessous aussi (c'est le disque de base).
+21. Boule : le contour reste un cercle sous tous les angles ; l'équateur s'ouvre ou se referme quand on
+    bascule (moitié arrière en tirets), jusqu'à se confondre avec le contour vu de dessus.
+22. Les noms des centres (et du sommet du cône) et les points marqués suivent, tenus pendant le mouvement
+    et replacés à l'arrêt, comme pour les polyèdres.
+23. `cachees: non` : tout en trait plein, à chaque angle.
+
+### Limites
+
+24. La figure tient dans son cadre sous tous les angles ; la place est réservée dès le repos, la page ne
+    bouge pas (comme au lot 2).
+25. Un cône très plat (hauteur à peine plus grande que la moitié du rayon) : ses deux traits disparaissent
+    presque tout de suite quand on bascule vers le dessus. Accepté.
+
+### Erreurs
+
+26. `tourner: oui` sur un solide rond coupé (`section:`) ou coté (`cotes:`) : message pour l'auteur, figure
+    fixe pour l'élève, comme aujourd'hui (lot 4).
+
+### Questions pour David (réponse du 2026-11-27 : « je te suis » — les deux recommandations, qui sont aussi les choix qui n'ajoutent rien au dessin)
+
+- **Q5 — Tourner à gauche ou à droite.** Un cylindre, un cône ou une boule que l'on fait tourner autour de
+  son axe ne change pas d'aspect : l'élève glisse le doigt de côté et ne voit rien bouger (seul le
+  glissement vers le haut ou le bas se voit). Pour la boule, même la bascule ne montre que l'équateur qui
+  s'ouvre. Deux possibilités : (a) l'accepter, c'est la vérité de l'objet ; (b) dessiner un repère qui
+  tourne avec le solide quand la figure peut tourner — par exemple un rayon en tirets sur la base du
+  cylindre et du cône, un méridien sur la boule. Recommandation : (a) pour ce lot ; au lot 4, le rayon coté
+  (`cotes:`) tournera de lui-même.
+- **Q6 — Cône vu de dessus.** Quand les deux traits ont disparu, on ne voit plus qu'un ovale : rien ne dit
+  où est le sommet (sauf si l'auteur l'a nommé ou marqué). Faut-il alors dessiner un petit point au sommet ?
+  Recommandation : non, on dessine ce qu'on verrait ; l'auteur qui veut le sommet le nomme.
+
+## 9. Lot 3 — ce qui est fait (2026-11-27)
+
+- **Modèle** : le dessin « à plat » (ovales de rapport 0,3) est la vraie vue d'un œil à asin 0,3 ≈ 17,5°
+  au-dessus de l'horizontale, hauteurs non raccourcies. `turnedRoundDraft(spec, vue)` en part : inclinaison
+  e = 17,5° + `vue.pitch`, petit axe r × sin e (signé), hauteur h × cos e, étirée de 1 / cos 17,5° au repos
+  (`oblique`). `vue.yaw` ne change rien.
+- **Bascule** : `turnVue(vue, dyaw, dpitch, tilt)` ; `solideTilt(form)` donne la bascule propre au dessin
+  (`VUE_TILT` des polyèdres, `SOLIDE_ROUND_TILT`). Bornes des polyèdres inchangées.
+- **Parseur** : `tourner: oui` accepté pour cylindre, cône, boule ; coupés ou cotés : figure fixe et phrase
+  pour l'auteur (lot 4).
+- **Choix de la session, hors phase 0** : quand les deux traits du cône ont disparu, son sommet **s'il est
+  nommé** reçoit un point (`Draft.lone`) — sinon le nom « S » flotte près de l'ovale sans rien désigner (vu
+  sur les captures). Sans nom : aucun point (Q6). À retirer si David n'en veut pas.
+- **Vu par la session** : planche des trois formes (et d'un cône très plat) sous huit inclinaisons, de −60° à
+  90° — tirets du bon côté vus de dessus et de dessous, cône tangent, cercle vu de dessus ; page
+  `/aide-ecriture/blocs/solide` chargée sans erreur de console. **Pas vu** : le geste du doigt sur un vrai
+  téléphone.
+- Tests : `solide-ronds-tourner.test.ts` (49, rouges avant le code), `SolideTourner.svelte.test.ts` (cylindre :
+  dessous, arrêt à la vue de dessus). Catalogue : exemple « Un cône que l'élève peut tourner ». Doc :
+  `docs/systeme/ubumark.md`, `utilitaires-et-demos.md`.
+- Revue (`code-reviewer`, opus) : aucun bloquant. Trouvé juste : parties cachées sous tous les angles (0° et
+  ±90° compris), figure fixe et polyèdres tournés inchangés (bornes de `turnVue` identiques au bit près),
+  cadre (preuve et balayage de 21 passages × 201 bascules sur les dimensions extrêmes, marge minimale
+  0,235 cm), pas de NaN. Corrigé : test de l'arc caché du cône (ses bouts sont les pieds des deux traits),
+  test tautologique retiré, commentaires déplacés. Laissé à David : le point du sommet nommé est aussi posé vu
+  de dessous, où le sommet est caché par le disque.

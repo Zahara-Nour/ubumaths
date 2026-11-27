@@ -17,9 +17,10 @@
 	  large que le conteneur ; `--espace-taille` (3 cm dans un choix) plafonne
 	  la largeur.
 	- Bloc en erreur : messages pour le prof, cadre neutre pour l'élève (Q48).
-	- `tourner: oui` (polyèdres, chantier `solides-3d`, ADR 0045) : l'élève fait
+	- `tourner: oui` (chantier `solides-3d`, ADR 0045) : l'élève fait
 	  glisser la figure pour la tourner (flèches au clavier) ; elle passe en
-	  douceur de la cavalière à une vue droite, tirets recalculés à chaque angle.
+	  douceur de la cavalière à une vue droite, tirets recalculés à chaque angle
+	  (cylindre, cône, boule : les ovales s'ouvrent avec la bascule, lot 3).
 	  « Vue de départ » (ou Échap) la ramène. Cadre fixe, réservé dès le repos :
 	  la page ne bouge pas. Glisser sur la figure ne fait pas défiler la page.
 	  Rien n'est enregistré ; un autre bloc repart de la vue de départ.
@@ -46,7 +47,8 @@
 		SOLIDE_SUB_SCALE,
 		buildSolideScene,
 		solideLineStroke,
-		solideLabel
+		solideLabel,
+		solideTilt
 	} from '#lib/ubumark/utils/espace-solides.ts';
 	import { VUE_DE_DEPART, turnVue, type EspaceVue } from '#lib/ubumark/utils/espace-vue.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -92,6 +94,8 @@
 	let turned = $state.raw<{ source: string; vue: EspaceVue } | null>(null);
 	let vue = $derived(turned !== null && turned.source === node.source ? turned.vue : VUE_DE_DEPART);
 	let moved = $derived(vue !== VUE_DE_DEPART);
+	/** Bascule que le dessin ajoute à la vue : là où s'arrêtent le dessus et le dessous */
+	let tilt = $derived(spec === null ? undefined : solideTilt(spec.form));
 	/**
 	 * Places des noms tenues pendant que la figure tourne (et le bloc auquel elles
 	 * appartiennent) ; null : chaque nom est placé pour la vue
@@ -264,7 +268,7 @@
 		drag.x = event.clientX;
 		drag.y = event.clientY;
 		// Glisser vers la droite amène la face de gauche devant ; vers le bas, montre le dessus
-		setVue(turnVue(vue, -dx * DRAG_TURN, dy * DRAG_TURN));
+		setVue(turnVue(vue, -dx * DRAG_TURN, dy * DRAG_TURN, tilt));
 	}
 
 	function handlePointerEnd(event: PointerEvent) {
@@ -299,7 +303,7 @@
 			keysDown.add(event.key);
 			holdNames();
 			leaveCavaliere();
-			setVue(turnVue(vue, turn[0], turn[1]));
+			setVue(turnVue(vue, turn[0], turn[1], tilt));
 		} else if (event.key === 'Escape' && moved) {
 			event.preventDefault();
 			event.stopPropagation();

@@ -16,7 +16,7 @@ export const solideEntry: BlockCatalogEntry = {
 	summary:
 		'Un cube, un pavé, un prisme, une pyramide, un cylindre, un cône ou une boule dessiné en perspective cavalière, arêtes cachées en tirets : pour reconnaître et nommer un solide, repérer ses faces, ses arêtes et ses sommets, lire ses dimensions.',
 	intro:
-		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse. Avec tourner: oui, l’élève peut faire tourner un polyèdre à l’écran pour voir comment ses points, ses arêtes et ses vecteurs sont disposés ; sans cette ligne, la figure est fixe.',
+		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse. Avec tourner: oui, l’élève peut faire tourner le solide à l’écran pour voir comment ses points, ses arêtes et ses vecteurs sont disposés ; sans cette ligne, la figure est fixe.',
 	settingGroups: [
 		{
 			settings: [
@@ -90,7 +90,7 @@ export const solideEntry: BlockCatalogEntry = {
 					values: 'oui | non',
 					defaultValue: 'non',
 					description:
-						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Pour l’instant : cube, pavé, prisme et pyramide, sans section:, cotes: ni tracer: ; sinon la figure reste fixe et un message le dit à l’auteur.'
+						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Cylindre, cône, boule : la figure part du dessin à plat ; basculer ouvre les ovales jusqu’au cercle (vue de dessus), le bord caché est recalculé, les deux traits du cône disparaissent quand le sommet passe dans l’ovale ; tourner à gauche ou à droite ne change rien, un solide rond a le même aspect tout autour de son axe. Pour l’instant : sans section:, cotes: ni tracer: ; sinon la figure reste fixe et un message le dit à l’auteur.'
 				}
 			]
 		}
@@ -242,6 +242,12 @@ export const solideEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Faire glisser la figure la fait tourner : on voit que les flèches AG et AI ne sont pas dans une même face. « Vue de départ » revient à la perspective cavalière.'
+		},
+		{
+			title: 'Un cône que l’élève peut tourner',
+			source: fence('solide', 'forme: cone 2 4', 'sommets: S O', 'tourner: oui'),
+			explanation:
+				'Faire glisser la figure vers le bas montre le cône de dessus : l’ovale de la base s’ouvre, puis les deux traits disparaissent quand le sommet passe au-dessus du disque. Vers le haut, on le voit par-dessous.'
 		},
 		{
 			title: 'Sans arêtes cachées',

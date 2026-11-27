@@ -80,19 +80,6 @@ describe('```solide — tourner:', () => {
 	});
 
 	it.each([
-		['forme: cylindre 2 5', 'un cylindre'],
-		['forme: cone 2 4', 'un cône'],
-		['forme: boule 3', 'une boule']
-	])('%s : pas encore, figure fixe', (form, what) => {
-		const node = read(form, 'tourner: oui');
-		expect(node.errors).toEqual([]);
-		expect(node.spec).not.toHaveProperty('rotate');
-		expect(node.rotationErrors).toHaveLength(1);
-		expect(node.rotationErrors?.[0]).toContain('Ligne 2');
-		expect(node.rotationErrors?.[0]).toContain(what);
-	});
-
-	it.each([
 		['section: parallele ABCD 1', 'section:'],
 		['cotes: cm', 'cotes:'],
 		['tracer: vecteur AB + AD', 'tracer:']
