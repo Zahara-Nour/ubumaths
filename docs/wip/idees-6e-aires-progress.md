@@ -2,19 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3245._
+_Mis à jour le 2026-11-27, après la publication des brouillons en prod._
 
-- **État** : lot mergé (#3245) : 7 modèles neufs (`scripts/questions/idees-6e-aires-neufs/`, 22 variations) et
-  8 variations ajoutées à 82748db8, fdd849f5, 01e205ed (`scripts/questions/idees-6e-aires-publies/`) ; rien en
-  base de prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-6e-aires-neufs --publier` (dépôt principal) ; puis, dans un nouveau worktree, commiter
-  les ids, champ `rangement` → `migration-rangement.ts` et `migration-contenu.ts` (niveaux relevés en prod juste
-  avant), `security-auditor`, `db:migrate` selon les 4 conditions.
-- **En attente de David** : `create-questions --publier` (écriture en prod).
+- **État** : #3245 mergée ; David a lancé `create-questions --publier` : 7 brouillons en prod (57720668 relations,
+  36b7d2e8 quadrillage, 9c9c7081 comparer, 533bb8d0 formule carré, 6aef6255 formule rectangle, 7a8294a4 aire et
+  périmètre, 3e3c05d6 rectangles accolés), ids commités sur `feat/idees-6e-aires-rangement` (poussée, pas de PR).
+- **Prochaine action** : dans ce worktree, relever les niveaux en prod, `migration-rangement.ts --dir
+  scripts/questions/idees-6e-aires-neufs` (champ `rangement` déjà écrit) et `migration-contenu.ts --dir
+  scripts/questions/idees-6e-aires-publies` ; `security-auditor` ; PR ; `db:migrate` selon les 4 conditions
+  (`migration list --linked` d'abord).
+- **En attente de David** : rien.
 - **Pièges en cours** : 82748db8 partage `a` (1..9), fdd849f5 la condition `a>b` ; `e` est Euler ; le bloc figure
   n'a pas de `secteur` ; `{{eval:-b/2}}` s'écrit en fraction dans une figure (`0.5*b`).
-- **Worktree / branche** : aucun (retiré après #3245) ; le prochain sur `origin/main`, sujet `idees-6e-aires`.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-aires`, `feat/idees-6e-aires-rangement`.
 
 ## Phase 0 (2026-11-27)
 
@@ -87,6 +87,8 @@ scripts/questions/idees-6e-aires-neufs --publier` (dépôt principal) ; puis, da
   que cm², dm², m². Les bornes de ces points sont « général ». Recommandation : ne rien toucher.
 
 ## Historique
+
+- 2026-11-27 : David publie les 7 brouillons en prod (« publié ») ; ids vérifiés par MCP (7 `draft`).
 
 - 2026-11-27 : #3245 mergée (fichiers du lot seuls, CI verte).
 
