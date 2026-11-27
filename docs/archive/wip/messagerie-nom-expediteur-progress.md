@@ -1,18 +1,18 @@
 ---
 title: Messagerie — envoi refusé pour un expéditeur sans nom complet — journal
 date: 2026-11-26
-status: en cours
+status: clos
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3188, code et migration en prod._
+_Mis à jour le 2026-11-27 : chantier clos, journal archivé._
 
-- **État** : #3188 mergée (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu » : clos au registre). **Migration `20261126132310` jouée en prod par David le 2026-11-26**, vérifiée en lecture seule (sept fonctions de la messagerie à la nouvelle version, `search_path` et droits en place). **Code en prod depuis la 0.115.0** (2026-11-26, 21 h 23, lancée par une autre session) ; 0.116.0 en ligne le 2026-11-27. Tout le chantier est livré.
-- **Prochaine action** : aucune côté code. Quand David a refait son essai en prod (page « Écrire » du prof, « Répondre » depuis un fil côté élève, message à une classe), lui proposer de clore : versement du durable, journal archivé.
-- **En attente de David** : son essai en prod, puis son go pour clore.
+- **État** : clos. #3174 (V131, envoi refusé sans nom complet) et #3188 (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu ») mergées, écarts barrés au registre. Migrations `20261126132310` et celle de #3174 jouées en prod ; code en prod depuis la 0.115.0 (2026-11-26). **Essai de David en prod bon le 2026-11-27** (page « Écrire » du prof, « Répondre » côté élève, message à une classe).
+- **Prochaine action** : aucune pour le chantier. Le lien « Messages » du menu (V104) et les restes se traitent dans `ecarts-a-trier`.
+- **En attente de David** : rien.
 - **Décisions d'accès de David** : (2026-11-26) le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit ceux du prof qui lui écrit ; un élève qui reçoit un message envoyé à sa classe ne voit pas l'identité des autres destinataires. (2026-11-27, confirmé) il ne voit pas non plus les autres destinataires d'un message envoyé à plusieurs élèves cochés un à un : « et N autres destinataires ».
-- **Pièges en cours** : `CREATE OR REPLACE` garde les droits mais pas le `search_path` ; le cliquet des types peut rougir sur un fichier non touché quand des fichiers de test s'ajoutent (vu sur la route du détail d'un échange du marché, typée à la main dans #3188) ; restes au registre : L128 à L135, V135, T37.
+- **Versé** : `docs/systeme/messagerie-et-moderation.md` (noms affichés, destinataire d'une réponse, refus rendus en français, règle 4 bis des destinataires masqués), dans #3188. **Restes au registre** : L128 à L136, V135, T37.
 - **Worktree / branche** : aucun (retirés au merge de #3188).
 
 ## Le constat (essai de David en prod, v0.113.0)
