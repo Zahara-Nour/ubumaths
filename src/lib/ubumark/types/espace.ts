@@ -77,6 +77,7 @@ export const SOLIDE_KEYS = [
 	'points',
 	'vecteurs',
 	'droites',
+	'plans',
 	'tracer',
 	'tourner',
 	'case'
@@ -88,6 +89,9 @@ export const SOLIDE_MAX_VECTORS = 8;
 
 /** Droites données (`droites:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
 export const SOLIDE_MAX_DROITES = 4;
+
+/** Plans donnés (`plans:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
+export const SOLIDE_MAX_PLANS = 2;
 
 /** Vecteurs de la combinaison de `tracer:` : au plus */
 export const SOLIDE_MAX_TERMS = 6;
@@ -236,6 +240,11 @@ export interface SolideSpec {
 	 * couleur ; absent : aucune (la figure reste celle d'avant)
 	 */
 	droites?: SolideDroite[];
+	/**
+	 * Plans donnés (`plans:`, chantier `solides-3d`, lot 7b) : la partie du plan
+	 * dans le solide, teintée ; absent : aucun (la figure reste celle d'avant)
+	 */
+	plans?: SolidePlan[];
 	/** Geste de l'élève (`tracer:`, chantier `solide-vecteur`, lot 2) ; absent : affichage seul */
 	task?: SolideTask;
 	/**
@@ -383,6 +392,13 @@ export interface SolideDroite {
 	from: number;
 	to: number;
 	/** `d = (AG)` : d ; null : nommée par ses deux points */
+	name: string | null;
+}
+
+/** Un plan donné (`plans: (BDE), P = (ACG)`) : indices de trois points non alignés (sommets, puis points déclarés) */
+export interface SolidePlan {
+	through: [number, number, number];
+	/** `P = (BDE)` : P ; null : nommé par ses trois points */
 	name: string | null;
 }
 
