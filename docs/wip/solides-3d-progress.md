@@ -2,21 +2,30 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3235._
+_Mis à jour le 2026-11-27, après #3239 (exemple « retrouver » de la page d'aide des cubes), lot 7a en cours._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195 moteur ;
-  #3200 polyèdres ; #3211 noms tenus ; #3216 cylindre, cône, boule ; #3222 sections et cotes ; #3227 vecteur à
-  tracer sur figure tournée ; #3229 nom d'un centre écarté des cotes ; **#3235 assemblages de cubes**, § 15 et
-  16). Les lots 3 à 6 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas
-  emportés (le vérifier avant de l'affirmer).
-- **Prochaine action** : lot 7 (Terminale : repère, points par coordonnées, droites, plans) — **nouvelle
-  phase 0** : comportements à écrire en français et à faire valider par David avant tout code. Ne pas
-  l'ouvrir sans son go : c'est le dernier lot du découpage, d'une autre taille que les précédents.
-- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` et
-  `/aide-ecriture/blocs/cubes` (compte prof) : noms tenus (§ 7), solides ronds (§ 9), lot 4 (longueurs qui
-  s'effacent, section qui tourne), lot 5 (exemple « Un vecteur à tracer sur un pavé que l'élève peut
-  tourner »), lot 6 (exemple « Un assemblage que l'élève peut tourner »). Puis sa demande de `deploy:prod`
-  (mise en prod seulement après son essai).
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195, #3200,
+  #3211, #3216, #3222, #3227, #3229, #3235). Les lots 3 à 6 et #3229 ne sont pas en prod tant qu'un
+  `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de l'affirmer). **Phase 0 du lot 7
+  validée** (§ 17, « je te suis » : dans le bloc solide ; 7a droites, 7b plans, 7c repère du solide et points
+  par coordonnées, une PR chacun ; 7d laissé ; tirets là où une face passe devant ; 7e point d'intersection
+  ensuite). **Lot 7a commencé, commité en l'état sur la branche, RIEN n'a encore été lancé** : tests écrits
+  (`solide-droites.test.ts`), types (`SolideDroite`, `SOLIDE_MAX_DROITES`), parseur (`readDroites`), moteur
+  (`chordInSolid`, `hiddenStretches` dans `espace-vue.ts`), scène (`SolideScene.droites`, nom « (d) »),
+  `Solide.svelte` (trait bleu `--color-fig-bleu`).
+- **Prochaine action** : lot 7a — lancer `pnpm test:server src/lib/ubumark/__tests__/espace` et corriger
+  jusqu'au vert (le test de la corde attend `[0, 1]` exact : passer à `toBeCloseTo` si −0) ; puis PDF
+  (`solideTypst` : droites en `rgb(37, 99, 235)`, tirets compris — le test l'attend), `pnpm svelte:autofix`
+  sur `Solide.svelte`, test de composant, catalogue (`block-catalog/solide.ts` : réglage, exemple, erreur
+  fréquente), doc `docs/systeme/ubumark.md`, `check:incremental`, `types:cliquet`, rendu vu à l'écran
+  (`pnpm voir /aide-ecriture/blocs/solide --compte prof`, fixe et tourné), § 18 « ce qui est fait », revue
+  `code-reviewer` en opus (géométrie), PR, `pnpm pr:merger`. Avant de pousser : `git merge origin/main`
+  (la branche est en retard).
+- **En attente de David** : son essai au doigt des lots 3 à 6 (il a les liens, serveur 5176 relancé ; l'exemple
+  « retrouver » des cubes ne sera à jour sur ce serveur qu'après `git merge origin/main` dans ce worktree).
+  Puis sa demande de `deploy:prod`. Proposé, sans réponse : mettre la description des réglages sous le
+  réglage dans la page d'aide (tableau trop étroit sur téléphone) ; teinter les cases de saisie de
+  `retrouver:`.
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
@@ -527,7 +536,7 @@ Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devan
   l'arrière et le dessous) : cubes pleins, trou visible de derrière, teintes tenues, cadre et bouton en place.
   **Pas vu** : le geste du doigt sur un vrai téléphone ; le thème sombre sous une vue tournée.
 
-## 17. Lot 7 — Terminale : droites, plans, repère : comportements (à valider par David)
+## 17. Lot 7 — Terminale : droites, plans, repère : comportements (validés par David le 2026-11-27)
 
 Exemple suivi : le cube ABCDEFGH, I milieu de [AE], la droite (IG) et le plan (BDE), `tourner: oui`. Question
 type : « La droite (IG) et le plan (BDE) sont-ils sécants ? ». Programme de Terminale spécialité : « les
@@ -571,7 +580,7 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
 83. `droites:`, `plans:`, `repere:` sur un cylindre, un cône ou une boule ; avec `section:` ou `tracer:`
     (pas dans ce lot).
 
-### Questions pour David
+### Questions pour David (réponse du 2026-11-27 : « je te suis » — (a) 1 : dans le bloc solide ; (b) 7a droites, 7b plans, 7c repère du solide et points par coordonnées, une PR chacun, 7d laissé tant qu'aucun modèle n'en a besoin ; (c) 2 : tirets là où une face passe devant ; (d) lot 7e après les trois premiers)
 
 - **(a) Où écrire tout cela.** (1) Dans le bloc ` ```solide ` qu'on connaît, avec des lignes en plus
   (`droites:`, `plans:`, `repere:`) et une forme `repere` pour le repère sans solide ; (2) un bloc neuf pour
