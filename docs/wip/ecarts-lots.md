@@ -40,8 +40,11 @@ avant d'y toucher.
 8. **Écart nouveau** : `pnpm ecarts ajouter` depuis le dépôt principal, comme d'habitude. Il
    n'entre dans aucun lot : il va dans « Hors lots » en bas de ce fichier.
 
-Pour lancer une session, David écrit dans une session neuve :
-« Prends le lot `<nom>` de `docs/wip/ecarts-lots.md` ».
+Pour lancer une session, David tape dans une session neuve **`/prendre-lot`** (la skill choisit
+le premier lot libre) ou `/prendre-lot <nom>`. La skill
+[`prendre-lot`](../../.claude/skills/prendre-lot/SKILL.md) réserve le lot et ouvre son chantier.
+
+Colonne « Pris par » : vide = libre ; `ecarts-<lot> (date)` = en cours ; `fait (#PR, date)` = fini.
 
 ## Lots sans décision (mécaniques)
 
