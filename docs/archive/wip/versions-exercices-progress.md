@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3202._
+_Mis à jour le 2026-11-27 : chantier clos, journal archivé._
 
-- **État** : les 4 PR du découpage sont faites. PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0), PR 3 (#3194) en prod (v0.115.0). PR 4 (#3202) mergée, migration `20261126221127` jouée en prod : `exercises` n'a plus que `variables`, 0 fonction morte, 428 exercices / 428 avec version. La page publique `/exercice/<slug>` rend bien l'énoncé.
-- **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/exercices.md` et `base-de-donnees.md`, puis archiver ce journal). Seulement sur le go de David.
-- **En attente de David** : `deploy:prod` qui livre #3202 — d'ici là, en prod, la **restauration d'une sauvegarde admin** (elle écrit encore `variations`/`shared`/`generic_functions` sur `exercises`) et le **fichier SQL de sauvegarde** (non rejouable) cassent ; rien d'autre ne lit les colonnes retirées. Puis go pour clore.
-- **Pièges en cours** : pas vus à l'écran, car ils demandent une connexion : le lien de partage et la sauvegarde admin, couverts par les tests d'intégration (`versions-exercices-retrait`, `versions-exercices-sauvegarde`).
-- **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : clos. Les 4 PR du découpage sont mergées : #3150, #3154 (prod v0.112.0), #3194 (prod v0.115.0), #3202 (mergée ; migration `20261126221127` jouée en prod : `exercises` n'a plus que `variables`, 428 exercices / 428 avec version).
+- **Prochaine action** : aucune pour le chantier.
+- **En attente de David** : `deploy:prod` qui livre #3202 (pas encore dans `production` le 2026-11-27, dernière version 0.115.0). D'ici là, en prod, la **restauration d'une sauvegarde admin** et le **fichier SQL de sauvegarde** cassent : ils écrivent encore `variations`/`shared`/`generic_functions` sur `exercises`.
+- **Versé** : `docs/systeme/exercices.md`, `base-de-donnees.md`, `fiches-et-pdf.md` (ADR 0044), dans les PR du chantier.
+- **Worktree / branche** : aucun.
 
 ## PR 4 — fait (2026-11-26)
 
