@@ -111,7 +111,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Longueurs                          | 6M1   | 16        | libre                |                             |
 | Aires                              | 6M2   | 17        | libre                |                             |
 | Volumes                            | 6M3   | 3         | libre                |                             |
-| Durées                             | 6M4   | 11        | libre                |                             |
+| Durées                             | 6M4   | 11        | prise (2026-11-27)   | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
