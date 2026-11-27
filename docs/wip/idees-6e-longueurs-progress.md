@@ -2,14 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 validée._
+_Mis à jour le 2026-11-27, lot écrit._
 
-- **État** : rubrique prise (9d73c269a9), relevé écrit ([idees-6e-longueurs-releve.md](idees-6e-longueurs-releve.md)),
-  fiches F1 à F6, N1 à N5 et questions Q1, Q2 sur la page à cocher.
-- **Prochaine action** : écrire le lot (`docs/wip/questions/idees-6e-longueurs-neufs.py` et `…-publies.py`),
-  simulation, specs, essai en base locale, puis PR du lot.
-- **En attente de David** : rien (« je te suis » : fiches F1 à F6, N1 à N5 ; Q1 → 6-148 ; Q2 → 6e sans point).
-- **Pièges en cours** : le bloc `figure` n'a pas de secteur (arc + rayons tracés à part, comme 60f165a8).
+- **État** : lot écrit (6 modèles neufs, 20 variations ; 11 variations ajoutées à 6 publiés), `question:specs`
+  vert (111 + 109 specs), essai des neufs en base locale ; PR du lot ouverte.
+- **Prochaine action** : PR mergée → David lance `create-questions --publier` sur
+  `scripts/questions/idees-6e-longueurs-neufs` ; puis migrations de rangement et de contenu (générées).
+- **En attente de David** : la commande `--publier` ; question sur le bogue de fdd849f5 (voir Historique).
+- **Pièges en cours** : une variation `conditions: []` écrase les conditions partagées (`??` du générateur) ;
+  ccb4f5e5 gagne l'option `constraints.products: off` (« ⚠️ options » de `migration-contenu`) ; la migration de
+  contenu générée trop tôt est mise de côté, à régénérer.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs`, `chore/idees-6e-longueurs`.
 
 ## Phase 0 (2026-11-27)
@@ -108,6 +110,14 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
 
 ## Historique
 
+- 2026-11-27 : lot écrit par deux agents (Opus), relu. Neufs : N1 carré et rectangle (6-144, 6-199), N2 et N3
+  (6-148), N4 et N5 (6e sans point, nœud « unités simples » comme c31c9d95) ; 111 specs vertes, sonde des figures
+  sans problème, 6 brouillons essayés en base locale. Publiés : 060086c8 +2, 66f9abbf +2, cfb4c692 +1,
+  4343af4c +1, ccb4f5e5 +2, 60f165a8 +3 ; 109 specs vertes. Écarts : les cases choix ne portent pas d'erreurs
+  prévues (messages dans le corrigé) ; N5 garde leurs plages (multiples de 10 et de 100, 11..99) ; N5 (d) sans
+  décimal en mm (0,0046 m) ; ccb4f5e5 `constraints.products: off` (sinon π × D jugé « non optimal »), comme
+  61ffb696. **Bogue trouvé en prod, chantier `idees-6e-aires`** : fdd849f5 variation 7 (rectangle dessiné,
+  a 3..11, b 2..10) a `conditions: []`, ce qui annule le `a>b` partagé : la largeur peut dépasser la longueur.
 - 2026-11-27 : David répond « je te suis » aux recommandations (toutes les fiches oui ; Q1 : N3 sur 6-148 ;
   Q2 : N4 et N5 modèles de 6e sans point). Modèles 060086c8, 4343af4c, 60f165a8, 66f9abbf, ccb4f5e5, cfb4c692
   réservés (b871d0f3ac).

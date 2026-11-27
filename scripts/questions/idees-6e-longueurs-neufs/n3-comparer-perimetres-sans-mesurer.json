@@ -1,0 +1,257 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Périmètres",
+		"point": "6-148"
+	},
+	"title": "Comparer des périmètres sans mesurer",
+	"description": "Comparer le périmètre d'un rectangle et d'une figure posée dessus, sans mesurer : bosse ou creux (le détour allonge le contour), partie découpée et recollée (même aire, plus grand périmètre), figure inscrite",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le rectangle en pointillés et la figure colorée sont posés l'un sur l'autre. Sans mesurer, lequel a le plus grand périmètre ?\n\n```figure\nfenetre: -1.5 ; 7.5 ; -2 ; 6.5\ndescription: Un rectangle en pointillés et une figure colorée posée dessus, avec une bosse ou un creux sur le bord du haut.\n---\n{{if:t==0|F1 = point(0, 0, visible=faux)\nF2 = point(6, 0, visible=faux)\nF3 = point(6, 4, visible=faux)\nF4 = point({{eval:p+2}}, 4, visible=faux)\nF5 = point({{eval:p+1}}, {{eval:4+k}}, visible=faux)\nF6 = point({{p}}, 4, visible=faux)\nF7 = point(0, 4, visible=faux)\npolygone(F1, F2, F3, F4, F5, F6, F7, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)|{{if:t==1|F1 = point(0, 0, visible=faux)\nF2 = point(6, 0, visible=faux)\nF3 = point(6, 4, visible=faux)\nF4 = point({{eval:p+2}}, 4, visible=faux)\nF5 = point({{eval:p+1}}, {{eval:4-k}}, visible=faux)\nF6 = point({{p}}, 4, visible=faux)\nF7 = point(0, 4, visible=faux)\npolygone(F1, F2, F3, F4, F5, F6, F7, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)|{{if:t==2|F1 = point(0, 0, visible=faux)\nF2 = point(6, 0, visible=faux)\nF3 = point(6, 4, visible=faux)\nF4 = point({{eval:p+1+1.000}}, {{eval:4+0.000}}, visible=faux)\nF5 = point({{eval:p+1+0.924}}, {{eval:4+0.383}}, visible=faux)\nF6 = point({{eval:p+1+0.707}}, {{eval:4+0.707}}, visible=faux)\nF7 = point({{eval:p+1+0.383}}, {{eval:4+0.924}}, visible=faux)\nF8 = point({{eval:p+1+0.000}}, {{eval:4+1.000}}, visible=faux)\nF9 = point({{eval:p+1+-0.383}}, {{eval:4+0.924}}, visible=faux)\nF10 = point({{eval:p+1+-0.707}}, {{eval:4+0.707}}, visible=faux)\nF11 = point({{eval:p+1+-0.924}}, {{eval:4+0.383}}, visible=faux)\nF12 = point({{eval:p+1+-1.000}}, {{eval:4+0.000}}, visible=faux)\nF13 = point(0, 4, visible=faux)\npolygone(F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)|F1 = point(0, 0, visible=faux)\nF2 = point(6, 0, visible=faux)\nF3 = point(6, 4, visible=faux)\nF4 = point({{eval:p+1+1.000}}, {{eval:4-0.000}}, visible=faux)\nF5 = point({{eval:p+1+0.924}}, {{eval:4-0.383}}, visible=faux)\nF6 = point({{eval:p+1+0.707}}, {{eval:4-0.707}}, visible=faux)\nF7 = point({{eval:p+1+0.383}}, {{eval:4-0.924}}, visible=faux)\nF8 = point({{eval:p+1+0.000}}, {{eval:4-1.000}}, visible=faux)\nF9 = point({{eval:p+1+-0.383}}, {{eval:4-0.924}}, visible=faux)\nF10 = point({{eval:p+1+-0.707}}, {{eval:4-0.707}}, visible=faux)\nF11 = point({{eval:p+1+-0.924}}, {{eval:4-0.383}}, visible=faux)\nF12 = point({{eval:p+1+-1.000}}, {{eval:4-0.000}}, visible=faux)\nF13 = point(0, 4, visible=faux)\npolygone(F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)}}}}}}\nR1 = point(0, 0, visible=faux)\nR2 = point(6, 0, visible=faux)\nR3 = point(6, 4, visible=faux)\nR4 = point(0, 4, visible=faux)\npolygone(R1, R2, R3, R4, couleur=\"noir\", trait=\"tirets\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Le rectangle en pointillés a le plus grand périmètre.\n- La figure colorée a le plus grand périmètre.\n- Ils ont le même périmètre.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:t==0|Sur le bord du haut, la figure colorée remplace un segment par les deux côtés d'un triangle qui **dépasse**.|{{if:t==1|Sur le bord du haut, la figure colorée remplace un segment par les deux côtés d'un triangle **creusé**.|{{if:t==2|Sur le bord du haut, la figure colorée remplace un segment par un demi-cercle qui **dépasse**.|Sur le bord du haut, la figure colorée remplace un segment par un demi-cercle **creusé**.}}}}}}",
+					"Ce détour est plus long que le segment qu'il remplace, qu'il aille vers l'extérieur ou vers l'intérieur ; le reste du contour est le même.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{La figure colorée}}$ a le plus grand périmètre."
+				]
+			},
+			"hint": "Compare seulement les morceaux de contour qui diffèrent : le chemin le plus court entre deux points, c'est la ligne droite."
+		},
+		{
+			"statement": "Le rectangle en pointillés et la figure colorée sont posés l'un sur l'autre. Sans mesurer, lequel a le plus grand périmètre ?\n\n```figure\nfenetre: -1.5 ; 7.5 ; -2 ; 6.5\ndescription: Un rectangle en pointillés et une figure colorée posée dessus : un triangle découpé d'un côté dépasse de l'autre.\n---\n{{if:s==0|F1 = point(0, 0, visible=faux)\nF2 = point({{q}}, 0, visible=faux)\nF3 = point({{eval:q+1}}, {{eval:-k}}, visible=faux)\nF4 = point({{eval:q+2}}, 0, visible=faux)\nF5 = point(6, 0, visible=faux)\nF6 = point(6, 4, visible=faux)\nF7 = point({{eval:p+2}}, 4, visible=faux)\nF8 = point({{eval:p+1}}, {{eval:4-k}}, visible=faux)\nF9 = point({{p}}, 4, visible=faux)\nF10 = point(0, 4, visible=faux)\npolygone(F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)|F1 = point(0, 0, visible=faux)\nF2 = point(6, 0, visible=faux)\nF3 = point(6, 1, visible=faux)\nF4 = point({{eval:6+k}}, 2, visible=faux)\nF5 = point(6, 3, visible=faux)\nF6 = point(6, 4, visible=faux)\nF7 = point(0, 4, visible=faux)\nF8 = point(0, 3, visible=faux)\nF9 = point({{k}}, 2, visible=faux)\nF10 = point(0, 1, visible=faux)\npolygone(F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)}}\nR1 = point(0, 0, visible=faux)\nR2 = point(6, 0, visible=faux)\nR3 = point(6, 4, visible=faux)\nR4 = point(0, 4, visible=faux)\npolygone(R1, R2, R3, R4, couleur=\"noir\", trait=\"tirets\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Le rectangle en pointillés a le plus grand périmètre.\n- La figure colorée a le plus grand périmètre.\n- Ils ont le même périmètre.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==0|On a découpé un triangle en haut du rectangle et on l'a recollé en bas.|On a découpé un triangle à gauche du rectangle et on l'a recollé à droite.}}",
+					"L'aire n'a pas changé, mais le contour est plus long : à deux endroits, un segment est remplacé par les deux côtés d'un triangle.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{La figure colorée}}$ a le plus grand périmètre."
+				]
+			},
+			"hint": "Ne regarde pas la surface, regarde le tour : le contour de la figure colorée suit-il les mêmes segments que le rectangle ?"
+		},
+		{
+			"statement": "Le rectangle en pointillés et la figure colorée sont posés l'un sur l'autre. Sans mesurer, lequel a le plus grand périmètre ?\n\n```figure\nfenetre: -2 ; 8 ; -3 ; 7.5\ndescription: Un rectangle en pointillés et une figure colorée : l'une est entièrement à l'intérieur de l'autre.\n---\n{{if:s==0|F1 = point({{a}}, 0, visible=faux)\nF2 = point(6, {{b}}, visible=faux)\nF3 = point({{eval:6-a}}, 4, visible=faux)\nF4 = point(0, {{eval:4-b}}, visible=faux)\npolygone(F1, F2, F3, F4, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)|F1 = point(-1, {{eval:-0.5*b}}, visible=faux)\nF2 = point(3, {{eval:-1-0.5*b}}, visible=faux)\nF3 = point(7, {{eval:-0.5*b}}, visible=faux)\nF4 = point(7, {{eval:4+0.5*b}}, visible=faux)\nF5 = point(3, {{eval:5+0.5*b}}, visible=faux)\nF6 = point(-1, {{eval:4+0.5*b}}, visible=faux)\npolygone(F1, F2, F3, F4, F5, F6, couleur=\"orange\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.35)}}\nR1 = point(0, 0, visible=faux)\nR2 = point(6, 0, visible=faux)\nR3 = point(6, 4, visible=faux)\nR4 = point(0, 4, visible=faux)\npolygone(R1, R2, R3, R4, couleur=\"noir\", trait=\"tirets\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Le rectangle en pointillés a le plus grand périmètre.\n- La figure colorée a le plus grand périmètre.\n- Ils ont le même périmètre.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==0|La figure colorée est tout entière à l'intérieur du rectangle : chacun de ses côtés coupe au plus court un coin du rectangle.|Le rectangle est tout entier à l'intérieur de la figure colorée : chacun de ses côtés coupe au plus court un coin de la figure.}}",
+					"{{if:s==0|$\\textcolor{{{color:primary.0}}}{\\text{Le rectangle}}$ a le plus grand périmètre.|$\\textcolor{{{color:primary.0}}}{\\text{La figure colorée}}$ a le plus grand périmètre.}}"
+				]
+			},
+			"hint": "L'une des deux figures est-elle tout entière à l'intérieur de l'autre ? Laquelle fait le plus grand tour ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle en bosse : la figure",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"p": "2",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Triangle en creux : la figure",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"p": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Triangle en creux : le rectangle refusé",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"p": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Demi-disque en bosse : la figure",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"p": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Demi-disque en creux : la figure",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"p": "3",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Demi-disque en creux : le même refusé",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"p": "3",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Découpé et recollé : la figure",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"p": "1",
+				"q": "3",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Découpé et recollé : « le même » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"p": "1",
+				"q": "1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Quadrilatère inscrit : le rectangle",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"a": "2",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Quadrilatère inscrit : la figure refusée",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"a": "2",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Rectangle inscrit : la figure",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"a": "2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		}
+	]
+}

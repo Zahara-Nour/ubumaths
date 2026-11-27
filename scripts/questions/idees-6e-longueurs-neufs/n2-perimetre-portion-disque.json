@@ -1,0 +1,326 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Périmètres",
+		"point": "6-148"
+	},
+	"title": "Périmètre d'une portion de disque",
+	"description": "Périmètre d'un quart, d'un demi et de trois quarts de disque dessinés et cotés, π ≈ 3,14, arrondi au dixième ; pièges : l'arc seul, le cercle entier, rayon et diamètre confondus",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule le périmètre de ce quart de disque de rayon ${{r}}$ cm. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: -1.5 ; {{eval:r+1.5}} ; -1.5 ; {{eval:r+1.5}}\ndescription: Un quart de disque : deux rayons de {{r}} cm qui forment un angle droit, et l'arc qui les relie.\n---\nO = point(0, 0, visible=faux)\nA = point({{r}}, 0, visible=faux)\nB = point(0, {{r}}, visible=faux)\nsegment(O, A, couleur=\"noir\", epaisseur=2)\nsegment(O, B, couleur=\"noir\", epaisseur=2)\narc(O, rayon={{r}}, debut=0, fin=90, couleur=\"noir\", epaisseur=2)\nangle(A, O, B, marque=\"carre\")\ntexte({{eval:r/2;d}}, -0.6, \"{{r}} cm\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((357*r+5)/10)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((157*r+5)/10)/10;d}}",
+							"message": "Tu n'as compté que l'arc : le contour passe aussi par les deux rayons.",
+							"label": "Arc seul"
+						},
+						{
+							"answer": "{{eval:floor((628*r+5)/10)/10;d}}",
+							"message": "Ça, c'est le périmètre du disque entier ; ici, il n'y a qu'une portion de cercle.",
+							"label": "Cercle entier"
+						},
+						{
+							"answer": "{{eval:floor((2785*r+50)/100)/10;d}}",
+							"message": "Le rayon mesure ${{r}}$ cm : le cercle entier mesure $3{,}14 \\times 2 \\times {{r}}$, car son diamètre est le double du rayon.",
+							"label": "Rayon pris pour le diamètre"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : deux rayons de ${{r}}~\\unit{cm}$ et un **quart de cercle** de rayon ${{r}}~\\unit{cm}$.",
+					"Cercle entier : $3{,}14 \\times 2 \\times {{r}} = {{eval:6.28*r;d}}$ ; un quart : ${{eval:6.28*r;d}} \\div 4 = {{eval:1.57*r;d}}$.",
+					"Périmètre : ${{r}} + {{r}} + {{eval:1.57*r;d}} = {{eval:3.57*r;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor((357*r+5)/10)/10;d}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Suis le contour avec le doigt : il y a des segments et un morceau de cercle. Quelle part du cercle entier ?"
+		},
+		{
+			"statement": "Calcule le périmètre de ce demi-disque de diamètre ${{d}}$ cm. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: {{eval:-d/2-1;d}} ; {{eval:d/2+1;d}} ; -1.5 ; {{eval:d/2+1;d}}\ndescription: Un demi-disque : un diamètre de {{d}} cm et le demi-cercle qui le borde.\n---\nO = point(0, 0, visible=faux)\nA = point({{eval:-d/2;d}}, 0, visible=faux)\nB = point({{eval:d/2;d}}, 0, visible=faux)\nsegment(A, B, couleur=\"noir\", epaisseur=2)\narc(O, rayon={{eval:d/2;d}}, debut=0, fin=180, couleur=\"noir\", epaisseur=2)\ntexte(0, -0.6, \"{{d}} cm\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((257*d+5)/10)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((157*d+5)/10)/10;d}}",
+							"message": "Tu n'as compté que l'arc : le contour passe aussi par le diamètre.",
+							"label": "Arc seul"
+						},
+						{
+							"answer": "{{eval:floor((314*d+5)/10)/10;d}}",
+							"message": "Ça, c'est le périmètre du disque entier ; ici, il n'y a qu'une portion de cercle.",
+							"label": "Cercle entier"
+						},
+						{
+							"answer": "{{eval:floor((414*d+5)/10)/10;d}}",
+							"message": "${{d}}$ cm, c'est le diamètre : le cercle entier mesure $3{,}14 \\times {{d}}$, pas $3{,}14 \\times 2 \\times {{d}}$.",
+							"label": "Diamètre pris pour le rayon"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : le diamètre de ${{d}}~\\unit{cm}$ et un **demi-cercle** de diamètre ${{d}}~\\unit{cm}$.",
+					"Cercle entier : $3{,}14 \\times {{d}} = {{eval:3.14*d;d}}$ ; la moitié : ${{eval:3.14*d;d}} \\div 2 = {{eval:1.57*d;d}}$.",
+					"Périmètre : ${{d}} + {{eval:1.57*d;d}} = {{eval:2.57*d;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor((257*d+5)/10)/10;d}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Le contour, c'est un morceau de cercle **et** un segment. Le nombre donné est-il un rayon ou un diamètre ?"
+		},
+		{
+			"statement": "Calcule le périmètre de ces trois quarts de disque de rayon ${{r}}$ cm. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: {{eval:-r-1.5}} ; {{eval:r+1.5}} ; {{eval:-r-1.5}} ; {{eval:r+1.5}}\ndescription: Trois quarts de disque : deux rayons de {{r}} cm qui forment un angle droit, et l'arc qui fait les trois quarts du tour.\n---\nO = point(0, 0, visible=faux)\nA = point({{r}}, 0, visible=faux)\nB = point(0, {{r}}, visible=faux)\nsegment(O, A, couleur=\"noir\", epaisseur=2)\nsegment(O, B, couleur=\"noir\", epaisseur=2)\narc(O, rayon={{r}}, debut=90, fin=360, couleur=\"noir\", epaisseur=2)\ntexte({{eval:r/2;d}}, -0.6, \"{{r}} cm\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((671*r+5)/10)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((471*r+5)/10)/10;d}}",
+							"message": "Tu n'as compté que l'arc : le contour passe aussi par les deux rayons.",
+							"label": "Arc seul"
+						},
+						{
+							"answer": "{{eval:floor((628*r+5)/10)/10;d}}",
+							"message": "Ça, c'est le périmètre du disque entier ; ici, il n'y a qu'une portion de cercle.",
+							"label": "Cercle entier"
+						},
+						{
+							"answer": "{{eval:floor((4355*r+50)/100)/10;d}}",
+							"message": "Le rayon mesure ${{r}}$ cm : le cercle entier mesure $3{,}14 \\times 2 \\times {{r}}$, car son diamètre est le double du rayon.",
+							"label": "Rayon pris pour le diamètre"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : deux rayons de ${{r}}~\\unit{cm}$ et **trois quarts de cercle** de rayon ${{r}}~\\unit{cm}$.",
+					"Cercle entier : $3{,}14 \\times 2 \\times {{r}} = {{eval:6.28*r;d}}$ ; un quart : ${{eval:1.57*r;d}}$ ; trois quarts : $3 \\times {{eval:1.57*r;d}} = {{eval:4.71*r;d}}$.",
+					"Périmètre : ${{r}} + {{r}} + {{eval:4.71*r;d}} = {{eval:6.71*r;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor((671*r+5)/10)/10;d}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Suis le contour avec le doigt : des segments, et un morceau de cercle. Quelle part du cercle entier ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Quart, r = 4 : 14,3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14{,}3"]
+		},
+		{
+			"description": "Quart, r = 4 : 14,3 (point)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14.3"]
+		},
+		{
+			"description": "Quart, r = 4 : arc seul 6,3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté que l'arc : le contour passe aussi par les deux rayons."
+			},
+			"answers": ["6{,}3"]
+		},
+		{
+			"description": "Quart, r = 4 : cercle 25,1",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre du disque entier ; ici, il n'y a qu'une portion de cercle."
+			},
+			"answers": ["25{,}1"]
+		},
+		{
+			"description": "Quart, r = 4 : rayon pris pour le diamètre 11,1",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le rayon mesure $4$ cm : le cercle entier mesure $3{,}14 \\times 2 \\times 4$, car son diamètre est le double du rayon."
+			},
+			"answers": ["11{,}1"]
+		},
+		{
+			"description": "Quart, r = 5 : 17,9 (arrondi au-dessus)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17{,}9"]
+		},
+		{
+			"description": "Quart, r = 4 : non arrondi 14,28 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["14{,}28"]
+		},
+		{
+			"description": "Demi, d = 6 : 15,4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15{,}4"]
+		},
+		{
+			"description": "Demi, d = 6 : arc seul 9,4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté que l'arc : le contour passe aussi par le diamètre."
+			},
+			"answers": ["9{,}4"]
+		},
+		{
+			"description": "Demi, d = 6 : cercle 18,8",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre du disque entier ; ici, il n'y a qu'une portion de cercle."
+			},
+			"answers": ["18{,}8"]
+		},
+		{
+			"description": "Demi, d = 6 : diamètre pris pour le rayon 24,8",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$6$ cm, c'est le diamètre : le cercle entier mesure $3{,}14 \\times 6$, pas $3{,}14 \\times 2 \\times 6$."
+			},
+			"answers": ["24{,}8"]
+		},
+		{
+			"description": "Demi, d = 5 : 12,9",
+			"variationIndex": 1,
+			"variables": {
+				"d": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12{,}9"]
+		},
+		{
+			"description": "Trois quarts, r = 3 : 20,1",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["20{,}1"]
+		},
+		{
+			"description": "Trois quarts, r = 3 : arc seul 14,1",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté que l'arc : le contour passe aussi par les deux rayons."
+			},
+			"answers": ["14{,}1"]
+		},
+		{
+			"description": "Trois quarts, r = 3 : cercle 18,8",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre du disque entier ; ici, il n'y a qu'une portion de cercle."
+			},
+			"answers": ["18{,}8"]
+		},
+		{
+			"description": "Trois quarts, r = 3 : rayon pris pour le diamètre 13,1",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le rayon mesure $3$ cm : le cercle entier mesure $3{,}14 \\times 2 \\times 3$, car son diamètre est le double du rayon."
+			},
+			"answers": ["13{,}1"]
+		}
+	]
+}
