@@ -2,14 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après la publication de `505ee05a`._
+_Mis à jour le 2026-11-27 : chantier clos, journal archivé._
 
-- **État** : modèle `505ee05a` relu par David et publié en prod (`published`, vérifié par MCP).
-  Le seul modèle neuf de la rubrique est livré.
-- **Prochaine action** : clore le chantier (archiver le journal) sur le go de David.
-- **En attente de David** : le go pour clore.
-- **Pièges en cours** : second tag 1TECHNO-095 non posé (`outils-manquants.md` n° 66, hors chantier).
-- **Worktree / branche** : aucun.
+- **État** : clos ; #3203 et #3206 mergées et migrées, `505ee05a` publié, rubrique 1P2 « publiée »
+  dans `idees-ailleurs-repartition.md`, aucun modèle réservé · **Prochaine action** : aucune ·
+  **En attente de David** : rien · **Piège durable** : second tag 1TECHNO-095 non posé
+  (`outils-manquants.md` n° 66) · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -35,3 +33,4 @@ _Mis à jour le 2026-11-27, après la publication de `505ee05a`._
   techno) ; `migration list --linked` sans écart ; nœud et tag vérifiés par MCP.
 - 2026-11-27 : relecture validée par David ; il a lancé `publier-lot.ts --publier` ; `505ee05a`
   `published` en prod (vérifié par MCP).
+- 2026-11-27 : chantier clos sur le go de David ; journal, fiche et relevé archivés.

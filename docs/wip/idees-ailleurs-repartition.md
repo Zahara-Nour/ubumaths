@@ -43,7 +43,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Produit scalaire                  | 1G1   | 10        | publiée (2026-11-26) | `idees-1re-produit-scalaire`     |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                                  |
 | Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`          |
-| Variables aléatoires réelles      | 1P2   | 1         | prise (2026-11-26)   | `idees-1re-variables-aleatoires` |
+| Variables aléatoires réelles      | 1P2   | 1         | publiée (2026-11-27) | `idees-1re-variables-aleatoires` |
 
 ### Automatismes de l'épreuve anticipée
 

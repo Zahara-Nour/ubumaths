@@ -1,7 +1,7 @@
 """Écrit le modèle neuf du chantier idees-1re-variables-aleatoires dans
 scripts/questions/idees-1re-variables-aleatoires-neufs/.
 
-Phase 0 : fiche docs/wip/idees-1re-variables-aleatoires-fiches.md, validée par David le 2026-11-26
+Phase 0 : fiche docs/archive/wip/idees-1re-variables-aleatoires/idees-1re-variables-aleatoires-fiches.md, validée par David le 2026-11-26
 (« je valide » : F1 et ses trois variations, Q1 oui, Q2 oui).
 
 Rangement, nœud et point vérifiés en base le 2026-11-26 : sous-notion « loi d'une variable
