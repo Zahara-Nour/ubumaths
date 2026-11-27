@@ -108,7 +108,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
 | Algèbre                            | 6N4   | 9         | libre                |                             |
 | Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
-| Longueurs                          | 6M1   | 16        | libre                |                             |
+| Longueurs                          | 6M1   | 16        | prise (2026-11-27)   | `idees-6e-longueurs`        |
 | Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
 | Volumes                            | 6M3   | 3         | libre                |                             |
 | Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
