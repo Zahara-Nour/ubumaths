@@ -628,3 +628,4 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   **Laissés** : une droite posée dans une face vue exactement par la tranche est en tirets alors que l'arête
   est en plein (angle que le clavier n'atteint pas) ; `droites:` vide ou `(AG` sans parenthèse fermante
   acceptés sans message.
+- Docs produites : `docs/systeme/ubumark.md` (paragraphe « Droites données »), ce journal.
