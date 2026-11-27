@@ -1245,7 +1245,9 @@ async function textsOnStrokes(drawing: Locator): Promise<string[]> {
 		// celui-ci aux petits corps (police de 0,37 unité agrandie par le viewBox : « I » large de
 		// 10,7 px au lieu de 3,7, haut de 21 au lieu de 16) ; vérifié aux pixels le 2026-11-27.
 		// Largeur : union des cases de caractères ; hauteur : encre mesurée par un canvas, posée
-		// sur le point d'ancrage du texte (ligne de base, ou milieu avec `dominant-baseline`).
+		// sur le point d'ancrage du texte (ligne de base, ou milieu avec `dominant-baseline: central`).
+		// Suppose un texte d'un seul tenant (sans tspan décalé) et non tourné : c'est le cas des
+		// noms de sommets et des cotes de ces dessins.
 		const ctx = document.createElement('canvas').getContext('2d');
 		const inkBox = (text: SVGTextElement) => {
 			const m = text.getScreenCTM();
@@ -1264,13 +1266,8 @@ async function textsOnStrokes(drawing: Locator): Promise<string[]> {
 			const style = getComputedStyle(text);
 			const px = parseFloat(style.fontSize) * scale;
 			ctx.font = `${style.fontStyle} ${style.fontWeight} ${px}px ${style.fontFamily}`;
-			// Même repère que le texte : `central` (le milieu du cadratin) = `middle` du canvas
-			const baselines: Record<string, CanvasTextBaseline> = {
-				central: 'middle',
-				middle: 'middle',
-				hanging: 'hanging'
-			};
-			ctx.textBaseline = baselines[style.dominantBaseline] ?? 'alphabetic';
+			// Même repère que le texte : `central` (milieu du cadratin) = `middle` du canvas
+			ctx.textBaseline = style.dominantBaseline === 'central' ? 'middle' : 'alphabetic';
 			const ink = ctx.measureText(text.textContent ?? '');
 			const start = text.getStartPositionOfChar(0);
 			const baseline = toScreenY(start.x, start.y);
