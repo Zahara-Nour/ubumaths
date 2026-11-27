@@ -8,9 +8,9 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR 1._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR 1._
 
-- **État** : PR 1 (branche `fix/ecarts-fiches`) : L85, T23, L111, L9, V111, V108 + M44 faits et barrés au registre ; revues `code-reviewer` (Sonnet) + `security-auditor` lancées le 2026-11-28 ; après un `/clear`, leurs rapports sont perdus : les relancer sur `git diff origin/main...HEAD -- src scripts tests`. Restent **V109** et **L86**, tranchés par David (§ Questions), pour une PR 2.
+- **État** : PR 1 (branche `fix/ecarts-fiches`) : L85, T23, L111, L9, V111, V108 + M44 faits et barrés au registre ; revues faites le 2026-11-28 (`code-reviewer` : rien de bloquant, lien `https://` gardé ; `security-auditor` : rien de bloquant, deux défauts antérieurs inscrits T38 et L140, zone du lot, hors PR). Restent **V109** et **L86**, tranchés par David (§ Questions), pour une PR 2.
 - **Prochaine action** : PR 1 ouverte, CI, merge. Puis PR 2 : V109 (horloge à régler et barre à construire dans une série d'automatismes : aujourd'hui refusées par `buildSerie` « 0 case(s) dans l'énoncé » ; même mécanisme que V108, `solution: oui` sur ```horloge et sur le diagramme en barres, écran + PDF) ; L86 (fonction SQL aux droits de l'appelant, tests d'intégration rouges d'abord, `security-auditor`).
 - **En attente de David** : rien.
 - **Pièges en cours** : preuve de M44 sous bash (glob `--include=*.ts`). Tests de preuve : `ECARTS_PREUVES=1 npx vitest run --project ecarts …`. Capture d'un rendu Svelte : `page.screenshot({ element })` dans un test jetable, image dans `__screenshots__/` à déplacer.
