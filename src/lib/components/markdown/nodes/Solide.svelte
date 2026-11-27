@@ -27,6 +27,10 @@
 	  Pendant que la figure tourne, chaque nom garde sa place par rapport à son
 	  point ; à l'arrêt (doigt levé, touche relâchée, fin du retour), les noms
 	  glissent à la place qui convient à la vue.
+	  Solide coupé ou coté (lot 4) : la section et ses noms tournent avec lui ;
+	  les longueurs écrites (`cotes:`) ne se voient qu'à la vue de départ, les
+	  traits qui les accompagnent (hauteur, rayon) restent — c'est la scène qui
+	  en décide (`buildSolideScene`).
 
 	@module components/markdown/nodes/Solide
 -->

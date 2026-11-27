@@ -96,30 +96,13 @@ describe('```solide rond — tourner:', () => {
 		}
 	);
 
-	it.each([
-		['forme: cylindre 2 5', 'section: perpendiculaire 2', 'section:'],
-		['forme: boule 3', 'section: 1', 'section:'],
-		['forme: cone 2 4', 'cotes: cm', 'cotes:']
-	])('%s avec %s : pas encore, figure fixe (comportement 26)', (form, line, key) => {
-		const node = read(form, line, 'tourner: oui');
-		expect(node.errors).toEqual([]);
-		expect(node.spec).not.toHaveProperty('rotate');
-		expect(node.rotationErrors).toHaveLength(1);
-		expect(node.rotationErrors?.[0]).toContain('Ligne 3');
-		expect(node.rotationErrors?.[0]).toContain(key);
-	});
-
 	it('PDF : la vue de départ, la même fiche qu’un cylindre sans la clé', () => {
 		const lines = ['forme: cylindre 2 5', "sommets: O O'"];
 		expect(generateEspaceTypst(read(...lines, 'tourner: oui'))).toBe(
 			generateEspaceTypst(read(...lines))
 		);
 	});
-
-	it('un solide rond coupé ou coté à qui l’on donne une vue reste le dessin fixe', () => {
-		const cut = read('forme: cylindre 2 5', 'section: perpendiculaire 2').spec as SolideSpec;
-		expect(buildSolideScene(cut, from(deg(60)))).toEqual(buildSolideScene(cut));
-	});
+	// Solide rond coupé ou coté : il tourne depuis le lot 4 (`solide-sections-tourner.test.ts`)
 });
 
 describe('```solide rond — bascule bornée', () => {
