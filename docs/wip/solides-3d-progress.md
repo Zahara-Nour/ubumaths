@@ -526,3 +526,64 @@ Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devan
 - Vu à l'écran par la session (captures Chromium du composant, deux assemblages sous six angles, dont
   l'arrière et le dessous) : cubes pleins, trou visible de derrière, teintes tenues, cadre et bouton en place.
   **Pas vu** : le geste du doigt sur un vrai téléphone ; le thème sombre sous une vue tournée.
+
+## 17. Lot 7 — Terminale : droites, plans, repère : comportements (à valider par David)
+
+Exemple suivi : le cube ABCDEFGH, I milieu de [AE], la droite (IG) et le plan (BDE), `tourner: oui`. Question
+type : « La droite (IG) et le plan (BDE) sont-ils sécants ? ». Programme de Terminale spécialité : « les
+figures formées à partir des solides usuels (cube, pavé, tétraèdre) sont des supports privilégiés » pour les
+positions relatives ; le repère sert ensuite aux calculs (représentations paramétriques, équations de plans).
+
+### Nominal
+
+69. **Droite.** L'auteur écrit `droites: (IG)` dans le bloc ` ```solide ` (deux points nommés : sommets ou
+    points déclarés). La droite est dessinée en couleur, elle dépasse des deux côtés, un peu au-delà du
+    solide. Elle peut porter un nom : `d = (IG)`.
+70. **Plan.** L'auteur écrit `plans: (BDE)` (trois points nommés non alignés). On voit la partie du plan
+    qui est dans le solide : ici le triangle BDE, teinté. Il peut porter un nom : `P = (BDE)`.
+71. **Repère.** L'auteur écrit `repere: A ; AB, AD, AE` : les trois vecteurs du repère sont dessinés depuis
+    A. Il peut alors déclarer un point par ses coordonnées : `points: M (1 ; 0,5 ; 1)`, et s'en servir
+    comme d'un autre point (droite, plan, vecteur).
+72. **Repère sans solide.** `forme: repere 4 4 4` : trois axes gradués O, I, J, K, sans solide. Points par
+    coordonnées, droites et plans s'y écrivent de la même façon ; un plan est montré par sa partie comprise
+    dans la boîte du repère, une droite s'arrête au bord de la boîte.
+73. Avec `tourner: oui`, tout suit la rotation : droites, plans, axes, points, noms. Sans la clé, la
+    figure est fixe ; sur la fiche PDF, c'est toujours la vue de départ.
+74. Ce qui est caché se lit comme pour les arêtes : voir la question (c).
+
+### Limites
+
+75. Un plan qui contient une face du solide (`(ABC)` sur un cube) teinte cette face. Une droite qui suit
+    une arête la recouvre et la dépasse.
+76. Le point où une droite perce un plan, ou la droite où deux plans se coupent, **n'est pas dessiné** de
+    lui-même : ce serait donner la réponse. Voir la question (d).
+77. Au plus 4 droites et 2 plans par figure (au-delà, on ne lit plus rien).
+78. Lecteur d'écran : « droite (IG) », « plan (BDE) », « repère d'origine A ». Jamais la position relative.
+79. Une figure sans `droites:`, `plans:` ni `repere:` reste strictement celle d'aujourd'hui.
+
+### Erreurs (message pour l'auteur, jamais de figure fausse)
+
+80. Point inconnu, deux fois le même point pour une droite, trois points alignés pour un plan, nom déjà
+    pris.
+81. Point par coordonnées qui tombe hors de la figure (hors du solide agrandi d'une marge, hors de la boîte
+    du repère) ; coordonnées sans `repere:`.
+82. `repere:` dont les trois vecteurs sont dans un même plan.
+83. `droites:`, `plans:`, `repere:` sur un cylindre, un cône ou une boule ; avec `section:` ou `tracer:`
+    (pas dans ce lot).
+
+### Questions pour David
+
+- **(a) Où écrire tout cela.** (1) Dans le bloc ` ```solide ` qu'on connaît, avec des lignes en plus
+  (`droites:`, `plans:`, `repere:`) et une forme `repere` pour le repère sans solide ; (2) un bloc neuf pour
+  la Terminale. Recommandation : (1) — tout ce qui existe (points, vecteurs, rotation, PDF) sert tel quel.
+- **(b) Découpage.** Le lot est gros. Proposition : **7a** droites sur un solide ; **7b** plans sur un
+  solide ; **7c** repère du solide et points par coordonnées ; **7d** repère sans solide (axes gradués).
+  Une PR chacun, dans cet ordre. 7d seulement si tu en as l'usage : en Terminale, les exercices à
+  coordonnées sans solide se font le plus souvent sans figure.
+- **(c) Ce qui est caché.** Aujourd'hui un vecteur est en trait plein partout, même à travers le solide.
+  Pour une droite : (1) pareil, trait plein partout ; (2) comme dans les manuels : en tirets là où une face
+  du solide passe devant elle, en plein ailleurs, recalculé quand on tourne ; même règle pour le bord du
+  plan teinté. Recommandation : (2), c'est ce qui permet de lire si la droite passe devant ou derrière.
+- **(d) Montrer un point d'intersection quand l'auteur le demande** (`points: K intersection (IG) (BDE)`,
+  utile pour un corrigé ou pour une question qui part de K). (1) Pas dans ce lot ; (2) dans un lot 7e à la
+  suite. Sans recommandation forte : (1) est le choix qui n'ajoute rien.
