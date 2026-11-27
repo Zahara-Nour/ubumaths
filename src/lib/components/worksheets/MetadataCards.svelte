@@ -45,7 +45,7 @@
 	import {
 		WORKSHEET_TYPE_LABELS,
 		WORKSHEET_TYPE_OPTIONS,
-		formatDuration
+		formatMinutes
 	} from '#lib/utils/worksheet-constants.ts';
 	import { formatGradeShort } from '#lib/utils/grades.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
@@ -527,7 +527,7 @@
 							onclick={() => startEdit('duration')}
 							disabled={!isEditable}
 						>
-							{formatDuration(worksheet.estimated_duration_minutes)}
+							{formatMinutes(worksheet.estimated_duration_minutes)}
 						</button>
 					{:else}
 						<div class="flex items-center gap-1">

@@ -104,7 +104,7 @@
 	import { tipTapToMarkdown } from './markdown-export';
 	import { markdownToTipTap } from './markdown-import';
 	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
-	import MarkdownCodeEditor from './MarkdownCodeEditor.svelte';
+	import CodeEditor from '#lib/components/CodeEditor.svelte';
 	import type { MarkdownDisplayMode } from '#lib/components/markdown/types.ts';
 	import type {
 		RichTextMode,
@@ -2068,9 +2068,11 @@
 				<!-- CodeMirror markdown editor - shown only in markdown mode -->
 				{#if isMarkdownEditMode}
 					<div class="h-full pt-10">
-						<MarkdownCodeEditor
+						<CodeEditor
 							bind:value={rawMarkdownContent}
 							{disabled}
+							language="markdown"
+							ariaLabel="Éditeur Markdown"
 							placeholder="Entrez votre markdown ici..."
 						/>
 					</div>

@@ -3,9 +3,9 @@ couvre:
   - src/routes/+layout.svelte
   - 'src/routes/(protected)/+layout.svelte'
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
-  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,FlipCard,FontSelector,Wheel}.svelte'
+  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,FlipCard,Wheel}.svelte'
   - 'src/lib/components/{skeleton,modals}/**'
-  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack,input-capability,auth}.svelte.ts'
+  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
   - src/lib/utils/cache-sync.ts
   - src/lib/utils/app-version.ts
@@ -226,8 +226,6 @@ aussi par le Démineur (`minesweeper.svelte.ts`), `RewardsBlock` et la page
 - `mobileStore` (`mobile.svelte.ts`) : largeur de fenêtre suivie par un écouteur `resize`,
   `isMobile` (< 768), `isTablet`, `isDesktop` (≥ 1024). Côté serveur, largeur supposée 1024. Seul
   utilisateur : `MinesweeperBoard`.
-- `inputCapability` (`input-capability.svelte.ts`) : `hasTouch`, `hasMouse`, `canHover`,
-  `primaryIsTouch`, par `matchMedia`. Aucun composant ne l'importe.
 
 La navigation elle-même choisit entre barre et tiroir par CSS (`md:hidden`, `hidden md:block`), pas
 par ces stores.
@@ -256,8 +254,8 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 
 - `FlipCard` : carte à deux faces de même hauteur (grille CSS), face cachée `inert`. Utilisée par
   `FlashCard` et `/demo`.
-- `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` sont utilisés
-  (layouts, marché) ; `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem` non.
+- `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` (layouts,
+  marché).
 
 ### Onglet resté ouvert pendant un déploiement
 

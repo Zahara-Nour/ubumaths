@@ -15,6 +15,7 @@ import type {
 	AnnotationShape,
 	AnnotationStamp
 } from '../types/document';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
 import { smoothStroke, pointsToSvgPath, getToolOptions } from './stroke-smoothing';
 import { renderRoughShapeToSvgString } from './rough-renderer';
 import { isPageExpanded, getExportScaleFactor, getOriginalDimensions } from './page-expansion';
@@ -842,18 +843,6 @@ function renderAnnotationStampToSvg(stamp: AnnotationStamp): string {
 
 	svg += '</g>';
 	return svg;
-}
-
-/**
- * Escape HTML special characters
- */
-function escapeHtml(text: string): string {
-	return text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#039;');
 }
 
 /**

@@ -7,7 +7,7 @@
 	} from '#lib/ubumark/importers/latex/index.ts';
 	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
-	import LaTeXEditor from '#lib/components/LaTeXEditor.svelte';
+	import CodeEditor from '#lib/components/CodeEditor.svelte';
 	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
@@ -323,8 +323,9 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 		<!-- Input Tab -->
 		<Tabs.Content value="input" class="mt-4">
-			<LaTeXEditor
+			<CodeEditor
 				bind:value={latexInput}
+				ariaLabel="Éditeur LaTeX"
 				height="600px"
 				placeholder="Entrez votre code LaTeX ici..."
 				lineWrapping={true}
@@ -342,8 +343,9 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 				</Button>
 			</div>
 			{#if editableMarkdown || transpileResult}
-				<LaTeXEditor
+				<CodeEditor
 					bind:value={editableMarkdown}
+					ariaLabel="Éditeur Markdown"
 					height="600px"
 					placeholder="Markdown genere (editable)..."
 					lineWrapping={true}

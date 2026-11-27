@@ -11,7 +11,7 @@ couvre:
   - 'src/lib/components/templates/{Chapter,Template}*.svelte'
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
-  - 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
+  - 'src/lib/types/{chapter*,chapters,journal}.ts'
   - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching,programme-tree,programme-map,template-select-items}.ts'
   - 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
   - 'src/routes/api/student/{chapters,checklist}/**'
