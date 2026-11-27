@@ -33,12 +33,11 @@
 	import type { StudentWarningCounts } from '#lib/server/warnings.ts';
 
 	interface Props {
-		riddlesSolved: number; // Not in cache, passed as prop (unused - Riddles tile removed)
 		studentId: string; // Needed for modal
 		periodId: string | null; // Academic period for warnings
 	}
 
-	let { riddlesSolved: _riddlesSolved, studentId, periodId }: Props = $props();
+	let { studentId, periodId }: Props = $props();
 
 	// Derive rewards from cache (reactive to cache updates)
 	const rewards = $derived(studentCache.getRewardsSync());

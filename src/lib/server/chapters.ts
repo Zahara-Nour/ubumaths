@@ -31,7 +31,6 @@ import type {
 	CreateChapterInput,
 	UpdateChapterInput,
 	CreateDocumentInput,
-	UpdateDocumentInput,
 	CreateChecklistItemInput,
 	UpdateChecklistItemInput
 } from '#lib/server/validation/chapters.ts';
@@ -75,12 +74,6 @@ type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K>
 
 /** Le contenu d'un document, sans son propriétaire (passé à part). */
 export type DocumentFields = DistributiveOmit<CreateDocumentInput, 'chapterId'>;
-
-/** Order update item for reordering operations */
-interface OrderUpdate {
-	id: string;
-	displayOrder: number;
-}
 
 /** Result type for operations */
 interface OperationResult<T> {
@@ -389,36 +382,6 @@ export async function deleteChapter(
 	return { error: null };
 }
 
-/**
- * Reorder chapters within a class
- *
- * @param classId - Class ID
- * @param orderUpdates - Array of {id, displayOrder} updates
- * @param supabase - Supabase client
- * @returns Success status
- */
-export async function reorderChapters(
-	classId: string,
-	orderUpdates: OrderUpdate[],
-	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
-	// Use a transaction via RPC or sequential updates
-	for (const update of orderUpdates) {
-		const { error } = await supabase
-			.from('class_chapters')
-			.update({ display_order: update.displayOrder })
-			.eq('id', update.id)
-			.eq('class_id', classId);
-
-		if (error) {
-			logger.error('[reorderChapters] Error updating order:', error);
-			return { error: new Error(error.message) };
-		}
-	}
-
-	return { error: null };
-}
-
 // ============================================================================
 // TEACHER FUNCTIONS - DOCUMENTS
 // ============================================================================
@@ -533,40 +496,6 @@ export async function addChapterDocument(
 }
 
 /**
- * Update a document
- *
- * @param documentId - Document ID
- * @param data - Update data
- * @param supabase - Supabase client
- * @returns Updated document
- */
-export async function updateChapterDocument(
-	documentId: string,
-	data: UpdateDocumentInput,
-	supabase: SupabaseClient<Database>
-): Promise<OperationResult<ChapterDocument>> {
-	const updateData: TablesUpdate<'chapter_documents'> = {};
-
-	if (data.title !== undefined) updateData.title = data.title;
-	if (data.description !== undefined) updateData.description = data.description;
-	if (data.displayOrder !== undefined) updateData.display_order = data.displayOrder;
-
-	const { data: document, error } = await supabase
-		.from('chapter_documents')
-		.update(updateData)
-		.eq('id', documentId)
-		.select()
-		.single();
-
-	if (error) {
-		logger.error('[updateChapterDocument] Error:', error);
-		return { data: null, error: new Error(error.message) };
-	}
-
-	return { data: convertDocument(document), error: null };
-}
-
-/**
  * Delete a document
  *
  * @param documentId - Document ID
@@ -595,36 +524,6 @@ export async function deleteChapterDocument(
 	if (!data || data.length !== 1) {
 		logger.error(`[deleteChapterDocument] Aucune ligne supprimée pour ${documentId}`);
 		return { error: new Error('Document introuvable') };
-	}
-
-	return { error: null };
-}
-
-/**
- * Reorder documents within a chapter
- *
- * @param chapterId - Chapter ID
- * @param orderUpdates - Array of {id, displayOrder} updates
- * @param supabase - Supabase client
- * @returns Success status
- */
-export async function reorderDocuments(
-	owner: ContentOwner | string,
-	orderUpdates: OrderUpdate[],
-	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
-	const proprietaire = toOwner(owner);
-	for (const update of orderUpdates) {
-		const { error } = await supabase
-			.from('chapter_documents')
-			.update({ display_order: update.displayOrder })
-			.eq('id', update.id)
-			.eq(ownerColumn(proprietaire), proprietaire.id);
-
-		if (error) {
-			logger.error('[reorderDocuments] Error:', error);
-			return { error: new Error(error.message) };
-		}
 	}
 
 	return { error: null };
@@ -959,36 +858,6 @@ export async function unlinkWorksheet(
 	return deleteOwnRow('chapter_worksheets', chapterWorksheetId, 'unlinkWorksheet', supabase);
 }
 
-/**
- * Reorder exercises within a chapter
- *
- * @param chapterId - Chapter ID
- * @param orderUpdates - Array of {id, displayOrder} updates
- * @param supabase - Supabase client
- * @returns Success status
- */
-export async function reorderExercises(
-	owner: ContentOwner | string,
-	orderUpdates: OrderUpdate[],
-	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
-	const proprietaire = toOwner(owner);
-	for (const update of orderUpdates) {
-		const { error } = await supabase
-			.from('chapter_exercises')
-			.update({ display_order: update.displayOrder })
-			.eq('id', update.id)
-			.eq(ownerColumn(proprietaire), proprietaire.id);
-
-		if (error) {
-			logger.error('[reorderExercises] Error:', error);
-			return { error: new Error(error.message) };
-		}
-	}
-
-	return { error: null };
-}
-
 // ============================================================================
 // TEACHER FUNCTIONS - PROGRESS TRACKING
 // ============================================================================
@@ -1085,41 +954,6 @@ export async function getStudentChecklistProgress(
 // ============================================================================
 // STUDENT FUNCTIONS - VIEW
 // ============================================================================
-
-/**
- * Get visible chapters for a student
- *
- * @param studentId - Student's user ID
- * @param supabase - Supabase client
- * @param classId - Optional class ID filter
- * @returns List of visible chapters
- */
-export async function getStudentChapters(
-	studentId: string,
-	supabase: SupabaseClient<Database>,
-	classId?: string
-): Promise<ListResult<ClassChapter>> {
-	// RLS handles visibility filtering (is_visible = true AND is_class_student)
-	let query = supabase
-		.from('class_chapters')
-		.select('*')
-		.eq('is_visible', true)
-		.order('display_order', { ascending: true });
-
-	if (classId) {
-		query = query.eq('class_id', classId);
-	}
-
-	const { data, error } = await query;
-
-	if (error) {
-		logger.error('[getStudentChapters] Error:', error);
-		return { data: [], error: new Error(error.message), count: 0 };
-	}
-
-	const chapters = (data || []).map(convertChapter);
-	return { data: chapters, error: null, count: chapters.length };
-}
 
 /**
  * Get chapter with full content and student progress
@@ -1313,69 +1147,6 @@ export async function toggleChecklistItem(
 
 		return { data: convertChecklistProgress(created), error: null };
 	}
-}
-
-/**
- * Get student's checklist progress for a chapter
- *
- * @param studentId - Student's user ID
- * @param chapterId - Chapter ID
- * @param supabase - Supabase client
- * @returns List of checklist items with progress
- */
-export async function getMyChecklistProgress(
-	studentId: string,
-	chapterId: string,
-	supabase: SupabaseClient<Database>
-): Promise<
-	ListResult<ChapterChecklistItem & { isCompleted: boolean; completedAt: string | null }>
-> {
-	// Get checklist items
-	const { data: items, error: itemsError } = await supabase
-		.from('chapter_checklist_items')
-		.select('*')
-		.eq('chapter_id', chapterId)
-		.order('display_order', { ascending: true });
-
-	if (itemsError) {
-		logger.error('[getMyChecklistProgress] Error fetching items:', itemsError);
-		return { data: [], error: new Error(itemsError.message), count: 0 };
-	}
-
-	// Get progress
-	const { data: progress, error: progressError } = await supabase
-		.from('student_checklist_progress')
-		.select('*')
-		.eq('student_id', studentId)
-		.in(
-			'checklist_item_id',
-			(items || []).map((i) => i.id)
-		);
-
-	// Sans cette garde, une panne affichait toute la liste décochée : l'élève
-	// voyait son travail effacé et pouvait le refaire par-dessus.
-	if (progressError) {
-		logger.error('[getMyChecklistProgress] Avancement illisible :', progressError);
-		return { data: [], error: new Error(progressError.message), count: 0 };
-	}
-
-	// Build progress map
-	const progressMap = new Map<string, DbStudentChecklistProgress>();
-	for (const p of progress || []) {
-		progressMap.set(p.checklist_item_id, p);
-	}
-
-	// Combine items with progress
-	const result = (items || []).map((item) => {
-		const p = progressMap.get(item.id);
-		return {
-			...convertChecklistItem(item),
-			isCompleted: p?.is_completed ?? false,
-			completedAt: p?.completed_at ?? null
-		};
-	});
-
-	return { data: result, error: null, count: result.length };
 }
 
 /**

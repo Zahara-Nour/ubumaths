@@ -198,7 +198,8 @@ admin seul, textes en français : boutons qui provoquent des erreurs de test).
   tout, appelée par `clearWorkData` (déconnexion, suppression du compte, autre compte sur
   l'appareil) et par un onglet qui voit le compte changer ailleurs, avant de se recharger
   (voir [RGPD](conformite/rgpd.md)) ;
-- `getFreezeDetectionContext()` rend gels, actions et Web Vitals pour un signalement.
+- `getFreezeDetectionContext()` rend gels et actions pour un signalement (les mesures de
+  performance n'y figurent pas : elles vont à la table des mesures, M47).
 
 Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte`
 (`setFreezePromptCallback`, `setAutoReportCallback`). Ils consultent la configuration
@@ -298,7 +299,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 ### OpenAPI et la page Swagger
 
 - `src/lib/server/openapi/generator.ts` : `generateOpenAPISpec()` écrit **à la main** une
-  spécification OpenAPI 3.1 de 11 chemins.
+  spécification OpenAPI 3.1 de 7 chemins.
 - `GET /api/openapi.json` : admin seul, `Cache-Control: private, no-store`.
 - `/dev/api` (ex-`/dashboard/admin/debug/api-docs` ; admin seul : garde de `/dev` et `requireAdmin`
   dans `+page.server.ts` ; `ssr = false`, entrée « API (Swagger) » de `/dev`) :

@@ -421,9 +421,8 @@ Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/stores/listNumbering.svel
   `schemeWithoutNesting`. Par défaut : `auto`, `1-a-i` avec ou sans imbrication (même hiérarchie que
   le PDF, `typst-generator.ts` ; une liste plate est numérotée 1) 2) 3), choix de David du
   2026-10-18). Un réglage enregistré par l'admin (localStorage) garde son choix.
-- **Calcul** : `MarkdownRenderer.svelte` (`effectiveListScheme`) prend le store, fusionne la prop
-  `listNumberingOverride`, et en mode `auto` choisit selon la profondeur maximale des listes de
-  l'AST. `ListNode.svelte` applique la classe.
+- **Calcul** : `MarkdownRenderer.svelte` (`effectiveListScheme`) prend le réglage du store et, en
+  mode `auto`, choisit selon la profondeur maximale des listes de l'AST. `ListNode.svelte` applique la classe.
 - **Interface** : carte « Numérotation des listes » de `/dashboard/admin/settings`.
 
 Cette partie appartient au rendu ubumark ([ubumark.md](ubumark.md)) ; elle est décrite ici
