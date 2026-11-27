@@ -104,8 +104,7 @@ import { isNullCombination, solideVectorPairs } from '../utils/solide-gestes';
 // CONSTANTES
 // ============================================================================
 
-/** `clé: valeur` */
-/** Une clé : des lettres, un tiret entre deux mots permis (`angles-droits:`) */
+/** `clé: valeur` ; une clé : des lettres, un tiret entre deux mots permis (`angles-droits:`) */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+(?:-[A-Za-zÀ-ÿ]+)*)\s*:\s*(.*)$/;
 
 const KEY_LIST = SOLIDE_KEYS.join(', ');

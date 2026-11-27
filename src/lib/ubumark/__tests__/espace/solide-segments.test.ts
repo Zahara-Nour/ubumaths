@@ -39,6 +39,18 @@ const expectFromTo = (pieces: SolideLine[], from: EspacePoint, to: EspacePoint) 
 	});
 };
 
+/** Le point est-il sur le segment [a, b] (au centième de millimètre) ? */
+const onSegment = (p: EspacePoint, a: EspacePoint, b: EspacePoint) =>
+	Math.abs(distance(a, p) + distance(p, b) - distance(a, b)) < 1e-6;
+/** Les morceaux dessinés sur le segment [a, b], dans l'ordre */
+const piecesOn = (pieces: SolideLine[], a: EspacePoint, b: EspacePoint) =>
+	pieces.filter((piece) => piece.points.every((p) => onSegment(p, a, b)));
+/** Les morceaux sur aucun des segments donnés : les côtés des carrés d'angles droits */
+const squarePieces = (pieces: SolideLine[], segments: [EspacePoint, EspacePoint][]) =>
+	pieces.filter(
+		(piece) => !segments.some(([a, b]) => piece.points.every((p) => onSegment(p, a, b)))
+	);
+
 describe('segments: et angles-droits: — lecture', () => {
 	it('lit les segments (crochets facultatifs) et les angles droits', () => {
 		const s = spec(...CUBE, 'segments: [EG], AG', 'angles-droits: AEG');
@@ -106,25 +118,38 @@ describe('segments: et angles-droits: — dessin', () => {
 	it('trace chaque segment d’un bout à l’autre, en tirets là où le cube passe devant', () => {
 		const scene = buildSolideScene(s);
 		const pieces = scene.segments ?? [];
-		// [EG] est sur la face du dessus, vue : un seul morceau plein
-		const eg = pieces.slice(0, 1);
+		const v = scene.vertices;
+		const eg = piecesOn(pieces, v[E], v[G]);
+		const ag = piecesOn(pieces, v[A], v[G]);
+		const square = squarePieces(pieces, [
+			[v[E], v[G]],
+			[v[A], v[G]]
+		]);
+		expect(eg.length + ag.length + square.length).toBe(pieces.length);
+		// [EG] est sur la face du dessus, vue : en plein
 		expectFromTo(eg, scene.vertices[E], scene.vertices[G]);
-		expect(eg[0].dashed).toBe(false);
-		// [AG] traverse le cube : ses morceaux suivent, au moins un en tirets
-		const ag = pieces.slice(1, pieces.length - 2);
+		expect(eg.every((p) => !p.dashed)).toBe(true);
+		// [AG] traverse le cube : au moins un morceau en tirets
 		expectFromTo(ag, scene.vertices[A], scene.vertices[G]);
 		expect(ag.some((p) => p.dashed)).toBe(true);
+		expect(square.length).toBeGreaterThanOrEqual(2);
 	});
 
 	it('code l’angle droit par un petit carré au sommet E, fermé sur ses deux côtés', () => {
 		const scene = buildSolideScene(s);
-		const pieces = scene.segments ?? [];
-		const square = pieces.slice(-2);
-		const [p1, p2] = square[0].points;
-		const [q2, p3] = square[1].points;
-		const corner = scene.vertices[E];
-		// Le coin du carré opposé à E est le bout commun des deux côtés
-		expect(distance(p2, q2)).toBeLessThan(1e-9);
+		const v = scene.vertices;
+		const square = squarePieces(scene.segments ?? [], [
+			[v[E], v[G]],
+			[v[A], v[G]]
+		]);
+		const corner = v[E];
+		// Les deux côtés se suivent : p1 → coin opposé à E → p3
+		const p1 = square[0].points[0];
+		const p3 = square[square.length - 1].points[1];
+		// Le coin opposé : le point du tracé le plus loin de E
+		const p2 = square
+			.flatMap((piece) => piece.points)
+			.reduce((best, p) => (distance(p, corner) > distance(best, corner) ? p : best));
 		// Un parallélogramme (le carré en perspective) : E + coin = p1 + p3
 		expect(
 			distance({ x: corner.x + p2.x, y: corner.y + p2.y }, { x: p1.x + p3.x, y: p1.y + p3.y })
@@ -136,11 +161,37 @@ describe('segments: et angles-droits: — dessin', () => {
 		expect(near(p3)).toBeLessThan(0.6);
 	});
 
+	it('met en tirets le carré d’un angle droit caché (pied de la hauteur d’une pyramide)', () => {
+		const scene = buildSolideScene(
+			spec(
+				'forme: pyramide carree 4 3',
+				'sommets: S A B C D',
+				'points: O centre ABCD',
+				'segments: [SO], [OA]',
+				'angles-droits: SOA'
+			)
+		);
+		const pieces = scene.segments ?? [];
+		const [s, o, a] = [scene.vertices[0], scene.points[0], scene.vertices[1]];
+		const so = piecesOn(pieces, s, o);
+		const oa = piecesOn(pieces, o, a);
+		const square = squarePieces(pieces, [
+			[s, o],
+			[o, a]
+		]);
+		expect(square.length).toBeGreaterThanOrEqual(2);
+		expect(so.every((p) => p.dashed)).toBe(true);
+		expect(oa.every((p) => p.dashed)).toBe(true);
+		expect(square.every((p) => p.dashed)).toBe(true);
+	});
+
 	it('suit la figure qui tourne', () => {
 		const vue = turnVue({ ...VUE_DE_DEPART, oblique: 0 }, 0.6, 0.3);
 		const scene = buildSolideScene({ ...s, rotate: true }, vue);
 		const pieces = scene.segments ?? [];
-		expectFromTo([pieces[0]], scene.vertices[E], scene.vertices[G]);
+		const v = scene.vertices;
+		expectFromTo(piecesOn(pieces, v[E], v[G]), v[E], v[G]);
+		expectFromTo(piecesOn(pieces, v[A], v[G]), v[A], v[G]);
 	});
 
 	it('cachees: non : tout en trait plein', () => {
@@ -158,7 +209,17 @@ describe('segments: et angles-droits: — dessin', () => {
 	it('se dessine en bleu sur la fiche PDF, un trait par morceau', () => {
 		const node = read(...CUBE, 'segments: [EG], [AG]', 'angles-droits: AEG') as EspaceNode;
 		const typst = generateEspaceTypst(node);
-		const blue = typst.match(/paint: rgb\(37, 99, 235\)/g) ?? [];
+		const blue = typst.match(/paint: rgb\(37, 99, 235\)[^)]*\)/g) ?? [];
 		expect(blue).toHaveLength(buildSolideScene(s).segments?.length ?? -1);
+		// [AG] traverse le cube : des morceaux bleus en tirets, d'autres en plein ([EG])
+		expect(blue.some((stroke) => stroke.includes('dash:'))).toBe(true);
+		expect(blue.some((stroke) => !stroke.includes('dash:'))).toBe(true);
+	});
+
+	it('cachees: non : aucun trait bleu en tirets sur la fiche PDF', () => {
+		const node = read(...CUBE, 'cachees: non', 'segments: [AG]') as EspaceNode;
+		const blue = generateEspaceTypst(node).match(/paint: rgb\(37, 99, 235\)[^)]*\)/g) ?? [];
+		expect(blue.length).toBeGreaterThan(0);
+		expect(blue.some((stroke) => stroke.includes('dash:'))).toBe(false);
 	});
 });
