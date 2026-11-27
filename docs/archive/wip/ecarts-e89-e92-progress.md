@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-27, après #3250._
 
-- **État** : les quatre correctifs sont écrits, vérifiés à l'écran et par les tests (voir ci-dessous) · **Prochaine action** : ouvrir la PR, la merger quand la CI est verte, puis clore E89 à E92 au registre (commit de doc sur `main`, numéro de PR cité) et archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-e89-e92`, `fix/ecarts-e89-e92`
+- **État** : chantier clos : #3250 mergée (pas encore en prod), E89 à E92 barrés au registre · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Décision
 
