@@ -1,0 +1,267 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Périmètres > carré",
+		"point": "6-144"
+	},
+	"title": "La formule du périmètre du carré",
+	"description": "Écrire la formule P = 4 × c, la dire en mots (quatre fois le côté), l'utiliser pour une valeur de c ; pièges : c × c (l'aire), 2 × c, 4 + c",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off",
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un carré a des côtés de longueur $c$. Écris la formule de son périmètre $P$.\n\n$P = ?$",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "4\\times c",
+					"expectedErrors": [
+						{
+							"answer": "c\\times c",
+							"message": "Ça, c'est l'aire du carré. Le périmètre est le tour : on ajoute ses quatre côtés.",
+							"label": "Aire"
+						},
+						{
+							"answer": "2\\times c",
+							"message": "Le carré a quatre côtés de longueur $c$, pas deux.",
+							"label": "Deux côtés"
+						},
+						{
+							"answer": "4+c",
+							"message": "On ajoute **quatre fois** le côté : c'est $4$ fois $c$, pas $4$ plus $c$.",
+							"label": "4 + c au lieu de 4 × c"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre est la longueur du tour : les quatre côtés du carré mesurent $c$.",
+					"$P = c + c + c + c$, soit $$P = \\textcolor{{{color:primary.0}}}{4 \\times c}$$"
+				]
+			},
+			"hint": "Le périmètre est le tour de la figure : combien de côtés, et que mesure chacun ?"
+		},
+		{
+			"statement": "Complète la phrase.\n\nLe périmètre d'un carré est égal à … fois la longueur de son côté.\n\n```choix\nmelanger: non\n- deux\n- trois\n- quatre\n- six\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tour du carré passe par ses quatre côtés, tous de même longueur.",
+					"Le périmètre est égal à $\\textcolor{{{color:primary.0}}}{\\text{quatre}}$ fois la longueur du côté : $P = 4 \\times c$."
+				]
+			},
+			"hint": "Dessine un carré et suis son contour avec le doigt : combien de côtés parcours-tu ?"
+		},
+		{
+			"statement": "Le périmètre d'un carré de côté $c$ est $P = 4 \\times c$.\n\nCalcule $P$ pour $c = {{c}}$ cm.\n\n$P = ?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*c}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c*c}}\\unit{cm^2}",
+							"message": "Ça, c'est l'aire du carré. Le périmètre est le tour : on ajoute ses quatre côtés.",
+							"label": "Aire"
+						},
+						{
+							"answer": "{{eval:2*c}}\\unit{cm}",
+							"message": "Le carré a quatre côtés de longueur $c$, pas deux.",
+							"label": "Deux côtés"
+						},
+						{
+							"answer": "{{eval:4+c}}\\unit{cm}",
+							"message": "On ajoute **quatre fois** le côté : c'est $4$ fois $c$, pas $4$ plus $c$.",
+							"label": "4 + c au lieu de 4 × c"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $c$ par ${{c}}$ cm :",
+					"$$P = 4 \\times {{c}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:4*c}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Remplace la lettre $c$ par sa valeur dans la formule."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 × c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4\\times c"]
+		},
+		{
+			"description": "c × 4",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["c\\times 4"]
+		},
+		{
+			"description": "c + c + c + c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["c+c+c+c"]
+		},
+		{
+			"description": "4c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4c"]
+		},
+		{
+			"description": "c × c (aire)",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est l'aire du carré. Le périmètre est le tour : on ajoute ses quatre côtés."
+			},
+			"answers": ["c\\times c"]
+		},
+		{
+			"description": "2 × c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré a quatre côtés de longueur $c$, pas deux."
+			},
+			"answers": ["2\\times c"]
+		},
+		{
+			"description": "c + c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré a quatre côtés de longueur $c$, pas deux."
+			},
+			"answers": ["c+c"]
+		},
+		{
+			"description": "4 + c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ajoute **quatre fois** le côté : c'est $4$ fois $c$, pas $4$ plus $c$."
+			},
+			"answers": ["4+c"]
+		},
+		{
+			"description": "Quatre",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Deux refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c = 7 : 28 cm",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28\\unit{cm}"]
+		},
+		{
+			"description": "c = 7 : 280 mm",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["280\\unit{mm}"]
+		},
+		{
+			"description": "c = 7 : 49 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est l'aire du carré. Le périmètre est le tour : on ajoute ses quatre côtés."
+			},
+			"answers": ["49\\unit{cm^2}"]
+		},
+		{
+			"description": "c = 7 : 14 cm",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré a quatre côtés de longueur $c$, pas deux."
+			},
+			"answers": ["14\\unit{cm}"]
+		},
+		{
+			"description": "c = 7 : 11 cm",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ajoute **quatre fois** le côté : c'est $4$ fois $c$, pas $4$ plus $c$."
+			},
+			"answers": ["11\\unit{cm}"]
+		}
+	]
+}

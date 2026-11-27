@@ -1,0 +1,415 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Unités et conversions > unités simples",
+		"point": null
+	},
+	"title": "Le sens des préfixes",
+	"description": "Kilo, hecto, déca, déci, centi, milli : mille, cent, dix, un dixième, un centième, un millième ; 1 cm est un centième de mètre ; 1 mm = 1/1 000 m ; 1 m = 1/1 000 km ; pièges : kilo = cent, le sens inversé, un rang de trop",
+	"grades": ["6"],
+	"level": 5,
+	"delay": 15,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans le mot « {{if:p==0|kilomètre|{{if:p==1|hectomètre|{{if:p==2|décamètre|{{if:p==3|décimètre|{{if:p==4|centimètre|millimètre}}}}}}}}}} », que veut dire le préfixe « {{if:p==0|kilo|{{if:p==1|hecto|{{if:p==2|déca|{{if:p==3|déci|{{if:p==4|centi|milli}}}}}}}}}} » ?\n\n```choix\nmelanger: non\n- mille\n- cent\n- dix\n- un dixième\n- un centième\n- un millième\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:p==0|km|{{if:p==1|hm|{{if:p==2|dam|{{if:p==3|dm|{{if:p==4|cm|mm}}}}}}}}}}} = {{if:p==0|1\\,000~\\unit{m}|{{if:p==1|100~\\unit{m}|{{if:p==2|10~\\unit{m}|{{if:p==3|\\frac{1}{10}~\\unit{m}|{{if:p==4|\\frac{1}{100}~\\unit{m}|\\frac{1}{1\\,000}~\\unit{m}}}}}}}}}}}$.",
+					"« {{if:p==0|kilo|{{if:p==1|hecto|{{if:p==2|déca|{{if:p==3|déci|{{if:p==4|centi|milli}}}}}}}}}} » veut dire $\\textcolor{{{color:primary.0}}}{\\text{{{if:p==0|mille|{{if:p==1|cent|{{if:p==2|dix|{{if:p==3|un dixième|{{if:p==4|un centième|un millième}}}}}}}}}}}}$."
+				]
+			},
+			"hint": "Kilo, hecto et déca désignent des unités plus grandes que le mètre ; déci, centi et milli des unités plus petites."
+		},
+		{
+			"statement": "Complète la phrase.\n\n$1~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}}$ est … de mètre.\n\n```choix\nmelanger: non\n- un dixième\n- un centième\n- un millième\n- une centaine\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut {{if:u==0|$10$|{{if:u==1|$100$|$1\\,000$}}}} {{if:u==0|dm|{{if:u==1|cm|mm}}}} pour faire $1~\\unit{m}$.",
+					"$1~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}}$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:u==0|un dixième|{{if:u==1|un centième|un millième}}}}}}$ de mètre."
+				]
+			},
+			"hint": "Combien de {{if:u==0|dm|{{if:u==1|cm|mm}}}} faut-il pour faire $1$ mètre ? Un seul en est quelle part ?"
+		},
+		{
+			"statement": "Complète, en écriture fractionnaire ou décimale.\n\n$1~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}} = ?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{if:u==0|10|{{if:u==1|100|1\\,000}}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:u==0|10|{{if:u==1|100|1\\,000}}}}",
+							"message": "Le {{if:u==0|dm|{{if:u==1|cm|mm}}}} est plus petit que le mètre : $1~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}}$ n'est qu'une petite partie de $1~\\unit{m}$.",
+							"label": "Sens inversé"
+						},
+						{
+							"answer": "{{if:u==0|0{,}01|{{if:u==1|0{,}001|0{,}0001}}}}",
+							"message": "Compte les rangs entre le {{if:u==0|dm|{{if:u==1|cm|mm}}}} et le mètre dans le tableau de conversion : il y en a {{if:u==0|un|{{if:u==1|deux|trois}}}}.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{if:u==0|1|{{if:u==1|0{,}1|0{,}01}}}}",
+							"message": "Compte les rangs entre le {{if:u==0|dm|{{if:u==1|cm|mm}}}} et le mètre dans le tableau de conversion : il y en a {{if:u==0|un|{{if:u==1|deux|trois}}}}.",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{m} = {{if:u==0|10|{{if:u==1|100|1\\,000}}}}~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}}$ : il faut ${{if:u==0|10|{{if:u==1|100|1\\,000}}}}$ {{if:u==0|dm|{{if:u==1|cm|mm}}}} pour faire $1$ mètre.",
+					"Donc $1~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}} = \\textcolor{{{color:primary.0}}}{\\frac{1}{{{if:u==0|10|{{if:u==1|100|1\\,000}}}}}~\\unit{m}} = {{if:u==0|0{,}1|{{if:u==1|0{,}01|0{,}001}}}}~\\unit{m}$."
+				]
+			},
+			"hint": "Combien de {{if:u==0|dm|{{if:u==1|cm|mm}}}} faut-il pour faire $1$ mètre ? Un seul en est quelle part ?"
+		},
+		{
+			"statement": "Complète, en écriture fractionnaire ou décimale.\n\n$1~\\unit{m} = ?~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}}$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{if:u==0|10|{{if:u==1|100|1\\,000}}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:u==0|10|{{if:u==1|100|1\\,000}}}}",
+							"message": "Le {{if:u==0|dam|{{if:u==1|hm|km}}}} est plus grand que le mètre : $1~\\unit{m}$ n'est qu'une petite partie de $1~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}}$.",
+							"label": "Sens inversé"
+						},
+						{
+							"answer": "{{if:u==0|0{,}01|{{if:u==1|0{,}001|0{,}0001}}}}",
+							"message": "Compte les rangs entre le {{if:u==0|dam|{{if:u==1|hm|km}}}} et le mètre dans le tableau de conversion : il y en a {{if:u==0|un|{{if:u==1|deux|trois}}}}.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{if:u==0|1|{{if:u==1|0{,}1|0{,}01}}}}",
+							"message": "Compte les rangs entre le {{if:u==0|dam|{{if:u==1|hm|km}}}} et le mètre dans le tableau de conversion : il y en a {{if:u==0|un|{{if:u==1|deux|trois}}}}.",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}} = {{if:u==0|10|{{if:u==1|100|1\\,000}}}}~\\unit{m}$ : il faut ${{if:u==0|10|{{if:u==1|100|1\\,000}}}}$ mètres pour faire $1$ {{if:u==0|dam|{{if:u==1|hm|km}}}}.",
+					"Donc $1~\\unit{m} = \\textcolor{{{color:primary.0}}}{\\frac{1}{{{if:u==0|10|{{if:u==1|100|1\\,000}}}}}~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}}} = {{if:u==0|0{,}1|{{if:u==1|0{,}01|0{,}001}}}}~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}}$."
+				]
+			},
+			"hint": "Combien de mètres faut-il pour faire $1$ {{if:u==0|dam|{{if:u==1|hm|km}}}} ? Un seul mètre en est quelle part ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Kilo : mille",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Kilo : cent refusé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Déci : un dixième",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Milli : un millième",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Milli : un centième refusé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "1 cm : un centième",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "1 cm : une centaine refusée",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "1 mm : un millième",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "1 mm = 1/1 000 m",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{1\\,000}"]
+		},
+		{
+			"description": "1 mm = 0,001 m",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}001"]
+		},
+		{
+			"description": "1 dm = 0,1 m",
+			"variationIndex": 2,
+			"variables": {
+				"u": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}1"]
+		},
+		{
+			"description": "1 cm = 1/100 m",
+			"variationIndex": 2,
+			"variables": {
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{100}"]
+		},
+		{
+			"description": "1 mm : 1 000",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le mm est plus petit que le mètre : $1~\\unit{mm}$ n'est qu'une petite partie de $1~\\unit{m}$."
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "1 mm : 0,0001",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les rangs entre le mm et le mètre dans le tableau de conversion : il y en a trois."
+			},
+			"answers": ["0{,}0001"]
+		},
+		{
+			"description": "1 mm : 0,01",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les rangs entre le mm et le mètre dans le tableau de conversion : il y en a trois."
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "1 cm : 0,1",
+			"variationIndex": 2,
+			"variables": {
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les rangs entre le cm et le mètre dans le tableau de conversion : il y en a deux."
+			},
+			"answers": ["0{,}1"]
+		},
+		{
+			"description": "1 m = 1/1 000 km",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{1\\,000}"]
+		},
+		{
+			"description": "1 m = 0,001 km",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}001"]
+		},
+		{
+			"description": "1 m = 0,01 hm",
+			"variationIndex": 3,
+			"variables": {
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "1 m = 0,1 dam",
+			"variationIndex": 3,
+			"variables": {
+				"u": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}1"]
+		},
+		{
+			"description": "1 m : 1 000 km",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le km est plus grand que le mètre : $1~\\unit{m}$ n'est qu'une petite partie de $1~\\unit{km}$."
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "1 m : 0,01 km",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les rangs entre le km et le mètre dans le tableau de conversion : il y en a trois."
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "1 m : 0,0001 km",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les rangs entre le km et le mètre dans le tableau de conversion : il y en a trois."
+			},
+			"answers": ["0{,}0001"]
+		},
+		{
+			"description": "1 m : 10 dam",
+			"variationIndex": 3,
+			"variables": {
+				"u": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dam est plus grand que le mètre : $1~\\unit{m}$ n'est qu'une petite partie de $1~\\unit{dam}$."
+			},
+			"answers": ["10"]
+		}
+	]
+}

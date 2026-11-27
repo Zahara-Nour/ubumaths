@@ -1,0 +1,266 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Périmètres > rectangle",
+		"point": "6-199"
+	},
+	"title": "La formule du périmètre du rectangle",
+	"description": "Écrire la formule P = 2 × (L + l), la dire en mots (le double de la somme), l'utiliser pour des valeurs de L et l ; pièges : L × l (l'aire), L + l, 2 × L + l",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off",
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un rectangle a pour longueur $L$ et pour largeur $l$. Écris la formule de son périmètre $P$.\n\n$P = ?$",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2\\times(L+l)",
+					"expectedErrors": [
+						{
+							"answer": "L\\times l",
+							"message": "Ça, c'est l'aire du rectangle. Le périmètre est le tour : on **ajoute** les côtés.",
+							"label": "Aire"
+						},
+						{
+							"answer": "L+l",
+							"message": "Le tour compte deux longueurs **et** deux largeurs, pas une seule de chaque.",
+							"label": "Demi-périmètre"
+						},
+						{
+							"answer": "2\\times L+l",
+							"message": "Il y a deux largeurs aussi : on double la somme de la longueur **et** de la largeur.",
+							"label": "Une seule largeur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tour du rectangle passe par deux longueurs $L$ et deux largeurs $l$ :",
+					"$P = L + l + L + l$, soit $$P = \\textcolor{{{color:primary.0}}}{2 \\times (L + l)}$$"
+				]
+			},
+			"hint": "Suis le contour du rectangle : combien de longueurs, combien de largeurs ?"
+		},
+		{
+			"statement": "Complète la phrase.\n\nLe périmètre d'un rectangle est égal au … de la somme de sa longueur et de sa largeur.\n\n```choix\nmelanger: non\n- double\n- triple\n- produit\n- carré\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tour passe par deux longueurs et deux largeurs : $P = L + l + L + l$.",
+					"C'est deux fois $L + l$ : le périmètre est égal au $\\textcolor{{{color:primary.0}}}{\\text{double}}$ de la somme, $P = 2 \\times (L + l)$."
+				]
+			},
+			"hint": "Pour un rectangle de $5$ cm sur $3$ cm, fais le tour : combien de fois retrouves-tu $5 + 3$ ?"
+		},
+		{
+			"statement": "Le périmètre d'un rectangle de longueur $L$ et de largeur $l$ est $P = 2 \\times (L + l)$.\n\nCalcule $P$ pour $L = {{L}}$ cm et $l = {{l}}$ cm.\n\n$P = ?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..12"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["L>l"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(L+l)}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L*l}}\\unit{cm^2}",
+							"message": "Ça, c'est l'aire du rectangle. Le périmètre est le tour : on **ajoute** les côtés.",
+							"label": "Aire"
+						},
+						{
+							"answer": "{{eval:L+l}}\\unit{cm}",
+							"message": "Le tour compte deux longueurs **et** deux largeurs, pas une seule de chaque.",
+							"label": "Demi-périmètre"
+						},
+						{
+							"answer": "{{eval:2*L+l}}\\unit{cm}",
+							"message": "Il y a deux largeurs aussi : on double la somme de la longueur **et** de la largeur.",
+							"label": "Une seule largeur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $L$ par ${{L}}$ cm et $l$ par ${{l}}$ cm, et on calcule d'abord la parenthèse :",
+					"$$P = 2 \\times ({{L}} + {{l}}) = 2 \\times {{eval:L+l}} = \\textcolor{{{color:primary.0}}}{{{eval:2*(L+l)}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Remplace chaque lettre par sa valeur, puis commence par la parenthèse."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 × (L + l)",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\times(L+l)"]
+		},
+		{
+			"description": "2 × L + 2 × l",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\times L+2\\times l"]
+		},
+		{
+			"description": "L + l + L + l",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["L+l+L+l"]
+		},
+		{
+			"description": "(L + l) × 2",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(L+l)\\times 2"]
+		},
+		{
+			"description": "L × l (aire)",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est l'aire du rectangle. Le périmètre est le tour : on **ajoute** les côtés."
+			},
+			"answers": ["L\\times l"]
+		},
+		{
+			"description": "L + l",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le tour compte deux longueurs **et** deux largeurs, pas une seule de chaque."
+			},
+			"answers": ["L+l"]
+		},
+		{
+			"description": "2 × L + l",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a deux largeurs aussi : on double la somme de la longueur **et** de la largeur."
+			},
+			"answers": ["2\\times L+l"]
+		},
+		{
+			"description": "Le double",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Le produit refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "8 et 3 : 22 cm",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["22\\unit{cm}"]
+		},
+		{
+			"description": "8 et 3 : 220 mm",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["220\\unit{mm}"]
+		},
+		{
+			"description": "8 et 3 : 24 cm² (aire)",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est l'aire du rectangle. Le périmètre est le tour : on **ajoute** les côtés."
+			},
+			"answers": ["24\\unit{cm^2}"]
+		},
+		{
+			"description": "8 et 3 : 11 cm",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le tour compte deux longueurs **et** deux largeurs, pas une seule de chaque."
+			},
+			"answers": ["11\\unit{cm}"]
+		},
+		{
+			"description": "8 et 3 : 19 cm",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a deux largeurs aussi : on double la somme de la longueur **et** de la largeur."
+			},
+			"answers": ["19\\unit{cm}"]
+		}
+	]
+}
