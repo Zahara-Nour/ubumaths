@@ -87,6 +87,6 @@ Sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math`. Agent `matha
 ## Hors lots
 
 - **T13, T19** (conformité, RGPD) : papier et essai de restauration, avec David, pas une session de code.
-- Les 67 lignes ouvertes qui ne sont pas « à faire » (suspendues avec le tuteur, en attente de
+- Les 68 lignes ouvertes qui ne sont pas « à faire » (suspendues avec le tuteur, en attente de
   David, reportées, à trier) ne sont dans aucun lot.
 - Écarts ajoutés après le 2026-11-28 : à lister ici.
