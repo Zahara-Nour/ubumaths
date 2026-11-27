@@ -17,9 +17,9 @@ probabilités dans la ligne du dessous (3 ou 4 cases, fractions). Trois situatio
 3. **Deux tirs au but** : $X$ = nombre de buts en deux tirs indépendants, probabilité $a/b$ de marquer ;
    pas d'arbre dans l'énoncé (il est dans le corrigé).
 
-**Bornes** ([1re spé](../systeme/programmes/bornes/lycee/1spe.md)) : univers finis, variables
+**Bornes** ([1re spé](../../../systeme/programmes/bornes/lycee/1spe.md)) : univers finis, variables
 aléatoires réelles ; deux épreuves indépendantes, sur un arbre ; ni loi binomiale ni coefficient
-binomial. [1re techno](../systeme/programmes/bornes/lycee/1techno.md) 1TECHNO-095 : loi d'une
+binomial. [1re techno](../../../systeme/programmes/bornes/lycee/1techno.md) 1TECHNO-095 : loi d'une
 variable aléatoire « sans formalisme : issues numériques, en contexte ».
 
 ## Nos modèles (prod, tous publiés)
