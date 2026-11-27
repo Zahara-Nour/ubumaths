@@ -2,17 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, gros lot écrit (PR 1)._
+_Mis à jour le 2026-11-27, PR 2 ouverte._
 
-- **État** : lot écrit sur `feat/idees-3e-thales` (§ Lot) : 4 variations de modèles publiés,
-  2 corrigées (Q1), 3 modèles neufs, migration de la notion « Agrandissement et réduction » et
-  migration de contenu. Specs vertes, essai en base locale, rendu vu dans Chrome.
-  · **Prochaine action** : PR 1, merge, `db:migrate` (notion + contenu), puis David crée les
-  brouillons en prod ; PR 2 = ids + migration de rangement ; relecture dans `/dev/modeles`
-  · **En attente de David** : `create-questions --publier` en prod après le merge de la PR 1
-  · **Pièges en cours** : la migration de rangement exige la notion EN PROD (lue par le script)
-  · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales` (l'ancienne
-  branche distante `docs/idees-3e-thales` reste à supprimer).
+- **État** : PR 1 (#3228) mergée, migrée. Brouillons en prod : 210bffdd (N1, niveau 2), 1584c3b5
+  (H1), 1f133534 (H2). PR 2 (rangement 20261127114444) : intégration verte, rouge sans la
+  migration (6 tests), garde des niveaux verte, `security-auditor` sans bloquant (H1/H2 rangés
+  sans tag : voulu, sans point).
+  · **Prochaine action** : merge de la PR 2 (`pnpm pr:merger`), puis
+  `db:migrate` (4 conditions réunies ; `migration list --linked` avant) ; ensuite relecture dans
+  `/dev/modeles` (`?titre=Thalès`, `?titre=Agrandissement`, `?titre=semblables`)
+  · **En attente de David** : rien avant la relecture · **Pièges en cours** : aucun
+  · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales-rangement`.
 
 ## Phase 0 (2026-11-27)
 

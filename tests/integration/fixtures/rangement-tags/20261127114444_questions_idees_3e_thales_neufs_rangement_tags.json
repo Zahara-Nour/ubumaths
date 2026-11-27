@@ -1,0 +1,33 @@
+{
+	"migration": "supabase/migrations/20261127114444_questions_idees_3e_thales_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "1584c3b5-40fd-4bd4-abe3-53cfe0ed8bb8",
+			"title": "Agrandissement et réduction : aires et volumes",
+			"fichier": "h1-agrandissement-reduction-aires-volumes.json",
+			"branche": "Géométrie",
+			"notion": "Agrandissement et réduction",
+			"sousNotion": null,
+			"point": null
+		},
+		{
+			"id": "1f133534-3aff-4a07-b038-fb3d94b7e0e6",
+			"title": "Triangles semblables : côtés homologues et longueurs",
+			"fichier": "h2-triangles-semblables.json",
+			"branche": "Géométrie",
+			"notion": "Triangles semblables",
+			"sousNotion": null,
+			"point": null
+		},
+		{
+			"id": "210bffdd-3584-494f-893d-2daa9ab51c34",
+			"title": "Résoudre un problème avec Thalès",
+			"fichier": "n1-resoudre-un-probleme-avec-thales.json",
+			"branche": "Géométrie",
+			"notion": "Théorème de Thalès",
+			"sousNotion": "calcul de longueurs",
+			"point": "3-060"
+		}
+	],
+	"niveaux": []
+}
