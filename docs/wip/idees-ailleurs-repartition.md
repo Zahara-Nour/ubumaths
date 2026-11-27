@@ -41,7 +41,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle`        |
 | Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`                |
 | Produit scalaire                  | 1G1   | 10        | publiée (2026-11-26) | `idees-1re-produit-scalaire`     |
-| Géométrie repérée                 | 1G2   | 5         | prise (2026-11-27)   | `idees-1re-geometrie-reperee`    |
+| Géométrie repérée                 | 1G2   | 5         | publiée (2026-11-27) | `idees-1re-geometrie-reperee`    |
 | Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`          |
 | Variables aléatoires réelles      | 1P2   | 1         | publiée (2026-11-27) | `idees-1re-variables-aleatoires` |
 

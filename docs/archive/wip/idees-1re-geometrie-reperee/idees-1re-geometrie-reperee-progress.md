@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3224._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : N1 (75a03073) et N2 (bbafb6dd) en brouillon en prod, rangés sous « projeté orthogonal » (niveaux 4 et 5), tagués 1SPE-437 (`db:migrate` fait) · **Prochaine action** : lire les verdicts « À revoir » en base (`question_template_reviews`, après le 2026-11-27), corriger, puis `publier-lot.ts --dir scripts/questions/idees-1re-geometrie-reperee-neufs` en simulation · **En attente de David** : relecture dans `/dev/modeles?noeud=3~c5066dfa-b654-4205-a228-29a352db725d&statut=draft` · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré après #3224)
+- **État** : clos. N1 (75a03073) et N2 (bbafb6dd) publiés en prod, rubrique 1G2 « publiée » dans le tableau de répartition, journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun
 
 ## Historique
 
@@ -57,3 +57,5 @@ _Mis à jour le 2026-11-27, après #3224._
   rester sans effet hors bloc de transaction (au pire une attente de verrou). Personne ne gagne ni
   ne perd d'accès.
 - #3224 mergée ; `db:migrate` le 2026-11-27 (seule migration en attente) ; MCP : 2/2 rangés et tagués 1SPE-437.
+- 2026-11-27 : David valide les 2 modèles (aucun verdict en base, validation dans la session) ; `publier-lot.ts` simulé : 2 brouillons passent ; `garde-niveaux-tags` verte.
+- 2026-11-27 : David lance `publier-lot.ts --publier` ; MCP : 2/2 `published`. Rubrique publiée, journal, relevé et fiches archivés (`docs/archive/wip/idees-1re-geometrie-reperee/`). Aucune réservation de modèle publié à lever.
