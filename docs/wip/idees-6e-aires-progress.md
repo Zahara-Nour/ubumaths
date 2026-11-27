@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après la publication des brouillons en prod._
+_Mis à jour le 2026-11-27, migrations écrites, PR ouverte._
 
-- **État** : #3245 mergée ; David a lancé `create-questions --publier` : 7 brouillons en prod (57720668 relations,
-  36b7d2e8 quadrillage, 9c9c7081 comparer, 533bb8d0 formule carré, 6aef6255 formule rectangle, 7a8294a4 aire et
-  périmètre, 3e3c05d6 rectangles accolés), ids commités sur `feat/idees-6e-aires-rangement` (poussée, pas de PR).
-- **Prochaine action** : dans ce worktree, relever les niveaux en prod, `migration-rangement.ts --dir
-  scripts/questions/idees-6e-aires-neufs` (champ `rangement` déjà écrit) et `migration-contenu.ts --dir
-  scripts/questions/idees-6e-aires-publies` ; `security-auditor` ; PR ; `db:migrate` selon les 4 conditions
-  (`migration list --linked` d'abord).
+- **État** : migrations générées sur `feat/idees-6e-aires-rangement` : rangement des 7 neufs
+  (`20261127141209`) et contenu des 3 publiés (`20261127141216`, +8 variations). Tests verts, rouges vidées
+  (9 échecs) ; `security-auditor` : aucun finding bloquant.
+- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal (`migration list --linked`
+  d'abord) → vérifier en prod (7 nœuds + tags ; 9, 8, 9 variations) → relecture `/dev/modeles`.
 - **En attente de David** : rien.
 - **Pièges en cours** : 82748db8 partage `a` (1..9), fdd849f5 la condition `a>b` ; `e` est Euler ; le bloc figure
   n'a pas de `secteur` ; `{{eval:-b/2}}` s'écrit en fraction dans une figure (`0.5*b`).
@@ -87,6 +85,12 @@ _Mis à jour le 2026-11-27, après la publication des brouillons en prod._
   que cm², dm², m². Les bornes de ces points sont « général ». Recommandation : ne rien toucher.
 
 ## Historique
+
+- 2026-11-27 : migrations de rangement (7 neufs, N4 sur CM2-071 selon Q2) et de contenu (01e205ed +2,
+  82748db8 +4, fdd849f5 +2 variations) générées, relevé prod concordant. Tests `migrations-rangement-tags` et
+  `migrations-contenu-publie` verts, rouges avec les migrations vidées (9 échecs, tous sur elles).
+  `security-auditor` : aucun finding bloquant (non bloquant : vérifier en prod après `db:migrate`, une absence
+  d'id passerait en silence). `migration list --linked` : rien d'autre en attente.
 
 - 2026-11-27 : David publie les 7 brouillons en prod (« publié ») ; ids vérifiés par MCP (7 `draft`).
 
