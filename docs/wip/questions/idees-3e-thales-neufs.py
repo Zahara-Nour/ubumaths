@@ -24,7 +24,8 @@ Décisions d'écriture et écarts à la fiche :
   on ne l'interdit pas, la condition rendait le tirage trop rare).
 - N1 v2 : l'erreur « même différence » de la fiche est MB = NC (AB − AC = AM − AN).
 - H1 : k = n/10, n de 2 à 9 (réduction) ou de 11 à 30 (agrandissement), k ≠ 2 (k² = 2k). Résultats
-  sous 1 000 (pas d'espace de groupement à taper). H1 v2 (k depuis deux longueurs) n'a que deux
+  sous 1 000 (pas d'espace de groupement à taper) ; volume exact au centième (k³ a trois
+  décimales). H1 v2 (k depuis deux longueurs) n'a que deux
   erreurs prévues : rapport renversé et différence ; je n'en invente pas une troisième.
 - H2 : sans figure, les angles égaux sont écrits dans l'énoncé. v2 : case choix à trois côtés
   ([DE], [EF], [DF]), mélangés ; B a pour homologue E ou F (p), le côté demandé est tiré (q).
@@ -114,7 +115,7 @@ def cases_et_specs(vi, juste, erreurs, valeurs, desc):
 
 def calc(expr, v):
     env = {k: float(x) for k, x in v.items()}
-    return eval(expr, {'__builtins__': {}}, env)
+    return eval(expr, {'__builtins__': {}, 'abs': abs}, env)
 
 
 def distincts(juste, erreurs, facteur=100):
@@ -337,17 +338,18 @@ H1_V1 = variation(
      '$$\\mathcal{V} = ' + K + '^3 \\times {{v}} = ' + exact('k*k*k') + ' \\times {{v}} = '
      + couleur(exact(J_H1) + '~\\unit{cm^3}') + '$$'],
     'Quand les longueurs sont multipliées par $k$, par quoi les volumes sont-ils multipliés ?',
-    C_K + [f'{J_H1} < 1000', 'k*v < 1000', '3*k*v < 1000'] + distincts(J_H1, E_H1),
+    C_K + [exact_au(J_H1, 100), f'{J_H1} < 1000', 'k*v < 1000', '3*k*v < 1000']
+    + distincts(J_H1, E_H1),
 )
 
 # --- v2 : k depuis deux longueurs homologues
 J_H2 = 'k'
 E_H2 = [('1/k', 'Tu as divisé la longueur de départ par la longueur d\'arrivée : k = longueur '
          'd\'arrivée ÷ longueur de départ.', 'Rapport renversé'),
-        ('k*l-l', 'Le rapport k est un quotient, pas une différence : on divise la longueur '
+        ('abs(k*l-l)', 'Le rapport k est un quotient, pas une différence : on divise la longueur '
          'd\'arrivée par la longueur de départ.', 'Différence au lieu du quotient')]
 B_H2, S_H2 = cases_et_specs(2, J_H2, E_H2, vk(0, 25, l=4), 'L = 4, L\' = 10')
-_, S_H2b = cases_et_specs(2, J_H2, E_H2[:1], vk(1, 4, l=15), 'réduction L = 15, L\' = 6')
+_, S_H2b = cases_et_specs(2, J_H2, E_H2, vk(1, 4, l=15), 'réduction L = 15, L\' = 6')
 H1_V2 = variation(
     'Un côté d\'une figure mesure ${{l}}~\\unit{cm}$. Après ' + TRANSFO_DE + ' de la figure, ce '
     'côté mesure $' + exact('k*l') + '~\\unit{cm}$. Quel est le rapport $k$ de '
@@ -445,7 +447,7 @@ H2_V1, S_S1 = h2_longueur(1, 'AC', 'DF', 'ac', {'ab': 5, 'ac': 7, 'de': 4})    #
 IMG_B = '{{if:p==0|E|F}}'
 IMG_C = '{{if:p==0|F|E}}'
 COTE = '{{if:q==0|[AB]|}}{{if:q==1|[BC]|}}{{if:q==2|[AC]|}}'
-IMG_COTE = ('{{if:q==0|[D' + IMG_B + ']|}}{{if:q==1|[' + IMG_B + IMG_C + ']|}}'
+IMG_COTE = ('{{if:q==0|[D' + IMG_B + ']|}}{{if:q==1|[EF]|}}'
             '{{if:q==2|[D' + IMG_C + ']|}}')
 H2_V2 = variation(
     'Les triangles $ABC$ et $DEF$ sont semblables : $\\widehat{A} = \\widehat{D} = {{a}}^{\\circ}$, '

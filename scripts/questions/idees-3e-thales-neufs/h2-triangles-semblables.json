@@ -155,7 +155,7 @@
 			"correction": {
 				"steps": [
 					"Les sommets homologues sont ceux des angles égaux : $A$ et $D$, $B$ et ${{if:p==0|E|F}}$, $C$ et ${{if:p==0|F|E}}$.",
-					"Le côté ${{if:q==0|[AB]|}}{{if:q==1|[BC]|}}{{if:q==2|[AC]|}}$ a pour homologue le côté qui relie les homologues de ses deux extrémités : $\\textcolor{{{color:primary.0}}}{{{if:q==0|[D{{if:p==0|E|F}}]|}}{{if:q==1|[{{if:p==0|E|F}}{{if:p==0|F|E}}]|}}{{if:q==2|[D{{if:p==0|F|E}}]|}}}$.",
+					"Le côté ${{if:q==0|[AB]|}}{{if:q==1|[BC]|}}{{if:q==2|[AC]|}}$ a pour homologue le côté qui relie les homologues de ses deux extrémités : $\\textcolor{{{color:primary.0}}}{{{if:q==0|[D{{if:p==0|E|F}}]|}}{{if:q==1|[EF]|}}{{if:q==2|[D{{if:p==0|F|E}}]|}}}$.",
 					"Attention : l'ordre des lettres dans le nom $DEF$ ne dit pas quels sommets sont homologues ; ce sont les angles égaux qui le disent."
 				]
 			},

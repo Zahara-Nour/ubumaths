@@ -20,7 +20,9 @@
 -- ne change.
 --
 -- Rollback (aucune donnée d'élève). Il refuse si la notion porte quelque chose (sous-notion,
--- modèle, point) : à jouer après le rollback de la migration de rangement du chantier.
+-- modèle, point) : à jouer après le rollback de la migration de rangement du chantier. Un Mathou
+-- d'élève ou une fiche liés à la notion (clés `on delete restrict`) font échouer le `delete` :
+-- rien n'est alors supprimé, aucune donnée d'élève n'est perdue.
 -- ROLLBACK:BEGIN
 -- do $rollback$
 -- declare v_notion uuid;

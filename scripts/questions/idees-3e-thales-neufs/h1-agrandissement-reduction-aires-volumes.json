@@ -109,6 +109,7 @@
 			],
 			"conditions": [
 				"n != 20",
+				"round(100*(k*k*k*v)) == 100*(k*k*k*v)",
 				"k*k*k*v < 1000",
 				"k*v < 1000",
 				"3*k*v < 1000",
@@ -180,8 +181,8 @@
 			"conditions": [
 				"n != 20",
 				"round(100*(k)) != round(100*(1/k))",
-				"round(100*(k)) != round(100*(k*l-l))",
-				"round(100*(1/k)) != round(100*(k*l-l))"
+				"round(100*(k)) != round(100*(abs(k*l-l)))",
+				"round(100*(1/k)) != round(100*(abs(k*l-l)))"
 			],
 			"blanks": [
 				{
@@ -193,7 +194,7 @@
 							"label": "Rapport renversé"
 						},
 						{
-							"answer": "{{eval:round(100*(k*l-l))/100;d}}",
+							"answer": "{{eval:round(100*(abs(k*l-l)))/100;d}}",
 							"message": "Le rapport k est un quotient, pas une différence : on divise la longueur d'arrivée par la longueur de départ.",
 							"label": "Différence au lieu du quotient"
 						}
@@ -544,6 +545,23 @@
 				"expectedErrorMessage": "Tu as divisé la longueur de départ par la longueur d'arrivée : k = longueur d'arrivée ÷ longueur de départ."
 			},
 			"answers": ["2{,}5"]
+		},
+		{
+			"description": "v2 : Différence au lieu du quotient (9)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "4",
+				"n": "4",
+				"k": "0.4",
+				"l": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le rapport k est un quotient, pas une différence : on divise la longueur d'arrivée par la longueur de départ."
+			},
+			"answers": ["9"]
 		},
 		{
 			"description": "v3 k = 1,5, A' = 36 : 16",
