@@ -65,6 +65,11 @@ angle=90)`), le numéro ne servait qu'à répondre sans placer. (a) quart de tou
 - **R — Rien** : can3G1-01 (aire × k²) est couvert par 1584c3b5 ; les symétries et la translation de 3G10-1 sont
   publiées (5e, 4e, 3e).
 
+### Réponse de David (2026-11-27)
+
+« Je te suis » : toutes les recommandations sont suivies. N1 à N4 : oui. O1 : noté (`outils-manquants.md` n° 71), pas
+maintenant. Q1 : oui, sans point. Q2 : sans point. La page à cocher est restée vide.
+
 ### Questions
 
 - **Q1 — Garder ces modèles hors programme, rangés sans point ?** Recommandation : oui, comme en Seconde et pour
