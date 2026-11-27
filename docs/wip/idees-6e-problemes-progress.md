@@ -6,11 +6,12 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 publiée._
+_Mis à jour le 2026-11-27, phase 0 validée._
 
-- **État** : relevé fait (24 exercices : ✅ 5 · 🟡 14 · ❌ 5), phase 0 publiée · **Prochaine action** :
-  lire les verdicts de la page à cocher, puis écrire le gros lot · **En attente de David** : verdicts
-  de la phase 0 (F1 à F4, N1 à N5, R, Q1 à Q3) · **Pièges en cours** : aucun ·
+- **État** : phase 0 validée (tout oui, recommandations suivies), 4 modèles publiés réservés et
+  exportés · **Prochaine action** : écrire le gros lot (`idees-6e-problemes-neufs.py`,
+  `idees-6e-problemes-publies.py`), specs, essai local, PR · **En attente de David** : rien ·
+  **Pièges en cours** : aucun ·
   **Worktree / branche** : `../ubumaths-wt-idees-6e-problemes`, `feat/idees-6e-problemes`.
 
 ## Journal
@@ -20,8 +21,15 @@ _Mis à jour le 2026-11-27, phase 0 publiée._
   6-124 (division euclidienne, 1), 6-137 (fractions, 1), 6-142 (schémas en barres, 6), 6-119 (ordre de
   grandeur, 1). Aucun point de 6e pour les problèmes additifs seuls : ils relèvent du cycle 3 (CM).
 - 2026-11-27 : relevé écrit ([idees-6e-problemes-releve.md](idees-6e-problemes-releve.md)).
+- 2026-11-27 : **phase 0 validée** par David dans la conversation (« je suis tes recos », page à
+  cocher laissée vide) : F1 à F4 et N1 à N5 oui, R oui ; **Q1** N4 et N5 sur 5-001, niveaux 6e et
+  5e ; **Q2** échiquier noté dans `outils-manquants.md` (n° 67, plus tard) ; **Q3** le nombre qui
+  tranche remplace le Oui / Non. Réservés sur `main` : 32b7a9bc, 399342ff, 2af325bb, 7deff4e0
+  (exportés de prod dans `scripts/questions/idees-6e-problemes-publies/`). Rangement : N1, N2 →
+  Algèbre > Premiers pas algébriques > nombre inconnu (6-142) ; N3 → Décimaux : calculs >
+  multiplication (6-120) ; N4, N5 → notion Décimaux : calculs (5-001, comme c241cf63).
 
-## Phase 0 (2026-11-27, en attente de David)
+## Phase 0 (2026-11-27, validée)
 
 Page à cocher : https://claude.ai/artifact/U47s6Dv5142CRoYX3tuFMn (Oui / Non / Autrement + note,
 collection `verdicts`). Si tout est oui : 5 modèles neufs (17 variations) et 8 variations sur 4 modèles
