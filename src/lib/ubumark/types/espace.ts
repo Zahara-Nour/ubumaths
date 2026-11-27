@@ -56,7 +56,15 @@ export type CubesSideView = (typeof CUBES_SIDE_VIEWS)[number];
  * `case:` posée par le générateur de questions ; `vues:` écrite par le serveur dans
  * l'énoncé masqué d'une évaluation, jamais par un auteur — chantier `fuite-enonce`)
  */
-export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case', 'vues'] as const;
+export const CUBES_KEYS = [
+	'hauteurs',
+	'vue',
+	'dessiner',
+	'retrouver',
+	'tourner',
+	'case',
+	'vues'
+] as const;
 
 /** Les clés du bloc ```solide */
 export const SOLIDE_KEYS = [
@@ -176,6 +184,11 @@ export interface CubesSpec {
 	view: CubesView;
 	/** Geste de l'élève (lot 2) ; absent : affichage seul */
 	task?: CubesTask;
+	/**
+	 * `tourner: oui` : l'élève peut faire tourner l'assemblage à l'écran (chantier
+	 * `solides-3d`, lot 6) ; perspective sans geste seulement ; absent : dessin fixe
+	 */
+	rotate?: true;
 	/**
 	 * Énoncé masqué d'une évaluation (`hauteurs: ? 0 ?` + `vues:`, chantier
 	 * `fuite-enonce`) : les vues données, une hauteur par colonne de la vue
@@ -382,8 +395,9 @@ export interface EspaceNode extends BaseNode {
 	/** Phrases pour l'AUTEUR (jamais montrées à l'élève), « Ligne N : … » */
 	errors: string[];
 	/**
-	 * Phrases pour l'AUTEUR sur `tourner:` (valeur mal écrite) : le bloc n'est
-	 * PAS en erreur, la figure se dessine, fixe (chantier `solides-3d`, lot 2)
+	 * Phrases pour l'AUTEUR sur `tourner:` (valeur mal écrite ; assemblage de
+	 * cubes : vue à plat ou geste) : le bloc n'est PAS en erreur, la figure se
+	 * dessine, fixe (chantier `solides-3d`, lots 2 et 6)
 	 */
 	rotationErrors?: string[];
 	/** Geste dans une question : sa case, posée par le générateur (`case: N`) */
