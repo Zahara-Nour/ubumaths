@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot écrit et commité (pas encore de PR)._
+_Mis à jour le 2026-11-27, après #3233._
 
-- **État** : lot écrit sur `feat/idees-6e-durees` (commit « 6 modèles neufs et une variation de 311bf024 ») : `docs/wip/questions/idees-6e-durees-neufs.py` → `scripts/questions/idees-6e-durees-neufs/` (N1 à N6, 25 variations, rangement écrit) ; `idees-6e-durees-publies.py` → `311bf024.json` (+1 variation, F1) ; migration de contenu `20261127115608_…_publies_contenu.sql` + fixture générées. Specs et 200 tirages verts sur les 7 modèles ; test `migrations-contenu-publie` vert en local. Brouillons créés en base LOCALE (ids restaurés dans les fichiers : N1 2e7c7caa, N2 8d704fbf, N3 f4708028, N4 53710ca9, N5 4f6d4b72, N6 d250d62d).
-- **Prochaine action** : jouer les 6 brouillons dans l'aperçu admin local (`/dashboard/admin/questions/<id>/preview`, `pnpm voir … --compte admin`, serveur du worktree sur 5177+) ; réserver 311bf024 dans `idees-ailleurs-repartition.md` (commit doc sur main) ; ouvrir la PR (revue : aucune, contenu ; `security-auditor` si demandé pour la migration de contenu), CI, merge ; puis David : `create-questions --publier` en prod, migration de rangement.
-- **En attente de David** : rien.
+- **État** : #3233 mergée (6 modèles neufs N1 à N6, 25 variations ; 1 variation ajoutée à 311bf024, réservé dans `idees-ailleurs-repartition.md`). Les 6 brouillons ont été joués dans l'aperçu admin local (rendu iPhone correct ; N1 et N5 un peu plus larges que l'écran). `security-auditor` passé après le merge sur la migration de contenu : aucun finding bloquant. `migration list --linked` : seule `20261127115608` en attente.
+- **Prochaine action** : après les deux gestes de David, commiter les ids de prod en tête des fichiers N1 à N6 ; relever les niveaux en prod ; générer la migration de rangement (`migration-rangement.ts --dir scripts/questions/idees-6e-durees-neufs`), PR avec `security-auditor` ; puis la relecture dans `/dev/modeles`.
+- **En attente de David** : (1) `pnpm db:migrate` (contenu de 311bf024) ; (2) `create-questions --publier` sur `scripts/questions/idees-6e-durees-neufs` (brouillons en prod).
 - **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; niveaux posés 9, 10 (calcul de durées) et 14 à 17 (conversions), à relever en prod avant la migration de rangement ; les messages à décimaux s'écrivent `0.3` dans les specs.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-durees`, `feat/idees-6e-durees`.
+- **Worktree / branche** : aucun (retiré par `pr:merger`) ; nouveau worktree pour la PR de rangement.
 
 ## Phase 0 (2026-11-27)
 
