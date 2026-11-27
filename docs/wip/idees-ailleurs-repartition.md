@@ -41,7 +41,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle`        |
 | Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`                |
 | Produit scalaire                  | 1G1   | 10        | publiée (2026-11-26) | `idees-1re-produit-scalaire`     |
-| Géométrie repérée                 | 1G2   | 5         | prise (2026-11-27)   | `idees-1re-geometrie-reperee`    |
+| Géométrie repérée                 | 1G2   | 5         | publiée (2026-11-27) | `idees-1re-geometrie-reperee`    |
 | Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`          |
 | Variables aléatoires réelles      | 1P2   | 1         | publiée (2026-11-27) | `idees-1re-variables-aleatoires` |
 
@@ -107,11 +107,11 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
 | Algèbre                            | 6N4   | 9         | libre                |                             |
-| Résolution de problèmes            | 6N5   | 24        | prise (2026-11-27)   | `idees-6e-problemes`        |
+| Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
 | Longueurs                          | 6M1   | 16        | libre                |                             |
 | Aires                              | 6M2   | 17        | libre                |                             |
 | Volumes                            | 6M3   | 3         | libre                |                             |
-| Durées                             | 6M4   | 11        | libre                |                             |
+| Durées                             | 6M4   | 11        | prise (2026-11-27)   | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
@@ -164,10 +164,6 @@ de contenu appliquée en prod.
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
 | 37c13d51 Réciproque et contraposée de Thalès                 | `idees-3e-thales`                                           | 2026-11-27 |                                      |
 | f55d07b0 Calculer une longueur avec Thalès                   | `idees-3e-thales`                                           | 2026-11-27 |                                      |
-| 2af325bb Schéma en barres : parts égales et un reste         | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
-| 32b7a9bc Problèmes de produits décimaux                      | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
-| 399342ff Schéma en barres : somme et différence              | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
-| 7deff4e0 Contrôler par un ordre de grandeur                  | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

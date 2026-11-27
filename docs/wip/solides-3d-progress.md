@@ -10,17 +10,17 @@ _Mis à jour le 2026-11-27, après #3227._
   § 12 et 13). Les lots 3 à 5 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas
   emportés (le vérifier avant de l'affirmer).
 - **Prochaine action** : la petite PR de la boule coupée et cotée (dessin fixe : « 1,5 cm » touche le nom du
-  centre, § 11) — David n'a pas dit « maintenant » : le lui redemander avant de coder. Ensuite lot 6
-  (` ```cubes `, assemblages), comportements à écrire et à faire valider d'abord.
-- **En attente de David** : (1) « Vue de départ » sous la figure à geste, au-dessus des boutons, et non dans
-  leur rangée comme l'écrivait le comportement 44 (§ 13) : il garde ou il la veut dans la rangée ? (2) son
-  essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : noms tenus (§ 7), solides ronds (§ 9),
-  lot 4 (longueurs qui s'effacent, section qui tourne), lot 5 (exemple « Un vecteur à tracer sur un pavé que
-  l'élève peut tourner » : toucher contre glisser, toucher « tremblé » de 4 à 10 px qui tourne sans poser).
-  Puis sa demande de `deploy:prod` (mise en prod seulement après son essai).
+  centre, § 11) — **go de David le 2026-11-27 (« je te suis »)**, à faire dès la reprise, dans le worktree
+  ci-dessous ; elle doit partir avec le même `deploy:prod` que les lots 3 à 5. Ensuite lot 6 (` ```cubes `,
+  assemblages), comportements à écrire et à faire valider d'abord.
+- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : noms tenus
+  (§ 7), solides ronds (§ 9), lot 4 (longueurs qui s'effacent, section qui tourne), lot 5 (exemple « Un
+  vecteur à tracer sur un pavé que l'élève peut tourner » : toucher contre glisser, toucher « tremblé » de 4
+  à 10 px qui tourne sans poser). Puis sa demande de `deploy:prod` (mise en prod seulement après son essai).
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
-  « Correction » tourne.
+  « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
+  le comportement 44 accepté).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`, scènes neuves à prendre sur le code de `main`) ; jamais d'instantané de
   flottants bruts ; l'angle libre d'un nom se calcule dans le repère du dessin fixe (`fixedVertices`), jamais

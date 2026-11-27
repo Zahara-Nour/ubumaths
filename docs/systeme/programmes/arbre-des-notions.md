@@ -39,7 +39,7 @@ un programme (un niveau scolaire) est un ensemble de **points** du BO, chacun po
 
 | Quoi                                                     | Où                                                                                         |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Les nœuds (source de vérité)                             | `classification_nodes` — 19 branches, 134 notions, 472 sous-notions actives ; 74 archivées |
+| Les nœuds (source de vérité)                             | `classification_nodes` — 19 branches, 135 notions, 484 sous-notions actives ; 74 archivées |
 | Les points des programmes                                | `curriculum_points` (`node_id` NOT NULL, `grade`, `code`, `display_order`, archivage)      |
 | Rangement d'un modèle                                    | `question_templates.classification_node_id`                                                |
 | Rangement d'un exercice                                  | `exercise_classifications`                                                                 |
