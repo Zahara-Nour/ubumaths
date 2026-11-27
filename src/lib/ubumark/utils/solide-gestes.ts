@@ -27,6 +27,7 @@
 
 import type { EspacePoint } from './espace-scene';
 import { solidePoints3, type Point3, type SolideScene } from './espace-solides';
+import { vueProjection, type EspaceVue } from './espace-vue';
 import type { SolideSpec, SolideTask, SolideVectorTerm } from '../types/espace';
 
 // Types
@@ -106,6 +107,46 @@ export function solidePointAt(scene: SolideScene, index: number): EspacePoint {
 	return index < scene.vertices.length
 		? scene.vertices[index]
 		: scene.points[index - scene.vertices.length];
+}
+
+/**
+ * Figure que l'on tourne : à quel point chaque point (sommets, puis points
+ * déclarés) est près de l'œil dans cette vue — plus grand = plus devant. Ne sert
+ * qu'à comparer deux points du même solide.
+ */
+export function solidePointNearness(spec: SolideGeometry, vue: EspaceVue): number[] {
+	// L'ordre ne dépend pas du pivot : tourner autour d'un autre point décale tout du même pas
+	const view = vueProjection(vue, { x: 0, y: 0, z: 0 });
+	return solidePoints3(spec.form, spec.dims, spec.points).map((p) => {
+		const r = view.rotate(p);
+		return r.x * view.toEye.x + r.y * view.toEye.y + r.z * view.toEye.z;
+	});
+}
+
+/** La zone de toucher d'un point : sa place à l'écran, et s'il est devant (`solidePointNearness`) */
+export interface SolideTouchZone {
+	index: number;
+	at: EspacePoint;
+	nearness: number;
+}
+
+/**
+ * Le point que pose un toucher sur une figure tournée : parmi ceux dont la zone
+ * (disque de rayon `radius`) contient le toucher, celui de devant — deux points
+ * au même endroit de l'écran, c'est le plus près de l'œil qui se touche
+ * (chantier `solides-3d`, lot 5, question (a)). null : aucune zone sous le doigt.
+ */
+export function solideTouchedPoint(
+	zones: SolideTouchZone[],
+	touch: EspacePoint,
+	radius: number
+): number | null {
+	let front: SolideTouchZone | null = null;
+	for (const zone of zones) {
+		if (Math.hypot(zone.at.x - touch.x, zone.at.y - touch.y) > radius) continue;
+		if (front === null || zone.nearness > front.nearness) front = zone;
+	}
+	return front?.index ?? null;
 }
 
 /** Le vecteur de la combinaison, en 3D */

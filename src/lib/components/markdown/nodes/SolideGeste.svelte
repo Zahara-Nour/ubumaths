@@ -19,11 +19,21 @@
 	- Sans `answer` (aperçu du prof, cours) : le même geste, rien de jugé.
 	  `solution` : la flèche juste, sans geste (bonne réponse, verso de la copie).
 	- Nom accessible : jamais la forme du solide (cube, pavé…) ni la flèche attendue.
+	- `tourner: oui` (chantier `solides-3d`, lot 5 ; journal, § 12) : toucher un
+	  point sans glisser le pose, glisser tourne la figure (même parti d'un point,
+	  rien n'est posé). Anneaux, points choisis et flèche suivent ; la vue ne
+	  compte pas dans la réponse. Flèches du clavier et Échap comme sur
+	  `Solide.svelte`, depuis la figure ou depuis un point. Deux points au même
+	  endroit de l'écran : le toucher pose celui de devant (`solideTouchedPoint`) ;
+	  au clavier, chaque point reste lui-même. La figure verrouillée et celle de la
+	  correction tournent encore, chacune de son côté (`solide-rotation.svelte.ts`).
 
 	@module components/markdown/nodes/SolideGeste
 -->
 <script lang="ts">
+	import { createSolideRotation, type SolideRotation } from './solide-rotation.svelte.ts';
 	import SolideRotationNote from './SolideRotationNote.svelte';
+	import SolideVueDeDepart from './SolideVueDeDepart.svelte';
 	import type { EspaceNode, SolideSpec } from '#lib/ubumark/types/espace.ts';
 	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 	import {
@@ -31,17 +41,19 @@
 		SOLIDE_DOT_RADIUS,
 		SOLIDE_LABEL_SIZE,
 		SOLIDE_SUB_SCALE,
-		buildSolideScene,
 		solideLineStroke,
 		solideArrowBetween,
-		solideLabel
+		solideLabel,
+		type SolideScene
 	} from '#lib/ubumark/utils/espace-solides.ts';
 	import {
 		readSolideAnswer,
 		solideAnswer,
 		solideClickablePoints,
 		solidePointAt,
+		solidePointNearness,
 		solideSolutionVector,
+		solideTouchedPoint,
 		solideVectorMistake,
 		type SolideVectorEnds
 	} from '#lib/ubumark/utils/solide-gestes.ts';
@@ -70,6 +82,11 @@
 
 	/** Rayon (cm) maximal de la zone qui reçoit le toucher : ~15 px sur la figure de 4 cm */
 	const HIT_RADIUS = 0.45;
+	/**
+	 * Figure que l'on tourne : la zone ne descend pas sous ce rayon (cm) quand deux points se
+	 * rapprochent à l'écran — là où deux zones se recouvrent, le toucher pose le point de devant
+	 */
+	const HIT_MIN = 0.2;
 	/** Rayon (cm) de l'anneau qui montre qu'un point se touche, et du point choisi */
 	const RING_RADIUS = 0.15;
 	const CHOSEN_RADIUS = 0.2;
@@ -79,7 +96,17 @@
 	// Seul un solide à geste arrive ici (aiguillage d'`Espace.svelte`, des cases)
 	let spec = $derived(node.spec as SolideSpec);
 	let task = $derived(spec.task!);
-	let scene = $derived(buildSolideScene(spec));
+	let rotatable = $derived(spec.rotate === true && node.errors.length === 0);
+	/** Deux figures, deux rotations : celle de l'élève (ou de la bonne réponse), celle de la correction */
+	const rotationOptions = {
+		source: () => node.source,
+		spec: () => spec,
+		rotatable: () => rotatable
+	};
+	const mainRotation = createSolideRotation(rotationOptions);
+	const correctionRotation = createSolideRotation(rotationOptions);
+	// `spec` n'est jamais null ici : la scène non plus
+	let scene = $derived(mainRotation.scene!);
 	let clickable = $derived(solideClickablePoints(spec));
 	/**
 	 * Rayon des zones de toucher : HIT_RADIUS, réduit à la moitié de la plus petite distance
@@ -94,7 +121,7 @@
 				radius = Math.min(radius, Math.hypot(at[i].x - at[j].x, at[i].y - at[j].y) / 2);
 			}
 		}
-		return radius;
+		return rotatable ? Math.max(HIT_MIN, radius) : radius;
 	});
 	let locked = $derived(solution || (answer?.disabled ?? false));
 	let verdict = $derived<boolean | null>(solution ? null : (answer?.isCorrect ?? null));
@@ -136,8 +163,8 @@
 	/** Rien à effacer : ni extrémité, ni origine libre */
 	let nothing = $derived(ends.to === null && (fixedName !== null || ends.from === null));
 
-	function arrowOf(arrow: SolideVectorEnds) {
-		return solideArrowBetween(solidePointAt(scene, arrow.from), solidePointAt(scene, arrow.to));
+	function arrowOf(drawing: SolideScene, arrow: SolideVectorEnds) {
+		return solideArrowBetween(solidePointAt(drawing, arrow.from), solidePointAt(drawing, arrow.to));
 	}
 
 	function pick(name: string) {
@@ -145,6 +172,36 @@
 		ends = active === 'from' ? { from: name, to: ends.to } : { from: ends.from, to: name };
 		if (active === 'from') chosen = 'to';
 		answer?.onChange(solideAnswer(ends.from, ends.to));
+	}
+
+	/**
+	 * Toucher (doigt, souris) d'un point. Figure que l'on tourne : deux points peuvent se trouver
+	 * au même endroit de l'écran — c'est celui de devant qui est posé. Clic sans position
+	 * (lecteur d'écran, `click()`) : le point lui-même.
+	 */
+	function touchPoint(event: MouseEvent, name: string) {
+		const svg = (event.currentTarget as SVGElement).ownerSVGElement;
+		if (!rotatable || event.detail === 0 || svg === null) {
+			pick(name);
+			return;
+		}
+		const box = svg.getBoundingClientRect();
+		const width = scene.width + 2 * ESPACE_MARGIN;
+		const height = scene.height + 2 * ESPACE_MARGIN;
+		const touch = {
+			x: ((event.clientX - box.left) / box.width) * width - ESPACE_MARGIN,
+			y: ((event.clientY - box.top) / box.height) * height - ESPACE_MARGIN
+		};
+		const nearness = solidePointNearness(spec, mainRotation.vue);
+		const zones = clickable
+			.filter((c) => c.name !== fixedName)
+			.map((c) => ({
+				index: c.index,
+				at: solidePointAt(scene, c.index),
+				nearness: nearness[c.index]
+			}));
+		const index = solideTouchedPoint(zones, touch, hitRadius);
+		pick(clickable.find((c) => c.index === index)?.name ?? name);
 	}
 
 	function handlePointKey(event: KeyboardEvent, name: string) {
@@ -172,9 +229,17 @@
 
 <SolideRotationNote {node} />
 
-{#snippet figure(arrow: SolideVectorEnds | null, kind: 'eleve' | 'juste', markers: boolean)}
+{#snippet figure(
+	rotation: SolideRotation,
+	arrow: SolideVectorEnds | null,
+	kind: 'eleve' | 'juste',
+	markers: boolean
+)}
+	{@const scene = rotation.scene!}
 	{@const width = scene.width + 2 * ESPACE_MARGIN}
 	{@const height = scene.height + 2 * ESPACE_MARGIN}
+	<!-- Figure que l'on peut tourner : le clavier l'atteint (flèches, Échap), son nom le dit -->
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 {width} {height}"
@@ -182,6 +247,17 @@
 		aria-label={markers ? `${solideLabel(spec)}, points à toucher` : solideLabel(spec)}
 		class="solide-figure"
 		class:solide-verrouille={locked}
+		class:solide-tournante={rotatable}
+		class:solide-saisie={rotation.dragging}
+		tabindex={rotatable ? 0 : undefined}
+		onpointerdown={rotatable ? rotation.handlePointerDown : undefined}
+		onpointermove={rotatable ? rotation.handlePointerMove : undefined}
+		onpointerup={rotatable ? rotation.handlePointerEnd : undefined}
+		onpointercancel={rotatable ? rotation.handlePointerEnd : undefined}
+		onkeydown={rotatable ? rotation.handleKeyDown : undefined}
+		onkeyup={rotatable ? rotation.handleKeyUp : undefined}
+		onfocusout={rotatable ? rotation.handleBlur : undefined}
+		{@attach rotatable ? rotation.attach : undefined}
 		style:width="{width}cm"
 		style:aspect-ratio="{width} / {height}"
 		fill="none"
@@ -269,7 +345,7 @@
 						aria-label={pointLabel(c.name)}
 						aria-pressed={isFrom || isTo}
 						aria-disabled={locked}
-						onclick={() => pick(c.name)}
+						onclick={(event) => touchPoint(event, c.name)}
 						onkeydown={(event) => handlePointKey(event, c.name)}
 					/>
 				{/if}
@@ -277,7 +353,7 @@
 		{/if}
 		<!-- Flèche par-dessus les points : sa pointe reste visible sur le point choisi -->
 		{#if arrow !== null}
-			{@const drawing = arrowOf(arrow)}
+			{@const drawing = arrowOf(scene, arrow)}
 			<g class={kind === 'juste' ? 'solide-fleche-juste' : 'solide-fleche-eleve'}>
 				<line
 					class="solide-fleche-trait"
@@ -291,6 +367,9 @@
 			</g>
 		{/if}
 	</svg>
+	{#if rotatable}
+		<SolideVueDeDepart moved={rotation.moved} onreset={rotation.resetFromButton} />
+	{/if}
 {/snippet}
 
 <div class="solide-geste my-2 flex flex-col items-center gap-2 {className}">
@@ -301,9 +380,9 @@
 	>
 		{#if solution}
 			<!-- La réponse juste : la flèche en vert, rien à toucher -->
-			{@render figure(solutionEnds, 'juste', false)}
+			{@render figure(mainRotation, solutionEnds, 'juste', false)}
 		{:else}
-			{@render figure(drawn, 'eleve', true)}
+			{@render figure(mainRotation, drawn, 'eleve', true)}
 		{/if}
 	</div>
 
@@ -352,7 +431,7 @@
 		{#if solutionEnds !== null}
 			<div class="solide-correction flex flex-col items-center gap-1">
 				<p class="text-sm font-medium text-muted-foreground">Correction</p>
-				{@render figure(solutionEnds, 'juste', false)}
+				{@render figure(correctionRotation, solutionEnds, 'juste', false)}
 			</div>
 		{/if}
 	{/if}
@@ -365,6 +444,25 @@
 		-webkit-user-select: none;
 		user-select: none;
 		-webkit-touch-callout: none;
+	}
+
+	/* Figure que l'on peut tourner : le doigt la tourne au lieu de faire défiler la page ;
+	   rien n'est rogné pendant le passage d'une vue à l'autre */
+	.solide-tournante {
+		touch-action: none;
+		cursor: grab;
+		overflow: visible;
+		border-radius: 0.5rem;
+	}
+
+	.solide-tournante.solide-saisie,
+	.solide-tournante.solide-saisie .solide-cliquable {
+		cursor: grabbing;
+	}
+
+	.solide-tournante:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 2px;
 	}
 
 	.solide-cadre {
