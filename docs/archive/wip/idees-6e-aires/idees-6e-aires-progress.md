@@ -83,8 +83,8 @@ _Mis à jour le 2026-11-27, chantier clos._
 
 ## Historique
 
-- 2026-11-27 : David : « je valide les modèles » (validation orale, sans verdict en base ; série de relecture
-  écrite puis abandonnée, jamais enregistrée). `publier-lot.ts --publier` lancé par David ; vérifié en prod :
+- 2026-11-27 : David : « je valide les modèles » (validation orale, sans verdict en base). Série de relecture
+  des 3 publiés enregistrée par David (`ecda0a01`), fichier `scripts/series/6-relecture-aires-publies.json`. `publier-lot.ts --publier` lancé par David ; vérifié en prod :
   les 7 modèles `published`. Tableau : rubrique publiée, 3 réservations levées. Journal versé, chantier clos.
 
 - 2026-11-27 : #3246 mergée, `db:migrate` (seules nos 2 migrations en attente) ; vérifié en prod : 7 brouillons

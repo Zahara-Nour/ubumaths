@@ -1,0 +1,26 @@
+{
+	"id": "ecda0a01-52dd-4b38-b445-0e62780abace",
+	"title": "Relecture — aires de 6e, 3 modèles publiés complétés",
+	"grade": "6",
+	"description": "Relecture dans /dev/modeles des 3 modèles publiés de 6e auxquels le chantier idees-6e-aires a ajouté 8 variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Calcul de l'aire d'un carré.",
+			"templateId": "01e205ed-e30a-402f-8517-fd308a2fb26a",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Convertir dans une autre unité",
+			"templateId": "82748db8-01fe-4c2e-86b6-4ef8c1dde805",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calcul de l'aire d'un rectangle.",
+			"templateId": "fdd849f5-56b8-4da5-82d8-37f819e3ceaf",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
