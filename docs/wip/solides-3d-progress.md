@@ -10,7 +10,8 @@ _Mis à jour le 2026-11-27, après #3216._
   pendant son merge : vérifier s'il l'a emporté avant de l'affirmer).
 - **Prochaine action** : lot 4 — sections et cotes sur figure tournée (§ 4 ; Q1 du § 3 : cotes à la vue de
   départ seulement), revue `code-reviewer` en opus. Comportements à écrire et à faire valider avant de coder.
-- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
+- **En attente de David** : **Q7 et Q8 du § 10** (comportements 27 à 37 du lot 4, proposés le 2026-11-27 : rien
+  n'est codé avant sa réponse) ; son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
   noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
   session) ; (2) les solides ronds (§ 9 : le point posé sur le sommet NOMMÉ du cône quand ses deux traits ont
   disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque — question
@@ -264,3 +265,50 @@ et du sommet du cône), `marquer: sommet` et `cachees:`. `section:` et `cotes:` 
   0,235 cm), pas de NaN. Corrigé : test de l'arc caché du cône (ses bouts sont les pieds des deux traits),
   test tautologique retiré, commentaires déplacés. Laissé à David : le point du sommet nommé est aussi posé vu
   de dessous, où le sommet est caché par le disque.
+
+## 10. Lot 4 — sections et cotes : comportements (proposés le 2026-11-27, en attente de David)
+
+Exemples suivis : un pavé ABCDEFGH coté en cm et coupé parallèlement à sa face du dessus (section IJKL) ; un
+cylindre coté coupé parallèlement à son axe. Blocs ` ```solide ` avec `tourner: oui`. Les comportements 1 à 26
+valent tels quels ; ne sont écrits ici que ceux propres aux sections et aux cotes.
+
+### Nominal
+
+27. Au repos, un solide coupé ou coté qui peut tourner est dessiné exactement comme aujourd'hui : section
+    teintée, contour épais, noms I, J, K, L, longueurs écrites.
+28. Cotes (Q1, tranchée) : dès que l'élève fait glisser le doigt, les longueurs écrites (« 4 cm ») s'effacent.
+    Elles reviennent quand la figure est revenue à la vue de départ (bouton, Échap).
+29. La section tourne avec le solide : même teinte, même contour épais, à chaque angle. Ses noms (I, J, K, L)
+    suivent, tenus pendant le mouvement et replacés à l'arrêt, comme les noms des sommets.
+30. Pavé et cube coupés : les arêtes du solide gardent leurs tirets recalculés à chaque angle ; le contour de
+    la section reste en trait plein.
+31. Cylindre coupé à l'horizontale : la section est un ovale qui s'ouvre et se referme avec ceux des bases.
+32. Cylindre coupé parallèlement à l'axe : glisser le doigt de côté fait tourner le rectangle autour de l'axe
+    (de face on le voit en vraie grandeur, de profil il se réduit à un trait). C'est le premier solide rond où
+    tourner à gauche ou à droite se voit.
+33. Boule coupée : le contour reste un cercle, la section est un ovale qui s'ouvre quand on bascule, jusqu'au
+    cercle vu de dessus.
+34. Sur la fiche PDF : la vue de départ, avec ses cotes, comme aujourd'hui.
+
+### Limites
+
+35. Une section regardée exactement par la tranche se réduit à un trait. Accepté.
+36. Le lecteur d'écran lit la même description qu'aujourd'hui (cotes comprises, jamais la nature de la
+    section), plus « figure que l'on peut tourner ».
+
+### Erreurs
+
+37. `tourner: oui` avec `tracer:` : toujours figure fixe et message pour l'auteur (lot 5). Il n'y a plus de
+    message pour `section:` ni `cotes:`.
+
+### Questions pour David
+
+- **Q7 — Les traits qui accompagnent une cote.** Une pyramide cotée a sa hauteur dessinée en tirets, avec
+  « 5 cm » à côté ; un cylindre coté a un rayon en tirets. Quand la figure tourne, le « 5 cm » s'efface (Q1).
+  Et le trait en tirets ? (a) il reste et tourne avec le solide — on voit la hauteur de la pyramide sous tous
+  les angles, et le rayon du cylindre tourne quand on glisse de côté ; (b) il s'efface avec le nombre.
+  Recommandation : (a).
+- **Q8 — La section vue de derrière.** Un cylindre coupé parallèlement à l'axe, que l'on retourne : le
+  rectangle est alors derrière l'axe, vu à travers le solide. (a) le dessiner toujours pareil, teinté, contour
+  plein, comme si le solide était transparent — c'est ce que fait déjà le dessin fixe ; (b) mettre en tirets
+  les parties du contour cachées par le solide. Recommandation : (a), plus lisible et plus simple.
