@@ -292,8 +292,10 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 - **L'hydratation des layouts est dans `onMount`** : elle ne se rejoue pas quand les `load`
   repassent (`refreshAll()`). Les données neuves du layout n'atteignent pas le cache.
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
-  `/dashboard/teacher` (`documents/+page.server.ts:25`) ne rend pas la
-  page accessible à l'admin : le 403 du layout passe avant.
+  `/dashboard/teacher` ne rendrait pas la page accessible à l'admin : le 403 du layout passe
+  avant. Mais le load d'une page tourne **en parallèle** de celui du layout : il ne lit rien de
+  sensible sans `await parent()` ou sa propre garde de rôle (`documents/+page.server.ts` ne rend
+  rien et ne relit plus le rôle, M32).
 - **Deux listes de liens publics** : `Header.svelte` (tiroir mobile) et `Sidebar.svelte` (barre)
   ont chacun leur copie. Une entrée ajoutée à l'une manque à l'autre.
 

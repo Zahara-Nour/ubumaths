@@ -32,7 +32,7 @@
 	// List numbering
 	import { listNumberingStore } from '#lib/stores/listNumbering.svelte.ts';
 	import { getMaxEnumerateDepth } from '#lib/ubumark/utils/list-depth.ts';
-	import type { SchemeId, ListNumberingConfig } from '#lib/types/list-numbering.ts';
+	import type { SchemeId } from '#lib/types/list-numbering.ts';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -109,8 +109,6 @@
 		onInputSubmit?: (index: number) => void;
 		/** Whether inputs are disabled (e.g., after submission) */
 		inputsDisabled?: boolean;
-		/** Override list numbering config for this render (uses global store by default) */
-		listNumberingOverride?: Partial<ListNumberingConfig>;
 		/** Callback when a hashtag is clicked */
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
@@ -176,7 +174,6 @@
 		onInputChange,
 		onInputSubmit,
 		inputsDisabled = false,
-		listNumberingOverride,
 		onHashtagClick,
 		onMentionClick,
 		genericFunctions,
@@ -289,11 +286,7 @@
 	 * Uses auto-detection when scheme is 'auto', otherwise uses the specified scheme.
 	 */
 	const effectiveListScheme = $derived.by<SchemeId | null>(() => {
-		// Get config (override takes precedence over store)
-		const config = {
-			...listNumberingStore.config,
-			...listNumberingOverride
-		};
+		const config = listNumberingStore.config;
 
 		// If scheme is explicitly set (not auto), use it
 		if (config.scheme !== 'auto') {
