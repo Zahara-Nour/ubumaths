@@ -1,0 +1,467 @@
+{
+	"rangement": {
+		"noeud": "Algèbre > Premiers pas algébriques > nombre inconnu",
+		"point": "6-142"
+	},
+	"title": "Balances : la masse de deux objets",
+	"description": "Deux pesées en équilibre (boules et étoiles) : trouver la masse de chaque objet ; un seul objet multiplié (× 2 à × 4) puis soustraire et partager, les deux objets multipliés (imaginer un multiple de la seconde pesée), masses au dixième de gramme ; pièges : différence non partagée, pesée partagée entre tous les objets",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Les boules (B) sont toutes identiques, les étoiles (E) aussi. Voici deux pesées : chaque fois, la balance est en équilibre.\n\n{{if:a==2|```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Première pesée : à gauche 2 boules B et 1 étoile E, à droite une masse de {{eval:2*B+E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:2*B+E}} g\")\n```|{{if:a==3|```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Première pesée : à gauche 3 boules B et 1 étoile E, à droite une masse de {{eval:3*B+E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"B\")\nO3a = point(3.1, 1.3, visible=faux)\nO3b = point(3.9, 1.3, visible=faux)\nO3c = point(3.9, 2.2, visible=faux)\nO3d = point(3.1, 2.2, visible=faux)\npolygone(O3a, O3b, O3c, O3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.5, 1.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:3*B+E}} g\")\n```|```figure\nfenetre: 0 ; 9 ; -0.4 ; 3.6\ndescription: Première pesée : à gauche 4 boules B et 1 étoile E, à droite une masse de {{eval:4*B+E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"B\")\nO3a = point(3.1, 1.3, visible=faux)\nO3b = point(3.9, 1.3, visible=faux)\nO3c = point(3.9, 2.2, visible=faux)\nO3d = point(3.1, 2.2, visible=faux)\npolygone(O3a, O3b, O3c, O3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.5, 1.75, \"B\")\nO4a = point(0.4, 2.3, visible=faux)\nO4b = point(1.2, 2.3, visible=faux)\nO4c = point(1.2, 3.2, visible=faux)\nO4d = point(0.4, 3.2, visible=faux)\npolygone(O4a, O4b, O4c, O4d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 2.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:4*B+E}} g\")\n```}}}}\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Deuxième pesée : à gauche 1 boule B et 1 étoile E, à droite une masse de {{eval:B+E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:B+E}} g\")\n```\n\nQuelle est la masse d'une boule ? Quelle est la masse d'une étoile ?\n\nUne boule pèse $?$ g.\n\nUne étoile pèse $?$ g.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "B",
+					"expression": "20..50"
+				},
+				{
+					"name": "E",
+					"expression": "20..50"
+				}
+			],
+			"conditions": ["B!=E"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:B}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((a-1)*B)}}",
+							"message": "C'est la masse de ${{eval:a-1}}$ boules : partage-la entre elles.",
+							"label": "Différence non partagée"
+						},
+						{
+							"answer": "{{eval:(a*B+E)/(a+1)}}",
+							"message": "Les objets n'ont pas tous la même masse : on ne peut pas partager la première pesée en parts égales.",
+							"label": "Pesée partagée entre tous les objets"
+						},
+						{
+							"answer": "{{eval:E}}",
+							"message": "C'est la masse d'une étoile : vérifie quelle case est celle de la boule.",
+							"label": "Boule et étoile échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:E}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(B+E)/2}}",
+							"message": "Une boule et une étoile n'ont pas la même masse : on ne peut pas partager la deuxième pesée en deux.",
+							"label": "Deuxième pesée partagée en deux"
+						},
+						{
+							"answer": "{{eval:(E-(a-2)*B)}}",
+							"message": "Tu as retiré la masse de ${{eval:a-1}}$ boules : sur la deuxième pesée, il n'y a qu'une boule.",
+							"label": "Différence non partagée retirée"
+						},
+						{
+							"answer": "{{eval:B}}",
+							"message": "C'est la masse d'une boule : vérifie quelle case est celle de l'étoile.",
+							"label": "Boule et étoile échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer les pesées.** La première a ${{eval:a-1}}$ boule{{if:a>2|s|}} de plus que la deuxième ; tout le reste est pareil. La différence des masses, c'est donc ${{eval:a-1}}$ boule{{if:a>2|s|}} : ${{eval:(a*B+E)}} - {{eval:(B+E)}} = {{eval:((a-1)*B)}}$.",
+					"**Une boule.** {{if:a>2|${{eval:((a-1)*B)}} \\div {{eval:a-1}} = \\textcolor{{{color:primary.0}}}{{{eval:B}}}$ g.|Une boule pèse $\\textcolor{{{color:primary.0}}}{{{eval:B}}}$ g.}}",
+					"**Une étoile.** Deuxième pesée : ${{eval:(B+E)}} - {{eval:B}} = \\textcolor{{{color:primary.0}}}{{{eval:E}}}$ g.",
+					"**Vérification.** Première pesée : ${{a}} \\times {{eval:B}} + {{eval:E}} = {{eval:(a*B+E)}}$."
+				]
+			},
+			"hint": "Compare les deux pesées : qu'y a-t-il en plus sur la première balance ?"
+		},
+		{
+			"statement": "Les boules (B) sont toutes identiques, les étoiles (E) aussi. Voici deux pesées : chaque fois, la balance est en équilibre.\n\n{{if:c==0|```figure\nfenetre: 0 ; 9 ; -0.4 ; 3.6\ndescription: Première pesée : à gauche 2 boules B et 3 étoiles E, à droite une masse de {{eval:2*B+3*E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"E\")\nO3a = point(3.1, 1.3, visible=faux)\nO3b = point(3.9, 1.3, visible=faux)\nO3c = point(3.9, 2.2, visible=faux)\nO3d = point(3.1, 2.2, visible=faux)\npolygone(O3a, O3b, O3c, O3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.5, 1.75, \"E\")\nO4a = point(0.4, 2.3, visible=faux)\nO4b = point(1.2, 2.3, visible=faux)\nO4c = point(1.2, 3.2, visible=faux)\nO4d = point(0.4, 3.2, visible=faux)\npolygone(O4a, O4b, O4c, O4d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 2.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:2*B+3*E}} g\")\n```|{{if:c==1|```figure\nfenetre: 0 ; 9 ; -0.4 ; 3.6\ndescription: Première pesée : à gauche 2 boules B et 4 étoiles E, à droite une masse de {{eval:2*B+4*E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"E\")\nO3a = point(3.1, 1.3, visible=faux)\nO3b = point(3.9, 1.3, visible=faux)\nO3c = point(3.9, 2.2, visible=faux)\nO3d = point(3.1, 2.2, visible=faux)\npolygone(O3a, O3b, O3c, O3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.5, 1.75, \"E\")\nO4a = point(0.4, 2.3, visible=faux)\nO4b = point(1.2, 2.3, visible=faux)\nO4c = point(1.2, 3.2, visible=faux)\nO4d = point(0.4, 3.2, visible=faux)\npolygone(O4a, O4b, O4c, O4d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 2.75, \"E\")\nO5a = point(1.3, 2.3, visible=faux)\nO5b = point(2.1, 2.3, visible=faux)\nO5c = point(2.1, 3.2, visible=faux)\nO5d = point(1.3, 3.2, visible=faux)\npolygone(O5a, O5b, O5c, O5d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 2.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:2*B+4*E}} g\")\n```|```figure\nfenetre: 0 ; 9 ; -0.4 ; 3.6\ndescription: Première pesée : à gauche 3 boules B et 4 étoiles E, à droite une masse de {{eval:3*B+4*E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"B\")\nO3a = point(3.1, 1.3, visible=faux)\nO3b = point(3.9, 1.3, visible=faux)\nO3c = point(3.9, 2.2, visible=faux)\nO3d = point(3.1, 2.2, visible=faux)\npolygone(O3a, O3b, O3c, O3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.5, 1.75, \"E\")\nO4a = point(0.4, 2.3, visible=faux)\nO4b = point(1.2, 2.3, visible=faux)\nO4c = point(1.2, 3.2, visible=faux)\nO4d = point(0.4, 3.2, visible=faux)\npolygone(O4a, O4b, O4c, O4d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 2.75, \"E\")\nO5a = point(1.3, 2.3, visible=faux)\nO5b = point(2.1, 2.3, visible=faux)\nO5c = point(2.1, 3.2, visible=faux)\nO5d = point(1.3, 3.2, visible=faux)\npolygone(O5a, O5b, O5c, O5d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 2.75, \"E\")\nO6a = point(2.2, 2.3, visible=faux)\nO6b = point(3.0, 2.3, visible=faux)\nO6c = point(3.0, 3.2, visible=faux)\nO6d = point(2.2, 3.2, visible=faux)\npolygone(O6a, O6b, O6c, O6d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 2.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:3*B+4*E}} g\")\n```}}}}\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Deuxième pesée : à gauche 1 boule B et 1 étoile E, à droite une masse de {{eval:B+E}} g.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{eval:B+E}} g\")\n```\n\nQuelle est la masse d'une boule ? Quelle est la masse d'une étoile ?\n\nUne boule pèse $?$ g.\n\nUne étoile pèse $?$ g.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "eval:2*(1-min(abs(c-0),1))+2*(1-min(abs(c-1),1))+3*(1-min(abs(c-2),1))"
+				},
+				{
+					"name": "b",
+					"expression": "eval:3*(1-min(abs(c-0),1))+4*(1-min(abs(c-1),1))+4*(1-min(abs(c-2),1))"
+				},
+				{
+					"name": "B",
+					"expression": "20..50"
+				},
+				{
+					"name": "E",
+					"expression": "20..50"
+				}
+			],
+			"conditions": ["B!=E"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{B}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*B+b*E)-(B+E)}}",
+							"message": "On ne peut pas soustraire les pesées telles quelles : il resterait des boules et des étoiles. Imagine d'abord ${{a}}$ fois la deuxième pesée.",
+							"label": "Pesées soustraites telles quelles"
+						},
+						{
+							"answer": "{{eval:(B+E)/2}}",
+							"message": "Une boule et une étoile n'ont pas la même masse : on ne peut pas partager la deuxième pesée en deux.",
+							"label": "Deuxième pesée partagée en deux"
+						},
+						{
+							"answer": "{{E}}",
+							"message": "C'est la masse d'une étoile : vérifie quelle case est celle de la boule.",
+							"label": "Boule et étoile échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{E}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(b-a)*E}}",
+							"message": "C'est la masse de ${{eval:b-a}}$ étoiles : partage-la entre elles.",
+							"label": "Différence non partagée"
+						},
+						{
+							"answer": "{{eval:(a*B+b*E)/(a+b)}}",
+							"message": "Les objets n'ont pas tous la même masse : on ne peut pas partager la première pesée en parts égales.",
+							"label": "Pesée partagée entre tous les objets"
+						},
+						{
+							"answer": "{{B}}",
+							"message": "C'est la masse d'une boule : vérifie quelle case est celle de l'étoile.",
+							"label": "Boule et étoile échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une pesée imaginée.** Avec ${{a}}$ fois la deuxième pesée, on aurait ${{a}}$ boules et ${{a}}$ étoiles, de masse ${{a}} \\times {{eval:B+E}} = {{eval:a*(B+E)}}$ g.",
+					"**Comparer.** La première pesée a autant de boules, et ${{eval:b-a}}$ étoile{{if:b-a>1|s|}} de plus : ${{eval:a*B+b*E}} - {{eval:a*(B+E)}} = {{eval:(b-a)*E}}$ g.",
+					"**Une étoile.** {{if:b-a>1|${{eval:(b-a)*E}} \\div {{eval:b-a}} = \\textcolor{{{color:primary.0}}}{{{E}}}$ g.|Une étoile pèse $\\textcolor{{{color:primary.0}}}{{{E}}}$ g.}}",
+					"**Une boule.** Deuxième pesée : ${{eval:B+E}} - {{E}} = \\textcolor{{{color:primary.0}}}{{{B}}}$ g."
+				]
+			},
+			"hint": "Imagine ${{a}}$ fois la deuxième pesée : combien pèserait-elle ? Compare-la à la première."
+		},
+		{
+			"statement": "Les boules (B) sont toutes identiques, les étoiles (E) aussi. Voici deux pesées : chaque fois, la balance est en équilibre.\n\n{{if:a==2|```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Première pesée : à gauche 2 boules B et 1 étoile E, à droite une masse de {{if:mod(2*B+E,10)==0|{{eval:(2*B+E)/10}} g|{{eval:floor((2*B+E)/10)}},{{eval:mod(2*B+E,10)}} g}}.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{if:mod(2*B+E,10)==0|{{eval:(2*B+E)/10}} g|{{eval:floor((2*B+E)/10)}},{{eval:mod(2*B+E,10)}} g}}\")\n```|{{if:a==3|```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Première pesée : à gauche 3 boules B et 1 étoile E, à droite une masse de {{if:mod(3*B+E,10)==0|{{eval:(3*B+E)/10}} g|{{eval:floor((3*B+E)/10)}},{{eval:mod(3*B+E,10)}} g}}.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"B\")\nO3a = point(3.1, 1.3, visible=faux)\nO3b = point(3.9, 1.3, visible=faux)\nO3c = point(3.9, 2.2, visible=faux)\nO3d = point(3.1, 2.2, visible=faux)\npolygone(O3a, O3b, O3c, O3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.5, 1.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{if:mod(3*B+E,10)==0|{{eval:(3*B+E)/10}} g|{{eval:floor((3*B+E)/10)}},{{eval:mod(3*B+E,10)}} g}}\")\n```|```figure\nfenetre: 0 ; 9 ; -0.4 ; 3.6\ndescription: Première pesée : à gauche 4 boules B et 1 étoile E, à droite une masse de {{if:mod(4*B+E,10)==0|{{eval:(4*B+E)/10}} g|{{eval:floor((4*B+E)/10)}},{{eval:mod(4*B+E,10)}} g}}.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"B\")\nO2a = point(2.2, 1.3, visible=faux)\nO2b = point(3.0, 1.3, visible=faux)\nO2c = point(3.0, 2.2, visible=faux)\nO2d = point(2.2, 2.2, visible=faux)\npolygone(O2a, O2b, O2c, O2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.6, 1.75, \"B\")\nO3a = point(3.1, 1.3, visible=faux)\nO3b = point(3.9, 1.3, visible=faux)\nO3c = point(3.9, 2.2, visible=faux)\nO3d = point(3.1, 2.2, visible=faux)\npolygone(O3a, O3b, O3c, O3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.5, 1.75, \"B\")\nO4a = point(0.4, 2.3, visible=faux)\nO4b = point(1.2, 2.3, visible=faux)\nO4c = point(1.2, 3.2, visible=faux)\nO4d = point(0.4, 3.2, visible=faux)\npolygone(O4a, O4b, O4c, O4d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 2.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{if:mod(4*B+E,10)==0|{{eval:(4*B+E)/10}} g|{{eval:floor((4*B+E)/10)}},{{eval:mod(4*B+E,10)}} g}}\")\n```}}}}\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Deuxième pesée : à gauche 1 boule B et 1 étoile E, à droite une masse de {{if:mod(B+E,10)==0|{{eval:(B+E)/10}} g|{{eval:floor((B+E)/10)}},{{eval:mod(B+E,10)}} g}}.\n---\nS1 = point(3.95, 0, visible=faux)\nS2 = point(5.05, 0, visible=faux)\nS3 = point(4.5, 1.15, visible=faux)\npolygone(S1, S2, S3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nO0a = point(0.4, 1.3, visible=faux)\nO0b = point(1.2, 1.3, visible=faux)\nO0c = point(1.2, 2.2, visible=faux)\nO0d = point(0.4, 2.2, visible=faux)\npolygone(O0a, O0b, O0c, O0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.8, 1.75, \"B\")\nO1a = point(1.3, 1.3, visible=faux)\nO1b = point(2.1, 1.3, visible=faux)\nO1c = point(2.1, 2.2, visible=faux)\nO1d = point(1.3, 2.2, visible=faux)\npolygone(O1a, O1b, O1c, O1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(1.7, 1.75, \"E\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.9, 1.3, visible=faux)\nD3 = point(7.9, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\npolygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.6, 1.75, \"{{if:mod(B+E,10)==0|{{eval:(B+E)/10}} g|{{eval:floor((B+E)/10)}},{{eval:mod(B+E,10)}} g}}\")\n```\n\nQuelle est la masse d'une boule ? Quelle est la masse d'une étoile ?\n\nUne boule pèse $?$ g.\n\nUne étoile pèse $?$ g.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "B",
+					"expression": "201..499"
+				},
+				{
+					"name": "E",
+					"expression": "201..499"
+				}
+			],
+			"conditions": ["B!=E", "mod(B,10)!=0", "mod(E,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:B/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((a-1)*B)/10;d}}",
+							"message": "C'est la masse de ${{eval:a-1}}$ boules : partage-la entre elles.",
+							"label": "Différence non partagée"
+						},
+						{
+							"answer": "{{eval:(a*B+E)/10/(a+1);d}}",
+							"message": "Les objets n'ont pas tous la même masse : on ne peut pas partager la première pesée en parts égales.",
+							"label": "Pesée partagée entre tous les objets"
+						},
+						{
+							"answer": "{{eval:E/10;d}}",
+							"message": "C'est la masse d'une étoile : vérifie quelle case est celle de la boule.",
+							"label": "Boule et étoile échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:E/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(B+E)/10/2;d}}",
+							"message": "Une boule et une étoile n'ont pas la même masse : on ne peut pas partager la deuxième pesée en deux.",
+							"label": "Deuxième pesée partagée en deux"
+						},
+						{
+							"answer": "{{eval:(E-(a-2)*B)/10;d}}",
+							"message": "Tu as retiré la masse de ${{eval:a-1}}$ boules : sur la deuxième pesée, il n'y a qu'une boule.",
+							"label": "Différence non partagée retirée"
+						},
+						{
+							"answer": "{{eval:B/10;d}}",
+							"message": "C'est la masse d'une boule : vérifie quelle case est celle de l'étoile.",
+							"label": "Boule et étoile échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer les pesées.** La première a ${{eval:a-1}}$ boule{{if:a>2|s|}} de plus que la deuxième ; tout le reste est pareil. La différence des masses, c'est donc ${{eval:a-1}}$ boule{{if:a>2|s|}} : ${{eval:(a*B+E)/10;d}} - {{eval:(B+E)/10;d}} = {{eval:((a-1)*B)/10;d}}$.",
+					"**Une boule.** {{if:a>2|${{eval:((a-1)*B)/10;d}} \\div {{eval:a-1}} = \\textcolor{{{color:primary.0}}}{{{eval:B/10;d}}}$ g.|Une boule pèse $\\textcolor{{{color:primary.0}}}{{{eval:B/10;d}}}$ g.}}",
+					"**Une étoile.** Deuxième pesée : ${{eval:(B+E)/10;d}} - {{eval:B/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:E/10;d}}}$ g.",
+					"**Vérification.** Première pesée : ${{a}} \\times {{eval:B/10;d}} + {{eval:E/10;d}} = {{eval:(a*B+E)/10;d}}$."
+				]
+			},
+			"hint": "Compare les deux pesées : qu'y a-t-il en plus sur la première balance ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Un objet : 3B + E = 145, B + E = 65 → 40 et 25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"B": "40",
+				"E": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40", "25"]
+		},
+		{
+			"description": "Un objet : différence non partagée (80)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"B": "40",
+				"E": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse de $2$ boules : partage-la entre elles."
+			},
+			"answers": ["80", "25"]
+		},
+		{
+			"description": "Un objet : boule et étoile échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"B": "40",
+				"E": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse d'une étoile : vérifie quelle case est celle de la boule."
+			},
+			"answers": ["25", "40"]
+		},
+		{
+			"description": "Un objet : deuxième pesée en deux (32,5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"B": "40",
+				"E": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une boule et une étoile n'ont pas la même masse : on ne peut pas partager la deuxième pesée en deux."
+			},
+			"answers": ["40", "32{,}5"]
+		},
+		{
+			"description": "Un objet : 80 g retirés (−15)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"B": "40",
+				"E": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré la masse de $2$ boules : sur la deuxième pesée, il n'y a qu'une boule."
+			},
+			"answers": ["40", "-15"]
+		},
+		{
+			"description": "Un objet : 4B + E = 180, partagé en 5 (36)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"B": "40",
+				"E": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les objets n'ont pas tous la même masse : on ne peut pas partager la première pesée en parts égales."
+			},
+			"answers": ["36", "20"]
+		},
+		{
+			"description": "Un objet : 2B + E = 84, B + E = 54 → 30 et 24",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"B": "30",
+				"E": "24"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30", "24"]
+		},
+		{
+			"description": "Deux objets : 2B + 3E = 142, B + E = 59 → 35 et 24",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"a": "2",
+				"b": "3",
+				"B": "35",
+				"E": "24"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["35", "24"]
+		},
+		{
+			"description": "Deux objets : pesées soustraites (83)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"a": "2",
+				"b": "3",
+				"B": "35",
+				"E": "24"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne peut pas soustraire les pesées telles quelles : il resterait des boules et des étoiles. Imagine d'abord $2$ fois la deuxième pesée."
+			},
+			"answers": ["83", "24"]
+		},
+		{
+			"description": "Deux objets : échangés",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"a": "2",
+				"b": "3",
+				"B": "35",
+				"E": "24"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse d'une étoile : vérifie quelle case est celle de la boule."
+			},
+			"answers": ["24", "35"]
+		},
+		{
+			"description": "Deux objets : 2B + 4E, différence non partagée (60)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"a": "2",
+				"b": "4",
+				"B": "35",
+				"E": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse de $2$ étoiles : partage-la entre elles."
+			},
+			"answers": ["35", "60"]
+		},
+		{
+			"description": "Deux objets : 3B + 4E = 220, B + E = 60 → 40 et 20",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"b": "4",
+				"B": "40",
+				"E": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40", "25"]
+		},
+		{
+			"description": "Deux objets : 3B + 4E = 246 partagé en 7 (31,4…) : 2 étoiles non partagées",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"b": "4",
+				"B": "42",
+				"E": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["42", "30"]
+		},
+		{
+			"description": "Dixièmes : 3 × 23,4 + 41,7 = 111,9 ; 23,4 + 41,7 = 65,1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"B": "234",
+				"E": "417"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["23{,}4", "41{,}7"]
+		},
+		{
+			"description": "Dixièmes : différence non partagée (46,8)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"B": "234",
+				"E": "417"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse de $2$ boules : partage-la entre elles."
+			},
+			"answers": ["46{,}8", "41{,}7"]
+		},
+		{
+			"description": "Dixièmes : échangées",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"B": "234",
+				"E": "417"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse d'une étoile : vérifie quelle case est celle de la boule."
+			},
+			"answers": ["41{,}7", "23{,}4"]
+		}
+	]
+}

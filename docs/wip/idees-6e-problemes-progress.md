@@ -6,13 +6,14 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 validée._
+_Mis à jour le 2026-11-27, lot écrit, PR à ouvrir._
 
-- **État** : phase 0 validée (tout oui, recommandations suivies), 4 modèles publiés réservés et
-  exportés · **Prochaine action** : écrire le gros lot (`idees-6e-problemes-neufs.py`,
-  `idees-6e-problemes-publies.py`), specs, essai local, PR · **En attente de David** : rien ·
-  **Pièges en cours** : aucun ·
-  **Worktree / branche** : `../ubumaths-wt-idees-6e-problemes`, `feat/idees-6e-problemes`.
+- **État** : gros lot écrit et vérifié (5 neufs, 17 variations ; 8 variations sur 4 publiés),
+  migration de contenu générée · **Prochaine action** : PR, CI, merge ; puis David lance
+  `create-questions --publier` (neufs) en prod, migration de rangement, `db:migrate` du contenu ·
+  **En attente de David** : rien avant le merge · **Pièges en cours** : `ec` lu e × c (Euler),
+  précédence dans `prix()` (parenthèses) · **Worktree / branche** :
+  `../ubumaths-wt-idees-6e-problemes`, `feat/idees-6e-problemes`.
 
 ## Journal
 
@@ -28,6 +29,22 @@ _Mis à jour le 2026-11-27, phase 0 validée._
   (exportés de prod dans `scripts/questions/idees-6e-problemes-publies/`). Rangement : N1, N2 →
   Algèbre > Premiers pas algébriques > nombre inconnu (6-142) ; N3 → Décimaux : calculs >
   multiplication (6-120) ; N4, N5 → notion Décimaux : calculs (5-001, comme c241cf63).
+- 2026-11-27 : **lot écrit.** Scripts `docs/wip/questions/idees-6e-problemes-{neufs,publies}.py`
+  → `scripts/questions/idees-6e-problemes-{neufs,publies}/`. `question:specs` vert sur les 9
+  fichiers (aperçus relus), `create-questions` en simulation vert (5 à créer). Essai local : 5
+  neufs créés en base locale (ids retirés des fichiers ensuite), variations des publiés posées par
+  PATCH local ; `/dev/modeles` capturé au format iPhone : balances (N1), schémas en barres de F2
+  et F3 justes. Migration `20261127072050_questions_idees_6e_problemes_publies_contenu.sql`
+  générée (+3, +2, +1, +2 variations), test d'intégration vert.
+  - **Écarts à la fiche** (à dire à David) : F1 somme ou différence des quantités = 10 ou 20
+    (calcul de tête, comme le modèle) ; F1 grammes = 100, 200 ou 500 g ; F2 et F3 réponse en
+    euros avec l'unité (options des publiés inchangées) ; F3 n2 de 2 à 6 (schéma lisible) ; N2
+    somme et produit : somme paire seulement ; N4 choix dans l'ordre de l'énoncé (`melanger:
+non`, « Aucune » en dernier) ; N4 v3 toujours « Aucune » (comme la fiche) ; N5 manga : deux
+    erreurs prévues (pas de troisième réelle) ; N3 fromages : deux erreurs prévues.
+  - Niveaux : N1 3, N2 4 (nombre inconnu, après les 1 et 2 existants), N3 10 (multiplication,
+    après 9), N4 2, N5 3 (Décimaux : calculs). Options : espaces dès 4 chiffres partout, zéros
+    libres sauf N2 et N4.
 
 ## Phase 0 (2026-11-27, validée)
 
