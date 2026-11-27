@@ -1,15 +1,15 @@
 ---
 title: V39, la puissance sous la fonction sans parenthèses — journal
 date: 2026-11-27
-status: en cours (PR à ouvrir)
+status: PR ouverte, CI en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, revue faite, avant le push._
+_Mis à jour le 2026-11-27, à l'ouverture de la PR._
 
-- **État** : correctif commité sur la branche (deux parseurs LaTeX, accolades comprises après la revue), tests et doc système à jour ; rien n'est poussé, pas de PR.
-- **Prochaine action** : rejouer `pnpm test:server src/lib/mathAST src/lib/questions src/lib/atelier src/lib/ubumark` (vert au premier commit, à confirmer après le second), `pnpm check:incremental`, `git merge origin/main`, push, PR, CI, `pnpm pr:merger` ; puis clore V39 au registre, inscrire les deux lectures voisines (`\ln x!`, indice après une fonction sans parenthèses), archiver ce journal et mettre à jour [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **État** : correctif poussé (deux parseurs LaTeX, accolades comprises après la revue), tests verts (47 477 sur mathAST, questions, atelier, ubumark), 0 erreur de types, doc système à jour ; PR ouverte sur `fix/ecarts-v39` (numéro : `gh pr list --head fix/ecarts-v39`).
+- **Prochaine action** : `pnpm pr:merger <n>` (attend la CI et merge) ; puis, depuis le dépôt principal : clore V39 au registre, inscrire les deux lectures voisines (`\ln x!`, indice après une fonction sans parenthèses), archiver ce journal et mettre à jour [ecarts-a-trier](ecarts-a-trier-progress.md) (suite : V124, V125).
 - **En attente de David** : rien.
 - **Pièges en cours** : `tests/ecarts/` n'est pas dans le projet `server` de vitest : une sonde s'écrit sous `src/`.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-v39` · `fix/ecarts-v39`.
