@@ -68,29 +68,18 @@ describe('V92 — revue : constante dans le coefficient, lettres au carré', () 
 	});
 
 	// La condition est celle sous laquelle la racine ÉCRITE existe : avec
-	// « 4a²bc ⩾ 0 », a = 0, b = 1, c = −1 la vérifiait et √(bc) n'existe pas
-	it('x² − a²bc = 0 : ±|a|√(bc) si bc ⩾ 0', () => {
-		const latex = latexOf(run('.résoudre x^2-a^2bc=0'));
+	// « 4a²bc ⩾ 0 », a = 0, b = 1, c = −1 la vérifiait et √(bc) n'existe pas.
+	// Depuis V124 elle est portée par chaque solution (cf. plus bas)
+	it.each([
+		['x^2-a^2bc=0', '\\sqrt{b c} \\left| a \\right|', 'b c'],
+		['x^2-ab^2c=0', '\\sqrt{a c} \\left| b \\right|', 'a c'],
+		['x^2-a^2b=0', '\\sqrt{b} \\left| a \\right|', 'b']
+	])('%s : ±%s, chacune si %s ⩾ 0', (equation, root, radicand) => {
+		const latex = latexOf(run(`.résoudre ${equation}`));
 
-		expect(latex).toContain('\\sqrt{b c}');
-		expect(latex).toContain('\\left| a \\right|');
-		expect(latex.endsWith('\\quad \\text{si } b c \\geqslant 0')).toBe(true);
-	});
-
-	it('x² − ab²c = 0 : ±|b|√(ac) si ac ⩾ 0', () => {
-		const latex = latexOf(run('.résoudre x^2-ab^2c=0'));
-
-		expect(latex).toContain('\\sqrt{a c}');
-		expect(latex).toContain('\\left| b \\right|');
-		expect(latex.endsWith('\\quad \\text{si } a c \\geqslant 0')).toBe(true);
-	});
-
-	it('x² − a²b = 0 : ±|a|√b si b ⩾ 0', () => {
-		const latex = latexOf(run('.résoudre x^2-a^2b=0'));
-
-		expect(latex).toContain('\\sqrt{b}');
-		expect(latex).toContain('\\left| a \\right|');
-		expect(latex.endsWith('\\quad \\text{si } b \\geqslant 0')).toBe(true);
+		expect(latex).toContain(
+			`\\left\\{ ${root} \\text{ si } ${radicand} \\geqslant 0 \\,;\\, -${root} \\text{ si } ${radicand} \\geqslant 0 \\,;`
+		);
 	});
 });
 
@@ -111,6 +100,71 @@ describe('V92 — inchangés', () => {
 	it('avec a = −1 et b = −1 : S = {−1 ; 1}', () => {
 		expect(latexOf(run('a=-1', 'b=-1', '.résoudre x^2-ab=0'))).toBe(
 			'S = \\left\\{ -1 \\,;\\, 1 \\right\\}'
+		);
+	});
+});
+
+/**
+ * V124 (registre des écarts) : `x² − a²bc = 0` rendait ±|a|√(bc) « si bc ⩾ 0 »
+ * et rien pour a = 0 avec bc < 0, où 0 est pourtant solution. Une lettre sortie
+ * en entier de la racine annule Δ quand elle est nulle : la racine double de ce
+ * cas s'écrit à part, avec sa condition (phase 0 du 2026-11-27,
+ * docs/wip/ecarts-v124-progress.md).
+ */
+describe('V124 — la solution du cas où une lettre sortie de la racine est nulle', () => {
+	it.each([
+		['x^2-a^2bc=0', '\\sqrt{b c} \\left| a \\right|', 'b c', 'a'],
+		['x^2-a^2b=0', '\\sqrt{b} \\left| a \\right|', 'b', 'a'],
+		['x^2-4a^2bc=0', '2 \\sqrt{b c} \\left| a \\right|', 'b c', 'a'],
+		['x^2-a^4b=0', 'a^2 \\sqrt{b}', 'b', 'a'],
+		// Plusieurs lettres au carré : l'une ou l'autre nulle suffit
+		['x^2-a^2d^2bc=0', '\\sqrt{b c} \\left| a d \\right|', 'b c', 'a d']
+	])('%s : ±%s si %s ⩾ 0, et 0 si %s = 0', (equation, root, radicand, vanishing) => {
+		expect(latexOf(run(`.résoudre ${equation}`))).toBe(
+			`S = \\left\\{ ${root} \\text{ si } ${radicand} \\geqslant 0 \\,;\\, -${root} \\text{ si } ${radicand} \\geqslant 0 \\,;\\, 0 \\text{ si } ${vanishing} = 0 \\right\\}`
+		);
+	});
+
+	it('(x − 1)² = a²b : la racine double du cas a = 0 est 1, pas 0', () => {
+		expect(latexOf(run('.résoudre (x-1)^2=a^2b'))).toBe(
+			'S = \\left\\{ \\sqrt{b} \\left| a \\right| + 1 \\text{ si } b \\geqslant 0 \\,;\\, 1 - \\sqrt{b} \\left| a \\right| \\text{ si } b \\geqslant 0 \\,;\\, 1 \\text{ si } a = 0 \\right\\}'
+		);
+	});
+
+	it('avec a = 0 : S = {0}', () => {
+		expect(latexOf(run('a=0', '.résoudre x^2-a^2bc=0'))).toBe('S = \\left\\{ 0 \\right\\}');
+	});
+
+	// 0 est déjà solution sans condition : ni écrit deux fois, ni remplacé par « 0 si a = 0 »
+	it.each(['x^3-a^2bx=0', 'x(x^2-a^2b)=0'])('%s : 0 une seule fois, sans condition', (equation) => {
+		expect(latexOf(run(`.résoudre ${equation}`))).toBe(
+			'S = \\left\\{ 0 \\,;\\, \\sqrt{b} \\left| a \\right| \\text{ si } b \\geqslant 0 \\,;\\, -\\sqrt{b} \\left| a \\right| \\text{ si } b \\geqslant 0 \\right\\}'
+		);
+	});
+
+	it('x⁴ − a²bx² = 0 : 0 reste solution sans condition', () => {
+		expect(latexOf(run('.résoudre x^4-a^2bx^2=0'))).toBe(
+			'S = \\left\\{ \\sqrt{b} \\left| a \\right| \\text{ si } b \\geqslant 0 \\,;\\, -\\sqrt{b} \\left| a \\right| \\text{ si } b \\geqslant 0 \\,;\\, 0 \\right\\}'
+		);
+	});
+
+	it('(x − 1)(x² − a²b) = 0 : le 0 du cas a = 0 reste annoncé à côté de 1', () => {
+		expect(latexOf(run('.résoudre (x-1)(x^2-a^2b)=0'))).toContain('0 \\text{ si } a = 0');
+	});
+
+	// Pas de lettre sortie en entier : rien à ajouter, la condition reste commune
+	it.each([
+		['x^2-ab=0', '\\sqrt{a b}', 'a b'],
+		['x^2-a^3b=0', '\\sqrt{a b} \\left| a \\right|', 'a b']
+	])('%s : inchangé, ±%s si %s ⩾ 0', (equation, root, radicand) => {
+		expect(latexOf(run(`.résoudre ${equation}`))).toBe(
+			`S = \\left\\{ ${root} \\,;\\, -${root} \\right\\} \\quad \\text{si } ${radicand} \\geqslant 0`
+		);
+	});
+
+	it('x² − a² = 0 : ±|a|, sans condition (a = 0 y donne déjà 0)', () => {
+		expect(latexOf(run('.résoudre x^2-a^2=0'))).toBe(
+			'S = \\left\\{ \\left| a \\right| \\,;\\, -\\left| a \\right| \\right\\}'
 		);
 	});
 });

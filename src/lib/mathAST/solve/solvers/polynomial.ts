@@ -874,7 +874,13 @@ function handleCubicWithCommonFactor(
 		);
 		const second = quadraticSolver.solve(quadratic, variable, options, recorder);
 		if (isSolverFailure(second)) return second;
-		solutions.push(...second.solutions);
+		// 0 est déjà solution, sans condition : la racine double « 0 si a = 0 »
+		// du second degré (V124) ne l'écrit pas une deuxième fois
+		solutions.push(
+			...second.solutions.filter(
+				(solution) => !(solution.condition !== undefined && isZeroNode(solution.value))
+			)
+		);
 	} else if (squareFactor) {
 		// ax + b = 0 → x = −b/a, seulement si elle diffère de 0
 		if (!isZeroNode(b) && bValue !== 0) {
