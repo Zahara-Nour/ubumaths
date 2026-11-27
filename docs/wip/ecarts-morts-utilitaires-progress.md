@@ -5,9 +5,9 @@ M57, L115 (code mort et doublons d'utilitaires, sans décision).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR._
 
-- **État** : les 9 écarts traités sur la branche, typecheck 0, tests ciblés verts, preuves vertes · **Prochaine action** : rendu de `CodeEditor` vérifié à l'écran, revue, PR, merge ; puis registre barré, lot « fait », journal archivé (commit doc sur `main`) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-morts-utilitaires`, `chore/ecarts-morts-utilitaires`
+- **État** : 9 écarts traités, typecheck 0, tests verts, 8 preuves vertes (M57 : à la main), rendu de `CodeEditor` vu à l'écran (`/dev/latex-vers-ubumark`, mode markdown de `/dev/editeur-riche`), revues `code-reviewer` et `security-auditor` sans finding bloquant · **Prochaine action** : PR mergée → registre barré, lot « fait », journal archivé (commit doc sur `main`) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-morts-utilitaires`, `chore/ecarts-morts-utilitaires`
 
 ## Écarts
 
