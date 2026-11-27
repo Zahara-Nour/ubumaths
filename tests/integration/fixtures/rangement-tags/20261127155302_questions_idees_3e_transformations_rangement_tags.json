@@ -1,0 +1,42 @@
+{
+	"migration": "supabase/migrations/20261127155302_questions_idees_3e_transformations_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "4c82bef9-59fd-4392-a5a2-8920bacd1087",
+			"title": "L'image d'un point par une rotation",
+			"fichier": "n1-image-d-un-point-par-une-rotation.json",
+			"branche": "Géométrie",
+			"notion": "Rotations",
+			"sousNotion": null,
+			"point": null
+		},
+		{
+			"id": "a5e70b85-33a5-4499-989d-2d1bf674cd4f",
+			"title": "L'image d'un point par une homothétie",
+			"fichier": "n2-image-d-un-point-par-une-homothetie.json",
+			"branche": "Géométrie",
+			"notion": "Homothéties",
+			"sousNotion": null,
+			"point": null
+		},
+		{
+			"id": "277be356-1de5-4bd5-ab7a-5d7856b36655",
+			"title": "Calculs liés à une homothétie",
+			"fichier": "n3-calculs-lies-a-une-homothetie.json",
+			"branche": "Géométrie",
+			"notion": "Homothéties",
+			"sousNotion": null,
+			"point": null
+		},
+		{
+			"id": "bc6321ed-96d3-45f5-962b-e199b74e94e8",
+			"title": "Rotation dans un pavage",
+			"fichier": "n4-rotation-dans-un-pavage.json",
+			"branche": "Géométrie",
+			"notion": "Rotations",
+			"sousNotion": null,
+			"point": null
+		}
+	],
+	"niveaux": []
+}

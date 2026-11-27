@@ -5,7 +5,11 @@
 	Solide en perspective cavalière (cube, pavé, prisme, pyramide, cylindre,
 	cône, boule) : arêtes cachées en tirets, face marquée teintée, noms des
 	sommets et cotes, section (`section:`, lot 6), points déclarés (`points:`)
-	et vecteurs donnés en flèches (`vecteurs:`, chantier `solide-vecteur`).
+	et vecteurs donnés en flèches (`vecteurs:`, chantier `solide-vecteur`),
+	droites données en bleu (`droites:`, chantier `solides-3d`, lot 7a : en
+	tirets là où une face du solide passe devant), plans donnés teintés
+	(`plans:`, lot 7b : la partie du plan dans le solide, bord en tirets là où
+	une face passe devant).
 	Affichage seul. Dessiné
 	depuis `buildSolideScene`, la même scène que le PDF.
 
@@ -137,6 +141,13 @@
 			{#if scene.section}
 				<polygon class="solide-section" points={pointsOf(scene.section)} />
 			{/if}
+			{#each scene.plans ?? [] as plan, i (i)}
+				<polygon
+					class="solide-plan"
+					class:solide-plan-second={i === 1}
+					points={pointsOf(plan.fill)}
+				/>
+			{/each}
 			{#each scene.lines as line, i (i)}
 				<polyline
 					class="solide-trait"
@@ -145,6 +156,27 @@
 					stroke-width={solideLineStroke(line)}
 					stroke-dasharray={line.dashed ? SOLIDE_DASH.join(' ') : undefined}
 				/>
+			{/each}
+			{#each scene.plans ?? [] as plan, i (i)}
+				{#each plan.border as piece, j (j)}
+					<polyline
+						class="solide-plan-bord"
+						class:solide-plan-second={i === 1}
+						points={pointsOf(piece.points)}
+						stroke-width={solideLineStroke(piece)}
+						stroke-dasharray={piece.dashed ? SOLIDE_DASH.join(' ') : undefined}
+					/>
+				{/each}
+			{/each}
+			{#each scene.droites ?? [] as pieces, i (i)}
+				{#each pieces as piece, j (j)}
+					<polyline
+						class="solide-droite"
+						points={pointsOf(piece.points)}
+						stroke-width={solideLineStroke(piece)}
+						stroke-dasharray={piece.dashed ? SOLIDE_DASH.join(' ') : undefined}
+					/>
+				{/each}
 			{/each}
 			{#each scene.arrows as arrow, i (i)}
 				<line
@@ -226,6 +258,29 @@
 	.solide-section {
 		fill: color-mix(in srgb, var(--color-fig-orange) 40%, transparent);
 		stroke: none;
+	}
+
+	/* Droite donnée : une couleur à elle, pour ne pas la prendre pour une arête */
+	.solide-droite {
+		stroke: var(--color-fig-bleu);
+	}
+
+	/* Plan donné : sa partie dans le solide, translucide, et son bord de la même
+	   couleur ; le second plan a la sienne, pour les distinguer */
+	.solide-plan {
+		--solide-plan: var(--color-fig-vert);
+		fill: color-mix(in srgb, var(--solide-plan) 28%, transparent);
+		stroke: none;
+	}
+
+	.solide-plan-bord {
+		--solide-plan: var(--color-fig-vert);
+		stroke: var(--solide-plan);
+	}
+
+	.solide-plan.solide-plan-second,
+	.solide-plan-bord.solide-plan-second {
+		--solide-plan: var(--color-fig-violet);
 	}
 
 	.solide-point,

@@ -1,0 +1,972 @@
+{
+	"id": "277be356-1de5-4bd5-ab7a-5d7856b36655",
+	"rangement": {
+		"noeud": "Géométrie > Homothéties",
+		"point": null
+	},
+	"title": "Calculs liés à une homothétie",
+	"description": "Rapport d'une homothétie depuis OA et OA' ou depuis OA et AA', longueur de l'image ou de départ, longueur en deux étapes, encadrement du rapport selon la position des points, aire de l'image par un rapport négatif.",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$A'$ est l'image de $A$ par une homothétie de centre $O$. {{if:s==1|Les points $O$, $A$ et $A'$ sont alignés, $A$ et $A'$ du même côté de $O$.|Les points $A$, $O$ et $A'$ sont alignés dans cet ordre.}} On donne $OA = {{a}}~\\unit{cm}$ et $OA' = {{eval:a*n/10;d}}~\\unit{cm}$. Calcule le rapport $k$ de cette homothétie (écriture décimale).\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 3\ndescription: Figure à main levée, pas à l'échelle : les points O, A et A' sur une même droite.\n---\nO = point({{if:s==1|1|5}}, 1.5, etiquette=\"bas\")\nA = point({{if:s==1|{{if:g==1|4|7}}|2}}, 1.5, etiquette=\"bas\")\nAp = point({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}, 1.5, etiquette=\"aucune\")\ntexte({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}-0.2, 0.9, \"A'\")\nsegment(point(0.3, 1.5, visible=faux), point(9.7, 1.5, visible=faux), trait=\"tirets\")\n```\n\n$k = ?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "15..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:g*w+(1-g)*u"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [
+				"round(100*(s*n/10)) != round(100*(s*10/n))",
+				"round(100*(s*n/10)) != round(100*(-s*n/10))",
+				"round(100*(s*n/10)) != round(100*(a*n/10-a))",
+				"round(100*(s*10/n)) != round(100*(-s*n/10))",
+				"round(100*(s*10/n)) != round(100*(a*n/10-a))",
+				"round(100*(-s*n/10)) != round(100*(a*n/10-a))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*n/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(s*10/n))/100;d}}",
+							"message": "Tu as divisé OA par OA' : le rapport est $\\dfrac{OA'}{OA}$, la longueur d'arrivée sur la longueur de départ.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{eval:round(100*(-s*n/10))/100;d}}",
+							"message": "Regarde la position des points : {{if:s==1|$A$ et $A'$ sont du même côté de $O$, le rapport est positif.|$O$ est entre $A$ et $A'$, le rapport est négatif.}}",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:round(100*(a*n/10-a))/100;d}}",
+							"message": "Tu as calculé la différence OA' − OA : le rapport se trouve par une division.",
+							"label": "Différence"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$OA' {{if:g==1|>|<}} OA$ : c'est {{if:g==1|un agrandissement|une réduction}}, donc {{if:g==1|$k > 1$ ou $k < -1$|$k$ est entre $-1$ et $1$}}. {{if:s==1|$A$ et $A'$ sont du même côté de $O$ : $k$ est positif.|$O$ est entre $A$ et $A'$ : $k$ est négatif.}}",
+					"$$k = {{if:s==1||-}}\\dfrac{OA'}{OA} = {{if:s==1||-}}\\dfrac{ {{eval:a*n/10;d}} }{ {{a}} } = \\textcolor{{{color:primary.0}}}{{{eval:s*n/10;d}}}$$"
+				]
+			},
+			"hint": "Le rapport compare la longueur d'arrivée OA' à la longueur de départ OA. Son signe dépend de la position de O."
+		},
+		{
+			"statement": "$A'$ est l'image de $A$ par une homothétie de centre $O$ et de rapport $k = {{eval:s*n/10;d}}$. On donne $OA = {{a}}~\\unit{cm}$. Calcule $OA'$.\n\n$OA' = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "15..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:g*w+(1-g)*u"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [
+				"round(100*(a*n/10)) != round(100*(a*10/n))",
+				"round(100*(a*n/10)) != round(100*(-a*n/10))",
+				"round(100*(a*10/n)) != round(100*(-a*n/10))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*n/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(a*10/n))/100;d}}",
+							"message": "Tu as divisé OA par le rapport : une homothétie **multiplie** les longueurs par le rapport sans son signe.",
+							"label": "Division"
+						},
+						{
+							"answer": "{{eval:round(100*(-a*n/10))/100;d}}",
+							"message": "Une longueur est toujours positive : on multiplie OA par le rapport sans son signe, le signe de $k$ dit seulement de quel côté de $O$ est $A'$.",
+							"label": "Longueur négative"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une homothétie de rapport $k$ multiplie les longueurs par ${{eval:n/10;d}}$ (le rapport sans son signe : la distance à $O$ ne dépend pas du signe de $k$).",
+					"$$OA' = {{eval:n/10;d}} \\times {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:a*n/10;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Une homothétie multiplie les distances au centre par la valeur du rapport, sans son signe."
+		},
+		{
+			"statement": "$A'$ est l'image de $A$ par une homothétie de centre $O$ et de rapport $k = {{eval:s*n/10;d}}$. On donne $OA' = {{eval:a*n/10;d}}~\\unit{cm}$. Calcule $OA$.\n\n$OA = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "15..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:g*w+(1-g)*u"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [
+				"round(100*(a)) != round(100*(a*n*n/100))",
+				"round(100*(a)) != round(100*(-a))",
+				"round(100*(a*n*n/100)) != round(100*(-a))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(a*n*n/100))/100;d}}",
+							"message": "Tu as multiplié OA' par le rapport : on cherche la longueur de départ, on divise donc OA' par le rapport sans son signe.",
+							"label": "Multiplication"
+						},
+						{
+							"answer": "{{eval:round(100*(-a))/100;d}}",
+							"message": "Une longueur est toujours positive : le signe de $k$ dit seulement de quel côté de $O$ est $A'$.",
+							"label": "Longueur négative"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$OA' = {{eval:n/10;d}} \\times OA$, donc on divise par ${{eval:n/10;d}}$.",
+					"$$OA = \\dfrac{OA'}{{{eval:n/10;d}}} = \\dfrac{ {{eval:a*n/10;d}} }{{{eval:n/10;d}}} = \\textcolor{{{color:primary.0}}}{{{a}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "OA' est la longueur d'arrivée : pour revenir au départ, on fait l'opération inverse."
+		},
+		{
+			"statement": "$A'$ et $B'$ sont les images de $A$ et $B$ par une homothétie de centre $O$. {{if:s==1|Les points $O$, $A$ et $A'$ sont alignés, $A$ et $A'$ du même côté de $O$.|Les points $A$, $O$ et $A'$ sont alignés dans cet ordre.}} On donne $OA = {{a}}~\\unit{cm}$, $OA' = {{eval:a*n/10;d}}~\\unit{cm}$ et $AB = {{b}}~\\unit{cm}$. Calcule $A'B'$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 3\ndescription: Figure à main levée, pas à l'échelle : les points O, A et A' sur une même droite.\n---\nO = point({{if:s==1|1|5}}, 1.5, etiquette=\"bas\")\nA = point({{if:s==1|{{if:g==1|4|7}}|2}}, 1.5, etiquette=\"bas\")\nAp = point({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}, 1.5, etiquette=\"aucune\")\ntexte({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}-0.2, 0.9, \"A'\")\nsegment(point(0.3, 1.5, visible=faux), point(9.7, 1.5, visible=faux), trait=\"tirets\")\n```\n\n$A'B' = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "15..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:g*w+(1-g)*u"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [
+				"a != b",
+				"round(100*(b*n/10)) != round(100*(b*10/n))",
+				"round(100*(b*n/10)) != round(100*(b+a*n/10-a))",
+				"round(100*(b*10/n)) != round(100*(b+a*n/10-a))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*n/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(b*10/n))/100;d}}",
+							"message": "Tu as renversé le rapport : on multiplie AB par $\\dfrac{OA'}{OA}$, pas par $\\dfrac{OA}{OA'}$.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{eval:round(100*(b+a*n/10-a))/100;d}}",
+							"message": "Une homothétie multiplie les longueurs ; elle n'ajoute pas la même différence.",
+							"label": "Même différence"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche d'abord le rapport, sans son signe : $\\dfrac{OA'}{OA} = \\dfrac{ {{eval:a*n/10;d}} }{ {{a}} } = {{eval:n/10;d}}$.",
+					"L'homothétie multiplie toutes les longueurs par ${{eval:n/10;d}}$ : $$A'B' = {{eval:n/10;d}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:b*n/10;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Commence par le rapport, avec OA et OA'. Il agit sur toutes les longueurs, AB comprise."
+		},
+		{
+			"statement": "$A'$ est l'image de $A$ par une homothétie de centre $O$. {{if:s==1|Les points $O$, $A$ et $A'$ sont alignés dans cet ordre.|Les points $A$, $O$ et $A'$ sont alignés dans cet ordre.}} On donne $OA = {{a}}~\\unit{cm}$ et $AA' = {{if:s==1|{{eval:a*(n-10)/10;d}}|{{eval:a*(n+10)/10;d}}}}~\\unit{cm}$. Calcule le rapport $k$ de cette homothétie (écriture décimale).\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 3\ndescription: Figure à main levée, pas à l'échelle : les points O, A et A' sur une même droite.\n---\nO = point({{if:s==1|1|5}}, 1.5, etiquette=\"bas\")\nA = point({{if:s==1|{{if:g==1|4|7}}|2}}, 1.5, etiquette=\"bas\")\nAp = point({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}, 1.5, etiquette=\"aucune\")\ntexte({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}-0.2, 0.9, \"A'\")\nsegment(point(0.3, 1.5, visible=faux), point(9.7, 1.5, visible=faux), trait=\"tirets\")\n```\n\n$k = ?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "15..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:g*w+(1-g)*u"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [
+				"(s+1)*(1-g) == 0",
+				"round(100*(s*n/10)) != round(100*(s*(n-10*s)/10))",
+				"round(100*(s*n/10)) != round(100*(-s*n/10))",
+				"round(100*(s*n/10)) != round(100*(s*10/n))",
+				"round(100*(s*(n-10*s)/10)) != round(100*(-s*n/10))",
+				"round(100*(s*(n-10*s)/10)) != round(100*(s*10/n))",
+				"round(100*(-s*n/10)) != round(100*(s*10/n))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*n/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(s*(n-10*s)/10))/100;d}}",
+							"message": "Tu as divisé AA' par OA : le rapport est $\\dfrac{OA'}{OA}$. Calcule d'abord $OA'$.",
+							"label": "AA' au lieu de OA'"
+						},
+						{
+							"answer": "{{eval:round(100*(-s*n/10))/100;d}}",
+							"message": "Regarde la position des points : {{if:s==1|$A$ et $A'$ sont du même côté de $O$, le rapport est positif.|$O$ est entre $A$ et $A'$, le rapport est négatif.}}",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:round(100*(s*10/n))/100;d}}",
+							"message": "Tu as renversé le rapport : $k$ a pour valeur $\\dfrac{OA'}{OA}$.",
+							"label": "Rapport renversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|$A$ est entre $O$ et $A'$ : $OA' = OA + AA' = {{a}} + {{if:s==1|{{eval:a*(n-10)/10;d}}|{{eval:a*(n+10)/10;d}}}} = {{eval:a*n/10;d}}~\\unit{cm}$.|$O$ est entre $A$ et $A'$ : $OA' = AA' - OA = {{if:s==1|{{eval:a*(n-10)/10;d}}|{{eval:a*(n+10)/10;d}}}} - {{a}} = {{eval:a*n/10;d}}~\\unit{cm}$.}}",
+					"$$k = {{if:s==1||-}}\\dfrac{OA'}{OA} = {{if:s==1||-}}\\dfrac{ {{eval:a*n/10;d}} }{ {{a}} } = \\textcolor{{{color:primary.0}}}{{{eval:s*n/10;d}}}$$"
+				]
+			},
+			"hint": "Calcule d'abord OA' en lisant l'ordre des points sur la droite."
+		},
+		{
+			"statement": "$A'$ est l'image de $A$ par une homothétie de centre $O$. {{if:s==1|Les points $O$, $A$ et $A'$ sont alignés, $A$ et $A'$ du même côté de $O$.|Les points $A$, $O$ et $A'$ sont alignés dans cet ordre.}} On donne $OA = {{a}}~\\unit{cm}$ et $OA' = {{eval:a*n/10;d}}~\\unit{cm}$. Sans calculer $k$, que peut-on dire du rapport $k$ de cette homothétie ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 3\ndescription: Figure à main levée, pas à l'échelle : les points O, A et A' sur une même droite.\n---\nO = point({{if:s==1|1|5}}, 1.5, etiquette=\"bas\")\nA = point({{if:s==1|{{if:g==1|4|7}}|2}}, 1.5, etiquette=\"bas\")\nAp = point({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}, 1.5, etiquette=\"aucune\")\ntexte({{if:s==1|{{if:g==1|8|3}}|{{if:g==1|9|7}}}}-0.2, 0.9, \"A'\")\nsegment(point(0.3, 1.5, visible=faux), point(9.7, 1.5, visible=faux), trait=\"tirets\")\n```\n\n```choix\n- $k < -1$\n- $-1 < k < 0$\n- $0 < k < 1$\n- $k > 1$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "15..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:g*w+(1-g)*u"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(s+1)+g*s+(1-s)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$OA' {{if:g==1|>|<}} OA$ : l'image est {{if:g==1|plus loin de $O$ que $A$, c'est un agrandissement : $k > 1$ ou $k < -1$.|plus près de $O$ que $A$, c'est une réduction : $k$ est entre $-1$ et $1$.}}",
+					"{{if:s==1|$A$ et $A'$ sont du même côté de $O$ : $k > 0$.|$O$ est entre $A$ et $A'$ : $k < 0$.}} Donc $\\textcolor{{{color:primary.0}}}{{{if:s==1|{{if:g==1|k > 1|0 < k < 1}}|{{if:g==1|k < -1|-1 < k < 0}}}}}$."
+				]
+			},
+			"hint": "Deux questions : A' est-il plus loin de O que A, ou plus près ? Et O est-il entre A et A' ?"
+		},
+		{
+			"statement": "Une figure a pour aire ${{ai}}~\\unit{cm^2}$. Quelle est l'aire de son image par une homothétie de rapport ${{eval:s*n/10;d}}$ ?\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "15..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:g*w+(1-g)*u"
+				},
+				{
+					"name": "ai",
+					"expression": "4..60"
+				}
+			],
+			"conditions": [
+				"s == -1",
+				"round(100*ai*n*n/100) == ai*n*n",
+				"ai*n*n/100 < 1000",
+				"round(100*(ai*n*n/100)) != round(100*(ai*n/10))",
+				"round(100*(ai*n*n/100)) != round(100*(-ai*n*n/100))",
+				"round(100*(ai*n*n/100)) != round(100*(ai*2*n/10))",
+				"round(100*(ai*n/10)) != round(100*(-ai*n*n/100))",
+				"round(100*(ai*n/10)) != round(100*(ai*2*n/10))",
+				"round(100*(-ai*n*n/100)) != round(100*(ai*2*n/10))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ai*n*n/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(ai*n/10))/100;d}}",
+							"message": "Les aires ne sont pas multipliées par le rapport sans son signe, mais par $k^2$ : une aire, c'est longueur × longueur.",
+							"label": "Multiplié par |k|"
+						},
+						{
+							"answer": "{{eval:round(100*(-ai*n*n/100))/100;d}}",
+							"message": "Une aire est toujours positive : $k^2$ est un carré, il est positif.",
+							"label": "Aire négative"
+						},
+						{
+							"answer": "{{eval:round(100*(ai*2*n/10))/100;d}}",
+							"message": "$k^2$ n'est pas le double du rapport : $k^2 = k \\times k$.",
+							"label": "2k au lieu de k²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une homothétie de rapport $k$ multiplie les longueurs par ${{eval:n/10;d}}$, donc les aires par $k^2 = ({{eval:s*n/10;d}})^2 = {{eval:n*n/100;d}}$. Le signe de $k$ ne change rien.",
+					"$$\\text{Aire} = {{eval:n*n/100;d}} \\times {{ai}} = \\textcolor{{{color:primary.0}}}{{{eval:ai*n*n/100;d}}~\\unit{cm^2}}$$"
+				]
+			},
+			"hint": "Une aire est le produit de deux longueurs : chacune est multipliée par |k|."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 OA = 4, OA' = 10, même côté : 2{,}5",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}5"]
+		},
+		{
+			"description": "v0 : Rapport renversé (0{,}4)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé OA par OA' : le rapport est $\\dfrac{OA'}{OA}$, la longueur d'arrivée sur la longueur de départ."
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "v0 : Signe faux (-2{,}5)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la position des points : $A$ et $A'$ sont du même côté de $O$, le rapport est positif."
+			},
+			"answers": ["-2{,}5"]
+		},
+		{
+			"description": "v0 : Différence (6)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la différence OA' − OA : le rapport se trouve par une division."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v0 réduction négative : -0,4",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-0{,}4"]
+		},
+		{
+			"description": "v1 k = -0,4, OA = 5 : 2",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v1 : Division (12{,}5)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé OA par le rapport : une homothétie **multiplie** les longueurs par le rapport sans son signe."
+			},
+			"answers": ["12{,}5"]
+		},
+		{
+			"description": "v1 : Longueur négative (-2)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une longueur est toujours positive : on multiplie OA par le rapport sans son signe, le signe de $k$ dit seulement de quel côté de $O$ est $A'$."
+			},
+			"answers": ["-2"]
+		},
+		{
+			"description": "v2 k = -0,4, OA' = 2 : 5",
+			"variationIndex": 2,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "v2 : Multiplication (0{,}8)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié OA' par le rapport : on cherche la longueur de départ, on divise donc OA' par le rapport sans son signe."
+			},
+			"answers": ["0{,}8"]
+		},
+		{
+			"description": "v2 : Longueur négative (-5)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une longueur est toujours positive : le signe de $k$ dit seulement de quel côté de $O$ est $A'$."
+			},
+			"answers": ["-5"]
+		},
+		{
+			"description": "v3 OA = 4, OA' = 10, AB = 3 : 7{,}5",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}5"]
+		},
+		{
+			"description": "v3 : Rapport renversé (1{,}2)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : on multiplie AB par $\\dfrac{OA'}{OA}$, pas par $\\dfrac{OA}{OA'}$."
+			},
+			"answers": ["1{,}2"]
+		},
+		{
+			"description": "v3 : Même différence (9)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une homothétie multiplie les longueurs ; elle n'ajoute pas la même différence."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "v4 O, A, A', OA = 4, AA' = 6 : 2{,}5",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}5"]
+		},
+		{
+			"description": "v4 : AA' au lieu de OA' (1{,}5)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé AA' par OA : le rapport est $\\dfrac{OA'}{OA}$. Calcule d'abord $OA'$."
+			},
+			"answers": ["1{,}5"]
+		},
+		{
+			"description": "v4 : Signe faux (-2{,}5)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la position des points : $A$ et $A'$ sont du même côté de $O$, le rapport est positif."
+			},
+			"answers": ["-2{,}5"]
+		},
+		{
+			"description": "v4 : Rapport renversé (0{,}4)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : $k$ a pour valeur $\\dfrac{OA'}{OA}$."
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "v4 A, O, A', OA = 5, AA' = 7 : -0{,}4",
+			"variationIndex": 4,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-0{,}4"]
+		},
+		{
+			"description": "v4 : AA' au lieu de OA' (-1{,}4)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé AA' par OA : le rapport est $\\dfrac{OA'}{OA}$. Calcule d'abord $OA'$."
+			},
+			"answers": ["-1{,}4"]
+		},
+		{
+			"description": "v4 : Signe faux (0{,}4)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la position des points : $O$ est entre $A$ et $A'$, le rapport est négatif."
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "v4 : Rapport renversé (-2{,}5)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : $k$ a pour valeur $\\dfrac{OA'}{OA}$."
+			},
+			"answers": ["-2{,}5"]
+		},
+		{
+			"description": "v5 agrandissement positif : k > 1",
+			"variationIndex": 5,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v5 : signe oublié (k < -1)",
+			"variationIndex": 5,
+			"variables": {
+				"s": "1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v5 réduction négative : -1 < k < 0",
+			"variationIndex": 5,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v5 : réduction prise pour 0 < k < 1",
+			"variationIndex": 5,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v5 agrandissement négatif : k < -1",
+			"variationIndex": 5,
+			"variables": {
+				"s": "-1",
+				"g": "1",
+				"u": "4",
+				"w": "25",
+				"n": "25",
+				"a": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v5 réduction positive : 0 < k < 1",
+			"variationIndex": 5,
+			"variables": {
+				"s": "1",
+				"g": "0",
+				"u": "4",
+				"w": "25",
+				"n": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v6 k = -0,5, aire 20 : 5",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "5",
+				"w": "25",
+				"n": "5",
+				"ai": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "v6 : Multiplié par |k| (10)",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "5",
+				"w": "25",
+				"n": "5",
+				"ai": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les aires ne sont pas multipliées par le rapport sans son signe, mais par $k^2$ : une aire, c'est longueur × longueur."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "v6 : Aire négative (-5)",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "5",
+				"w": "25",
+				"n": "5",
+				"ai": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire est toujours positive : $k^2$ est un carré, il est positif."
+			},
+			"answers": ["-5"]
+		},
+		{
+			"description": "v6 : 2k au lieu de k² (20)",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1",
+				"g": "0",
+				"u": "5",
+				"w": "25",
+				"n": "5",
+				"ai": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$k^2$ n'est pas le double du rapport : $k^2 = k \\times k$."
+			},
+			"answers": ["20"]
+		}
+	]
+}

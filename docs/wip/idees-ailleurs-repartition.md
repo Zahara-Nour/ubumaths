@@ -108,8 +108,8 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
 | Algèbre                            | 6N4   | 9         | libre                |                             |
 | Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
-| Longueurs                          | 6M1   | 16        | libre                |                             |
-| Aires                              | 6M2   | 17        | prise (2026-11-27)   | `idees-6e-aires`            |
+| Longueurs                          | 6M1   | 16        | prise (2026-11-27)   | `idees-6e-longueurs`        |
+| Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
 | Volumes                            | 6M3   | 3         | libre                |                             |
 | Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
@@ -142,10 +142,10 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Proportionnalité                         | 3P1       | 3         | publiée (2026-11-26)                                       | `idees-3e-proportionnalite`  |
 | Statistiques                             | 3S1       | 3         | publiée (2026-11-27)                                       | `idees-3e-statistiques`      |
 | Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
-| Homothétie et rotation                   | 3G1       | 8         | prise (2026-11-27)                                         | `idees-3e-transformations`   |
+| Homothétie et rotation                   | 3G1       | 8         | publiée (2026-11-27)                                       | `idees-3e-transformations`   |
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
-| Espace                                   | 3G4       | 6         | libre                                                      |                              |
+| Espace                                   | 3G4       | 6         | prise (2026-11-27)                                         | `idees-3e-espace`            |
 | Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 | Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
@@ -178,9 +178,17 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 82748db8 Convertir dans une autre unité                      | `idees-6e-aires`                                            | 2026-11-27 |                                      |
-| fdd849f5 Calcul de l'aire d'un rectangle.                    | `idees-6e-aires`                                            | 2026-11-27 |                                      |
-| 01e205ed Calcul de l'aire d'un carré.                        | `idees-6e-aires`                                            | 2026-11-27 |                                      |
+| 060086c8 Périmètre d'un carré                                | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| 4343af4c Périmètre et diamètre (π)                           | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| 60f165a8 Périmètre de figures composées                      | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| 66f9abbf Périmètre d'un rectangle                            | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| ccb4f5e5 Formule du périmètre d'un disque                    | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| cfb4c692 Périmètre d'un disque                               | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| 0761124d Volume d'un cube ou d'un pavé droit                 | `idees-3e-espace`                                           | 2026-11-27 |                                      |
+| 35002b15 Volume d'un cône                                    | `idees-3e-espace`                                           | 2026-11-27 |                                      |
+| 6a770d04 Volume d'une pyramide                               | `idees-3e-espace`                                           | 2026-11-27 |                                      |
+| 7bb95104 Sections de solides                                 | `idees-3e-espace`                                           | 2026-11-27 |                                      |
+| 87f79961 Volume d'une boule                                  | `idees-3e-espace`                                           | 2026-11-27 |                                      |
 
 ## Idées en attente
 

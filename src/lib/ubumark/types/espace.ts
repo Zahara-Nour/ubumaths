@@ -76,6 +76,8 @@ export const SOLIDE_KEYS = [
 	'section',
 	'points',
 	'vecteurs',
+	'droites',
+	'plans',
 	'tracer',
 	'tourner',
 	'case'
@@ -84,6 +86,12 @@ export const SOLIDE_KEYS = [
 /** Points déclarés (`points:`) et vecteurs donnés (`vecteurs:`) d'un ```solide : au plus */
 export const SOLIDE_MAX_POINTS = 8;
 export const SOLIDE_MAX_VECTORS = 8;
+
+/** Droites données (`droites:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
+export const SOLIDE_MAX_DROITES = 4;
+
+/** Plans donnés (`plans:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
+export const SOLIDE_MAX_PLANS = 2;
 
 /** Vecteurs de la combinaison de `tracer:` : au plus */
 export const SOLIDE_MAX_TERMS = 6;
@@ -227,6 +235,16 @@ export interface SolideSpec {
 	points: SolidePoint[];
 	/** Vecteurs donnés (`vecteurs:`), dessinés en flèches */
 	vectors: SolideVector[];
+	/**
+	 * Droites données (`droites:`, chantier `solides-3d`, lot 7a), dessinées en
+	 * couleur ; absent : aucune (la figure reste celle d'avant)
+	 */
+	droites?: SolideDroite[];
+	/**
+	 * Plans donnés (`plans:`, chantier `solides-3d`, lot 7b) : la partie du plan
+	 * dans le solide, teintée ; absent : aucun (la figure reste celle d'avant)
+	 */
+	plans?: SolidePlan[];
 	/** Geste de l'élève (`tracer:`, chantier `solide-vecteur`, lot 2) ; absent : affichage seul */
 	task?: SolideTask;
 	/**
@@ -366,6 +384,21 @@ export interface SolideVector {
 	from: number;
 	to: number;
 	/** `u = AB` : u ; null : nommé par ses extrémités */
+	name: string | null;
+}
+
+/** Une droite donnée (`droites: (AG), d = (IJ)`) : indices de deux points (sommets, puis points déclarés) */
+export interface SolideDroite {
+	from: number;
+	to: number;
+	/** `d = (AG)` : d ; null : nommée par ses deux points */
+	name: string | null;
+}
+
+/** Un plan donné (`plans: (BDE), P = (ACG)`) : indices de trois points non alignés (sommets, puis points déclarés) */
+export interface SolidePlan {
+	through: [number, number, number];
+	/** `P = (BDE)` : P ; null : nommé par ses trois points */
 	name: string | null;
 }
 

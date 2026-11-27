@@ -2,18 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 envoyée._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : relevé fait ([idees-3e-transformations-releve.md](idees-3e-transformations-releve.md)), phase 0 écrite
-  ci-dessous (4 fiches, 1 outil manquant, 2 questions), page à cocher envoyée à David :
-  https://claude.ai/artifact/JDt4gt8e2BdToYTsPNarPx (verdicts dans sa base, collection `verdicts`).
-- **Prochaine action** : lire ses réponses (page à cocher + session), puis écrire le gros lot (4 modèles neufs).
-- **En attente de David** : fiches N1 à N4, O1, questions Q1 et Q2.
-- **Pièges en cours** : tout est hors programme du cycle 4 (bornes n° 13) : rangement **sans point**, jamais un tag
-  approximatif. Vérifier à l'essai que `point A' = rotation(…)` / `homothetie(…)` passent la garde de l'auteur sur
-  quadrillage (nœud atteint) et que le message d'erreur générique suffit.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-transformations`, `docs/idees-3e-transformations` (sur
-  `origin/main`, rien commité : la phase 0 est de la doc, commitée sur `main`).
+- **État** : **clos**. Les 4 modèles (4c82bef9, a5e70b85, 277be356, bc6321ed) sont **publiés** en prod (publication
+  lancée par David, statut relu par `publier-lot.ts` en simulation). Journal archivé.
+- **Prochaine action** : aucune. L'outil manquant n° 71 (papier uni) reste dans `outils-manquants.md`.
+- **En attente de David** : rien.
+- **Pièges notés** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
+  ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
+  annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
+  dans la base locale seulement.
+- **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Phase 0 (2026-11-27)
 
@@ -77,3 +76,26 @@ maintenant. Q1 : oui, sans point. Q2 : sans point. La page à cocher est restée
 - **Q2 — Point de N4 (pavage)** : sans point, ou 1TECHNO-114 « Analyser un pavage et en rechercher un motif
   élémentaire » (STD2A seulement), avec le niveau 1re techno dans `grades` ? Recommandation : **sans point**. Le
   point STD2A demande de trouver le motif d'un pavage, pas l'image par une rotation : ce serait un tag approximatif.
+
+## Lot (2026-11-27)
+
+Écarts aux fiches, écrits dans l'en-tête du script : N3 tire |k| = n/10 seulement (un rapport n/d rendrait les
+longueurs non décimales), demande k « en écriture décimale », et ses corrigés n'écrivent jamais |k| (la notation
+de la valeur absolue est hors des bornes du cycle 4) ; N3 (b) et (c) ont deux erreurs prévues ; N1 (e) et N2 (e)
+nomment B le point à placer ; N4 (c) a six configurations fixes, pavage numéroté rangée par rangée.
+
+## En prod (2026-11-27)
+
+David a publié les brouillons (`create-questions --publier`) : 4c82bef9 (N1), a5e70b85 (N2), 277be356 (N3),
+bc6321ed (N4), `draft`, `grades` = 3, vérifiés en prod. Migration de rangement générée
+(`migration-rangement.ts`), sans tag, nœuds Rotations et Homothéties.
+
+## Relecture (2026-11-27)
+
+David : « je valide », les 4 sans correction. `publier-lot.ts` en simulation : 4 brouillons passent le contrôle.
+
+## Publication (2026-11-27)
+
+David a lancé `publier-lot.ts --publier`. Relu en simulation : les 4 sont « publié ». Chantier clos, journal et
+relevé archivés sous `docs/archive/wip/idees-3e-transformations/`, rubrique 3G1 « publiée » dans
+`idees-ailleurs-repartition.md`.

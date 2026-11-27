@@ -2,21 +2,26 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3235._
+_Mis à jour le 2026-11-27, après #3251 (lot 7b mergé)._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195 moteur ;
-  #3200 polyèdres ; #3211 noms tenus ; #3216 cylindre, cône, boule ; #3222 sections et cotes ; #3227 vecteur à
-  tracer sur figure tournée ; #3229 nom d'un centre écarté des cotes ; **#3235 assemblages de cubes**, § 15 et
-  16). Les lots 3 à 6 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas
-  emportés (le vérifier avant de l'affirmer).
-- **Prochaine action** : lot 7 (Terminale : repère, points par coordonnées, droites, plans) — **nouvelle
-  phase 0** : comportements à écrire en français et à faire valider par David avant tout code. Ne pas
-  l'ouvrir sans son go : c'est le dernier lot du découpage, d'une autre taille que les précédents.
-- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` et
-  `/aide-ecriture/blocs/cubes` (compte prof) : noms tenus (§ 7), solides ronds (§ 9), lot 4 (longueurs qui
-  s'effacent, section qui tourne), lot 5 (exemple « Un vecteur à tracer sur un pavé que l'élève peut
-  tourner »), lot 6 (exemple « Un assemblage que l'élève peut tourner »). Puis sa demande de `deploy:prod`
-  (mise en prod seulement après son essai).
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6, 7a (droites) et 7b
+  (plans) mergés** (#3195 à #3251, § 18 et 19), le 7b essayé par David (« c'est bon »). Les lots 3 à 7b ne
+  sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de
+  l'affirmer).
+- **Prochaine action** : **petite PR du bord en butée** (tranchée, ci-dessous) : un trait posé sur une arête
+  (bord d'un plan, droite) prend l'état de cette arête, y compris quand la face est vue exactement par la
+  tranche (butée de la vue de dessus ou de dessous ; cas témoin : `prisme triangle 3,3 2,1 4,7` avec
+  `plans: (ABC)`). Puis **lot 7c** (repère du solide et points par coordonnées, § 17). Worktree et branche
+  neufs depuis `main`, tests d'abord.
+- **En attente de David** : il vérifie chaque morceau du lot 7 **avant le merge** (lien `pnpm lien`). Pas de
+  `deploy:prod` sans sa demande. Proposé, sans réponse : description des réglages sous le réglage dans la
+  page d'aide ; teinter les cases de saisie de `retrouver:`. Signalé, sans réponse : avec deux plans dans un
+  cube, « (Q) » de (BDE) est écrit sur la zone teintée de (P), contre son propre bord.
+- **Tranché par David le 2026-11-27 (lot 7b, « suis tes recos »)** : le nom « (P) » s'écrit à côté du plan
+  quand il n'a pas la place dedans (fait, § 19) ; le bord d'un plan ou une droite posés sur une face vue par
+  la tranche (butée de la vue de dessus) prennent l'état de l'arête : **petite PR à part, après le 7b, avant
+  le 7c** ; couleurs gardées (plans vert et violet, droites bleues) ; un bout de droite encore derrière le
+  solide reste en tirets (`(DG)` d'un cube) ; « (P) » qui croise un autre nom pendant la rotation : laissé.
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
@@ -33,8 +38,8 @@ _Mis à jour le 2026-11-27, après #3235._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7` (neuve, depuis
-  `main` après #3235, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
+- **Worktree / branche** : aucun (retirés après #3251, serveur arrêté). À créer : `../ubumaths-wt-solides-3d`,
+  depuis `origin/main` ; le port 5176 peut être pris par une autre session (5177 utilisé pour le 7b).
 
 ## 1. D'où l'on part
 
@@ -526,3 +531,145 @@ Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devan
 - Vu à l'écran par la session (captures Chromium du composant, deux assemblages sous six angles, dont
   l'arrière et le dessous) : cubes pleins, trou visible de derrière, teintes tenues, cadre et bouton en place.
   **Pas vu** : le geste du doigt sur un vrai téléphone ; le thème sombre sous une vue tournée.
+
+## 17. Lot 7 — Terminale : droites, plans, repère : comportements (validés par David le 2026-11-27)
+
+Exemple suivi : le cube ABCDEFGH, I milieu de [AE], la droite (IG) et le plan (BDE), `tourner: oui`. Question
+type : « La droite (IG) et le plan (BDE) sont-ils sécants ? ». Programme de Terminale spécialité : « les
+figures formées à partir des solides usuels (cube, pavé, tétraèdre) sont des supports privilégiés » pour les
+positions relatives ; le repère sert ensuite aux calculs (représentations paramétriques, équations de plans).
+
+### Nominal
+
+69. **Droite.** L'auteur écrit `droites: (IG)` dans le bloc ` ```solide ` (deux points nommés : sommets ou
+    points déclarés). La droite est dessinée en couleur, elle dépasse des deux côtés, un peu au-delà du
+    solide. Elle peut porter un nom : `d = (IG)`.
+70. **Plan.** L'auteur écrit `plans: (BDE)` (trois points nommés non alignés). On voit la partie du plan
+    qui est dans le solide : ici le triangle BDE, teinté. Il peut porter un nom : `P = (BDE)`.
+71. **Repère.** L'auteur écrit `repere: A ; AB, AD, AE` : les trois vecteurs du repère sont dessinés depuis
+    A. Il peut alors déclarer un point par ses coordonnées : `points: M (1 ; 0,5 ; 1)`, et s'en servir
+    comme d'un autre point (droite, plan, vecteur).
+72. **Repère sans solide.** `forme: repere 4 4 4` : trois axes gradués O, I, J, K, sans solide. Points par
+    coordonnées, droites et plans s'y écrivent de la même façon ; un plan est montré par sa partie comprise
+    dans la boîte du repère, une droite s'arrête au bord de la boîte.
+73. Avec `tourner: oui`, tout suit la rotation : droites, plans, axes, points, noms. Sans la clé, la
+    figure est fixe ; sur la fiche PDF, c'est toujours la vue de départ.
+74. Ce qui est caché se lit comme pour les arêtes : voir la question (c).
+
+### Limites
+
+75. Un plan qui contient une face du solide (`(ABC)` sur un cube) teinte cette face. Une droite qui suit
+    une arête la recouvre et la dépasse.
+76. Le point où une droite perce un plan, ou la droite où deux plans se coupent, **n'est pas dessiné** de
+    lui-même : ce serait donner la réponse. Voir la question (d).
+77. Au plus 4 droites et 2 plans par figure (au-delà, on ne lit plus rien).
+78. Lecteur d'écran : « droite (IG) », « plan (BDE) », « repère d'origine A ». Jamais la position relative.
+79. Une figure sans `droites:`, `plans:` ni `repere:` reste strictement celle d'aujourd'hui.
+
+### Erreurs (message pour l'auteur, jamais de figure fausse)
+
+80. Point inconnu, deux fois le même point pour une droite, trois points alignés pour un plan, nom déjà
+    pris.
+81. Point par coordonnées qui tombe hors de la figure (hors du solide agrandi d'une marge, hors de la boîte
+    du repère) ; coordonnées sans `repere:`.
+82. `repere:` dont les trois vecteurs sont dans un même plan.
+83. `droites:`, `plans:`, `repere:` sur un cylindre, un cône ou une boule ; avec `section:` ou `tracer:`
+    (pas dans ce lot).
+
+### Questions pour David (réponse du 2026-11-27 : « je te suis » — (a) 1 : dans le bloc solide ; (b) 7a droites, 7b plans, 7c repère du solide et points par coordonnées, une PR chacun, 7d laissé tant qu'aucun modèle n'en a besoin ; (c) 2 : tirets là où une face passe devant ; (d) lot 7e après les trois premiers)
+
+- **(a) Où écrire tout cela.** (1) Dans le bloc ` ```solide ` qu'on connaît, avec des lignes en plus
+  (`droites:`, `plans:`, `repere:`) et une forme `repere` pour le repère sans solide ; (2) un bloc neuf pour
+  la Terminale. Recommandation : (1) — tout ce qui existe (points, vecteurs, rotation, PDF) sert tel quel.
+- **(b) Découpage.** Le lot est gros. Proposition : **7a** droites sur un solide ; **7b** plans sur un
+  solide ; **7c** repère du solide et points par coordonnées ; **7d** repère sans solide (axes gradués).
+  Une PR chacun, dans cet ordre. 7d seulement si tu en as l'usage : en Terminale, les exercices à
+  coordonnées sans solide se font le plus souvent sans figure.
+- **(c) Ce qui est caché.** Aujourd'hui un vecteur est en trait plein partout, même à travers le solide.
+  Pour une droite : (1) pareil, trait plein partout ; (2) comme dans les manuels : en tirets là où une face
+  du solide passe devant elle, en plein ailleurs, recalculé quand on tourne ; même règle pour le bord du
+  plan teinté. Recommandation : (2), c'est ce qui permet de lire si la droite passe devant ou derrière.
+- **(d) Montrer un point d'intersection quand l'auteur le demande** (`points: K intersection (IG) (BDE)`,
+  utile pour un corrigé ou pour une question qui part de K). (1) Pas dans ce lot ; (2) dans un lot 7e à la
+  suite. Sans recommandation forte : (1) est le choix qui n'ajoute rien.
+
+## 18. Lot 7a — droites : ce qui est fait (2026-11-27)
+
+- **Clé** `droites: (AG), d = (IG)` du bloc ` ```solide ` (`SolideSpec.droites`, `SolideDroite`, au plus
+  `SOLIDE_MAX_DROITES` = 4), polyèdres à sommets nommés ; erreurs des comportements 80 et 83, plus « même
+  droite » écrite deux fois (`readDroites`).
+- **Moteur de vue** (`espace-vue.ts`) : `chordInSolid` (où la droite entre dans le solide et en sort),
+  `hiddenStretches` (morceaux cachés ou visibles : coupes aux plans des faces et aux croisements des arêtes
+  sur le dessin, état lu au milieu de chaque morceau). Témoin indépendant dans le test (marche pas à pas vers
+  l'œil), 7 polyèdres × 164 vues × 3 droites. **Défaut trouvé par ce témoin** : signe faux dans le calcul du
+  croisement avec une arête (les coupes au bord du solide manquaient, un bout caché était dessiné plein).
+- **Scène** : `SolideScene.droites` ; la droite est la corde allongée de `DROITE_OVERHANG` (18 % de la plus
+  grande dimension) de chaque côté, la même sous tous les angles ; ses bouts comptent dans le cadre fixe.
+  Nom « (d) » près d'un bout, tenu pendant la rotation. Nom d'un point déclaré : un second tour de places plus
+  loin quand le bloc a des droites (`POINT_NAME_FAR`) — le nom de I n'est plus écrit sur (IG) ; sans droites,
+  rien ne change.
+- **Écart avec le test écrit d'avance** : `(DG)`, diagonale de la face du fond d'un cube. Le test attendait
+  plein / tirets / plein ; en cavalière, la droite au-delà de D est encore derrière la face de devant (son
+  dessin ne ressort du cube qu'en A, bien plus loin que le dépassement) : tirets puis plein. Le test dit
+  maintenant cela. À montrer à David.
+- **Écran** (`Solide.svelte`) : `polyline.solide-droite`, `--color-fig-bleu`. **PDF** : `rgb(37, 99, 235)`.
+- Catalogue (`block-catalog/solide.ts` : réglage, exemple « Deux droites dans un cube que l'élève peut
+  tourner », erreur « La même droite écrite deux fois »), doc `docs/systeme/ubumark.md`.
+- Tests : `solide-droites.test.ts` (27), `Solide.svelte.test.ts` (+1).
+- Vu à l'écran par la session (captures Chromium du composant) : cube avec (IG) et (BH), cube avec (DG),
+  (AF), (DC), cube `cachees: non`, pyramide avec (SO) et (AC), prisme, pavé à 4 diagonales ; cube tourné sous
+  4 angles (tirets recalculés, cadre tenu, nom suivi). **Pas vu** : la fiche PDF imprimée (le Typst est
+  testé, pas compilé) ; le thème sombre ; le doigt sur un vrai téléphone. Remarque : en cavalière, (AF) et
+  (DG) d'un cube se dessinent l'une sur l'autre (la fuyante est à 45°) — c'est la perspective, pas un défaut.
+- **Revue** (`code-reviewer`, opus) : géométrie de `hiddenStretches` confirmée par un second témoin (0 désaccord
+  sur 46 686 morceaux), bloc sans droites inchangé. Deux défauts corrigés, tests rouges avant : le nom « (d) »
+  touchait sa propre droite dès qu'elle était en biais (écart au trait calculé selon la pente,
+  `DROITE_NAME_CLEAR`) ; un nom de droite tenu pendant la rotation sortait du cadre (ramené dans le cadre).
+  **Laissés** : une droite posée dans une face vue exactement par la tranche est en tirets alors que l'arête
+  est en plein (angle que le clavier n'atteint pas) ; `droites:` vide ou `(AG` sans parenthèse fermante
+  acceptés sans message.
+- Docs produites : `docs/systeme/ubumark.md` (paragraphe « Droites données »), ce journal.
+
+## 19. Lot 7b — plans : ce qui est fait (2026-11-27)
+
+- **Clé** `plans: (BDE), P = (ACG)` du bloc ` ```solide ` (`SolideSpec.plans`, `SolidePlan`, au plus
+  `SOLIDE_MAX_PLANS` = 2), polyèdres à sommets nommés ; erreurs des comportements 80 et 83, plus « même
+  plan » écrit deux fois (`readPlans`). Nom de plan : une majuscule qui n'est pas le nom d'un point.
+- **Moteur de vue** (`espace-vue.ts`) : `planeInSolid`, le polygone où le plan coupe le solide (un sommet par
+  sommet du solide posé dans le plan, un par arête traversée, dans l'ordre du tour). Témoin indépendant dans
+  le test : 7 polyèdres, tous les plans par trois points pris parmi les sommets et les milieux d'arêtes
+  (plus de 3 000), nombre de sommets, appartenance au plan, convexité.
+- **Scène** : `SolideScene.plans` (`fill`, `border`) ; le bord est découpé par `hiddenStretches` (celui des
+  droites), côté par côté. Un plan qui contient une face la teinte (comportement 75). Le plan ne change ni
+  le cadre, ni les arêtes, ni les noms des sommets. Nom « (P) » écrit dans le plan, en un point du plan choisi
+  sur le dessin de départ (le plus dégagé) ; il suit ce point pendant la rotation, hors de `labelOffsets`.
+- **Écran** (`Solide.svelte`) : `polygon.solide-plan`, `polyline.solide-plan-bord` ; premier plan vert,
+  second violet (pour les distinguer : « les plans sont-ils sécants ? »). **PDF** : `PLAN_FILLS`,
+  `PLAN_STROKES`.
+- Catalogue (`block-catalog/solide.ts` : réglage, exemple « Une droite et un plan dans un cube que l'élève
+  peut tourner », erreur « Trois points alignés pour un plan »), doc `docs/systeme/ubumark.md`.
+- Tests : `solide-plans.test.ts` (29), `Solide.svelte.test.ts` (+1). Les tests ont été écrits avant le code,
+  mais lancés seulement après : pas de passage au rouge observé.
+- Vu à l'écran par la session (captures Chromium du composant) : cube avec (BDE), avec (IG) et (BDE), avec
+  (ABG) et (BDE), avec (ABC), hexagone par trois milieux, `cachees: non`, pavé à deux plans, pyramide avec
+  (SAC) et (SO), prisme, tétraèdre ; cube, pavé et hexagone tournés sous deux angles (polygone, tirets et nom
+  suivent). **Pas vu** : la fiche PDF imprimée, le thème sombre, le doigt sur un vrai téléphone.
+- **À montrer à David** : `(BDE)` d'un cube est vu presque par la tranche à la vue de départ ; son nom « (P) »
+  y touche l'arête cachée [DH] et le bord du plan, faute de place.
+- **Revue** (`code-reviewer`, opus) : `planeInSolid` rejoué sur environ 10 600 plans (sommets, milieux, centres,
+  dimensions décimales), bord comparé à l'arête qu'il recouvre sur plus de 40 000 morceaux, figure sans plan
+  inchangée, nom jamais hors du cadre : rien trouvé. **Un défaut corrigé, test rouge avant** : le nom « (P) »
+  pouvait toucher le nom d'un sommet ou une cote (`pave 5 3 2` avec `(ABF)` : touchait D) — la place est
+  maintenant la plus dégagée où il ne touche aucune étiquette déjà posée (`spots`, `planSpots`). **Laissés** :
+  plan trop petit pour son nom (face du dessus d'un `pave 1 1 6`), le nom touche un nom de sommet ; pendant
+  la rotation, « (P) » peut passer sur un autre nom (il suit son point, il n'est pas tenu) ; à la butée de la
+  vue de dessus ou de dessous, le bord d'un plan posé sur une face vue par la tranche est en tirets alors que
+  l'arête est en plein (prisme, `(ABC)` : l'écart du 7a, atteint en tirant jusqu'au bout).
+- **Nom à côté du plan** (tranché par David, « suis tes recos ») : quand aucune place du plan ne tient sans
+  toucher un trait, un point ou un nom, « (P) » se pose à côté d'un côté du polygone (`borderSpots`,
+  `PLAN_NAME_AWAY`, `PlanSpot`) ; il suit ce point du bord pendant la rotation, ramené dans le cadre. Vu à
+  l'écran : cube avec (IG) et (BDE) (« (P) » à droite de [EB]), cube à deux plans, `pave 1 1 6` avec (EFG),
+  `pave 5 3 2` avec (ABF), prisme coté avec (ABC), pyramide avec (SAC) ; les deux cubes tournés sous deux
+  angles. Le « À montrer à David » ci-dessus n'a plus lieu d'être. Tests : `solide-plans.test.ts` (31).
+- **Essayé par David le 2026-11-27 : « c'est bon ».** Le nom à côté du plan a été écrit après la revue : il
+  n'a pas été relu par un agent (tests et captures seulement).

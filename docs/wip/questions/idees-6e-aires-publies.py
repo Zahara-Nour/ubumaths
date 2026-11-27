@@ -1,7 +1,7 @@
 """Ajoute les variations validées à trois modèles publiés de 6e, exportés de prod dans
 scripts/questions/idees-6e-aires-publies/ (chantier idees-6e-aires).
 
-Phase 0 du 2026-11-27 (« je te suis », journal docs/wip/idees-6e-aires-progress.md) :
+Phase 0 du 2026-11-27 (« je te suis », journal docs/archive/wip/idees-6e-aires/idees-6e-aires-progress.md) :
 - N2 → 82748db8 « Convertir dans une autre unité » (6-150) : il ne tirait que a de 1 à 9 ; on
   ajoute 10 à 99, 101 à 999, les décimaux (3,7 dm², 0,07 m², 37,5 dm²) ;
 - N7 → fdd849f5 « Calcul de l'aire d'un rectangle » (6-201) : rectangle dessiné et coté, et largeur

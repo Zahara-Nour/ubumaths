@@ -57,13 +57,17 @@ import {
 	SOLIDE_KEYS,
 	SOLIDE_MAX_DECIMALS,
 	SOLIDE_MAX_DIMENSION,
+	SOLIDE_MAX_DROITES,
+	SOLIDE_MAX_PLANS,
 	SOLIDE_MAX_POINTS,
 	SOLIDE_MAX_RATIO,
 	SOLIDE_MAX_TERMS,
 	SOLIDE_MAX_VECTORS,
 	SOLIDE_UNITS,
+	type SolideDroite,
 	type SolideForm,
 	type SolideMark,
+	type SolidePlan,
 	type SolidePoint,
 	type SolideSection,
 	type SolideSpec,
@@ -101,6 +105,12 @@ const NAMES_IN_TEXT_REGEX = /[A-Z](?:'+|\d+)?/g;
 /** Un nom de vecteur : une minuscule, puis éventuellement un chiffre (u, v, u1) */
 const VECTOR_NAME_REGEX = /^[a-z]\d?$/;
 
+/** Un nom de droite : une minuscule, puis éventuellement ' ou un chiffre (d, d', d1) */
+const DROITE_NAME_REGEX = /^[a-z](?:'|\d)?$/;
+
+/** Un nom de plan : une majuscule, puis éventuellement ' ou un chiffre (P, P', P1) */
+const PLAN_NAME_REGEX = /^[A-Z](?:'|\d)?$/;
+
 /**
  * Un terme de `tracer:` : signe, coefficient (`2`, `1/3`), puis deux noms de
  * points (`AB`) ou le nom d'un vecteur de `vecteurs:` (`u`, `w1`)
@@ -115,6 +125,9 @@ const TRACER_USAGE = 'ex. tracer: vecteur AB + AD + AE, ou … depuis A';
 
 /** Deux points plus proches que cela sont confondus (vecteur nul, milieu d'un point avec lui-même) */
 const SAME_POINT = 1e-9;
+
+/** Un point est sur une droite quand il en est à moins de cette part de la plus grande dimension */
+const SAME_LINE = 1e-9;
 
 const FIRST_WORDS = ['cube', 'pave', 'prisme', 'pyramide', 'cylindre', 'cone', 'boule'];
 const PRISM_BASES = ['triangle', 'triangle-rectangle'];
@@ -570,6 +583,123 @@ function readVectors(
 	return vectors;
 }
 
+/** Les droites de `droites:` ; une phrase d'erreur sinon */
+function readDroites(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	names: (string | null)[],
+	points: SolidePoint[],
+	vectors: SolideVector[]
+): SolideDroite[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_DROITES) return `au plus ${SOLIDE_MAX_DROITES} droites`;
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	const size = Math.max(...shape.dims);
+	/** Le point p est-il sur la droite (a b) ? (distance à la droite, rapportée à la taille du solide) */
+	const onLine = (p: Point3, a: Point3, b: Point3) => {
+		const u = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z };
+		const w = { x: p.x - a.x, y: p.y - a.y, z: p.z - a.z };
+		const cross = Math.hypot(u.y * w.z - u.z * w.y, u.z * w.x - u.x * w.z, u.x * w.y - u.y * w.x);
+		return cross / Math.hypot(u.x, u.y, u.z) < size * SAME_LINE;
+	};
+	const droites: SolideDroite[] = [];
+	for (const item of items) {
+		const match = /^(?:([^=]+)=)?(.*)$/.exec(item.trim());
+		const name = match?.[1]?.trim().replace(/’/g, "'") ?? null;
+		const what = (match?.[2] ?? '').trim();
+		if (name !== null) {
+			if (!DROITE_NAME_REGEX.test(name)) {
+				return `« ${name} » : un nom de droite est une minuscule, puis éventuellement ' ou un chiffre (d, d', d1)`;
+			}
+			if (droites.some((d) => d.name === name)) {
+				return `« ${name} » deux fois : chaque droite a son nom`;
+			}
+			if (vectors.some((v) => v.name === name)) {
+				return `« ${name} » est déjà le nom d’un vecteur`;
+			}
+		}
+		const refs = namedPoints(what, known);
+		if (typeof refs === 'string') return refs;
+		const written = `(${refs.map((i) => known[i]).join('')})`;
+		if (refs.length !== 2) return `« ${what} » : une droite se désigne par deux points (ex. (AG))`;
+		if (samePosition(at[refs[0]], at[refs[1]])) {
+			return `${written} : une droite passe par deux points distincts`;
+		}
+		const same = droites.find(
+			(d) => onLine(at[refs[0]], at[d.from], at[d.to]) && onLine(at[refs[1]], at[d.from], at[d.to])
+		);
+		if (same !== undefined) {
+			return `${written} et (${known[same.from]}${known[same.to]}) : c’est la même droite`;
+		}
+		droites.push({ from: refs[0], to: refs[1], name });
+	}
+	return droites;
+}
+
+/** Les plans de `plans:` ; une phrase d'erreur sinon */
+function readPlans(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	names: (string | null)[],
+	points: SolidePoint[]
+): SolidePlan[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_PLANS) return `au plus ${SOLIDE_MAX_PLANS} plans`;
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	const size = Math.max(...shape.dims);
+	/** La normale du plan (a b c), de longueur 1 ; null : les trois points sont alignés */
+	const normalOf = (a: Point3, b: Point3, c: Point3): Point3 | null => {
+		const u = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z };
+		const v = { x: c.x - a.x, y: c.y - a.y, z: c.z - a.z };
+		const n = { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x };
+		const length = Math.hypot(n.x, n.y, n.z);
+		// Aire du triangle rapportée à la taille du solide : nulle, ils sont alignés
+		if (length < size * size * SAME_LINE) return null;
+		return { x: n.x / length, y: n.y / length, z: n.z / length };
+	};
+	const plans: SolidePlan[] = [];
+	for (const item of items) {
+		const match = /^(?:([^=]+)=)?(.*)$/.exec(item.trim());
+		const name = match?.[1]?.trim().replace(/’/g, "'") ?? null;
+		const what = (match?.[2] ?? '').trim();
+		if (name !== null) {
+			if (!PLAN_NAME_REGEX.test(name)) {
+				return `« ${name} » : un nom de plan est une majuscule, puis éventuellement ' ou un chiffre (P, P', P1)`;
+			}
+			if (plans.some((p) => p.name === name)) {
+				return `« ${name} » deux fois : chaque plan a son nom`;
+			}
+			if (known.includes(name)) return `« ${name} » est déjà le nom d’un point`;
+		}
+		const refs = namedPoints(what, known);
+		if (typeof refs === 'string') return refs;
+		const written = `(${refs.map((i) => known[i]).join('')})`;
+		if (refs.length !== 3) return `« ${what} » : un plan se désigne par trois points (ex. (BDE))`;
+		const [a, b, c] = refs;
+		if (normalOf(at[a], at[b], at[c]) === null) {
+			return `${written} : les trois points sont alignés, ils ne donnent pas un plan`;
+		}
+		const same = plans.find((plan) => {
+			const [p, q, r] = plan.through.map((i) => at[i]);
+			const normal = normalOf(p, q, r);
+			return (
+				normal !== null &&
+				[a, b, c].every((i) => {
+					const w = { x: at[i].x - p.x, y: at[i].y - p.y, z: at[i].z - p.z };
+					return Math.abs(w.x * normal.x + w.y * normal.y + w.z * normal.z) < size * SAME_LINE;
+				})
+			);
+		});
+		if (same !== undefined) {
+			return `${written} et (${same.through.map((i) => known[i]).join('')}) : c’est le même plan`;
+		}
+		plans.push({ through: [a, b, c], name });
+	}
+	return plans;
+}
+
 /** La combinaison de `tracer:` et son origine imposée ; une phrase d'erreur sinon */
 function readTask(
 	value: string,
@@ -754,7 +884,10 @@ export function parseSolideContent(source: string): {
 	const vectorsEntry = seen.get('vecteurs');
 	let points: SolidePoint[] = [];
 	let vectors: SolideVector[] = [];
-	const needs = (entry: { line: number }, what: 'points' | 'vecteurs' | 'tracer'): boolean => {
+	const needs = (
+		entry: { line: number },
+		what: 'points' | 'vecteurs' | 'droites' | 'plans' | 'tracer'
+	): boolean => {
 		if (topology.curved) {
 			fail(entry.line, `${what} : polyèdres seulement (pas ${topology.indefinite})`);
 			return false;
@@ -763,6 +896,8 @@ export function parseSolideContent(source: string): {
 			const purpose = {
 				points: 'déclarer des points',
 				vecteurs: 'dessiner des vecteurs',
+				droites: 'dessiner des droites',
+				plans: 'dessiner des plans',
 				tracer: 'faire tracer un vecteur'
 			}[what];
 			fail(entry.line, `nomme les sommets (sommets:) pour ${purpose}`);
@@ -793,6 +928,34 @@ export function parseSolideContent(source: string): {
 				vectors = read;
 				vectorsRead = true;
 			}
+		}
+	}
+	// Droites (`droites:`, chantier `solides-3d`, lot 7a) : par deux points nommés
+	const droitesEntry = seen.get('droites');
+	let droites: SolideDroite[] = [];
+	if (droitesEntry !== undefined) {
+		// Pas dans ce lot : le plan de coupe et le geste (comportement 83)
+		for (const other of ['section', 'tracer'] as const) {
+			if (seen.has(other)) fail(droitesEntry.line, `droites: ne va pas encore avec ${other}:`);
+		}
+		if (needs(droitesEntry, 'droites') && names !== null && pointsRead && vectorsRead) {
+			const read = readDroites(droitesEntry.value, shape, names, points, vectors);
+			if (typeof read === 'string') fail(droitesEntry.line, read);
+			else droites = read;
+		}
+	}
+	// Plans (`plans:`, chantier `solides-3d`, lot 7b) : par trois points nommés
+	const plansEntry = seen.get('plans');
+	let plans: SolidePlan[] = [];
+	if (plansEntry !== undefined) {
+		// Pas dans ce lot : le plan de coupe et le geste (comportement 83)
+		for (const other of ['section', 'tracer'] as const) {
+			if (seen.has(other)) fail(plansEntry.line, `plans: ne va pas encore avec ${other}:`);
+		}
+		if (needs(plansEntry, 'plans') && names !== null && pointsRead) {
+			const read = readPlans(plansEntry.value, shape, names, points);
+			if (typeof read === 'string') fail(plansEntry.line, read);
+			else plans = read;
 		}
 	}
 	// Geste (`tracer:`) : sur les points nommés, comme `vecteurs:`
@@ -849,6 +1012,8 @@ export function parseSolideContent(source: string): {
 			section,
 			points,
 			vectors,
+			...(droites.length > 0 && { droites }),
+			...(plans.length > 0 && { plans }),
 			...(task !== undefined && { task }),
 			...(rotate && { rotate: true as const })
 		},

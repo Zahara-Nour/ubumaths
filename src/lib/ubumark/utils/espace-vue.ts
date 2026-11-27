@@ -204,3 +204,230 @@ export function hiddenEdges(
 		faces.every((face, i) => !(face.includes(a) && face.includes(b)) || !seen[i])
 	);
 }
+
+/** Un morceau de droite, entre deux paramètres de 0 (un bout) à 1 (l'autre) */
+export interface Stretch {
+	from: number;
+	to: number;
+	/** Une face du solide passe devant ce morceau */
+	hidden: boolean;
+}
+
+/** Part de la taille du solide en dessous de laquelle deux longueurs se confondent */
+const SOLID_EPSILON = 1e-9;
+
+const minus = (a: Point3, b: Point3): Point3 => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z });
+const scalar = (a: Point3, b: Point3) => a.x * b.x + a.y * b.y + a.z * b.z;
+
+/**
+ * Les plans des faces d'un polyèdre convexe : normale unitaire sortante et
+ * `offset` tel qu'un point p du solide vérifie normale · p ≤ offset
+ */
+function facePlanes(vertices: Point3[], faces: number[][]): { normal: Point3; offset: number }[] {
+	const center = {
+		x: vertices.reduce((s, p) => s + p.x, 0) / vertices.length,
+		y: vertices.reduce((s, p) => s + p.y, 0) / vertices.length,
+		z: vertices.reduce((s, p) => s + p.z, 0) / vertices.length
+	};
+	return faces.map((face) => {
+		const [a, b, c] = face.map((i) => vertices[i]);
+		const u = minus(b, a);
+		const v = minus(c, a);
+		let normal = { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x };
+		const length =
+			Math.hypot(normal.x, normal.y, normal.z) * (scalar(normal, minus(a, center)) < 0 ? -1 : 1);
+		normal = { x: normal.x / length, y: normal.y / length, z: normal.z / length };
+		return { normal, offset: scalar(normal, a) };
+	});
+}
+
+/** Plus grande distance entre le centre et un sommet : l'ordre de grandeur du solide */
+function solidSize(vertices: Point3[]): number {
+	const xs = vertices.map((p) => p.x);
+	const ys = vertices.map((p) => p.y);
+	const zs = vertices.map((p) => p.z);
+	return Math.hypot(
+		Math.max(...xs) - Math.min(...xs),
+		Math.max(...ys) - Math.min(...ys),
+		Math.max(...zs) - Math.min(...zs)
+	);
+}
+
+/**
+ * La corde d'une droite dans un polyèdre CONVEXE : les paramètres t de
+ * a + t (b − a) où la droite entre dans le solide et où elle en sort. `a` et
+ * `b` sont deux points distincts du solide (sommets, milieux, centres) : la
+ * corde contient toujours [0, 1].
+ */
+export function chordInSolid(
+	vertices: Point3[],
+	faces: number[][],
+	a: Point3,
+	b: Point3
+): [number, number] {
+	const direction = minus(b, a);
+	const epsilon = solidSize(vertices) * SOLID_EPSILON;
+	let from = -Infinity;
+	let to = Infinity;
+	for (const { normal, offset } of facePlanes(vertices, faces)) {
+		const along = scalar(normal, direction);
+		// Droite parallèle à la face : ce plan ne la coupe pas (a et b sont dans le solide)
+		if (Math.abs(along) < epsilon) continue;
+		const t = (offset - scalar(normal, a)) / along;
+		if (along > 0) to = Math.min(to, t);
+		else from = Math.max(from, t);
+	}
+	// a et b sont dans le solide, aux arrondis près
+	return [Math.min(from, 0), Math.max(to, 1)];
+}
+
+/**
+ * La partie d'un plan comprise dans un polyèdre CONVEXE : le polygone où le
+ * plan (a b c) coupe le solide, ses sommets dans l'ordre du tour. `a`, `b`, `c`
+ * sont trois points non alignés du solide : le polygone a toujours une aire.
+ * Un sommet par sommet du solide posé dans le plan, un par arête traversée.
+ */
+export function planeInSolid(
+	vertices: Point3[],
+	edges: [number, number][],
+	a: Point3,
+	b: Point3,
+	c: Point3
+): Point3[] {
+	const u = minus(b, a);
+	const v = minus(c, a);
+	const cross = { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x };
+	const length = Math.hypot(cross.x, cross.y, cross.z);
+	const normal = { x: cross.x / length, y: cross.y / length, z: cross.z / length };
+	const epsilon = solidSize(vertices) * SOLID_EPSILON;
+	const sides = vertices.map((p) => scalar(normal, minus(p, a)));
+	const on = (side: number) => Math.abs(side) < epsilon;
+	const corners = vertices.filter((_, i) => on(sides[i]));
+	for (const [i, j] of edges) {
+		if (on(sides[i]) || on(sides[j]) || sides[i] > 0 === sides[j] > 0) continue;
+		const t = sides[i] / (sides[i] - sides[j]);
+		const along = minus(vertices[j], vertices[i]);
+		corners.push({
+			x: vertices[i].x + along.x * t,
+			y: vertices[i].y + along.y * t,
+			z: vertices[i].z + along.z * t
+		});
+	}
+	// Dans l'ordre du tour : l'angle de chaque sommet autour du milieu, lu dans le plan
+	const middle = {
+		x: corners.reduce((s, p) => s + p.x, 0) / corners.length,
+		y: corners.reduce((s, p) => s + p.y, 0) / corners.length,
+		z: corners.reduce((s, p) => s + p.z, 0) / corners.length
+	};
+	const uLength = Math.hypot(u.x, u.y, u.z);
+	const first = { x: u.x / uLength, y: u.y / uLength, z: u.z / uLength };
+	const second = {
+		x: normal.y * first.z - normal.z * first.y,
+		y: normal.z * first.x - normal.x * first.z,
+		z: normal.x * first.y - normal.y * first.x
+	};
+	const angle = (p: Point3) => {
+		const w = minus(p, middle);
+		return Math.atan2(scalar(w, second), scalar(w, first));
+	};
+	return corners
+		.map((p) => ({ p, angle: angle(p) }))
+		.sort((p, q) => p.angle - q.angle)
+		.map(({ p }) => p);
+}
+
+/**
+ * Le segment [from, to] (dans l'espace, non tourné) découpé en morceaux cachés
+ * ou visibles par un polyèdre CONVEXE plein : un point est caché quand, en
+ * allant de lui vers l'œil, on traverse le solide — dedans, ou dehors mais
+ * derrière. Posé sur une face tournée vers l'œil, il se voit ; sur une face du
+ * fond, non. Les morceaux se suivent de 0 à 1 et alternent.
+ */
+export function hiddenStretches(
+	vertices: Point3[],
+	faces: number[][],
+	edges: [number, number][],
+	from: Point3,
+	to: Point3,
+	view: VueProjection
+): Stretch[] {
+	const turned = vertices.map(view.rotate);
+	const start = view.rotate(from);
+	const direction = minus(view.rotate(to), start);
+	const planes = facePlanes(turned, faces);
+	const size = solidSize(turned);
+	const epsilon = size * SOLID_EPSILON;
+	const at = (t: number): Point3 => ({
+		x: start.x + direction.x * t,
+		y: start.y + direction.y * t,
+		z: start.z + direction.z * t
+	});
+	const eyeLength = Math.hypot(view.toEye.x, view.toEye.y, view.toEye.z);
+	const toEye = {
+		x: view.toEye.x / eyeLength,
+		y: view.toEye.y / eyeLength,
+		z: view.toEye.z / eyeLength
+	};
+
+	/** En allant de p vers l'œil, traverse-t-on le solide sur une vraie longueur ? */
+	const hiddenAt = (p: Point3): boolean => {
+		let enter = 0;
+		let leave = Infinity;
+		for (const { normal, offset } of planes) {
+			const along = scalar(normal, toEye);
+			const room = offset - scalar(normal, p);
+			if (Math.abs(along) < SOLID_EPSILON) {
+				// Rayon parallèle à la face : du bon côté ou jamais
+				if (room < -epsilon) return false;
+				continue;
+			}
+			if (along > 0) leave = Math.min(leave, room / along);
+			else enter = Math.max(enter, room / along);
+		}
+		return leave - enter > size * 1e-7;
+	};
+
+	// Où le morceau peut changer d'état : là où la droite traverse le plan d'une
+	// face, et là où son dessin croise celui d'une arête
+	const cuts = [0, 1];
+	for (const { normal, offset } of planes) {
+		const along = scalar(normal, direction);
+		if (Math.abs(along) < epsilon) continue;
+		cuts.push((offset - scalar(normal, start)) / along);
+	}
+	const flat = (p: Point3): EspacePoint => ({
+		x: p.x - (p.z * toEye.x) / toEye.z,
+		y: p.y - (p.z * toEye.y) / toEye.z
+	});
+	const p0 = flat(start);
+	const d = flat(direction);
+	for (const [i, j] of edges) {
+		const q0 = flat(turned[i]);
+		const q1 = flat(turned[j]);
+		const e = { x: q1.x - q0.x, y: q1.y - q0.y };
+		const det = d.x * e.y - d.y * e.x;
+		// Dessins parallèles (ou droite vue par le bout) : pas de croisement
+		if (Math.abs(det) < epsilon * size) continue;
+		const wx = q0.x - p0.x;
+		const wy = q0.y - p0.y;
+		const u = (wx * d.y - wy * d.x) / det;
+		if (u < -1e-9 || u > 1 + 1e-9) continue;
+		cuts.push((wx * e.y - wy * e.x) / det);
+	}
+	const sorted = cuts.filter((t) => t >= 0 && t <= 1).sort((a, b) => a - b);
+
+	const stretches: Stretch[] = [];
+	for (let k = 1; k < sorted.length; k++) {
+		const a = sorted[k - 1];
+		const b = sorted[k];
+		// Deux coupes au même endroit (la droite passe par un sommet) : rien entre elles
+		if (b - a < 1e-9) continue;
+		const hidden = hiddenAt(at((a + b) / 2));
+		const last = stretches[stretches.length - 1];
+		if (last !== undefined && last.hidden === hidden) last.to = b;
+		else stretches.push({ from: last?.to ?? 0, to: b, hidden });
+	}
+	if (stretches.length === 0) return [{ from: 0, to: 1, hidden: hiddenAt(at(0.5)) }];
+	stretches[stretches.length - 1].to = 1;
+	return stretches;
+}
