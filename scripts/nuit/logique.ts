@@ -83,6 +83,8 @@ const REMINDER_DAYS = 7;
 const LOCK_MAX_MS = 8 * 3_600_000;
 const OUTAGE_KEYS: OutageKey[] = ['proofs', 'verifs', 'guards', 'push'];
 const TEST_STATUSES: TestStatus[] = ['green', 'red', 'flaky', 'skipped'];
+/** Préfixe d'un fichier de test qui ne se charge pas (rouge sans test à rejouer). */
+export const LOAD_ERROR = 'erreur de chargement ›';
 
 const STEP_NAMES = {
 	proofs: 'preuves des écarts pas jouées',
@@ -160,7 +162,7 @@ export function playwrightTests(report: unknown): Record<string, TestStatus> | n
 	for (const error of errors) {
 		const message = isRecord(error) && typeof error.message === 'string' ? error.message : '';
 		const first = message.split('\n')[0].trim().slice(0, 160) || 'sans message';
-		tests[`erreur de chargement › ${first}`] = 'red';
+		tests[`${LOAD_ERROR} ${first}`] = 'red';
 	}
 	return tests;
 }

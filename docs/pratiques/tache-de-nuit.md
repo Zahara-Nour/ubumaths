@@ -53,7 +53,8 @@ détaché sur `origin/main` et remis à jour chaque nuit (créé à la première
   fois (`--last-failed --workers=2`, délai de 2 h). Un test vert au second essai est **instable** :
   listé à part dans le bilan, il ne compte pas comme rouge et ne notifie pas (la suite sur six
   navigateurs en une fois fait des rouges de charge). Rouge deux fois : rouge. Second essai qui ne
-  peut pas tourner : les rouges restent rouges et le bilan le dit.
+  peut pas tourner : les rouges restent rouges et le bilan le dit. Pas de second essai quand
+  les seuls rouges sont des fichiers qui ne se chargent pas.
 - Une étape qui échoue n'arrête pas les suivantes.
 
 ## Le bilan
@@ -109,7 +110,9 @@ oublier ce qui était rouge avant elle.
 renotifie le 8, puis le 15 (`rappel (panne depuis le …) : …`), Mac éteint entre-temps compris (le
 rappel part dès que 7 jours sont passés). Chaque bilan garde les pannes notifiées cette nuit-là
 (`outages`). Une nuit saine entre deux : la panne suivante est neuve. Pour le registre pas poussé,
-une nuit sans ligne à pousser ne coupe pas la panne (on ne sait pas si le push passerait).
+une nuit sans ligne à pousser ne coupe pas la panne (on ne sait pas si le push passerait). Une panne
+déjà longue de 7 jours quand la règle est arrivée (bilans sans `outages`) rappelle dès la première
+nuit qui la lit : son début compte comme notifié.
 
 ## Pannes
 
@@ -124,6 +127,9 @@ Une étape qui n'a pas pu tourner est dite avec sa cause dans le bilan (« pas j
   arrêtée : `pnpm db:start`), suite arrêtée au bout de 4 heures (la commande et toute sa
   descendance sont arrêtées, navigateurs compris ; le serveur de dev l'est par la tâche), fichier
   de test qui ne se charge pas (une ligne « erreur de chargement », rouge) ;
+- **panne réparée dans la journée** (`.env.local` remis, port libéré…) : le bilan de 2 h existe,
+  `--lancer` est refusé jusqu'au lendemain ; `--lancer --essai` vérifie la réparation sans rien
+  barrer ni notifier ;
 - **une autre nuit tourne déjà** (`~/.local/state/nuit/verrou`) : la seconde s'arrête, code 1. Un
   verrou dont le processus a disparu, ou vieux de plus de 8 heures, est repris. La nuit n'attend
   aucun autre verrou (ni `supabase`, ni `typecheck`) : seuls les verrous d'élèves partagés entre

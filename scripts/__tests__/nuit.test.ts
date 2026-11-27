@@ -573,7 +573,10 @@ describe('pnpm nuit (le script)', () => {
 				...process.env,
 				NUIT_ETAT: state,
 				NUIT_WORKTREE: join(state, 'pas-de-worktree'),
-				NUIT_REF: 'refs/nuit/inexistante'
+				NUIT_REF: 'refs/nuit/inexistante',
+				// … et sa notification ne partirait pas (canal ntfy absent).
+				PREVENIR_CANAL: join(state, 'pas-de-canal'),
+				PREVENIR_ETAT: join(state, 'prevenir')
 			},
 			timeout: 30_000
 		});

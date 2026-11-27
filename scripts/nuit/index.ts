@@ -50,6 +50,7 @@ import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+	LOAD_ERROR,
 	deliveredNotice,
 	formatSummary,
 	isNight,
@@ -461,7 +462,11 @@ async function playVerifs(worktree: string): Promise<Step<VerifsData>> {
 	const first = await playSuite(worktree, false);
 	if (!first.ok) return first;
 	const tests = first.data;
-	if (!Object.values(tests).includes('red')) return { ok: true, data: { tests } };
+	// Un fichier qui ne se charge pas n'a aucun test à rejouer : seuls les vrais rouges comptent.
+	const replayable = Object.entries(tests).some(
+		([name, status]) => status === 'red' && !name.startsWith(LOAD_ERROR)
+	);
+	if (!replayable) return { ok: true, data: { tests } };
 	const again = await playSuite(worktree, true);
 	if (!again.ok) return { ok: true, data: { tests, replay: again.failure } };
 	return { ok: true, data: { tests: mergeReplay(tests, again.data) } };
