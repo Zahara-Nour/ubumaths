@@ -277,6 +277,10 @@ const DROITE_NAME_BACK = [0.35, 0.8, 1.25];
  */
 const PLAN_NAME_TOWARD = [0.3, 0.55];
 
+/** Le nom d'un plan écrit à côté de son bord : à ces parts du côté, à ces écarts en plus (cm) */
+const PLAN_NAME_AWAY = [0, 0.3, 0.6];
+const PLAN_NAME_ALONG = [0.5, 0.3, 0.7];
+
 /** Distance d'une cote à son trait, en cm */
 const COTE_GAP = 0.14;
 
@@ -558,10 +562,23 @@ interface Draft {
 	droites?: SolideLine[][];
 	/**
 	 * Plans donnés (`plans:`) ; `spots` : les points du plan où écrire le nom d'un plan
-	 * nommé, du plus dégagé au moins dégagé sur le dessin de départ ; polyèdres seulement
+	 * nommé, du plus dégagé au moins dégagé sur le dessin de départ ; `borderSpots` : des
+	 * points de son bord (`side` : le côté, de `fill[side]` au suivant), à côté desquels
+	 * écrire le nom quand il n'a pas la place dans le plan, les plus longs côtés du
+	 * dessin de départ d'abord ; polyèdres seulement
 	 */
-	plans?: (SolidePlanShape & { spots: EspacePoint[] })[];
+	plans?: (SolidePlanShape & {
+		spots: EspacePoint[];
+		borderSpots: { at: EspacePoint; side: number }[];
+	})[];
 }
+
+/**
+ * La place du nom d'un plan : `inside`, le rang d'un point du plan (`spots`) ;
+ * sinon à côté du bord, à l'écart `offset` (écran, cm) du point `border` de
+ * `borderSpots`
+ */
+type PlanSpot = { inside: number } | { border: number; offset: EspacePoint };
 
 /** Un solide vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
 interface TurnedDraft extends Draft {
@@ -741,6 +758,7 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 			);
 		});
 		let spots: EspacePoint[] = [];
+		let borderSpots: { at: EspacePoint; side: number }[] = [];
 		if (plan.name !== null) {
 			const middle3 = centroid(polygon);
 			const toward = polygon.flatMap((p, i) => [
@@ -760,8 +778,24 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 				.map((spot, i) => ({ spot, i, room: room(spot) }))
 				.sort((p, q) => (Math.abs(q.room - p.room) > 1e-9 ? q.room - p.room : p.i - q.i))
 				.map(({ spot }) => project(spot));
+			const restLength = (side: number) => {
+				const a = restProject(polygon[side]);
+				const b = restProject(polygon[(side + 1) % polygon.length]);
+				return Math.hypot(b.x - a.x, b.y - a.y);
+			};
+			borderSpots = polygon
+				.map((_, side) => ({ side, length: restLength(side) }))
+				.sort((p, q) =>
+					Math.abs(q.length - p.length) > 1e-9 ? q.length - p.length : p.side - q.side
+				)
+				.flatMap(({ side }) =>
+					PLAN_NAME_ALONG.map((t) => ({
+						at: project(lerp(polygon[side], polygon[(side + 1) % polygon.length], t)),
+						side
+					}))
+				);
 		}
-		return { fill: polygon.map(project), border, spots };
+		return { fill: polygon.map(project), border, spots, borderSpots };
 	});
 	return {
 		pivot: project(center3),
@@ -1277,6 +1311,28 @@ function segmentHitsBox(a: EspacePoint, b: EspacePoint, box: EspacePoint[]): boo
 }
 
 /**
+ * L'étiquette ne touche ni une de `placed`, ni un trait de `segments`, ni un
+ * point de `dots` ; `rise` : hauteur en plus au-dessus de la boîte
+ */
+function isFree(
+	c: SolideLabel,
+	placed: SolideLabel[],
+	segments: [EspacePoint, EspacePoint][],
+	dots: EspacePoint[],
+	rise = 0
+): boolean {
+	if (placed.some((l) => overlaps(c, l))) return false;
+	const [lo, hi] = labelBox(c);
+	const box = [{ x: lo.x, y: lo.y - rise }, hi];
+	const inside = (p: EspacePoint) =>
+		p.x > box[0].x - DOT_CLEARANCE &&
+		p.x < box[1].x + DOT_CLEARANCE &&
+		p.y > box[0].y - DOT_CLEARANCE &&
+		p.y < box[1].y + DOT_CLEARANCE;
+	return !segments.some(([a, b]) => segmentHitsBox(a, b, box)) && !dots.some(inside);
+}
+
+/**
  * La première étiquette qui ne touche ni une de `placed` ni un trait de
  * `segments` ; à défaut, la première qui ne touche aucune étiquette ; la
  * première sinon. `rise` : hauteur en plus au-dessus de la boîte (petite flèche
@@ -1290,16 +1346,7 @@ function firstFree(
 	rise = 0
 ): SolideLabel {
 	const clearOfLabels = (c: SolideLabel) => !placed.some((l) => overlaps(c, l));
-	const clearOfLines = (c: SolideLabel) => {
-		const [lo, hi] = labelBox(c);
-		const box = [{ x: lo.x, y: lo.y - rise }, hi];
-		const inside = (p: EspacePoint) =>
-			p.x > box[0].x - DOT_CLEARANCE &&
-			p.x < box[1].x + DOT_CLEARANCE &&
-			p.y > box[0].y - DOT_CLEARANCE &&
-			p.y < box[1].y + DOT_CLEARANCE;
-		return !segments.some(([a, b]) => segmentHitsBox(a, b, box)) && !dots.some(inside);
-	};
+	const clearOfLines = (c: SolideLabel) => isFree(c, [], segments, dots, rise);
 	return (
 		candidates.find((c) => clearOfLabels(c) && clearOfLines(c)) ??
 		candidates.find(clearOfLabels) ??
@@ -1396,8 +1443,8 @@ function layoutSolide(
 	coteMarks: EspacePoint[];
 	coteLabels: SolideLabel[];
 	coteLines: SolideLine[];
-	/** Pour chaque plan, le rang de la place de son nom parmi celles du plan (0 sans nom) */
-	planSpots: number[];
+	/** Pour chaque plan, la place de son nom (sans nom : la première) */
+	planSpots: PlanSpot[];
 } {
 	const curved = solideTopology(spec.form).curved;
 	// Le dessin fixe donne l'échelle, que la figure tournée garde
@@ -1443,7 +1490,8 @@ function layoutSolide(
 	const plans = draft.plans?.map((plan) => ({
 		fill: plan.fill.map(toScreen),
 		border: plan.border.map((l) => ({ ...l, points: l.points.map(toScreen) })),
-		spots: plan.spots.map(toScreen)
+		spots: plan.spots.map(toScreen),
+		borderSpots: plan.borderSpots.map((spot) => ({ ...spot, at: toScreen(spot.at) }))
 	}));
 	// Le bord de chaque plan, côté par côté : les noms des points l'évitent
 	const planSegments = (plans ?? []).flatMap((plan) =>
@@ -1614,23 +1662,77 @@ function layoutSolide(
 		...planSegments
 	];
 
-	// Plans nommés : « (P) » écrit dans le plan, en un point du plan qu'il suit quand
-	// la figure tourne (il ne se tient pas comme les autres noms : il est déjà à sa place).
-	// Le point se choisit sur le dessin fixe : le plus dégagé où le nom ne touche aucune
-	// étiquette déjà posée (noms des sommets, cotes)
-	const planSpots =
+	// Plans nommés : « (P) » écrit dans le plan, en un point du plan qu'il suit quand la
+	// figure tourne (il ne se tient pas comme les autres noms). Le point se choisit sur le
+	// dessin fixe : le plus dégagé où le nom ne touche ni trait ni étiquette déjà posée ;
+	// s'il n'y a pas la place dans le plan (plan mince ou petit), à côté de son bord,
+	// à un écart fixe d'un point du bord
+	const planSpots: PlanSpot[] =
 		turned !== null && spec.plans?.some((plan) => plan.name !== null)
 			? layoutSolide(spec).planSpots
-			: (spec.plans ?? []).map(() => 0);
+			: (spec.plans ?? []).map(() => ({ inside: 0 }));
+	const planNames: SolideLabel[] = [];
 	spec.plans?.forEach((plan, k) => {
-		const spots = plans?.[k]?.spots ?? [];
-		if (plan.name === null || spots.length === 0) return;
+		const shape = plans?.[k];
+		if (plan.name === null || shape === undefined || shape.spots.length === 0) return;
 		const text = `(${plan.name})`;
 		if (turned === null) {
-			const free = spots.findIndex((at) => !labels.some((l) => overlaps({ at, text }, l)));
-			planSpots[k] = Math.max(free, 0);
+			const free = (at: EspacePoint) => isFree({ at, text }, labels, segments, named);
+			const inside = shape.spots.findIndex(free);
+			if (inside >= 0) planSpots[k] = { inside };
+			else {
+				const middleOfPlan = {
+					x: shape.fill.reduce((sum, p) => sum + p.x, 0) / shape.fill.length,
+					y: shape.fill.reduce((sum, p) => sum + p.y, 0) / shape.fill.length
+				};
+				const [lo, hi] = labelBox({ at: { x: 0, y: 0 }, text });
+				// À côté d'un côté, vers l'extérieur du plan d'abord ; l'écart dépend de la pente
+				// du côté, comme pour le nom d'une droite
+				const beside = shape.borderSpots.flatMap((spot, border) => {
+					const from = shape.fill[spot.side];
+					const to = shape.fill[(spot.side + 1) % shape.fill.length];
+					const length = Math.hypot(to.x - from.x, to.y - from.y);
+					if (length < 1e-9) return [];
+					const u = { x: (to.x - from.x) / length, y: (to.y - from.y) / length };
+					const out =
+						-u.y * (spot.at.x - middleOfPlan.x) + u.x * (spot.at.y - middleOfPlan.y) < 0 ? -1 : 1;
+					const gap =
+						(Math.abs(u.y) * (hi.x - lo.x)) / 2 +
+						(Math.abs(u.x) * (hi.y - lo.y)) / 2 +
+						DROITE_NAME_CLEAR;
+					return PLAN_NAME_AWAY.flatMap((away) =>
+						[out, -out].map((side) => ({
+							border,
+							away,
+							offset: { x: -side * u.y * (gap + away), y: side * u.x * (gap + away) }
+						}))
+					);
+				});
+				// Tout contre le bord d'abord, quel que soit le côté ; plus loin ensuite
+				beside.sort((p, q) => p.away - q.away);
+				const outside = beside.find(({ border, offset }) =>
+					free({
+						x: shape.borderSpots[border].at.x + offset.x,
+						y: shape.borderSpots[border].at.y + offset.y
+					})
+				);
+				// Nulle part : dans le plan, là où il ne touche au moins aucune étiquette
+				const fallback = shape.spots.findIndex(
+					(at) => !labels.some((l) => overlaps({ at, text }, l))
+				);
+				planSpots[k] = outside ?? { inside: Math.max(fallback, 0) };
+			}
 		}
-		labels.push({ at: spots[planSpots[k]] ?? spots[0], text });
+		const spot = planSpots[k];
+		let at = shape.spots[0];
+		if ('inside' in spot) at = shape.spots[spot.inside] ?? at;
+		else {
+			const anchor = shape.borderSpots[spot.border]?.at ?? at;
+			at = { x: anchor.x + spot.offset.x, y: anchor.y + spot.offset.y };
+		}
+		const label = { at, text };
+		if (!('inside' in spot)) planNames.push(label);
+		labels.push(label);
 	});
 
 	// Points déclarés : un disque ; le nom en s'éloignant du milieu du dessin, sinon
@@ -1759,7 +1861,8 @@ function layoutSolide(
 		const half = Math.max(turned.reach, restReach) * scale + TURN_PAD;
 		// Nom de droite tenu pendant la rotation : sa place, prise le long d'un trait qui
 		// a tourné depuis, peut pointer hors du cadre — il y est ramené
-		for (const label of droiteNames) {
+		// (de même le nom d'un plan écrit à côté de son bord)
+		for (const label of [...droiteNames, ...planNames]) {
 			const [lo, hi] = labelBox(label);
 			const within = (v: number, size: number) =>
 				Math.min(Math.max(v, -half + size / 2), half - size / 2);

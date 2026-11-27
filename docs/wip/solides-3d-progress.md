@@ -9,15 +9,16 @@ _Mis à jour le 2026-11-27, lot 7b écrit, pas encore mergé (dernier merge : #3
   pas emportés. **Lot 7b (plans) écrit sur la branche** (§ 19), tests verts, vu à l'écran par la session ;
   **pas de PR ouverte**.
 - **Prochaine action** : attendre le « c'est bon » de David sur le 7b (lien `pnpm lien`, serveur **5177** :
-  le 5176 est pris par une autre session), puis PR, CI, `pnpm pr:merger`. Ensuite **lot 7c** (repère du
+  le 5176 est pris par une autre session), puis PR, CI, `pnpm pr:merger`. Ensuite la petite PR du bord en butée (ci-dessous), puis **lot 7c** (repère du
   solide et points par coordonnées, § 17), même chaîne.
 - **En attente de David** : son essai du 7b **avant le merge**. Pas de `deploy:prod` sans sa demande.
-  **Questions sans réponse (donc rien de changé)** : un bout de droite encore derrière le solide reste en
-  tirets (`(DC)`, `(DG)` d'un cube) — l'allonger jusqu'à ce qu'elle ressorte serait un autre choix ; le nom
-  « (P) » d'un plan vu presque par la tranche (`(BDE)` d'un cube à la vue de départ) touche les traits,
-  faute de place dans le plan — l'écrire dehors serait un autre choix ; couleurs des plans (vert, puis
-  violet pour le second) ; description des réglages sous le réglage dans la page d'aide ; teinter les cases
+  Proposé, sans réponse : description des réglages sous le réglage dans la page d'aide ; teinter les cases
   de saisie de `retrouver:`.
+- **Tranché par David le 2026-11-27 (lot 7b, « suis tes recos »)** : le nom « (P) » s'écrit à côté du plan
+  quand il n'a pas la place dedans (fait, § 19) ; le bord d'un plan ou une droite posés sur une face vue par
+  la tranche (butée de la vue de dessus) prennent l'état de l'arête : **petite PR à part, après le 7b, avant
+  le 7c** ; couleurs gardées (plans vert et violet, droites bleues) ; un bout de droite encore derrière le
+  solide reste en tirets (`(DG)` d'un cube) ; « (P) » qui croise un autre nom pendant la rotation : laissé.
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
@@ -661,3 +662,9 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   la rotation, « (P) » peut passer sur un autre nom (il suit son point, il n'est pas tenu) ; à la butée de la
   vue de dessus ou de dessous, le bord d'un plan posé sur une face vue par la tranche est en tirets alors que
   l'arête est en plein (prisme, `(ABC)` : l'écart du 7a, atteint en tirant jusqu'au bout).
+- **Nom à côté du plan** (tranché par David, « suis tes recos ») : quand aucune place du plan ne tient sans
+  toucher un trait, un point ou un nom, « (P) » se pose à côté d'un côté du polygone (`borderSpots`,
+  `PLAN_NAME_AWAY`, `PlanSpot`) ; il suit ce point du bord pendant la rotation, ramené dans le cadre. Vu à
+  l'écran : cube avec (IG) et (BDE) (« (P) » à droite de [EB]), cube à deux plans, `pave 1 1 6` avec (EFG),
+  `pave 5 3 2` avec (ABF), prisme coté avec (ABC), pyramide avec (SAC) ; les deux cubes tournés sous deux
+  angles. Le « À montrer à David » ci-dessus n'a plus lieu d'être. Tests : `solide-plans.test.ts` (32).

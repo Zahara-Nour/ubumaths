@@ -51,6 +51,30 @@ const inPolygon = (p: EspacePoint, polygon: EspacePoint[]) => {
 	return signs.every((s) => s > -1e-6) || signs.every((s) => s < 1e-6);
 };
 
+/** Le segment [a, b] passe-t-il dans la boîte [lo, hi] ? */
+const hitsBox = (a: EspacePoint, b: EspacePoint, lo: EspacePoint, hi: EspacePoint) => {
+	let t0 = 0;
+	let t1 = 1;
+	for (const [d, from, min, max] of [
+		[b.x - a.x, a.x, lo.x, hi.x],
+		[b.y - a.y, a.y, lo.y, hi.y]
+	]) {
+		if (Math.abs(d) < 1e-12) {
+			if (from < min || from > max) return false;
+			continue;
+		}
+		const [near, far] = [(min - from) / d, (max - from) / d].sort((p, q) => p - q);
+		t0 = Math.max(t0, near);
+		t1 = Math.min(t1, far);
+	}
+	return t0 <= t1;
+};
+/** Tous les traits de la scène : arêtes, droites, bords des plans */
+const traits = (s: SolideScene): [EspacePoint, EspacePoint][] =>
+	[...s.lines, ...(s.droites ?? []).flat(), ...plansOf(s).flatMap((plan) => plan.border)].flatMap(
+		(l) => l.points.slice(1).map((q, i): [EspacePoint, EspacePoint] => [l.points[i], q])
+	);
+
 /** Une vue droite tournée (hors du passage depuis la cavalière) */
 const turned = (dyaw: number, dpitch: number): EspaceVue =>
 	turnVue({ ...VUE_DE_DEPART, oblique: 0 }, dyaw, dpitch);
@@ -295,7 +319,7 @@ describe('```solide — plans: (scène)', () => {
 		expect(s.labels).toEqual(bare.labels);
 	});
 
-	it('plan nommé : « (P) » écrit dans le plan, sans toucher un trait ni un autre nom', () => {
+	it('plan nommé : « (P) » ne touche ni un trait ni un autre nom, dans le plan ou à côté', () => {
 		for (const lines of [
 			[...CUBE, 'plans: P = (BDE)'],
 			[...CUBE, 'plans: P = (ABG)'],
@@ -307,15 +331,35 @@ describe('```solide — plans: (scène)', () => {
 			['forme: pave 5 3 2', 'sommets: A B C D E F G H', 'plans: P = (BCG)'],
 			['forme: prisme triangle 4 3 5', 'sommets: A B C D E F', 'plans: P = (ABC)'],
 			['forme: prisme triangle 4 3 5', 'sommets: A B C D E F', 'cotes: cm', 'plans: P = (ABC)'],
-			['forme: pave 5 3 2', 'sommets: A B C D E F G H', 'plans: P = (ABF)', 'tourner: oui']
+			['forme: pave 5 3 2', 'sommets: A B C D E F G H', 'plans: P = (ABF)', 'tourner: oui'],
+			['forme: pave 1 1 6', 'sommets: A B C D E F G H', 'plans: P = (EFG)']
 		]) {
 			const s = scene(...lines);
 			plansOf(s).forEach((plan, k) => {
 				const label = s.labels.find((l) => l.text === `(${['P', 'Q'][k]})`);
 				expect(label, lines.join(' | ')).toBeDefined();
 				if (label === undefined) return;
-				expect(inPolygon(label.at, plan.fill), lines.join(' | ')).toBe(true);
 				const [lo, hi] = labelBox(label);
+				const touched = traits(s).some(([a, b]) => hitsBox(a, b, lo, hi));
+				expect(touched, `${lines.join(' | ')} : ${label.text} touche un trait`).toBe(false);
+				// À côté du plan : tout contre son bord
+				if (!inPolygon(label.at, plan.fill)) {
+					const near = Math.min(
+						...plan.fill.map((p, i) => {
+							const q = plan.fill[(i + 1) % plan.fill.length];
+							const t = Math.min(
+								1,
+								Math.max(
+									0,
+									((label.at.x - p.x) * (q.x - p.x) + (label.at.y - p.y) * (q.y - p.y)) /
+										(distance(p, q) ** 2 || 1)
+								)
+							);
+							return distance(label.at, { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t });
+						})
+					);
+					expect(near, lines.join(' | ')).toBeLessThan(1);
+				}
 				for (const other of s.labels) {
 					if (other === label) continue;
 					const [olo, ohi] = labelBox(other);
@@ -326,12 +370,14 @@ describe('```solide — plans: (scène)', () => {
 		}
 	});
 
-	it('plan trop petit pour son nom (face du dessus d’un pavé étroit) : le nom reste dans le plan', () => {
-		// Aucune place ne tient entre les noms des sommets : la plus dégagée est gardée
-		const s = scene('forme: pave 1 1 6', 'sommets: A B C D E F G H', 'plans: P = (EFG)');
-		const label = s.labels.find((l) => l.text === '(P)');
-		expect(label).toBeDefined();
-		if (label !== undefined) expect(inPolygon(label.at, plansOf(s)[0].fill)).toBe(true);
+	it('le nom est dans le plan quand il y a la place, à côté quand le plan est trop mince', () => {
+		const wide = scene(...CUBE, 'plans: P = (ABG)');
+		const inWide = wide.labels.find((l) => l.text === '(P)');
+		expect(inWide !== undefined && inPolygon(inWide.at, plansOf(wide)[0].fill)).toBe(true);
+		// (BDE) d'un cube, en cavalière : vu presque par la tranche
+		const thin = scene(...CUBE, 'plans: P = (BDE)');
+		const byThin = thin.labels.find((l) => l.text === '(P)');
+		expect(byThin !== undefined && inPolygon(byThin.at, plansOf(thin)[0].fill)).toBe(false);
 	});
 
 	it('plan sans nom : aucune étiquette de plus', () => {
@@ -339,18 +385,48 @@ describe('```solide — plans: (scène)', () => {
 	});
 
 	it('tourner: oui — sous tous les angles, le polygone suit les sommets et le nom reste dans le plan', () => {
-		const s = spec(...CUBE, 'plans: P = (BDE)', 'tourner: oui');
+		const s = spec(...CUBE, 'plans: P = (ABG)', 'tourner: oui');
 		const rest = buildSolideScene(s, VUE_DE_DEPART);
 		for (const vue of GRID) {
 			const at = buildSolideScene(s, vue, rest.labelOffsets);
 			const [plan] = plansOf(at);
-			expect(samePoints(plan.fill, [at.vertices[1], at.vertices[3], at.vertices[4]])).toBe(true);
+			expect(
+				samePoints(plan.fill, [at.vertices[0], at.vertices[1], at.vertices[6], at.vertices[7]])
+			).toBe(true);
 			const label = at.labels.find((l) => l.text === '(P)');
 			expect(label).toBeDefined();
 			if (label !== undefined) expect(inPolygon(label.at, plan.fill)).toBe(true);
-			// Le cadre est celui de la figure sans plan
+			// Le cadre est celui de la figure au repos
 			expect(at.width).toBeCloseTo(rest.width, 9);
 			expect(at.height).toBeCloseTo(rest.height, 9);
+		}
+	});
+
+	it('tourner: oui — un nom écrit à côté du plan suit son bord et reste dans le cadre', () => {
+		const s = spec(...CUBE, 'plans: P = (BDE)', 'tourner: oui');
+		const rest = buildSolideScene(s, VUE_DE_DEPART);
+		for (const vue of GRID) {
+			const at = buildSolideScene(s, vue, rest.labelOffsets);
+			const label = at.labels.find((l) => l.text === '(P)');
+			expect(label).toBeDefined();
+			if (label === undefined) continue;
+			const [lo, hi] = labelBox(label);
+			expect(lo.x).toBeGreaterThanOrEqual(-1e-9);
+			expect(lo.y).toBeGreaterThanOrEqual(-1e-9);
+			expect(hi.x).toBeLessThanOrEqual(at.width + 1e-9);
+			expect(hi.y).toBeLessThanOrEqual(at.height + 1e-9);
+			// Jamais loin du bord du plan : à moins d'un centimètre d'un de ses côtés
+			const [plan] = plansOf(at);
+			const near = Math.min(
+				...plan.fill.flatMap((p, i) => {
+					const q = plan.fill[(i + 1) % plan.fill.length];
+					return [0, 0.25, 0.5, 0.75, 1].map((t) =>
+						distance(label.at, { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t })
+					);
+				})
+			);
+			expect(near).toBeLessThan(1);
+			expect(at.width).toBeCloseTo(rest.width, 9);
 		}
 	});
 

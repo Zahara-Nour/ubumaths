@@ -1629,14 +1629,16 @@ arête traversée, rangés dans l'ordre du tour) — le triangle BDE pour `(BDE)
 en contient une ; `border`, son bord en morceaux `SolideLine`, en tirets là où une face passe devant
 (`hiddenStretches` côté par côté : un côté posé sur une face du fond est caché, comme une arête) ;
 `cachees: non` → tout en plein. Le plan ne change ni le cadre, ni les arêtes, ni les noms des sommets. Nom :
-« (P) » écrit **dans** le plan, en un point du plan choisi une fois sur le dessin fixe : `Draft.plans[].spots`
-range les places (milieu du polygone, points vers ses coins et ses côtés, `PLAN_NAME_TOWARD`) de la plus
-dégagée à la moins dégagée (loin de tout trait et de tout point nommé du dessin de départ), et `layoutSolide`
-prend la première où le nom ne touche aucune étiquette déjà posée (noms des sommets, cotes), à défaut la
-plus dégagée ; son rang (`planSpots`) est relu sur le dessin fixe par une figure tournée. Le nom suit ce point
-quand la figure tourne et **n'entre pas dans `labelOffsets`** (il ne se tient pas, il est déjà à sa place).
-Dans un plan vu presque par la tranche (`(BDE)` d'un cube en cavalière) ou trop petit (face du dessus d'un
-`pave 1 1 6`), le nom touche des traits ou des noms : il n'y a pas la place.
+« (P) » écrit **dans** le plan quand il y a la place, **à côté de son bord** sinon. La place se choisit une
+fois, sur le dessin fixe (`layoutSolide`, `PlanSpot`) : `Draft.plans[].spots` range les points du plan (milieu
+du polygone, points vers ses coins et ses côtés, `PLAN_NAME_TOWARD`) du plus dégagé au moins dégagé, et le
+premier où le nom ne touche ni trait, ni point, ni étiquette déjà posée (`isFree`) est pris. Aucun (plan vu
+presque par la tranche : `(BDE)` d'un cube en cavalière ; plan trop petit : face du dessus d'un `pave 1 1 6`) :
+le nom se pose à côté d'un côté du polygone (`borderSpots`, les plus longs côtés d'abord, à `PLAN_NAME_ALONG`
+du côté), vers l'extérieur du plan puis vers l'intérieur, tout contre le bord puis plus loin
+(`PLAN_NAME_AWAY`) ; à défaut, dans le plan, là où il ne touche au moins aucune étiquette. Une figure tournée
+relit ce choix sur le dessin fixe (`planSpots`) : le nom suit son point du plan, ou son point du bord à écart
+fixe (ramené dans le cadre) ; il **n'entre pas dans `labelOffsets`**.
 Les noms des points déclarés évitent le bord
 des plans (second tour de places `POINT_NAME_FAR`, comme avec des droites). Écran (`Solide.svelte`) :
 `polygon.solide-plan` sous les arêtes (translucide), `polyline.solide-plan-bord` après elles ; premier plan
