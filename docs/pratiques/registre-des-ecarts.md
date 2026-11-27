@@ -129,6 +129,13 @@ disparu.
   commande ferme aussi la ligne si le test est renommé ou supprimé sans correction : ne retirer
   le marqueur qu'avec `.fails`. Même
   principe que les écarts E, marqués dans les specs de `e2e/verifs/`.
+- **Écart qui demande un navigateur** (composant monté, réactivité d'un store) : le projet
+  `ecarts` tourne sous Node, donc même forme que pour la base. Le test vit à côté des tests de
+  composants (`src/**/__tests__/ecarts-<domaine>.svelte.test.ts`, projet `client`), en
+  `it.fails`, avec le marqueur « écart L41 » dans son nom, un témoin et une seule affirmation ;
+  la ligne du registre porte la même commande sur ce fichier. Avant de le commiter, le jouer une
+  fois sans `.fails` (sur une copie) et lire le message : il doit échouer sur l'affirmation, pas
+  sur le montage (lot coquille, 2026-11-27).
 - **Preuve cassée** : fichier absent, aucun test de ce nom, fichier qui ne se charge pas, commande
   introuvable. Une ligne n'est **jamais** fermée sur une preuve cassée ; elle sort à part dans le
   bilan, à réparer.
