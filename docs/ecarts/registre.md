@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V137 · L135 · M60 · C44 · D45 · T37 · E87
+Derniers numéros : V137 · L136 · M60 · C44 · D45 · T37 · E87
 
 ## Écarts
 
@@ -352,3 +352,4 @@ Derniers numéros : V137 · L135 · M60 · C44 · D45 · T37 · E87
 - E86 · vérification à l'écran · signalements de bug · la carte d'un signalement de bug (BugReportCard.svelte) met une case à cocher dans un bouton : la carte entière est un <button> et MyCheckbox en est un autre ; erreur de console node_invalid_placement_ssr sur le serveur de dev (famille de E80 et E84), vue sur ordi-chrome à la page des signalements de bug de l'admin en mode sélection ; antérieure à verifs-auto, trouvée en rejouant base-locale-paquet9 le 2026-11-26 · preuve : à la main · en attente
 - ~~E87 · vérification à l'écran · modèles de questions · « Factoriser un trinôme à l'aide de ses racines », variation « en calculant d'abord ses racines », quand a < 0 (−2x² + 2x + 24) : la case de la réponse attendue écrit −2(x + 3)(x − 4) alors que la correction finit par −2(x − 4)(x + 3), dans l'ordre de x₁, x₂ (suite de E34 ; les deux écritures sont justes) · preuve : à la main · tranché par David le 2026-11-26 : à aligner sur l'ordre de x₁, x₂ ; c'est le contenu du modèle (expectedAnswer), à republier en prod par David~~ · clos le 2026-11-26 (#3204, modèle republié en prod par David, case vue par lui)
 - V137 · bug visible · questions · une puissance rationnelle écrite sur une autre base est comptée fausse, sans « bonne valeur, autre forme » : 2^(1/2) ou √2 pour 4^(1/4) attendu (x⁴ = 4), 3^(1/2) pour 9^(1/4), 2^(1/2) pour 8^(1/6) ; 2 pour 8^(1/3) est reconnu. Trouvé par la revue de #3196 (F6 de 52b884ee limitée à r ∈ {2, 3, 5, 6, 7} pour l'éviter) · preuve : test tests/ecarts/questions.test.ts › V137 · à faire, aucun modèle publié touché (décision de David du 2026-11-26 : inscrire sans corriger)
+- L136 · bug latent · messagerie · le nom de l'expéditeur écrit dans l'index de recherche (message_search_index.sender_name) est figé à l'envoi : un compte renommé garde son ancien nom dans la recherche de ses anciens messages ; sans effet visible tant que la recherche n'a aucun appelant (M41) · preuve : à la main · à trier (security-auditor de #3174)
