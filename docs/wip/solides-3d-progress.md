@@ -2,33 +2,36 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3222._
+_Mis à jour le 2026-11-27, après #3227._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1 à 4 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216 cylindre,
-  cône, boule, § 8 et 9 ; #3222 sections et cotes, § 10 et 11). Les lots 3 et 4 ne sont pas en prod tant
-  qu'un `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de l'affirmer).
-- **Prochaine action** : lot 5 — gestes sur figure tournée (`tracer: vecteur` avec `tourner: oui` ; Q2 du
-  § 3 : toucher un point = tracer, glisser = tourner), revue `code-reviewer`. Comportements à écrire et à
-  faire valider avant de coder.
-- **Tranché par David le 2026-11-27** : le point sur le sommet NOMMÉ du cône est gardé (dessus et dessous) ;
-  le dessin fixe d'une boule coupée et cotée, où « 1,5 cm » touche le nom du centre (§ 11), se corrige dans
-  une petite PR à part (avant ou après le lot 5 : pas tranché, le lui demander à la reprise) ; le nom de
-  vecteur qui dépasse de 0,08 cm reste tel quel ; mise en prod seulement après son essai au doigt.
-- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
-  noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
-  session) ; (2) les solides ronds (§ 9) ; (3) le lot 4 : longueurs qui s'effacent, section qui tourne (deux
-  exemples neufs en bas de la page du catalogue). Puis sa demande de `deploy:prod`.
+  du § 3) ; **lots 1 à 5 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216 cylindre,
+  cône, boule, § 8 et 9 ; #3222 sections et cotes, § 10 et 11 ; #3227 vecteur à tracer sur figure tournée,
+  § 12 et 13). Les lots 3 à 5 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas
+  emportés (le vérifier avant de l'affirmer).
+- **Prochaine action** : la petite PR de la boule coupée et cotée (dessin fixe : « 1,5 cm » touche le nom du
+  centre, § 11) — David n'a pas dit « maintenant » : le lui redemander avant de coder. Ensuite lot 6
+  (` ```cubes `, assemblages), comportements à écrire et à faire valider d'abord.
+- **En attente de David** : (1) « Vue de départ » sous la figure à geste, au-dessus des boutons, et non dans
+  leur rangée comme l'écrivait le comportement 44 (§ 13) : il garde ou il la veut dans la rangée ? (2) son
+  essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : noms tenus (§ 7), solides ronds (§ 9),
+  lot 4 (longueurs qui s'effacent, section qui tourne), lot 5 (exemple « Un vecteur à tracer sur un pavé que
+  l'élève peut tourner » : toucher contre glisser, toucher « tremblé » de 4 à 10 px qui tourne sans poser).
+  Puis sa demande de `deploy:prod` (mise en prod seulement après son essai).
+- **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
+  de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
+  « Correction » tourne.
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`, scènes neuves à prendre sur le code de `main`) ; jamais d'instantané de
   flottants bruts ; l'angle libre d'un nom se calcule dans le repère du dessin fixe (`fixedVertices`), jamais
-  de seuil d'égalité (il déplace des noms du dessin fixe) ; `turnVue` doit recevoir `solideTilt(form)` ; une
-  ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; `SolideGeste.svelte` dessine la
-  figure à geste, sans vue pour l'instant ; hors lot, connu : nom de vecteur qui dépasse le cadre de 0,08 cm
-  sur un pavé très profond (§ 11) ; « moins d'animations » et le geste tactile réel n'ont pas de test ;
-  `pnpm pr:merger` ne retire pas le worktree si son serveur de dev tourne (arrêter le serveur d'abord).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-gestes` (neuve, depuis
-  `main` après #3222). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
+  de seuil d'égalité ; `turnVue` doit recevoir `solideTilt(form)` ; la rotation vit dans
+  `solide-rotation.svelte.ts`, partagée par `Solide.svelte` et `SolideGeste.svelte` ; arrêter un clic avant
+  le `onclick` d'un enfant = écouteur `capture` (`on` de Svelte sert les `onclick` délégués d'abord) ;
+  « moins d'animations » et le geste tactile réel n'ont pas de test ; **`pnpm pr:merger` RETIRE le worktree
+  même si son serveur de dev tourne** (vu sur #3227 : serveur tué, lien d'essai mort) — recréer le worktree
+  et relancer le serveur aussitôt après le merge.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `fix/solides-3d-boule-cotee` (neuve, depuis
+  `main` après #3227, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
 
 ## 1. D'où l'on part
 
