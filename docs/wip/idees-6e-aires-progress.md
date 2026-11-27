@@ -2,19 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot écrit, PR des fichiers ouverte._
+_Mis à jour le 2026-11-27, après #3245._
 
-- **État** : phase 0 tranchée (« je te suis ») ; gros lot écrit : 7 modèles neufs
-  (`scripts/questions/idees-6e-aires-neufs/`, 22 variations) et 8 variations ajoutées à 82748db8, fdd849f5,
-  01e205ed (`scripts/questions/idees-6e-aires-publies/`) ; specs vertes, sonde des figures 0 problème, essai en
-  base locale (7 brouillons joués dans l'aperçu).
-- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --publier` (brouillons en prod)
-  → commiter les ids → migrations de rangement et de contenu.
-- **En attente de David** : `create-questions --publier` après le merge.
-- **Pièges en cours** : 82748db8 partage `a` (1..9), fdd849f5 la condition `a>b` ; `e` est Euler (variable
-  renommée `q`) ; le bloc figure n'a pas de `secteur` (demi-disque en polygone) ; `{{eval:-b/2}}` s'écrit en
-  fraction LaTeX dans une figure (passer par `0.5*b`).
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-aires`, `feat/idees-6e-aires`.
+- **État** : lot mergé (#3245) : 7 modèles neufs (`scripts/questions/idees-6e-aires-neufs/`, 22 variations) et
+  8 variations ajoutées à 82748db8, fdd849f5, 01e205ed (`scripts/questions/idees-6e-aires-publies/`) ; rien en
+  base de prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/idees-6e-aires-neufs --publier` (dépôt principal) ; puis, dans un nouveau worktree, commiter
+  les ids, champ `rangement` → `migration-rangement.ts` et `migration-contenu.ts` (niveaux relevés en prod juste
+  avant), `security-auditor`, `db:migrate` selon les 4 conditions.
+- **En attente de David** : `create-questions --publier` (écriture en prod).
+- **Pièges en cours** : 82748db8 partage `a` (1..9), fdd849f5 la condition `a>b` ; `e` est Euler ; le bloc figure
+  n'a pas de `secteur` ; `{{eval:-b/2}}` s'écrit en fraction dans une figure (`0.5*b`).
+- **Worktree / branche** : aucun (retiré après #3245) ; le prochain sur `origin/main`, sujet `idees-6e-aires`.
 
 ## Phase 0 (2026-11-27)
 
@@ -87,6 +87,8 @@ _Mis à jour le 2026-11-27, lot écrit, PR des fichiers ouverte._
   que cm², dm², m². Les bornes de ces points sont « général ». Recommandation : ne rien toucher.
 
 ## Historique
+
+- 2026-11-27 : #3245 mergée (fichiers du lot seuls, CI verte).
 
 - 2026-11-27 : David répond « je te suis » au message des fiches N1 à N8 et des questions Q1 à Q3 (page à
   cocher sans verdict) : fiches et propositions retenues telles quelles. Modèles 82748db8, fdd849f5, 01e205ed
