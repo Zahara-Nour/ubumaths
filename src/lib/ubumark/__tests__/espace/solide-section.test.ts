@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
 import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
 import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
-import { buildSolideScene, solideLabel } from '#lib/ubumark/utils/espace-solides.ts';
+import { buildSolideScene, labelBox, solideLabel } from '#lib/ubumark/utils/espace-solides.ts';
 
 const read = (...lines: string[]) => parseEspaceContent(lines.join('\n'), 'solide');
 const errors = (...lines: string[]) => read(...lines).errors;
@@ -265,6 +265,57 @@ describe('section: — dessin', () => {
 		const ball = scene('forme: boule 3', 'section: 2', 'cotes: cm');
 		expect(ball.labels.map((l) => l.text)).toContain('2 cm');
 		expect(ball.labels.map((l) => l.text).some((t) => t.startsWith('2,23'))).toBe(false);
+	});
+});
+
+describe('section: — le nom d’un centre ne touche pas une cote', () => {
+	/** Les paires d'étiquettes dont les boîtes se touchent */
+	const touching = (...lines: string[]) => {
+		const { labels } = scene(...lines);
+		return labels.flatMap((a, i) =>
+			labels.slice(i + 1).flatMap((b) => {
+				const [a0, a1] = labelBox(a);
+				const [b0, b1] = labelBox(b);
+				return a0.x < b1.x && b0.x < a1.x && a0.y < b1.y && b0.y < a1.y
+					? [`${a.text} × ${b.text}`]
+					: [];
+			})
+		);
+	};
+
+	it('boule coupée près du centre : O s’écarte de la distance du plan', () => {
+		for (const [r, d] of [
+			[6, 1.5],
+			[3, 0.3],
+			[3, 0.6],
+			[3, 0.75],
+			[10, 1]
+		]) {
+			for (const cotes of ['cotes: cm', 'cotes: oui']) {
+				expect(touching(`forme: boule ${r}`, 'sommets: O', `section: ${d}`, cotes)).toEqual([]);
+			}
+		}
+	});
+
+	it('cylindre étroit coupé parallèlement à l’axe : O s’écarte de la distance à l’axe', () => {
+		for (const d of [0.1, 0.5, 0.9]) {
+			expect(
+				touching('forme: cylindre 1 8', "sommets: O O'", `section: parallele ${d}`, 'cotes: cm')
+			).toEqual([]);
+		}
+	});
+
+	it('le nom reste près de son centre, à sa place habituelle quand rien ne gêne', () => {
+		const far = scene('forme: boule 3', 'sommets: O', 'section: 2', 'cotes: cm');
+		const o = far.labels.find((l) => l.text === 'O');
+		// À gauche du centre, un peu plus bas
+		expect(o?.at.x).toBeLessThan(far.vertices[0].x);
+		expect(o?.at.y).toBeGreaterThan(far.vertices[0].y);
+		const near = scene('forme: boule 6', 'sommets: O', 'section: 1.5', 'cotes: cm');
+		const moved = near.labels.find((l) => l.text === 'O');
+		expect(
+			Math.hypot((moved?.at.x ?? 0) - near.vertices[0].x, (moved?.at.y ?? 0) - near.vertices[0].y)
+		).toBeLessThan(0.4);
 	});
 });
 

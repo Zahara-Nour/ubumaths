@@ -1139,6 +1139,27 @@ function firstFree(
 	);
 }
 
+/** Une cote écrite à côté de son trait, du côté `side` du point `p` (écran) */
+function sideCote(
+	side: Exclude<Cote['side'], 'renvoi'>,
+	p: EspacePoint,
+	text: string
+): SolideLabel {
+	const halfWidth = (text.length * CHAR_WIDTH) / 2;
+	const halfHeight = SOLIDE_LABEL_SIZE / 2;
+	const shift = {
+		dessous: { x: 0, y: COTE_GAP + halfHeight },
+		dessus: { x: 0, y: -(COTE_GAP + halfHeight) },
+		droite: { x: COTE_GAP + halfWidth, y: 0 },
+		gauche: { x: -(COTE_GAP + halfWidth), y: 0 },
+		// Plus bas que le milieu de la fuyante : loin du nom du sommet du fond
+		'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP + halfHeight / 2 },
+		// Au-dessus d'une fuyante du haut à gauche : hors du dessin
+		'haut-gauche': { x: -(COTE_GAP + halfWidth / 2), y: -(COTE_GAP + halfHeight) }
+	}[side];
+	return { at: { x: p.x + shift.x, y: p.y + shift.y }, text };
+}
+
 /**
  * Cote renvoyée hors du solide : un trait fin de `from` (milieu de la hauteur) à
  * droite de tous les sommets, le texte au bout ; le premier bout (`LEADER_RISES`)
@@ -1288,6 +1309,21 @@ function layoutSolide(
 		anchored.push(label);
 		return label;
 	};
+	const unit = spec.cotes?.unit ? ` ${spec.cotes.unit}` : '';
+	const coteText = (cote: Cote) => `${frenchNumber(cote.value)}${unit}`;
+	// Figure cotée, ailleurs qu'au repos sans nom tenu : les cotes du repos, pour leur
+	// place dans le cadre et, de retour à la vue de départ pendant que les noms se
+	// replacent, pour les écrire là où elles seront (le renvoi d'une pyramide évite les noms)
+	const atRest =
+		turned !== null && spec.cotes !== null && !(atStart && !holding)
+			? layoutSolide(spec, VUE_DE_DEPART)
+			: null;
+	const writtenCotes = atStart && atRest === null ? draft.cotes : [];
+	// Les cotes écrites à côté de leur trait : le nom d'un centre les évite (boule coupée
+	// près du centre : la distance du plan s'écrit là où le nom se pose d'habitude)
+	const sideCotes = writtenCotes.flatMap((cote) =>
+		cote.side === 'renvoi' ? [] : [sideCote(cote.side, toScreen(cote.at), coteText(cote))]
+	);
 	const dots: EspacePoint[] = [];
 	const middleOfDrawing = {
 		x: vertices.reduce((s, p) => s + p.x, 0) / vertices.length,
@@ -1319,7 +1355,8 @@ function layoutSolide(
 			text: name
 		}));
 		const others = vertices.filter((_, k) => k !== i);
-		labels.push(nameAt(p, candidates, () => firstFree(candidates, labels, edgeSegments, others)));
+		const taken = draft.centers.includes(i) ? [...labels, ...sideCotes] : labels;
+		labels.push(nameAt(p, candidates, () => firstFree(candidates, taken, edgeSegments, others)));
 		if (draft.centers.includes(i) || draft.lone?.includes(i)) dots.push(p);
 	});
 	for (const mark of spec.marks) {
@@ -1330,14 +1367,6 @@ function layoutSolide(
 
 	// Cotes : le texte à côté du trait, du côté demandé ; figure tournée : à la vue de
 	// départ seulement
-	const unit = spec.cotes?.unit ? ` ${spec.cotes.unit}` : '';
-	// Figure cotée, ailleurs qu'au repos sans nom tenu : les cotes du repos, pour leur
-	// place dans le cadre et, de retour à la vue de départ pendant que les noms se
-	// replacent, pour les écrire là où elles seront (le renvoi d'une pyramide évite les noms)
-	const atRest =
-		turned !== null && spec.cotes !== null && !(atStart && !holding)
-			? layoutSolide(spec, VUE_DE_DEPART)
-			: null;
 	const coteMarks: EspacePoint[] = [];
 	const coteLabels: SolideLabel[] = [];
 	const coteLines: SolideLine[] = [];
@@ -1345,10 +1374,8 @@ function layoutSolide(
 		lines.push(...atRest.coteLines);
 		labels.push(...atRest.coteLabels);
 	}
-	for (const cote of atStart && atRest === null ? draft.cotes : []) {
-		const text = `${frenchNumber(cote.value)}${unit}`;
-		const halfWidth = (text.length * CHAR_WIDTH) / 2;
-		const halfHeight = SOLIDE_LABEL_SIZE / 2;
+	for (const cote of writtenCotes) {
+		const text = coteText(cote);
 		const p = toScreen(cote.at);
 		if (cote.side === 'renvoi') {
 			const leader = leaderCote(p, text, vertices, lines, labels);
@@ -1359,17 +1386,7 @@ function layoutSolide(
 			coteMarks.push(...leader.line.points, ...labelBox(leader.label));
 			continue;
 		}
-		const shift = {
-			dessous: { x: 0, y: COTE_GAP + halfHeight },
-			dessus: { x: 0, y: -(COTE_GAP + halfHeight) },
-			droite: { x: COTE_GAP + halfWidth, y: 0 },
-			gauche: { x: -(COTE_GAP + halfWidth), y: 0 },
-			// Plus bas que le milieu de la fuyante : loin du nom du sommet du fond
-			'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP + halfHeight / 2 },
-			// Au-dessus d'une fuyante du haut à gauche : hors du dessin
-			'haut-gauche': { x: -(COTE_GAP + halfWidth / 2), y: -(COTE_GAP + halfHeight) }
-		}[cote.side];
-		const label = { at: { x: p.x + shift.x, y: p.y + shift.y }, text };
+		const label = sideCote(cote.side, p, text);
 		labels.push(label);
 		coteLabels.push(label);
 		coteMarks.push(...labelBox(label));

@@ -55,6 +55,9 @@ const RONDS = [
 	['forme: boule 3', 'sommets: O', 'cotes: cm'],
 	['forme: boule 3', 'section: 1'],
 	['forme: boule 3', 'sommets: O', 'section: 2', 'cotes: cm'],
+	// Plan près du centre, cylindre étroit : le nom du centre s'écarte de la cote
+	['forme: boule 6', 'sommets: O', 'section: 1.5', 'cotes: cm'],
+	['forme: cylindre 1 8', "sommets: O O'", 'section: parallele 0.5', 'cotes: cm'],
 	['forme: boule 3', 'section: oui']
 ];
 
