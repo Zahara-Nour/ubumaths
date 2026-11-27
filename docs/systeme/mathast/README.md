@@ -545,10 +545,14 @@ de `generatedSteps.kind` pour la valeur absolue (PR suivante). Tests :
   qui suit son argument, comme dans les manuels : `\ln 5^2` est ln(5²), `\sin x^2` est sin(x²),
   `\log 10^{-3}` est log(10⁻³), `\sin^2 x^3` est sin²(x³), `\cos 60^\circ` est cos(60^∘) (avant :
   (ln 5)², (sin x)²…). Les deux parseurs LaTeX (`parseFunctionArguments`, argument « un seul
-  jeton »). Inchangé dès que l'argument est délimité : `\ln(5)^2`, `\ln\left(5\right)^2` et
-  `\ln{5}^2` restent (ln 5)² ; `\ln 2x^2` reste ln(2)·x² (l'Atelier le refuse avant) ; `\sqrt 5^2`
+  jeton » ou entre accolades, `withFollowingPower`). Des accolades ne changent rien, elles ne
+  s'affichent pas : `\ln{5}^2` est ln(5²), et c'est l'écriture d'une variable remplacée, si bien que
+  `{{eval:\ln a^2}}`, `{{eval:\ln {{a}}^2}}` et `{{eval:\ln(a^2)}}` disent la même chose. Inchangé
+  avec des parenthèses écrites : `\ln(5)^2` et `\ln\left(5\right)^2` restent (ln 5)² ; `\ln 2x^2`
+  reste ln(2)·x² (l'Atelier le refuse avant) ; `\sqrt 5^2`
   reste (√5)². Mesuré avant le changement : aucun modèle de question de la prod ni aucune réponse
-  d'élève enregistrée n'avait cette forme. Tests : `parser/latex/__tests__/puissance-sous-fonction.test.ts`.
+  d'élève enregistrée n'avait cette forme. Tests : `parser/latex/__tests__/puissance-sous-fonction.test.ts`,
+  `ubumark/__tests__/parameterization/resolver/variable-resolver.test.ts`.
 - **V51** : le transfert du lycée (`transpose-terms`) n'écrit plus `0` devant le terme déplacé :
   `5=2x+1` donne `\textcolor{blue}{-2x} = 1 \textcolor{blue}{- 5}` (`transposedMember`,
   `linear-renderer.ts`, LaTeX et console). Tests : `pedagogical-solve/__tests__/transfert-membre-vide.test.ts`.

@@ -2221,21 +2221,26 @@ class PrattParser {
 			return [delim];
 		}
 
+		// Accolades : invisibles à l'affichage, `\ln{5}^2` s'affiche comme `\ln 5^2` et se
+		// lit donc pareil (c'est aussi l'écriture d'une variable remplacée, `\ln {{a}}^2`).
 		if (this.check('LBRACE')) {
 			const content = this.parseBraceGroup();
-			return [content];
+			return [this.withFollowingPower(content)];
 		}
 
 		// Single token argument
 		const arg = this.nud();
 
-		// Sans parenthèses, la puissance qui suit porte sur l'argument : `\ln 5^2` est
-		// ln(5²), `\sin x^2` est sin(x²), comme dans les manuels (V39, décision de David
-		// du 2026-11-03). `\ln(5)^2` et `\ln{5}^2` gardent leur lecture, (ln 5)².
-		if (this.check('CARET')) {
-			return [this.parseSuperscript(arg)];
-		}
-		return [arg];
+		return [this.withFollowingPower(arg)];
+	}
+
+	/**
+	 * L'argument d'une fonction écrite sans parenthèses, avec la puissance qui le suit :
+	 * `\ln 5^2` est ln(5²), `\sin x^2` est sin(x²), comme dans les manuels (V39, décision
+	 * de David du 2026-11-03). `\ln(5)^2` garde sa lecture, (ln 5)².
+	 */
+	private withFollowingPower(arg: MathNode): MathNode {
+		return this.check('CARET') ? this.parseSuperscript(arg) : arg;
 	}
 
 	/**

@@ -3,8 +3,8 @@
  *
  * `\ln 5^2` se lit ln(5²), comme dans les manuels, et non (ln 5)². Décision de David du
  * 2026-11-03 pour `ln`, étendue le 2026-11-27 à toutes les fonctions nommées (`\sin x^2` =
- * sin(x²), `\cos 60^\circ` = cos(60°)). Avec des parenthèses ou des accolades écrites,
- * rien ne change : `\ln(5)^2` reste (ln 5)².
+ * sin(x²), `\cos 60^\circ` = cos(60°)). Des accolades ne changent rien (`\ln{5}^2` s'affiche
+ * comme `\ln 5^2`) ; avec des parenthèses écrites, `\ln(5)^2` reste (ln 5)².
  *
  * Les deux parseurs doivent lire pareil : chaque cas passe par les deux.
  */
@@ -12,6 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import { parsePratt } from '../parser-pratt';
 import { parseRD } from '../parser-rd';
+import { parseLatex } from '../../index';
 import { toLatex } from '../../../latex-generator';
 
 const PARSERS = [
@@ -37,14 +38,20 @@ const UNDER_THE_FUNCTION: [source: string, read: string][] = [
 	['2\\ln 3^2', '2 \\ln\\left( 3^2 \\right)'],
 	['\\ln 5^2+1', '\\ln\\left( 5^2 \\right) + 1'],
 	['\\ln 5^2x', '\\ln\\left( 5^2 \\right) x'],
-	['\\cos 60^\\circ', '\\cos\\left( 60^\\circ \\right)']
+	['\\cos 60^\\circ', '\\cos\\left( 60^\\circ \\right)'],
+	// Accolades : invisibles à l'affichage, donc lues comme sans rien
+	['\\ln{5}^2', '\\ln\\left( 5^2 \\right)'],
+	['\\ln {-3}^2', '\\ln\\left( \\left( -3 \\right)^2 \\right)'],
+	// Exposant négatif : sin(x⁻¹) ; la réciproque s'écrit `\sin^{-1} x`
+	['\\sin x^{-1}', '\\sin\\left( x^{-1} \\right)'],
+	['\\ln x^{-2}+1', '\\ln\\left( x^{-2} \\right) + 1'],
+	['\\ln\\ln x^2', '\\ln\\left( \\ln\\left( x^2 \\right) \\right)']
 ];
 
-/** Parenthèses, accolades ou racine écrites : la lecture d'avant, inchangée. */
+/** Parenthèses écrites, ou pas de puissance sur l'argument : la lecture d'avant, inchangée. */
 const UNCHANGED: [source: string, read: string][] = [
 	['\\ln(5)^2', '\\left( \\ln\\left( 5 \\right) \\right)^2'],
 	['\\ln\\left(5\\right)^2', '\\left( \\ln\\left( 5 \\right) \\right)^2'],
-	['\\ln{5}^2', '\\left( \\ln\\left( 5 \\right) \\right)^2'],
 	['\\sin(x)^2', '\\sin\\left( x \\right)^2'],
 	['\\sin^2 x', '\\sin^2\\left( x \\right)'],
 	['\\ln 2x^2', '\\ln\\left( 2 \\right) x^2'],
@@ -71,7 +78,21 @@ describe.each(PARSERS)('V39, parseur %s : puissance sous la fonction', (_name, p
 		expect(node.args[0]?.type).toBe('superscript');
 	});
 
+	it('la couleur de l’argument suit : \\ln \\textcolor{red}{5}^2 est ln(5²)', () => {
+		const node = parse('\\ln \\textcolor{red}{5}^2');
+
+		expect(node.type).toBe('function');
+		if (node.type !== 'function') return;
+		expect(node.args[0]?.type).toBe('superscript');
+	});
+
 	it('deux exposants de suite restent refusés', () => {
 		expect(() => parse('\\ln 5^2^3')).toThrow(/Two exponents in a row/);
+	});
+});
+
+describe('V39, entrée de prod parseLatex', () => {
+	it.each(['pratt', 'rd'] as const)('parseur %s : \\ln 5^2 est ln(5²)', (parser) => {
+		expect(toLatex(parseLatex('\\ln 5^2', { parser }))).toBe('\\ln\\left( 5^2 \\right)');
 	});
 });
