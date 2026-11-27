@@ -183,10 +183,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 			categorie: 'compte-appelant-ou-prof',
 			justification: 'soi-même, ou prof et élève inscrit ; filtres de rareté réservés au prof'
 		},
-	'duplicate_template(p_template_id uuid, p_user_id uuid, p_new_title text)': {
-		categorie: 'compte-appelant-ou-prof',
-		justification: 'exige p_user_id = auth.uid() ET is_teacher_or_admin'
-	},
 	'get_allowed_recipients(p_user_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde auth.uid() = p_user_id ou is_admin'
@@ -229,11 +225,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde auth.uid() = p_user_id ou is_teacher_or_admin (lot 4)'
 	},
-	'log_template_action(p_template_id uuid, p_action text, p_performed_by uuid, p_changes jsonb, p_metadata jsonb)':
-		{
-			categorie: 'compte-appelant-ou-prof',
-			justification: 'hors prof/admin : p_performed_by = auth.uid() et modèle à soi'
-		},
 	'search_private_messages(p_user_id uuid, p_query text, p_search_in text, p_has_attachments boolean, p_sender_name text, p_date_from timestamp with time zone, p_date_to timestamp with time zone, p_limit integer, p_offset integer)':
 		{
 			categorie: 'compte-appelant-ou-prof',
@@ -841,14 +832,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'get_riddle_of_the_day(p_date date)': {
 		categorie: 'non-personnel',
 		justification: 'identifiant de l’énigme du jour'
-	},
-	'get_template_statistics(p_template_id uuid)': {
-		categorie: 'non-personnel',
-		justification: 'agrégats anonymes d’usage d’un modèle de message'
-	},
-	'get_templates_for_context(p_trigger_type text, p_class_id uuid)': {
-		categorie: 'non-personnel',
-		justification: 'modèle de message actif (contenu), aucune donnée d’élève'
 	},
 	'get_tournament_details(p_tournament_id uuid)': {
 		categorie: 'non-personnel',

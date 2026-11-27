@@ -549,8 +549,8 @@ Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) 
   contrôle.
 - **Le code garde les anciens noms** : les écrans disent **contrôle** et **observation** depuis le
   2026-10-11, mais les URL (`/assessments`, `/evaluation-tasks`), les tables et les identifiants
-  (`evaluations`, `EvaluationCard`…) n'ont pas été renommés. Les notifications déjà envoyées et les
-  modèles de messages en base gardent « évaluation ».
+  (`evaluations`, `EvaluationCard`…) n'ont pas été renommés. Les notifications déjà envoyées
+  gardent « évaluation ».
 
 ### Points non vérifiés
 
