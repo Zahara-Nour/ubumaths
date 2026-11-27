@@ -8,18 +8,28 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture du lot._
+_Mis à jour le 2026-11-28, avant la PR._
 
-- **État** : lot réservé ([ecarts-lots.md](ecarts-lots.md)) ; 9 écarts, preuves rejouées le 2026-11-28 : toutes rouges (aucun déjà corrigé).
-- **Prochaine action** : écarts latents d'abord (L111, T23, L85, L86, L9, M44) ; phase 0 posée à David pour les trois bugs visibles (V108, V109, V111).
-- **En attente de David** : réponses de phase 0 sur V108, V109, V111.
-- **Pièges en cours** : la preuve de M44 utilise `--include=*.ts` : la rejouer sous bash, pas zsh (glob).
+- **État** : L85, T23, L111 corrigés et barrés au registre (commits sur la branche, pas de PR encore). Phase 0 posée à David le 2026-11-28 pour V108 (+ M44), V109, V111, L86 (question d'accès), L9 (décision du 2026-11-03 à revoir).
+- **Prochaine action** : selon les réponses ; sans réponse, ne rien coder sur ces cinq points.
+- **En attente de David** : les cinq réponses ci-dessus (voir § Questions).
+- **Pièges en cours** : la preuve de M44 utilise `--include=*.ts` : la rejouer sous bash, pas zsh (glob). Tests de preuve : `ECARTS_PREUVES=1 npx vitest run --project ecarts …`.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-fiches` · `fix/ecarts-fiches`.
 
 ## Écarts du lot
 
 V108, V109, V111 (visibles, phase 0) · L9, L85, L86, L111 (latents) · T23 (RGPD) · M44 (code mort).
 
+## Questions posées à David (2026-11-28)
+
+1. **V108 + M44** : au corrigé d'une série d'automatismes, vecteur attendu en flèche verte, droite verticale en vert ; le dessin `solved` de `courbe-typst.ts` (M44, sans appelant) servirait au lieu d'être supprimé.
+2. **V109** : au corrigé imprimé, aiguilles de l'horloge à régler et barre à construire dessinées en vert.
+3. **V111** : fiche anglaise, notion sans nom anglais : quel titre en tête ?
+4. **L86** : fonction SQL (droits de l'appelant) qui écrit notions et fiche d'un coup ; question d'accès.
+5. **L9** : la prod n'a pas STIX Two Math (polices du bundle typst.ts : New Computer Modern Math) ; le témoin devrait la retirer plutôt que la mettre dans le dépôt.
+
 ## Historique
+
+- 2026-11-28 : L85 (`escapeTypst` échappe `//` et `/*`), T23 (`escapeTypstBrackets` sur le texte du prof d'une fiche), L111 (refus HTTP relevé tel quel) ; tests compilés pour de vrai, vérifiés rouges sans le correctif.
 
 - 2026-11-28 : lot pris, worktree ouvert, preuves rejouées (9 rouges).
