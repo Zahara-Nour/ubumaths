@@ -523,14 +523,26 @@ test('#1640 — « Conjecturer la limite d’une suite » : énoncé « Quelle s
 	expect(await page.locator('body').innerText()).not.toMatch(/limites? aux bornes/i);
 
 	// Brouillon `227f2c9c` : corrigé par e^(ax) × e^b, puis rendu dans l'énoncé
+	// Les variations 0 à 2 (f(x) = e^(u(x))) finissent par la formule a·e^(ax). La variation 3
+	// (f(x) = a·e^(kx) + bx + c, ajoutée le 2026-11-24 par `idees-1re-exponentielle`) se corrige
+	// avec les nombres tirés (« celle de 9e^{3x} est 9×3e^{3x} ») : la formule générale n'y est pas.
 	const decomposed: string[] = [];
+	let withNumbers = 0;
 	for (let seed = 1; seed <= 40; seed++) {
 		const instance = await generate(page, DERIVEE_EXP_AFFINE, seed);
 		const steps = (instance.correction?.steps ?? []).join('\n');
+		if (instance.selectedVariationIndex === 3) {
+			expect(steps, `graine ${seed} : dérivée de k·e^(kx) avec les nombres`).toMatch(
+				/La dérivée de \$x\\mapsto e\^\{ -?\d+x \}\$ est \$x\\mapsto -?\d+e\^\{ -?\d+x \}\$/
+			);
+			withNumbers++;
+			continue;
+		}
 		if (steps.includes('e^{-x}\\times e')) decomposed.push(steps);
 		expect(steps, `graine ${seed} : toute dérivée finit par a·e^(ax)`).toMatch(/a\\,e\^\{ax\}/);
 	}
 	expect(decomposed.length, 'un tirage avec b ≠ 0 corrigé par e^(ax)·e^b').toBeGreaterThan(0);
+	expect(withNumbers, 'un tirage de la variation 3').toBeGreaterThan(0);
 });
 
 // ============================================================================

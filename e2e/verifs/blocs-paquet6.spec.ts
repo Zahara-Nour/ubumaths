@@ -734,8 +734,9 @@ const PAIRES = [
 async function exerciseOf(title: string, statement: string, solution: string): Promise<string> {
 	const rows = await sql<{ id: string }>(
 		withFirstVersion(
-			`insert into exercises (title, source, grades, topic, created_by, category, variations)
-			 values ($1, $4, '{}', 'Verifs6', $2, 'automatisme', $3::jsonb) returning id`
+			`insert into exercises (title, source, grades, topic, created_by, category)
+			 values ($1, $4, '{}', 'Verifs6', $2, 'automatisme') returning id`,
+			{ variations: '$3::jsonb' }
 		),
 		[
 			title,
@@ -807,23 +808,29 @@ async function copyFiche(sourceId: string, title: string): Promise<string> {
 	}
 	const placed = await sql<{
 		exercise_id: string;
+		exercise_version_id: string;
 		section_id: string | null;
 		position: number;
 		points: number | null;
 		answer_frame_lines: unknown;
 	}>(
-		`select exercise_id, section_id, position, points, answer_frame_lines
+		`select exercise_id, exercise_version_id, section_id, position, points, answer_frame_lines
 		   from worksheet_exercises where worksheet_id = $1 order by position`,
 		[sourceId]
 	);
 	for (const row of placed) {
 		const copy = await sql<{ id: string }>(
 			withFirstVersion(
-				`insert into exercises (title, source, grades, topic, created_by, category, variations, generic_functions, variables)
-				 select title, $3, grades, topic, $2, category, variations, generic_functions, variables
-				   from exercises where id = $1 returning id`
+				`insert into exercises (title, source, grades, topic, created_by, category, variables)
+				 select title, $3, grades, topic, $2, category, variables
+				   from exercises where id = $1 returning id`,
+				{
+					variations: '(select variations from exercise_versions where id = $4)',
+					shared: '(select shared from exercise_versions where id = $4)',
+					genericFunctions: '(select generic_functions from exercise_versions where id = $4)'
+				}
 			),
-			[row.exercise_id, TEACHER_ID, source6]
+			[row.exercise_id, TEACHER_ID, source6, row.exercise_version_id]
 		);
 		await sql(
 			`insert into worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, section_id, position, points, answer_frame_lines)
@@ -1048,6 +1055,8 @@ test.describe('PDF de fiche', { tag: '@bureau' }, () => {
 		const dark = share(raster, (r, g, b) => gray(r, g, b) < 80);
 		expect(mid, 'surfaces des objets (gris moyens)').toBeGreaterThan(0.003);
 		expect(dark, 'traits foncés').toBeGreaterThan(0.003);
+		// Dossier des captures : un worktree neuf ne l'a pas encore (aucun `shot` avant ce test)
+		await mkdir(SHOTS, { recursive: true });
 		execFileSync('pdftoppm', [
 			'-gray',
 			'-png',

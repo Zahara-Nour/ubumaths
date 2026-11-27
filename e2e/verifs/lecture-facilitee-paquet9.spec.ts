@@ -580,8 +580,9 @@ test('#2937 — corrigé PDF d’une fiche : texte coloré sans code brut, « la
 		'Verifs9 : la phrase commence par [« la somme »]{.bleu} : son premier terme est [« le produit de 3 par 5 »]{.orange}, soit [$3 \\times 5$]{.orange}.';
 	const created = await sql<{ id: string }>(
 		withFirstVersion(
-			`insert into exercises (title, source, grades, topic, created_by, category, variations)
-			 values ('Verifs9 couleurs', 'verifs9c', '{}', 'Verifs9', $1, 'automatisme', $2::jsonb) returning id`
+			`insert into exercises (title, source, grades, topic, created_by, category)
+			 values ('Verifs9 couleurs', 'verifs9c', '{}', 'Verifs9', $1, 'automatisme') returning id`,
+			{ variations: '$2::jsonb' }
 		),
 		[
 			TEACHER_ID,

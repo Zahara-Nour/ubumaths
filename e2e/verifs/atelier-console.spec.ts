@@ -392,8 +392,10 @@ test('#1385 — « Simuler avec probabilités M » : simuler L M 100, lettres s�
 	await chooseSetting(page, 'Écriture mathématique');
 	await cardAction(page, 'L', 'Avec une autre liste');
 	await page.getByRole('menuitem', { name: /Simuler avec probabilités M/ }).click();
-	const value = await mathValue(mathConsole(page));
-	expect(value.replace(/\s+/g, '')).toBe('\\text{simuler}\\,L\\,M\\,100');
+	// La console se remplit après la fermeture du menu : lue jusqu'à ce qu'elle le soit
+	await expect
+		.poll(async () => (await mathValue(mathConsole(page))).replace(/\s+/g, ''))
+		.toBe('\\text{simuler}\\,L\\,M\\,100');
 });
 
 /** Le bouton ☰ et le bouton du clavier virtuel d'un champ MathLive sont-ils affichés ? */

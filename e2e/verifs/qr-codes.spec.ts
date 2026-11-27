@@ -474,8 +474,9 @@ async function createFicheDecor(): Promise<FicheDecor> {
 	const run = Date.now().toString(36);
 	const exercise = await sql<{ id: string }>(
 		withFirstVersion(
-			`insert into exercises (title, created_by, is_public, slug, category, variations)
-			 values ('Verifs QR', $1, true, $2, 'automatisme', $3::jsonb) returning id`
+			`insert into exercises (title, created_by, is_public, slug, category)
+			 values ('Verifs QR', $1, true, $2, 'automatisme') returning id`,
+			{ variations: '$3::jsonb' }
 		),
 		[
 			'11111111-1111-4111-8111-111111111111',
