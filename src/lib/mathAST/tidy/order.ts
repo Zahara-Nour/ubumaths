@@ -61,6 +61,7 @@ import {
 	isDelimiter,
 	isHole,
 	isImaginaryUnit,
+	isPiConstant,
 	isSegmentLength,
 	isSubscript,
 	isSymbol,
@@ -370,6 +371,38 @@ function isImaginaryTerm(term: TidyTerm): boolean {
 		imaginary.length === 1 &&
 		term.factors.every((factor) => imaginary.includes(factor) || !containsComplex(factor.base))
 	);
+}
+
+/** Le nœud contient-il π ? */
+function containsPi(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (isPiConstant(n)) found = true;
+		return n;
+	});
+	return found;
+}
+
+/**
+ * Le terme imaginaire dont le `i` s'écrit **derrière** la barre de fraction
+ * (V35, décision de David, 2026-11-03 et 2026-11-27) : `\dfrac{\sqrt{3}}{2} i`,
+ * `\dfrac{3}{2} i`, `\dfrac{1}{2} i`, dans une somme ou seul. Rend le terme
+ * sans son `i` et ce facteur, ou `null` quand la règle ne s'applique pas : une
+ * inconnue (`\dfrac{ix}{2}`), une unité, un terme opaque, ou π — l'argument
+ * d'une exponentielle garde `\dfrac{i\pi}{3}`, comme dans les manuels.
+ * C'est `buildTermMagnitude` qui sait si le terme a une barre de fraction.
+ */
+export function imaginaryBehindFraction(
+	term: TidyTerm
+): { real: TidyTerm; imaginaryUnit: TidyFactor } | null {
+	if (!isPlainTerm(term) || !isImaginaryTerm(term)) return null;
+	if (term.factors.some((f) => containsUnknown(f.base) || containsPi(f.base))) return null;
+	const imaginaryUnit = term.factors.find((f) => isImaginaryUnit(f.base));
+	if (imaginaryUnit === undefined) return null;
+	return {
+		real: { ...term, factors: term.factors.filter((f) => f !== imaginaryUnit) },
+		imaginaryUnit
+	};
 }
 
 /** Un terme de partie réelle : aucun `i`, nulle part. */

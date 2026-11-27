@@ -2,13 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3233._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : #3233 mergée (6 modèles neufs N1 à N6, 25 variations ; 1 variation ajoutée à 311bf024, réservé dans `idees-ailleurs-repartition.md`). Les 6 brouillons ont été joués dans l'aperçu admin local (rendu iPhone correct ; N1 et N5 un peu plus larges que l'écran). `security-auditor` passé après le merge sur la migration de contenu : aucun finding bloquant. `migration list --linked` : seule `20261127115608` en attente.
-- **Prochaine action** : après les deux gestes de David, commiter les ids de prod en tête des fichiers N1 à N6 ; relever les niveaux en prod ; générer la migration de rangement (`migration-rangement.ts --dir scripts/questions/idees-6e-durees-neufs`), PR avec `security-auditor` ; puis la relecture dans `/dev/modeles`.
-- **En attente de David** : rien. `db:migrate` (contenu de 311bf024) et `create-questions --publier` (6 brouillons) faits par David le 2026-11-27 ; à vérifier en prod (MCP). ⚠️ Les ids de prod sont écrits, NON commités, dans les 6 JSON de `scripts/questions/idees-6e-durees-neufs/` du DÉPÔT PRINCIPAL : les reporter dans le nouveau worktree (copie des fichiers), puis `git checkout --` sur `main` après comparaison.
-- **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; niveaux posés 9, 10 (calcul de durées) et 14 à 17 (conversions), à relever en prod avant la migration de rangement ; les messages à décimaux s'écrivent `0.3` dans les specs.
-- **Worktree / branche** : aucun (retiré par `pr:merger`) ; nouveau worktree pour la PR de rangement.
+- **État** : clos. Les 6 modèles neufs N1 à N6 (4e63215d, c98a5fc6, fc244fa1, d48bdef9, ee8d7130, fa2e1ec0) publiés en prod, la variation F1 de 311bf024 en prod, rubrique 6M4 « publiée » dans le tableau de répartition, réservation de 311bf024 levée, journal et relevé archivés · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun
 
 ## Phase 0 (2026-11-27)
 
@@ -86,3 +82,8 @@ coup de pouce.
   on repart de 0 h »).
 - **Q4 — Conversions : deux modèles (N3, N4) ou un seul ?** Recommandation : deux, chacun une famille d'unités, plus
   simple à choisir pour un prof.
+
+## Historique
+
+- #3233 (modèles en brouillon, variation de 311bf024) et #3237 (rangement des 6 modèles neufs) mergées et migrées.
+- 2026-11-27 : brouillons montrés dans `/dev/modeles` par les filtres `?statut=draft&point=…` (le script de série refuse les brouillons) ; David : « je valide tous les modeles » ; `publier-lot.ts` simulé, 6 passent ; David lance `--publier` ; MCP : 6/6 `published`. Rubrique publiée, réservation de 311bf024 levée, journal et relevé archivés (`docs/archive/wip/idees-6e-durees/`).

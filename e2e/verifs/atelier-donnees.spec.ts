@@ -41,6 +41,20 @@ test.beforeEach(async ({ page }) => {
 	await openView(page, 'Données');
 });
 
+/** Met `text` dans le presse-papiers comme un logiciel : champ provisoire, tout sélectionner, ⌘C */
+async function copyText(page: Page, text: string): Promise<void> {
+	await page.evaluate((value) => {
+		const field = document.createElement('textarea');
+		field.id = 'verifs-presse-papiers';
+		field.value = value;
+		document.body.append(field);
+	}, text);
+	await page.locator('#verifs-presse-papiers').focus();
+	await page.keyboard.press('ControlOrMeta+A');
+	await page.keyboard.press('ControlOrMeta+C');
+	await page.evaluate(() => document.getElementById('verifs-presse-papiers')?.remove());
+}
+
 /** Sélectionne la zone de `from` à `to` (clic, puis Maj + clic) */
 async function selectZone(page: Page, from: string, to: string): Promise<void> {
 	await selectCell(page, from);
@@ -955,14 +969,11 @@ test(
 	async ({ page }) => {
 		await allowClipboard(page);
 		// Un tableau copié dans LibreOffice ou Excel : texte à tabulations, titres en tête
+		// Mis dans le presse-papiers par un vrai ⌘C (un `ClipboardEvent` fabriqué perd ses données
+		// sous Firefox : `getData` y rend une chaîne vide), puis collé par ⌘V dans la case
+		await copyText(page, 'Taille\tMasse\n152\t41,5\n160\t48\n');
 		await selectCell(page, 'B1');
-		await page.evaluate(() => {
-			const data = new DataTransfer();
-			data.setData('text/plain', 'Taille\tMasse\n152\t41,5\n160\t48\n');
-			document.activeElement?.dispatchEvent(
-				new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true })
-			);
-		});
+		await page.keyboard.press('ControlOrMeta+V');
 		await expect.poll(() => shownIn(page, 'B2')).toBe('160');
 		await expect.poll(() => shownIn(page, 'C1')).toBe('41,5');
 		await expect(page.locator('input.titre').nth(1)).toHaveValue('Taille');
