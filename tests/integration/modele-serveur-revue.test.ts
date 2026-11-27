@@ -33,8 +33,7 @@ import {
 } from '#lib/server/chapter-templates.ts';
 import { LinkedElementError, unlinkWorksheet } from '#lib/server/chapters.ts';
 import { POST as templateDocuments } from '../../src/routes/api/teacher/chapter-templates/[id]/documents/+server';
-import { DELETE as deleteChecklistApi } from '../../src/routes/api/teacher/chapters/[id]/checklist/[itemId]/+server';
-import { DELETE as unlinkExerciseApi } from '../../src/routes/api/teacher/chapters/[id]/exercises/[linkId]/+server';
+import { actions as chapterActions } from '../../src/routes/(protected)/dashboard/teacher/cours/[classId]/[chapterId]/+page.server';
 import { actions as templateActions } from '../../src/routes/(protected)/dashboard/teacher/contenu/templates/[templateId]/+page.server';
 
 vi.mock('#lib/server/serviceRoleClient.ts', async () => {
@@ -104,16 +103,6 @@ function formRequest(fields: Record<string, string>): Request {
 	const body = new FormData();
 	for (const [k, v] of Object.entries(fields)) body.set(k, v);
 	return new Request('http://localhost/', { method: 'POST', body });
-}
-
-async function statusOf(call: () => unknown): Promise<number> {
-	try {
-		return ((await call()) as Response).status;
-	} catch (e) {
-		const status = (e as { status?: number }).status;
-		if (typeof status === 'number') return status;
-		throw e;
-	}
 }
 
 /** La section liée d'un chapitre pour une section du modèle. */
@@ -277,16 +266,16 @@ describe('ADR 0029, étape 3b — corrections de la revue', () => {
 			const exercice = await lien('chapter_exercises');
 			const fiche = await lien('chapter_worksheets');
 
-			expect(
-				await statusOf(() =>
-					deleteChecklistApi({ locals, params: { id: chapA, itemId: objectif } } as never)
-				)
-			).toBe(409);
-			expect(
-				await statusOf(() =>
-					unlinkExerciseApi({ locals, params: { id: chapA, linkId: exercice } } as never)
-				)
-			).toBe(409);
+			const refusObjectif = (await chapterActions.deleteChecklistItem({
+				locals,
+				request: formRequest({ itemId: objectif })
+			} as never)) as { status?: number };
+			expect(refusObjectif.status).toBe(409);
+			const refusExercice = (await chapterActions.unlinkExercise({
+				locals,
+				request: formRequest({ chapterExerciseId: exercice })
+			} as never)) as { status?: number };
+			expect(refusExercice.status).toBe(409);
 			const { error } = await unlinkWorksheet(fiche, prof);
 			expect(error).toBeInstanceOf(LinkedElementError);
 
