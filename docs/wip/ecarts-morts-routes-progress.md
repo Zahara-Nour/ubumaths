@@ -8,9 +8,9 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR._
 
-- **État** : les 7 écarts du lot (M23, M24, M25, M26, M42, M43, M45) sont corrigés sur la branche, en une PR · **Prochaine action** : lire les revues `code-reviewer` + `security-auditor` lancées le 2026-11-28 (à relancer si la session a été vidée avant leur retour), corriger, puis pousser, ouvrir la PR, CI, merge ; puis clore le lot (registre barré par la tâche de nuit ou à la main, « fait (#PR) » dans [ecarts-lots.md](ecarts-lots.md), journal archivé) · **En attente de David** : rien (lot sans décision) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-morts-routes`, `chore/ecarts-morts-routes`
+- **État** : les 7 écarts corrigés, revues faites, PR ouverte · **Prochaine action** : CI verte → merge (`pnpm pr:merger`), puis clore le lot sur `main` (« fait (#PR) » dans [ecarts-lots.md](ecarts-lots.md), journal archivé ; le registre se barre à la tâche de nuit) · **En attente de David** : rien (lot sans décision) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-morts-routes`, `chore/ecarts-morts-routes`
 
 ## Écarts du lot
 
@@ -52,3 +52,11 @@ classes est vide (même adresse, même clé que la page vue).
 
 - 2026-11-28 : lot pris, worktree ouvert ; les 7 écarts vérifiés puis corrigés ; revues
   `code-reviewer` + `security-auditor` (routes d'API retirées).
+- Revues : `security-auditor` sans finding (aucune garde ne vivait que dans une route retirée ;
+  `/api/teacher/classes` a la même garde). `code-reviewer` : deux schémas de réordonnancement
+  orphelins retirés en plus, `static/openapi.json` régénéré (il portait encore l'ancien nom de la
+  marque), `max_attempts` du décor rendu explicite. Perte de couverture signalée sur les refus du
+  départ : fausse, `evaluation-notee-serveur` teste brouillon (404), date limite et tentatives
+  épuisées (403).
+- Hors lot, laissé : le RPC SQL `add_warning` n'a plus d'appelant dans le code (le retirer = une
+  migration, à décider à part).
