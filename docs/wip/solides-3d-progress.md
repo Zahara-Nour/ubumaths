@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, PR du bord en butée ouverte (après #3251)._
+_Mis à jour le 2026-11-27, après #3252 (bord en butée mergé)._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6, 7a (droites) et 7b
-  (plans) mergés** (#3195 à #3251, § 18 et 19). **Bord en butée** (§ 20) : codé, relu, PR ouverte depuis
-  `fix/solides-3d-bord-en-butee`, **pas mergée : David l'essaie d'abord**. Les lots 3 à 7b ne sont pas en prod
-  tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de l'affirmer).
-- **Prochaine action** : au « c'est bon » de David, `pnpm pr:merger <n>` de la PR du bord en butée (serveur de
-  dev du worktree à tuer par son PID). Puis **lot 7c** (repère du solide et points par coordonnées, § 17) :
-  worktree et branche neufs depuis `main`, tests d'abord.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6, 7a (droites), 7b
+  (plans) et bord en butée mergés** (#3195 à #3252, § 18 à 20), le bord en butée essayé par David (« c'est
+  bon »). Les lots 3 à 7b et le bord en butée ne sont pas en prod tant qu'un `deploy:prod` demandé par David
+  ne les a pas emportés (le vérifier avant de l'affirmer).
+- **Prochaine action** : **lot 7c** (repère du solide et points par coordonnées, § 17). Worktree et branche
+  neufs depuis `main`, tests d'abord.
 - **En attente de David** : il vérifie chaque morceau du lot 7 **avant le merge** (lien `pnpm lien`). Pas de
   `deploy:prod` sans sa demande. Proposé, sans réponse : description des réglages sous le réglage dans la
   page d'aide ; teinter les cases de saisie de `retrouver:`. Signalé, sans réponse : avec deux plans dans un
@@ -36,8 +35,8 @@ _Mis à jour le 2026-11-27, PR du bord en butée ouverte (après #3251)._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, `fix/solides-3d-bord-en-butee`, serveur de dev sur
-  5176 (lien `pnpm lien`). Après le merge : à recréer depuis `origin/main` pour le 7c.
+- **Worktree / branche** : aucun (retirés après #3252, serveur arrêté). À créer : `../ubumaths-wt-solides-3d`,
+  depuis `origin/main` ; le port 5176 peut être pris par une autre session.
 
 ## 1. D'où l'on part
 
@@ -695,3 +694,4 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   justes après ; aucun « visible » là où le témoin dit « caché ». Seuils : 0 désaccord avec `hiddenEdges` sur
   141 120 arêtes, angles à 1e-15 près de la tranche compris. Tests neufs rejoués sur l'ancien code : rouges
   (sauf la diagonale du fond, qui garde le cas inverse). Rien de bloquant ; un commentaire de test corrigé.
+- **Essayé par David le 2026-11-27 : « c'est bon ».** Mergé (#3252).
