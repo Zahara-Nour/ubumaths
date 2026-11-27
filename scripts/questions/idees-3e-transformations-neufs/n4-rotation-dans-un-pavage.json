@@ -1,0 +1,302 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Rotations",
+		"point": null
+	},
+	"title": "Rotation dans un pavage",
+	"description": "Dans un pavage de carrés ou de triangles équilatéraux aux pièces numérotées, trouver l'image d'une pièce par un quart de tour, un demi-tour, ou une rotation de 60° ou 120°.",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle pièce est l'image de la pièce n° ${{eval:4*(3-q)+p+1}}$ par la rotation de centre $O$ et d'angle $90^{\\circ}$ dans le sens inverse des aiguilles d'une montre ?\n\n```figure\nfenetre: -0.5 ; 8.5 ; -0.5 ; 8.5\ndescription: Pavage de 16 carrés numérotés de 1 à 16, ligne par ligne depuis le haut à gauche ; le point O est un sommet du pavage.\n---\nh0a = point(0, 0, visible=faux)\nh0b = point(8, 0, visible=faux)\nsegment(h0a, h0b)\nv0a = point(0, 0, visible=faux)\nv0b = point(0, 8, visible=faux)\nsegment(v0a, v0b)\nh1a = point(0, 2, visible=faux)\nh1b = point(8, 2, visible=faux)\nsegment(h1a, h1b)\nv1a = point(2, 0, visible=faux)\nv1b = point(2, 8, visible=faux)\nsegment(v1a, v1b)\nh2a = point(0, 4, visible=faux)\nh2b = point(8, 4, visible=faux)\nsegment(h2a, h2b)\nv2a = point(4, 0, visible=faux)\nv2b = point(4, 8, visible=faux)\nsegment(v2a, v2b)\nh3a = point(0, 6, visible=faux)\nh3b = point(8, 6, visible=faux)\nsegment(h3a, h3b)\nv3a = point(6, 0, visible=faux)\nv3b = point(6, 8, visible=faux)\nsegment(v3a, v3b)\nh4a = point(0, 8, visible=faux)\nh4b = point(8, 8, visible=faux)\nsegment(h4a, h4b)\nv4a = point(8, 0, visible=faux)\nv4b = point(8, 8, visible=faux)\nsegment(v4a, v4b)\ntexte(0.8, 1.2, \"13\")\ntexte(2.8, 1.2, \"14\")\ntexte(4.8, 1.2, \"15\")\ntexte(6.8, 1.2, \"16\")\ntexte(0.8, 3.2, \"9\")\ntexte(2.8, 3.2, \"10\")\ntexte(4.8, 3.2, \"11\")\ntexte(6.8, 3.2, \"12\")\ntexte(0.8, 5.2, \"5\")\ntexte(2.8, 5.2, \"6\")\ntexte(4.8, 5.2, \"7\")\ntexte(6.8, 5.2, \"8\")\ntexte(0.8, 7.2, \"1\")\ntexte(2.8, 7.2, \"2\")\ntexte(4.8, 7.2, \"3\")\ntexte(6.8, 7.2, \"4\")\nO = point(2*{{cx}}, 2*{{cy}}, etiquette=\"haut-droite\")\n```\n\nPièce n° $?$",
+			"variables": [
+				{
+					"name": "cx",
+					"expression": "1..3"
+				},
+				{
+					"name": "cy",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [
+				"cx+cy-q-1 >= 0",
+				"cx+cy-q-1 <= 3",
+				"cy-cx+p >= 0",
+				"cy-cx+p <= 3",
+				"cx-cy+q >= 0",
+				"cx-cy+q <= 3",
+				"cx+cy-p-1 >= 0",
+				"cx+cy-p-1 <= 3",
+				"2*cx-p-1 >= 0",
+				"2*cx-p-1 <= 3",
+				"2*cy-q-1 >= 0",
+				"2*cy-q-1 <= 3"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*(3-(cy-cx+p))+(cx+cy-q-1)+1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:4*(3-(cx+cy-p-1))+(cx-cy+q)+1}}",
+							"message": "Tu as tourné dans le sens des aiguilles d'une montre : ici, c'est le sens inverse.",
+							"label": "Sens inversé"
+						},
+						{
+							"answer": "{{eval:4*(3-(2*cy-q-1))+(2*cx-p-1)+1}}",
+							"message": "Tu as fait un demi-tour : un angle de $90^{\\circ}$, c'est un quart de tour.",
+							"label": "Demi-tour"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pièce n° ${{eval:4*(3-q)+p+1}}$ tourne autour de $O$ d'un quart de tour, dans le sens inverse des aiguilles d'une montre : chacun de ses sommets tourne de $90^{\\circ}$ autour de $O$, à la même distance de $O$.",
+					"Elle arrive sur la pièce n° $\\textcolor{{{color:primary.0}}}{{{eval:4*(3-(cy-cx+p))+(cx+cy-q-1)+1}}}$."
+				]
+			},
+			"hint": "Suis un coin de la pièce : il tourne autour de O comme l'aiguille d'une montre à l'envers, d'un quart de tour."
+		},
+		{
+			"statement": "Quelle pièce est l'image de la pièce n° ${{eval:4*(3-q)+p+1}}$ par la rotation de centre $O$ et d'angle $180^{\\circ}$ ?\n\n```figure\nfenetre: -0.5 ; 8.5 ; -0.5 ; 8.5\ndescription: Pavage de 16 carrés numérotés de 1 à 16, ligne par ligne depuis le haut à gauche ; le point O est un sommet du pavage.\n---\nh0a = point(0, 0, visible=faux)\nh0b = point(8, 0, visible=faux)\nsegment(h0a, h0b)\nv0a = point(0, 0, visible=faux)\nv0b = point(0, 8, visible=faux)\nsegment(v0a, v0b)\nh1a = point(0, 2, visible=faux)\nh1b = point(8, 2, visible=faux)\nsegment(h1a, h1b)\nv1a = point(2, 0, visible=faux)\nv1b = point(2, 8, visible=faux)\nsegment(v1a, v1b)\nh2a = point(0, 4, visible=faux)\nh2b = point(8, 4, visible=faux)\nsegment(h2a, h2b)\nv2a = point(4, 0, visible=faux)\nv2b = point(4, 8, visible=faux)\nsegment(v2a, v2b)\nh3a = point(0, 6, visible=faux)\nh3b = point(8, 6, visible=faux)\nsegment(h3a, h3b)\nv3a = point(6, 0, visible=faux)\nv3b = point(6, 8, visible=faux)\nsegment(v3a, v3b)\nh4a = point(0, 8, visible=faux)\nh4b = point(8, 8, visible=faux)\nsegment(h4a, h4b)\nv4a = point(8, 0, visible=faux)\nv4b = point(8, 8, visible=faux)\nsegment(v4a, v4b)\ntexte(0.8, 1.2, \"13\")\ntexte(2.8, 1.2, \"14\")\ntexte(4.8, 1.2, \"15\")\ntexte(6.8, 1.2, \"16\")\ntexte(0.8, 3.2, \"9\")\ntexte(2.8, 3.2, \"10\")\ntexte(4.8, 3.2, \"11\")\ntexte(6.8, 3.2, \"12\")\ntexte(0.8, 5.2, \"5\")\ntexte(2.8, 5.2, \"6\")\ntexte(4.8, 5.2, \"7\")\ntexte(6.8, 5.2, \"8\")\ntexte(0.8, 7.2, \"1\")\ntexte(2.8, 7.2, \"2\")\ntexte(4.8, 7.2, \"3\")\ntexte(6.8, 7.2, \"4\")\nO = point(2*{{cx}}, 2*{{cy}}, etiquette=\"haut-droite\")\n```\n\nPièce n° $?$",
+			"variables": [
+				{
+					"name": "cx",
+					"expression": "1..3"
+				},
+				{
+					"name": "cy",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [
+				"cx+cy-q-1 >= 0",
+				"cx+cy-q-1 <= 3",
+				"cy-cx+p >= 0",
+				"cy-cx+p <= 3",
+				"2*cx-p-1 >= 0",
+				"2*cx-p-1 <= 3",
+				"2*cy-q-1 >= 0",
+				"2*cy-q-1 <= 3",
+				"4*(3-(cy-cx+p))+(cx+cy-q-1)+1 != 4*(3-(2*cy-q-1))+(2*cx-p-1)+1"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*(3-(2*cy-q-1))+(2*cx-p-1)+1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:4*(3-(cy-cx+p))+(cx+cy-q-1)+1}}",
+							"message": "Tu as fait un quart de tour : un angle de $180^{\\circ}$, c'est un demi-tour.",
+							"label": "Quart de tour"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un demi-tour autour de $O$ est la symétrie de centre $O$ : chaque sommet de la pièce a son image de l'autre côté de $O$, à la même distance.",
+					"La pièce n° ${{eval:4*(3-q)+p+1}}$ arrive sur la pièce n° $\\textcolor{{{color:primary.0}}}{{{eval:4*(3-(2*cy-q-1))+(2*cx-p-1)+1}}}$."
+				]
+			},
+			"hint": "Un demi-tour : O est le milieu du segment qui relie un coin de la pièce à son image."
+		},
+		{
+			"statement": "Quelle pièce est l'image de la pièce n° ${{if:k==1|2|{{if:k==2|9|{{if:k==3|14|{{if:k==4|20|{{if:k==5|5|17}}}}}}}}}}$ par la rotation de centre $O$ et d'angle ${{if:k==1|60|{{if:k==2|120|{{if:k==3|60|{{if:k==4|120|{{if:k==5|120|60}}}}}}}}}}^{\\circ}$ {{if:k==1|dans le sens inverse des aiguilles d'une montre|{{if:k==2|dans le sens inverse des aiguilles d'une montre|{{if:k==3|dans le sens des aiguilles d'une montre|{{if:k==4|dans le sens des aiguilles d'une montre|{{if:k==5|dans le sens inverse des aiguilles d'une montre|dans le sens inverse des aiguilles d'une montre}}}}}}}}}} ?\n\n```figure\nfenetre: -4.6 ; 4.6 ; -3.9 ; 3.9\ndescription: Hexagone régulier de centre O découpé en 24 triangles équilatéraux numérotés de 1 à 24, de haut en bas puis de gauche à droite.\n---\ne0a = point(-4, 0.0, visible=faux)\ne0b = point(-3, -1.7321, visible=faux)\nsegment(e0a, e0b)\ne1a = point(-4, 0.0, visible=faux)\ne1b = point(-3, 1.7321, visible=faux)\nsegment(e1a, e1b)\ne2a = point(-4, 0.0, visible=faux)\ne2b = point(-2, 0.0, visible=faux)\nsegment(e2a, e2b)\ne3a = point(-3, -1.7321, visible=faux)\ne3b = point(-2, -3.4641, visible=faux)\nsegment(e3a, e3b)\ne4a = point(-3, -1.7321, visible=faux)\ne4b = point(-2, 0.0, visible=faux)\nsegment(e4a, e4b)\ne5a = point(-3, -1.7321, visible=faux)\ne5b = point(-1, -1.7321, visible=faux)\nsegment(e5a, e5b)\ne6a = point(-3, 1.7321, visible=faux)\ne6b = point(-2, 0.0, visible=faux)\nsegment(e6a, e6b)\ne7a = point(-3, 1.7321, visible=faux)\ne7b = point(-2, 3.4641, visible=faux)\nsegment(e7a, e7b)\ne8a = point(-3, 1.7321, visible=faux)\ne8b = point(-1, 1.7321, visible=faux)\nsegment(e8a, e8b)\ne9a = point(-2, -3.4641, visible=faux)\ne9b = point(-1, -1.7321, visible=faux)\nsegment(e9a, e9b)\ne10a = point(-2, -3.4641, visible=faux)\ne10b = point(0, -3.4641, visible=faux)\nsegment(e10a, e10b)\ne11a = point(-2, 0.0, visible=faux)\ne11b = point(-1, -1.7321, visible=faux)\nsegment(e11a, e11b)\ne12a = point(-2, 0.0, visible=faux)\ne12b = point(-1, 1.7321, visible=faux)\nsegment(e12a, e12b)\ne13a = point(-2, 0.0, visible=faux)\ne13b = point(0, 0.0, visible=faux)\nsegment(e13a, e13b)\ne14a = point(-2, 3.4641, visible=faux)\ne14b = point(-1, 1.7321, visible=faux)\nsegment(e14a, e14b)\ne15a = point(-2, 3.4641, visible=faux)\ne15b = point(0, 3.4641, visible=faux)\nsegment(e15a, e15b)\ne16a = point(-1, -1.7321, visible=faux)\ne16b = point(0, -3.4641, visible=faux)\nsegment(e16a, e16b)\ne17a = point(-1, -1.7321, visible=faux)\ne17b = point(0, 0.0, visible=faux)\nsegment(e17a, e17b)\ne18a = point(-1, -1.7321, visible=faux)\ne18b = point(1, -1.7321, visible=faux)\nsegment(e18a, e18b)\ne19a = point(-1, 1.7321, visible=faux)\ne19b = point(0, 0.0, visible=faux)\nsegment(e19a, e19b)\ne20a = point(-1, 1.7321, visible=faux)\ne20b = point(0, 3.4641, visible=faux)\nsegment(e20a, e20b)\ne21a = point(-1, 1.7321, visible=faux)\ne21b = point(1, 1.7321, visible=faux)\nsegment(e21a, e21b)\ne22a = point(0, -3.4641, visible=faux)\ne22b = point(1, -1.7321, visible=faux)\nsegment(e22a, e22b)\ne23a = point(0, -3.4641, visible=faux)\ne23b = point(2, -3.4641, visible=faux)\nsegment(e23a, e23b)\ne24a = point(0, 0.0, visible=faux)\ne24b = point(1, -1.7321, visible=faux)\nsegment(e24a, e24b)\ne25a = point(0, 0.0, visible=faux)\ne25b = point(1, 1.7321, visible=faux)\nsegment(e25a, e25b)\ne26a = point(0, 0.0, visible=faux)\ne26b = point(2, 0.0, visible=faux)\nsegment(e26a, e26b)\ne27a = point(0, 3.4641, visible=faux)\ne27b = point(1, 1.7321, visible=faux)\nsegment(e27a, e27b)\ne28a = point(0, 3.4641, visible=faux)\ne28b = point(2, 3.4641, visible=faux)\nsegment(e28a, e28b)\ne29a = point(1, -1.7321, visible=faux)\ne29b = point(2, -3.4641, visible=faux)\nsegment(e29a, e29b)\ne30a = point(1, -1.7321, visible=faux)\ne30b = point(2, 0.0, visible=faux)\nsegment(e30a, e30b)\ne31a = point(1, -1.7321, visible=faux)\ne31b = point(3, -1.7321, visible=faux)\nsegment(e31a, e31b)\ne32a = point(1, 1.7321, visible=faux)\ne32b = point(2, 0.0, visible=faux)\nsegment(e32a, e32b)\ne33a = point(1, 1.7321, visible=faux)\ne33b = point(2, 3.4641, visible=faux)\nsegment(e33a, e33b)\ne34a = point(1, 1.7321, visible=faux)\ne34b = point(3, 1.7321, visible=faux)\nsegment(e34a, e34b)\ne35a = point(2, -3.4641, visible=faux)\ne35b = point(3, -1.7321, visible=faux)\nsegment(e35a, e35b)\ne36a = point(2, 0.0, visible=faux)\ne36b = point(3, -1.7321, visible=faux)\nsegment(e36a, e36b)\ne37a = point(2, 0.0, visible=faux)\ne37b = point(3, 1.7321, visible=faux)\nsegment(e37a, e37b)\ne38a = point(2, 0.0, visible=faux)\ne38b = point(4, 0.0, visible=faux)\nsegment(e38a, e38b)\ne39a = point(2, 3.4641, visible=faux)\ne39b = point(3, 1.7321, visible=faux)\nsegment(e39a, e39b)\ne40a = point(3, -1.7321, visible=faux)\ne40b = point(4, 0.0, visible=faux)\nsegment(e40a, e40b)\ne41a = point(3, 1.7321, visible=faux)\ne41b = point(4, 0.0, visible=faux)\nsegment(e41a, e41b)\ntexte(-1.2, 3.087, \"1\")\ntexte(0.8, 3.087, \"2\")\ntexte(-2.2, 2.509, \"3\")\ntexte(-0.2, 2.509, \"4\")\ntexte(1.8, 2.509, \"5\")\ntexte(-2.2, 1.355, \"6\")\ntexte(-0.2, 1.355, \"7\")\ntexte(1.8, 1.355, \"8\")\ntexte(-3.2, 0.777, \"9\")\ntexte(-1.2, 0.777, \"10\")\ntexte(0.8, 0.777, \"11\")\ntexte(2.8, 0.777, \"12\")\ntexte(-3.2, -0.377, \"13\")\ntexte(-1.2, -0.377, \"14\")\ntexte(0.8, -0.377, \"15\")\ntexte(2.8, -0.377, \"16\")\ntexte(-2.2, -0.955, \"17\")\ntexte(-0.2, -0.955, \"18\")\ntexte(1.8, -0.955, \"19\")\ntexte(-2.2, -2.109, \"20\")\ntexte(-0.2, -2.109, \"21\")\ntexte(1.8, -2.109, \"22\")\ntexte(-1.2, -2.687, \"23\")\ntexte(0.8, -2.687, \"24\")\nO = point(0, 0, etiquette=\"bas\")\n```\n\nPièce n° $?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|3|{{if:k==2|24|{{if:k==3|10|{{if:k==4|1|{{if:k==5|9|21}}}}}}}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:k==1|12|{{if:k==2|5|{{if:k==3|18|{{if:k==4|16|{{if:k==5|24|6}}}}}}}}}}",
+							"message": "Tu as tourné dans l'autre sens : relis le sens de la rotation.",
+							"label": "Sens inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les six angles autour de $O$ mesurent chacun $60^{\\circ}$ : une rotation de ${{if:k==1|60|{{if:k==2|120|{{if:k==3|60|{{if:k==4|120|{{if:k==5|120|60}}}}}}}}}}^{\\circ}$ fait tourner chaque pièce d'{{if:k==1|un cran|{{if:k==2|deux crans|{{if:k==3|un cran|{{if:k==4|deux crans|{{if:k==5|deux crans|un cran}}}}}}}}}} autour de $O$, {{if:k==1|dans le sens inverse des aiguilles d'une montre|{{if:k==2|dans le sens inverse des aiguilles d'une montre|{{if:k==3|dans le sens des aiguilles d'une montre|{{if:k==4|dans le sens des aiguilles d'une montre|{{if:k==5|dans le sens inverse des aiguilles d'une montre|dans le sens inverse des aiguilles d'une montre}}}}}}}}}}.",
+					"La pièce n° ${{if:k==1|2|{{if:k==2|9|{{if:k==3|14|{{if:k==4|20|{{if:k==5|5|17}}}}}}}}}}$ arrive sur la pièce n° $\\textcolor{{{color:primary.0}}}{{{if:k==1|3|{{if:k==2|24|{{if:k==3|10|{{if:k==4|1|{{if:k==5|9|21}}}}}}}}}}}$."
+				]
+			},
+			"hint": "Autour de O, six triangles se partagent le tour complet : chacun fait 60°."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 pièce 7, O au centre : 6",
+			"variationIndex": 0,
+			"variables": {
+				"cx": "2",
+				"cy": "2",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v0 : sens inversé (11)",
+			"variationIndex": 0,
+			"variables": {
+				"cx": "2",
+				"cy": "2",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as tourné dans le sens des aiguilles d'une montre : ici, c'est le sens inverse."
+			},
+			"answers": ["11"]
+		},
+		{
+			"description": "v0 : demi-tour (10)",
+			"variationIndex": 0,
+			"variables": {
+				"cx": "2",
+				"cy": "2",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "v1 pièce 7, O au centre : 10",
+			"variationIndex": 1,
+			"variables": {
+				"cx": "2",
+				"cy": "2",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "v1 : quart de tour (6)",
+			"variationIndex": 1,
+			"variables": {
+				"cx": "2",
+				"cy": "2",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v2 k=1 : pièce 2 → 3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v2 k=2 : pièce 9 → 24",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "v2 k=3 : pièce 14 → 10",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "v2 k=4 : pièce 20 → 1",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v2 k=5 : pièce 5 → 9",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "v2 k=6 : pièce 17 → 21",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["21"]
+		},
+		{
+			"description": "v2 k=1 : sens inversé (12)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["12"]
+		}
+	]
+}
