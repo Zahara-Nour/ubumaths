@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, PR de rangement en cours._
+_Mis à jour le 2026-11-27, après #3224._
 
-- **État** : 2 brouillons en prod (75a03073 N1, bbafb6dd N2) ; migration de rangement `20261127105154` écrite, prouvée (verte avec, rouge sans) · **Prochaine action** : merge de la PR de rangement, `db:migrate` (4 conditions), puis relecture des 2 brouillons dans `/dev/modeles?noeud=` (projeté orthogonal) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-1re-geometrie-reperee`, `feat/idees-1re-geometrie-reperee-rangement`
+- **État** : N1 (75a03073) et N2 (bbafb6dd) en brouillon en prod, rangés sous « projeté orthogonal » (niveaux 4 et 5), tagués 1SPE-437 (`db:migrate` fait) · **Prochaine action** : lire les verdicts « À revoir » en base (`question_template_reviews`, après le 2026-11-27), corriger, puis `publier-lot.ts --dir scripts/questions/idees-1re-geometrie-reperee-neufs` en simulation · **En attente de David** : relecture dans `/dev/modeles?noeud=3~c5066dfa-b654-4205-a228-29a352db725d&statut=draft` · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré après #3224)
 
 ## Historique
 
@@ -56,3 +56,4 @@ _Mis à jour le 2026-11-27, PR de rangement en cours._
   sous `db push` ; seule migration en attente en prod. Non bloquant : `set local lock_timeout` peut
   rester sans effet hors bloc de transaction (au pire une attente de verrou). Personne ne gagne ni
   ne perd d'accès.
+- #3224 mergée ; `db:migrate` le 2026-11-27 (seule migration en attente) ; MCP : 2/2 rangés et tagués 1SPE-437.
