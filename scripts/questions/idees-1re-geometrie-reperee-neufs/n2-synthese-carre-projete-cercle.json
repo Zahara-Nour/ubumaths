@@ -1,0 +1,770 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Géométrie repérée > projeté orthogonal",
+		"point": "1SPE-437"
+	},
+	"title": "Synthèse avec le produit scalaire : carré, projeté et cercle",
+	"description": "Carré OABC dans un repère, H projeté de C sur (OI) : coordonnées, produit scalaire OI·OC, longueurs OI et OH, équation de (CH), équation développée d'un cercle, position d'un point",
+	"grades": ["1_SPE"],
+	"level": 5,
+	"delay": 600,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans le repère orthonormé ci-dessous, $OABC$ est un carré de côté ${{c}}$ : $A({{c}}\\,;0)$, $B({{c}}\\,;{{c}})$ et $C(0\\,;{{c}})$. On place $I({{xI}}\\,;{{yI}})$, et $H$ est le projeté orthogonal de $C$ sur la droite $(OI)$. Le cercle $\\varepsilon$ a pour centre $D\\left({{eval:xI/2}}\\,;{{eval:xI/2}}\\right)$ et pour rayon ${{eval:sqrt(N4)/2}}$.\n\n```figure\nfenetre: {{eval:floor(min(0,xI/2-sqrt(N4)/2))-1}} ; {{eval:ceil(max(c,xI/2+sqrt(N4)/2))+1}} ; {{eval:floor(min(0,xI/2-sqrt(N4)/2))-1}} ; {{eval:ceil(max(c,xI/2+sqrt(N4)/2))+1}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Carré OABC dans un repère orthonormé quadrillé, droite (OI), point H sur (OI), segment [CH] et cercle ε de centre D.\n---\nO = point(0, 0, etiquette=\"bas-gauche\")\nA = point({{c}}, 0, etiquette=\"bas-droite\")\nB = point({{c}}, {{c}}, etiquette=\"haut-droite\")\nC = point(0, {{c}}, etiquette=\"haut-gauche\")\npolygone(O, A, B, C, couleur=\"bleu\", epaisseur=2)\nI = point({{xI}}, {{yI}})\ndroite(O, I)\nH = point({{eval:round(100*(PS*xI/S))/100;d}}, {{eval:round(100*(PS*yI/S))/100;d}})\nsegment(C, H)\nD = point({{eval:round(100*(xI/2))/100;d}}, {{eval:round(100*(xI/2))/100;d}})\nM0 = point({{x0}}, {{y0}}, visible=faux)\ncercle(D, passant=M0, couleur=\"rouge\")\n```\n\n**1.** Donne les coordonnées des vecteurs $\\overrightarrow{OI}$ et $\\overrightarrow{OC}$, puis le produit scalaire $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}$.\n\n$\\overrightarrow{OI}\\begin{pmatrix}?\\\\?\\end{pmatrix}$ et $\\overrightarrow{OC}\\begin{pmatrix}?\\\\?\\end{pmatrix}$\n\n$\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=?$\n\n**2.** Comme $H$ est le projeté orthogonal de $C$ sur $(OI)$, $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=OI\\times OH$. Calcule $OI$, puis $OH$ (valeurs exactes).\n\n$OI=?$\n\n$OH=?$\n\n**3.** Donne une équation cartésienne de la droite $(CH)$.\n\n$?$\n\nDonne une équation de $\\varepsilon$ sous la forme développée $x^2+y^2+\\alpha x+\\beta y+\\gamma=0$.\n\n$?$\n\n**4.** On considère le point $M({{xM}}\\,;{{yM}})$. Que peut-on dire de $M$ ?\n\n```choix\nmelanger: non\n- $M$ est sur $\\varepsilon$ et sur $(CH)$.\n- $M$ est sur $(CH)$, mais pas sur $\\varepsilon$.\n- $M$ est sur $\\varepsilon$, mais pas sur $(CH)$.\n- $M$ n'est ni sur $\\varepsilon$, ni sur $(CH)$.\n```",
+			"variables": [
+				{
+					"name": "xI",
+					"expression": "3..6"
+				},
+				{
+					"name": "yI",
+					"expression": "1..5"
+				},
+				{
+					"name": "j",
+					"expression": "1..4"
+				},
+				{
+					"name": "c",
+					"expression": "eval:xI+j"
+				},
+				{
+					"name": "S",
+					"expression": "eval:xI^2+yI^2"
+				},
+				{
+					"name": "PS",
+					"expression": "eval:c*yI"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:yI"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:c-xI"
+				},
+				{
+					"name": "N4",
+					"expression": "eval:(2*yI-xI)^2+(2*(c-xI)-xI)^2"
+				},
+				{
+					"name": "K",
+					"expression": "eval:-(yI^2+(c-xI)^2-xI*yI-xI*(c-xI))"
+				},
+				{
+					"name": "w",
+					"expression": "0..3"
+				},
+				{
+					"name": "s",
+					"expression": "-1"
+				},
+				{
+					"name": "L1",
+					"expression": "eval:w*(w-2)*(w-3)/2"
+				},
+				{
+					"name": "L2",
+					"expression": "eval:-w*(w-1)*(w-3)/2"
+				},
+				{
+					"name": "L3",
+					"expression": "eval:w*(w-1)*(w-2)/6"
+				},
+				{
+					"name": "xM",
+					"expression": "eval:yI+L1*(-yI*s)+L2*(xI-2*yI)+L3"
+				},
+				{
+					"name": "yM",
+					"expression": "eval:c-xI+L1*(xI*s)+L2*(xI-2*(c-xI))-L3"
+				},
+				{
+					"name": "Fm",
+					"expression": "eval:xM^2+yM^2-xI*xM-xI*yM+K"
+				},
+				{
+					"name": "Lm",
+					"expression": "eval:xI*xM+yI*yM-yI*c"
+				}
+			],
+			"conditions": [
+				"S != 25",
+				"yI < xI",
+				"K != 0",
+				"N4 != 0",
+				"w != 1 || Fm != 0",
+				"w != 2 || Lm != 0",
+				"w != 3 || Fm != 0",
+				"w != 3 || Lm != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{xI}}"
+				},
+				{
+					"expectedAnswer": "{{yI}}"
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{PS}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c*sqrt(S)}}",
+							"message": "Tu as multiplié les longueurs $OI$ et $OC$ : en coordonnées, le produit scalaire vaut $xx'+yy'$.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:c*xI}}",
+							"message": "Tu as croisé les coordonnées : le produit scalaire vaut $xx'+yy'$.",
+							"label": "Coordonnées croisées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{S}}",
+							"message": "Tu as donné $OI^2$ : il reste à prendre la racine carrée.",
+							"label": "OI² au lieu de OI"
+						},
+						{
+							"answer": "{{eval:xI+yI}}",
+							"message": "$OI$ se calcule avec la racine de la somme des carrés des coordonnées.",
+							"label": "Somme des coordonnées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:PS/sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{PS}}",
+							"message": "Tu as donné le produit scalaire : $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=OI\\times OH$, il reste à diviser par $OI$.",
+							"label": "Pas divisé par OI"
+						},
+						{
+							"answer": "{{eval:PS/S}}",
+							"message": "Tu as divisé par $OI^2$ : on divise le produit scalaire par $OI$.",
+							"label": "Divisé par OI²"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{xI}}x+{{yI}}y{{eval:-yI*c}}=0",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "{{yI}}x-{{xI}}y+{{eval:xI*c}}=0",
+							"message": "Ta droite est parallèle à $(OI)$ : $(CH)$ est perpendiculaire à $(OI)$, donc $\\overrightarrow{OI}$ est un vecteur normal à $(CH)$.",
+							"label": "OI pris comme vecteur directeur"
+						},
+						{
+							"answer": "{{xI}}x+{{yI}}y=0",
+							"message": "Ta droite passe par $O$ : $(CH)$ passe par $C$.",
+							"label": "Passe par O"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "x^2+y^2-{{xI}}x-{{xI}}y{{K;+}}=0",
+					"answerKind": "equation",
+					"requiredForm": "cartesienne",
+					"expectedErrors": [
+						{
+							"answer": "x^2+y^2+{{xI}}x+{{xI}}y{{K;+}}=0",
+							"message": "Les signes du centre sont inversés : pour un centre d'abscisse $a$, on développe $\\left( x - a \\right)^2$, qui donne $-2 a x$.",
+							"label": "Signes du centre inversés"
+						},
+						{
+							"answer": "x^2+y^2-{{xI}}x-{{xI}}y{{eval:-N4/4;+}}=0",
+							"message": "En développant, tu as oublié les carrés des coordonnées du centre.",
+							"label": "Carrés du centre oubliés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{OI}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ {{xI}} }\\\\\\textcolor{{{color:primary.0}}}{ {{yI}} }\\end{pmatrix}$ et $\\overrightarrow{OC}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ 0 }\\\\\\textcolor{{{color:primary.0}}}{ {{c}} }\\end{pmatrix}$, donc $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}={{xI}}\\times 0+{{yI}}\\times {{c}}=\\textcolor{{{color:primary.0}}}{ {{PS}} }$.",
+					"$OI=\\sqrt{ {{xI}}^2+{{yI}}^2 }=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(S)}} }$. Comme $\\overrightarrow{OI}$ et $\\overrightarrow{OH}$ ont le même sens, $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=OI\\times OH$, donc $OH=\\dfrac{ {{PS}} }{ {{eval:sqrt(S)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:PS/sqrt(S)}} }$.",
+					"$(CH)$ est perpendiculaire à $(OI)$, donc $\\overrightarrow{OI}$ est un vecteur normal à $(CH)$ : $(CH)$ a une équation de la forme ${{xI}}x+{{yI}}y+k=0$. $C$ est sur $(CH)$ : ${{yI}}\\times {{c}}+k=0$, donc $k={{eval:-yI*c}}$ et $(CH) : \\textcolor{{{color:primary.0}}}{ {{xI}}x+{{yI}}y{{eval:-yI*c}}=0 }$.",
+					"$\\varepsilon : \\left(x-{{eval:xI/2}}\\right)^2+\\left(y-{{eval:xI/2}}\\right)^2={{eval:N4/4}}$. En développant : $x^2-{{xI}}x+{{eval:xI^2/4}}+y^2-{{xI}}y+{{eval:xI^2/4}}-{{eval:N4/4}}=0$, soit $\\textcolor{{{color:primary.0}}}{ x^2+y^2-{{xI}}x-{{xI}}y{{K;+}}=0 }$.",
+					"Avec $x={{xM}}$ et $y={{yM}}$ : dans l'équation de $(CH)$, le premier membre vaut ${{Lm}}$ ; dans celle de $\\varepsilon$, il vaut ${{Fm}}$. $\\textcolor{{{color:primary.0}}}{ {{if:w==0|\\text{M est sur les deux}}}{{if:w==1|\\text{M est sur (CH) seulement}}}{{if:w==2|\\text{M est sur ε seulement}}}{{if:w==3|\\text{M n'est sur aucun des deux}}} }$ : un point est sur une courbe quand ses coordonnées en vérifient l'équation."
+				]
+			},
+			"hint": "Le produit scalaire de deux vecteurs se calcule avec leurs coordonnées, $xx'+yy'$. Pour $(CH)$, $\\overrightarrow{OI}$ est un vecteur normal. Pour $M$, teste ses coordonnées dans les deux équations."
+		},
+		{
+			"statement": "Dans le repère orthonormé ci-dessous, $OABC$ est un carré de côté ${{c}}$ : $A({{c}}\\,;0)$, $B({{c}}\\,;{{c}})$ et $C(0\\,;{{c}})$. On place $I({{xI}}\\,;{{yI}})$, et $H$ est le projeté orthogonal de $C$ sur la droite $(OI)$. Le cercle $\\varepsilon$ a pour centre $D\\left({{eval:xI/2}}\\,;{{eval:xI/2}}\\right)$ et pour rayon ${{eval:sqrt(N4)/2}}$.\n\n```figure\nfenetre: {{eval:floor(min(0,xI/2-sqrt(N4)/2))-1}} ; {{eval:ceil(max(c,xI/2+sqrt(N4)/2))+1}} ; {{eval:floor(min(0,xI/2-sqrt(N4)/2))-1}} ; {{eval:ceil(max(c,xI/2+sqrt(N4)/2))+1}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Carré OABC dans un repère orthonormé quadrillé, droite (OI), point H sur (OI), segment [CH] et cercle ε de centre D.\n---\nO = point(0, 0, etiquette=\"bas-gauche\")\nA = point({{c}}, 0, etiquette=\"bas-droite\")\nB = point({{c}}, {{c}}, etiquette=\"haut-droite\")\nC = point(0, {{c}}, etiquette=\"haut-gauche\")\npolygone(O, A, B, C, couleur=\"bleu\", epaisseur=2)\nI = point({{xI}}, {{yI}})\ndroite(O, I)\nH = point({{eval:round(100*(PS*xI/S))/100;d}}, {{eval:round(100*(PS*yI/S))/100;d}})\nsegment(C, H)\nD = point({{eval:round(100*(xI/2))/100;d}}, {{eval:round(100*(xI/2))/100;d}})\nM0 = point({{x0}}, {{y0}}, visible=faux)\ncercle(D, passant=M0, couleur=\"rouge\")\n```\n\n**1.** Donne les coordonnées des vecteurs $\\overrightarrow{OI}$ et $\\overrightarrow{OC}$, puis le produit scalaire $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}$.\n\n$\\overrightarrow{OI}\\begin{pmatrix}?\\\\?\\end{pmatrix}$ et $\\overrightarrow{OC}\\begin{pmatrix}?\\\\?\\end{pmatrix}$\n\n$\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=?$\n\n**2.** Comme $H$ est le projeté orthogonal de $C$ sur $(OI)$, $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=OI\\times OH$. Calcule $OI$, puis $OH$ (valeurs exactes).\n\n$OI=?$\n\n$OH=?$\n\n**3.** Donne une équation cartésienne de la droite $(CH)$.\n\n$?$\n\nDonne une équation de $\\varepsilon$ sous la forme développée $x^2+y^2+\\alpha x+\\beta y+\\gamma=0$.\n\n$?$\n\n**4.** On considère le point $M({{xM}}\\,;{{yM}})$. Que peut-on dire de $M$ ?\n\n```choix\nmelanger: non\n- $M$ est sur $\\varepsilon$ et sur $(CH)$.\n- $M$ est sur $(CH)$, mais pas sur $\\varepsilon$.\n- $M$ est sur $\\varepsilon$, mais pas sur $(CH)$.\n- $M$ n'est ni sur $\\varepsilon$, ni sur $(CH)$.\n```",
+			"variables": [
+				{
+					"name": "xI",
+					"expression": "4"
+				},
+				{
+					"name": "yI",
+					"expression": "3"
+				},
+				{
+					"name": "j",
+					"expression": "1..4"
+				},
+				{
+					"name": "c",
+					"expression": "eval:xI+j"
+				},
+				{
+					"name": "S",
+					"expression": "eval:xI^2+yI^2"
+				},
+				{
+					"name": "PS",
+					"expression": "eval:c*yI"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:yI"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:c-xI"
+				},
+				{
+					"name": "N4",
+					"expression": "eval:(2*yI-xI)^2+(2*(c-xI)-xI)^2"
+				},
+				{
+					"name": "K",
+					"expression": "eval:-(yI^2+(c-xI)^2-xI*yI-xI*(c-xI))"
+				},
+				{
+					"name": "w",
+					"expression": "0..3"
+				},
+				{
+					"name": "s",
+					"expression": "-1"
+				},
+				{
+					"name": "L1",
+					"expression": "eval:w*(w-2)*(w-3)/2"
+				},
+				{
+					"name": "L2",
+					"expression": "eval:-w*(w-1)*(w-3)/2"
+				},
+				{
+					"name": "L3",
+					"expression": "eval:w*(w-1)*(w-2)/6"
+				},
+				{
+					"name": "xM",
+					"expression": "eval:yI+L1*(-yI*s)+L2*(xI-2*yI)+L3"
+				},
+				{
+					"name": "yM",
+					"expression": "eval:c-xI+L1*(xI*s)+L2*(xI-2*(c-xI))-L3"
+				},
+				{
+					"name": "Fm",
+					"expression": "eval:xM^2+yM^2-xI*xM-xI*yM+K"
+				},
+				{
+					"name": "Lm",
+					"expression": "eval:xI*xM+yI*yM-yI*c"
+				}
+			],
+			"conditions": [
+				"yI < xI",
+				"K != 0",
+				"N4 != 0",
+				"w != 1 || Fm != 0",
+				"w != 2 || Lm != 0",
+				"w != 3 || Fm != 0",
+				"w != 3 || Lm != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{xI}}"
+				},
+				{
+					"expectedAnswer": "{{yI}}"
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{PS}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c*sqrt(S)}}",
+							"message": "Tu as multiplié les longueurs $OI$ et $OC$ : en coordonnées, le produit scalaire vaut $xx'+yy'$.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:c*xI}}",
+							"message": "Tu as croisé les coordonnées : le produit scalaire vaut $xx'+yy'$.",
+							"label": "Coordonnées croisées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{S}}",
+							"message": "Tu as donné $OI^2$ : il reste à prendre la racine carrée.",
+							"label": "OI² au lieu de OI"
+						},
+						{
+							"answer": "{{eval:xI+yI}}",
+							"message": "$OI$ se calcule avec la racine de la somme des carrés des coordonnées.",
+							"label": "Somme des coordonnées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:PS/sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{PS}}",
+							"message": "Tu as donné le produit scalaire : $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=OI\\times OH$, il reste à diviser par $OI$.",
+							"label": "Pas divisé par OI"
+						},
+						{
+							"answer": "{{eval:PS/S}}",
+							"message": "Tu as divisé par $OI^2$ : on divise le produit scalaire par $OI$.",
+							"label": "Divisé par OI²"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{xI}}x+{{yI}}y{{eval:-yI*c}}=0",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "{{yI}}x-{{xI}}y+{{eval:xI*c}}=0",
+							"message": "Ta droite est parallèle à $(OI)$ : $(CH)$ est perpendiculaire à $(OI)$, donc $\\overrightarrow{OI}$ est un vecteur normal à $(CH)$.",
+							"label": "OI pris comme vecteur directeur"
+						},
+						{
+							"answer": "{{xI}}x+{{yI}}y=0",
+							"message": "Ta droite passe par $O$ : $(CH)$ passe par $C$.",
+							"label": "Passe par O"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "x^2+y^2-{{xI}}x-{{xI}}y{{K;+}}=0",
+					"answerKind": "equation",
+					"requiredForm": "cartesienne",
+					"expectedErrors": [
+						{
+							"answer": "x^2+y^2+{{xI}}x+{{xI}}y{{K;+}}=0",
+							"message": "Les signes du centre sont inversés : pour un centre d'abscisse $a$, on développe $\\left( x - a \\right)^2$, qui donne $-2 a x$.",
+							"label": "Signes du centre inversés"
+						},
+						{
+							"answer": "x^2+y^2-{{xI}}x-{{xI}}y{{eval:-N4/4;+}}=0",
+							"message": "En développant, tu as oublié les carrés des coordonnées du centre.",
+							"label": "Carrés du centre oubliés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{OI}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ {{xI}} }\\\\\\textcolor{{{color:primary.0}}}{ {{yI}} }\\end{pmatrix}$ et $\\overrightarrow{OC}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ 0 }\\\\\\textcolor{{{color:primary.0}}}{ {{c}} }\\end{pmatrix}$, donc $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}={{xI}}\\times 0+{{yI}}\\times {{c}}=\\textcolor{{{color:primary.0}}}{ {{PS}} }$.",
+					"$OI=\\sqrt{ {{xI}}^2+{{yI}}^2 }=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(S)}} }$. Comme $\\overrightarrow{OI}$ et $\\overrightarrow{OH}$ ont le même sens, $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=OI\\times OH$, donc $OH=\\dfrac{ {{PS}} }{ {{eval:sqrt(S)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:PS/sqrt(S)}} }$.",
+					"$(CH)$ est perpendiculaire à $(OI)$, donc $\\overrightarrow{OI}$ est un vecteur normal à $(CH)$ : $(CH)$ a une équation de la forme ${{xI}}x+{{yI}}y+k=0$. $C$ est sur $(CH)$ : ${{yI}}\\times {{c}}+k=0$, donc $k={{eval:-yI*c}}$ et $(CH) : \\textcolor{{{color:primary.0}}}{ {{xI}}x+{{yI}}y{{eval:-yI*c}}=0 }$.",
+					"$\\varepsilon : \\left(x-{{eval:xI/2}}\\right)^2+\\left(y-{{eval:xI/2}}\\right)^2={{eval:N4/4}}$. En développant : $x^2-{{xI}}x+{{eval:xI^2/4}}+y^2-{{xI}}y+{{eval:xI^2/4}}-{{eval:N4/4}}=0$, soit $\\textcolor{{{color:primary.0}}}{ x^2+y^2-{{xI}}x-{{xI}}y{{K;+}}=0 }$.",
+					"Avec $x={{xM}}$ et $y={{yM}}$ : dans l'équation de $(CH)$, le premier membre vaut ${{Lm}}$ ; dans celle de $\\varepsilon$, il vaut ${{Fm}}$. $\\textcolor{{{color:primary.0}}}{ {{if:w==0|\\text{M est sur les deux}}}{{if:w==1|\\text{M est sur (CH) seulement}}}{{if:w==2|\\text{M est sur ε seulement}}}{{if:w==3|\\text{M n'est sur aucun des deux}}} }$ : un point est sur une courbe quand ses coordonnées en vérifient l'équation."
+				]
+			},
+			"hint": "Le produit scalaire de deux vecteurs se calcule avec leurs coordonnées, $xx'+yy'$. Pour $(CH)$, $\\overrightarrow{OI}$ est un vecteur normal. Pour $M$, teste ses coordonnées dans les deux équations."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "I(5 ; 2), c = 7, M(2 ; 2) sur les deux",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y-14=0",
+				"x^2+y^2-5x-5y+12=0",
+				"0"
+			]
+		},
+		{
+			"description": "Produit des longueurs",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs $OI$ et $OC$ : en coordonnées, le produit scalaire vaut $xx'+yy'$."
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"7\\sqrt{29}",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y-14=0",
+				"x^2+y^2-5x-5y+12=0",
+				"0"
+			]
+		},
+		{
+			"description": "OI²",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $OI^2$ : il reste à prendre la racine carrée."
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"29",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y-14=0",
+				"x^2+y^2-5x-5y+12=0",
+				"0"
+			]
+		},
+		{
+			"description": "OH : pas divisé par OI",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le produit scalaire : $\\overrightarrow{OI}\\cdot\\overrightarrow{OC}=OI\\times OH$, il reste à diviser par $OI$."
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"14",
+				"5x+2y-14=0",
+				"x^2+y^2-5x-5y+12=0",
+				"0"
+			]
+		},
+		{
+			"description": "(CH) parallèle à (OI)",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta droite est parallèle à $\\left( OI \\right)$ : $\\left( CH \\right)$ est perpendiculaire à $\\left( OI \\right)$, donc $\\overrightarrow{OI}$ est un vecteur normal à $\\left( CH \\right)$."
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"2x-5y+35=0",
+				"x^2+y^2-5x-5y+12=0",
+				"0"
+			]
+		},
+		{
+			"description": "(CH) par O",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta droite passe par $O$ : $\\left( CH \\right)$ passe par $C$."
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y=0",
+				"x^2+y^2-5x-5y+12=0",
+				"0"
+			]
+		},
+		{
+			"description": "ε : signes inversés",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les signes du centre sont inversés : pour un centre d'abscisse $a$, on développe $\\left( x - a \\right)^2$, qui donne $-2 a x$."
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y-14=0",
+				"x^2+y^2+5x+5y+12=0",
+				"0"
+			]
+		},
+		{
+			"description": "M dit sur (CH) seulement",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "0",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y-14=0",
+				"x^2+y^2-5x-5y+12=0",
+				"1"
+			]
+		},
+		{
+			"description": "M(4 ; −3) sur (CH) seulement",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "1",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y-14=0",
+				"x^2+y^2-5x-5y+12=0",
+				"1"
+			]
+		},
+		{
+			"description": "M(3 ; 1) sur aucun",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "5",
+				"yI": "2",
+				"j": "2",
+				"w": "3",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"5",
+				"2",
+				"0",
+				"7",
+				"14",
+				"\\sqrt{29}",
+				"\\frac{14\\sqrt{29}}{29}",
+				"5x+2y-14=0",
+				"x^2+y^2-5x-5y+12=0",
+				"3"
+			]
+		},
+		{
+			"description": "I(4 ; 3), c = 6, M(1 ; 2) sur ε seulement",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"w": "2",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"4",
+				"3",
+				"0",
+				"6",
+				"18",
+				"5",
+				"\\frac{18}{5}",
+				"4x+3y-18=0",
+				"x^2+y^2-4x-4y+7=0",
+				"2"
+			]
+		},
+		{
+			"description": "OH en décimal",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"w": "2",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "3", "0", "6", "18", "5", "3,6", "4x+3y-18=0", "x^2+y^2-4x-4y+7=0", "2"]
+		},
+		{
+			"description": "OH divisé par OI²",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"w": "2",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par $OI^2$ : on divise le produit scalaire par $OI$."
+			},
+			"answers": [
+				"4",
+				"3",
+				"0",
+				"6",
+				"18",
+				"5",
+				"\\frac{18}{25}",
+				"4x+3y-18=0",
+				"x^2+y^2-4x-4y+7=0",
+				"2"
+			]
+		},
+		{
+			"description": "ε : carrés du centre oubliés",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"w": "2",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En développant, tu as oublié les carrés des coordonnées du centre."
+			},
+			"answers": [
+				"4",
+				"3",
+				"0",
+				"6",
+				"18",
+				"5",
+				"\\frac{18}{5}",
+				"4x+3y-18=0",
+				"x^2+y^2-4x-4y-1=0",
+				"2"
+			]
+		}
+	]
+}
