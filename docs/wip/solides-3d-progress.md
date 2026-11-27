@@ -2,27 +2,27 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3229._
+_Mis à jour le 2026-11-27, après #3235._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1 à 5 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216 cylindre,
-  cône, boule, § 8 et 9 ; #3222 sections et cotes, § 10 et 11 ; #3227 vecteur à tracer sur figure tournée,
-  § 12 et 13) ; **#3229** : nom d'un centre écarté des cotes (boule coupée près du centre, § 14). Les lots 3
-  à 5 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le
-  vérifier avant de l'affirmer).
-- **Prochaine action** : lot 6 (` ```cubes `, assemblages) : comportements 53 à 68 écrits (§ 15), **à faire
-  valider par David avant tout code**, avec ses réponses aux questions (a) teintes et (b) `dessiner:`.
-- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : noms tenus
-  (§ 7), solides ronds (§ 9), lot 4 (longueurs qui s'effacent, section qui tourne), lot 5 (exemple « Un
-  vecteur à tracer sur un pavé que l'élève peut tourner » : toucher contre glisser, toucher « tremblé » de 4
-  à 10 px qui tourne sans poser). Puis sa demande de `deploy:prod` (mise en prod seulement après son essai).
-  Deux défauts voisins signalés le 2026-11-27, sans réponse (§ 14) : contour de la section dans le texte de
-  la cote du rayon (boule coupée très près du centre) ; cotes du rayon et de la distance qui se touchent
-  (cylindre très plat coupé perpendiculairement à l'axe). Les corriger ou les laisser ?
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195 moteur ;
+  #3200 polyèdres ; #3211 noms tenus ; #3216 cylindre, cône, boule ; #3222 sections et cotes ; #3227 vecteur à
+  tracer sur figure tournée ; #3229 nom d'un centre écarté des cotes ; **#3235 assemblages de cubes**, § 15 et
+  16). Les lots 3 à 6 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas
+  emportés (le vérifier avant de l'affirmer).
+- **Prochaine action** : lot 7 (Terminale : repère, points par coordonnées, droites, plans) — **nouvelle
+  phase 0** : comportements à écrire en français et à faire valider par David avant tout code. Ne pas
+  l'ouvrir sans son go : c'est le dernier lot du découpage, d'une autre taille que les précédents.
+- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` et
+  `/aide-ecriture/blocs/cubes` (compte prof) : noms tenus (§ 7), solides ronds (§ 9), lot 4 (longueurs qui
+  s'effacent, section qui tourne), lot 5 (exemple « Un vecteur à tracer sur un pavé que l'élève peut
+  tourner »), lot 6 (exemple « Un assemblage que l'élève peut tourner »). Puis sa demande de `deploy:prod`
+  (mise en prod seulement après son essai).
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
-  le comportement 44 accepté).
+  le comportement 44 accepté) ; lot 6 : chaque face de cube garde sa teinte (arrière = devant, gauche =
+  droite, dessous = dessus), `tourner:` refusé avec `dessiner:` ; les deux défauts du § 14 (boule coupée
+  très près du centre, cylindre très plat) sont laissés, à corriger s'il les croise dans un modèle.
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`, scènes neuves à prendre sur le code de `main`) ; jamais d'instantané de
   flottants bruts ; l'angle libre d'un nom se calcule dans le repère du dessin fixe (`fixedVertices`), jamais
@@ -33,8 +33,8 @@ _Mis à jour le 2026-11-27, après #3229._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-6` (neuve, depuis
-  `main` après #3229, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7` (neuve, depuis
+  `main` après #3235, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
 
 ## 1. D'où l'on part
 
