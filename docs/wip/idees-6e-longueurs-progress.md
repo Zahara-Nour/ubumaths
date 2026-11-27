@@ -2,17 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot écrit._
+_Mis à jour le 2026-11-27, après #3254._
 
 - **État** : lot écrit (6 modèles neufs, 20 variations ; 11 variations ajoutées à 6 publiés), `question:specs`
-  vert (111 + 109 specs), essai des neufs en base locale ; PR du lot ouverte.
+  vert (111 + 109 specs), essai des neufs en base locale ; #3254 mergée (fichiers du lot seuls).
 - **Prochaine action** : PR mergée → David lance `create-questions --publier` sur
   `scripts/questions/idees-6e-longueurs-neufs` ; puis migrations de rangement et de contenu (générées).
 - **En attente de David** : la commande `--publier` ; question sur le bogue de fdd849f5 (voir Historique).
 - **Pièges en cours** : une variation `conditions: []` écrase les conditions partagées (`??` du générateur) ;
   ccb4f5e5 gagne l'option `constraints.products: off` (« ⚠️ options » de `migration-contenu`) ; la migration de
   contenu générée trop tôt est mise de côté, à régénérer.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs`, `chore/idees-6e-longueurs`.
+- **Worktree / branche** : aucun (le prochain, sur `origin/main`, sous le même sujet).
 
 ## Phase 0 (2026-11-27)
 
@@ -109,6 +109,8 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-27 : #3254 mergée (fichiers du lot seuls, CI verte).
 
 - 2026-11-27 : lot écrit par deux agents (Opus), relu. Neufs : N1 carré et rectangle (6-144, 6-199), N2 et N3
   (6-148), N4 et N5 (6e sans point, nœud « unités simples » comme c31c9d95) ; 111 specs vertes, sonde des figures
