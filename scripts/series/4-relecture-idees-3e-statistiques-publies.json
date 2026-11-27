@@ -1,0 +1,14 @@
+{
+	"id": "f4b416d8-f0e3-43c0-b973-221834893963",
+	"title": "Relecture — statistiques, 1 modèle publié de 4e complété",
+	"grade": "4",
+	"description": "Relecture dans /dev/modeles du modèle publié auquel le chantier idees-3e-statistiques a ajouté la moyenne des pointures arrondie au dixième, variation 5, à la fin du modèle.",
+	"items": [
+		{
+			"modele": "Moyenne pondérée",
+			"templateId": "c2497d96-498e-463a-82a0-611705a6e249",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
