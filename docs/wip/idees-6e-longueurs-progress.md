@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, brouillons créés en prod._
+_Mis à jour le 2026-11-28, migrations générées, PR à merger._
 
-- **État** : #3254 mergée ; David a lancé `create-questions --publier` : 6 brouillons en prod (c26b4d4c, 0d55c1de,
-  8ac28cf5, 84648b3b, 0031e3ea, 10dc7b1c ; vérifiés par MCP, `draft`, sans nœud), ids commités sur la branche.
-- **Prochaine action** : relever les niveaux en prod, puis générer `migration-rangement.ts --dir
-scripts/questions/idees-6e-longueurs-neufs` et `migration-contenu.ts --dir …-publies` ; tests
-  `migrations-rangement-tags` et `migrations-contenu-publie` (rouges sans les migrations), `security-auditor`, PR,
-  merge, `db:migrate` (4 conditions ; `migration list --linked` d'abord) ; série de relecture des 6 publiés.
-- **En attente de David** : oui / non à la correction de fdd849f5 dans la migration de contenu (variation 7,
-  `conditions: []` → `['a>b']`, à réserver d'abord ; `migration-contenu` accepte une variation corrigée).
+- **État** : 6 brouillons en prod ; migrations `20261127233649_…_neufs_rangement_tags.sql` (6 modèles rangés, 4
+  tags) et `20261127233659_…_publies_contenu.sql` (+11 variations sur 6 publiés) ; tests verts, rouges sans elles ;
+  `security-auditor` sans finding bloquant. Niveaux relevés en prod le 2026-11-28 : inchangés.
+- **Prochaine action** : PR mergée → `migration list --linked` (seulement les 2 nôtres en attente) → `db:migrate`
+  depuis le dépôt principal → vérifier par MCP → série de relecture des 6 publiés (`scripts/series/creer-serie.ts`)
+  et relecture des 6 brouillons dans `/dev/modeles?point=…`.
+- **En attente de David** : oui / non à la correction de fdd849f5 (variation 7, `conditions: []` → `['a>b']`),
+  **hors de ce lot** faute de réponse ; à réserver d'abord, migration de contenu à part.
 - **Pièges en cours** : `conditions: []` écrase les conditions partagées ; ccb4f5e5 gagne `constraints.products:
-off` ; la commande est `pnpm tsx scripts/create-questions.ts` (pas `pnpm create-questions`).
+off` ; la commande est `pnpm tsx scripts/create-questions.ts`.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs`, `feat/idees-6e-longueurs-rangement`.
 
 ## Phase 0 (2026-11-27)
@@ -111,6 +111,10 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : niveaux relevés en prod (inchangés), migrations de rangement et de contenu générées ;
+  `migrations-rangement-tags` et `migrations-contenu-publie` : 511 verts, rouges sans les migrations ;
+  `security-auditor` : aucun finding bloquant (seul le texte générique du rollback parle de niveaux).
 
 - 2026-11-28 : David lance `create-questions --publier` : 6 brouillons en prod, vérifiés par MCP.
 
