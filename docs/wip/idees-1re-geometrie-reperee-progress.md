@@ -39,3 +39,6 @@ _Mis à jour le 2026-11-27, après #3221._
   par les specs. Ids locaux retirés des fichiers.
 
 - #3221 mergée le 2026-11-27 (fichiers seuls, sans migration).
+- Écarts aux fiches (cercle de N2 passant par un point entier de (CH), rayon √n/2 ; AB² ⩽ 50 en
+  N1 V2) : décidés sans question pendant l'écriture, soumis après coup ; David les valide le
+  2026-11-27 (« je valide »). Rien à corriger.
