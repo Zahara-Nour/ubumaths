@@ -2,21 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3227._
+_Mis à jour le 2026-11-27, après #3229._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
   du § 3) ; **lots 1 à 5 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216 cylindre,
   cône, boule, § 8 et 9 ; #3222 sections et cotes, § 10 et 11 ; #3227 vecteur à tracer sur figure tournée,
-  § 12 et 13). Les lots 3 à 5 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas
-  emportés (le vérifier avant de l'affirmer).
-- **Prochaine action** : la petite PR de la boule coupée et cotée (dessin fixe : « 1,5 cm » touche le nom du
-  centre, § 11) — **go de David le 2026-11-27 (« je te suis »)**, à faire dès la reprise, dans le worktree
-  ci-dessous ; elle doit partir avec le même `deploy:prod` que les lots 3 à 5. Ensuite lot 6 (` ```cubes `,
-  assemblages), comportements à écrire et à faire valider d'abord.
+  § 12 et 13) ; **#3229** : nom d'un centre écarté des cotes (boule coupée près du centre, § 14). Les lots 3
+  à 5 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le
+  vérifier avant de l'affirmer).
+- **Prochaine action** : lot 6 (` ```cubes `, assemblages) : comportements à écrire en français et à faire
+  valider par David avant tout code.
 - **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : noms tenus
   (§ 7), solides ronds (§ 9), lot 4 (longueurs qui s'effacent, section qui tourne), lot 5 (exemple « Un
   vecteur à tracer sur un pavé que l'élève peut tourner » : toucher contre glisser, toucher « tremblé » de 4
   à 10 px qui tourne sans poser). Puis sa demande de `deploy:prod` (mise en prod seulement après son essai).
+  Deux défauts voisins signalés le 2026-11-27, sans réponse (§ 14) : contour de la section dans le texte de
+  la cote du rayon (boule coupée très près du centre) ; cotes du rayon et de la distance qui se touchent
+  (cylindre très plat coupé perpendiculairement à l'axe). Les corriger ou les laisser ?
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
@@ -28,10 +30,11 @@ _Mis à jour le 2026-11-27, après #3227._
   `solide-rotation.svelte.ts`, partagée par `Solide.svelte` et `SolideGeste.svelte` ; arrêter un clic avant
   le `onclick` d'un enfant = écouteur `capture` (`on` de Svelte sert les `onclick` délégués d'abord) ;
   « moins d'animations » et le geste tactile réel n'ont pas de test ; **`pnpm pr:merger` RETIRE le worktree
-  même si son serveur de dev tourne** (vu sur #3227 : serveur tué, lien d'essai mort) — recréer le worktree
-  et relancer le serveur aussitôt après le merge.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `fix/solides-3d-boule-cotee` (neuve, depuis
-  `main` après #3227, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
+  même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
+  à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
+--compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-6` (neuve, depuis
+  `main` après #3229, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
 
 ## 1. D'où l'on part
 
