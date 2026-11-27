@@ -130,6 +130,58 @@
 					"Donc $HM = \\sqrt{{{eval:R^2-d^2}}} = \\textcolor{{{color:primary.0}}}{{{rho}}~\\unit{cm}}$."
 				]
 			}
+		},
+		{
+			"statement": "Une boule de centre $O$ est coupée par un plan situé à ${{d}}~\\unit{cm}$ de son centre. La section est un disque de rayon ${{r}}~\\unit{cm}$. Quel est le rayon de la boule, arrondi au dixième ?\n\n```solide\nforme: boule {{R}}\nsommets: O\nsection: {{d}}\n```\n\n$R \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "3..12"
+				},
+				{
+					"name": "R",
+					"expression": "eval:round(100*sqrt(d^2+r^2))/100;d"
+				}
+			],
+			"conditions": [
+				"d < r",
+				"abs(sqrt(d^2+r^2) - round(sqrt(d^2+r^2))) > 0.01",
+				"abs(10*sqrt(d^2+r^2) - round(10*sqrt(d^2+r^2))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*sqrt(d^2+r^2))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:d+r}}",
+							"message": "On n'ajoute pas les longueurs : le rayon de la boule est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore.",
+							"label": "Longueurs ajoutées"
+						},
+						{
+							"answer": "{{eval:r-d}}",
+							"message": "Le rayon de la boule est plus long que le rayon de la section : c'est l'hypoténuse du triangle rectangle.",
+							"label": "Longueurs soustraites"
+						},
+						{
+							"answer": "{{eval:round(10*sqrt(r^2-d^2))/10;d}}",
+							"message": "Le rayon de la boule est l'hypoténuse : on **ajoute** les carrés, $R^2 = d^2 + r^2$.",
+							"label": "Carrés soustraits"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $H$ le centre de la section et $M$ un point de son bord : $OH = {{d}}~\\unit{cm}$ et $HM = {{r}}~\\unit{cm}$. Le triangle $OHM$ est rectangle en $H$, et $OM$ est le rayon de la boule (l'hypoténuse).",
+					"Théorème de Pythagore : $OM^2 = OH^2 + HM^2 = {{d}}^2 + {{r}}^2 = {{eval:d^2+r^2}}$.",
+					"Donc $OM = \\sqrt{{{eval:d^2+r^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*sqrt(d^2+r^2))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Le centre de la boule, le centre de la section et un point du bord de la section forment un triangle rectangle : lequel de ses côtés est le rayon de la boule ?"
 		}
 	],
 	"testSpecs": [
@@ -254,6 +306,71 @@
 			},
 			"description": "Erreur : R − d",
 			"variationIndex": 3
+		},
+		{
+			"answers": ["5{,}4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "2",
+				"r": "5",
+				"R": "5.39"
+			},
+			"description": "d = 2, r = 5 : √29 ≈ 5,4",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "2",
+				"r": "5",
+				"R": "5.39"
+			},
+			"description": "Erreur : d + r = 7",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "2",
+				"r": "5",
+				"R": "5.39"
+			},
+			"description": "Erreur : r − d = 3",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["4{,}6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "2",
+				"r": "5",
+				"R": "5.39"
+			},
+			"description": "Erreur : √(r² − d²) ≈ 4,6",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["5{,}3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "2",
+				"r": "5",
+				"R": "5.39"
+			},
+			"description": "Erreur : valeur tronquée 5,3",
+			"variationIndex": 4
 		}
 	]
 }

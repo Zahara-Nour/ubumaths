@@ -156,6 +156,55 @@
 					"$$\\mathcal{V} = \\dfrac{{{w}}}{3} = \\textcolor{{{color:primary.0}}}{{{m}}~\\unit{cm^3}}$$"
 				]
 			}
+		},
+		{
+			"statement": "La pyramide $SABCD$ a pour base le carré $ABCD$ de côté ${{a}}~\\unit{cm}$ ; sa hauteur mesure ${{H}}~\\unit{mm}$. Calcule son volume en $\\unit{cm^3}$.\n\n```solide\nforme: pyramide carree {{a}} {{h}}\nsommets: S A B C D\n```\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				},
+				{
+					"name": "H",
+					"expression": "eval:10*h"
+				}
+			],
+			"conditions": ["(a^2*h) % 3 == 0", "h <= 10*a", "a <= 10*h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2*h/3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a^2*H/3}}",
+							"message": "La hauteur est en $\\unit{mm}$ : convertis-la d'abord en $\\unit{cm}$ ($10~\\unit{mm} = 1~\\unit{cm}$).",
+							"label": "Sans conversion"
+						},
+						{
+							"answer": "{{eval:a^2*h}}",
+							"message": "C'est le volume du pavé de même base et de même hauteur : la pyramide en est le tiers.",
+							"label": "÷ 3 oublié"
+						},
+						{
+							"answer": "{{eval:a^2*h/30}}",
+							"message": "$10~\\unit{mm} = 1~\\unit{cm}$ : ${{H}}~\\unit{mm} = {{h}}~\\unit{cm}$.",
+							"label": "mm converti ÷100"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On met les longueurs en $\\unit{cm}$ : ${{H}}~\\unit{mm} = {{h}}~\\unit{cm}$.",
+					"Volume d'une pyramide : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3}$$",
+					"Aire de la base (carré) : ${{a}} \\times {{a}} = {{eval:a^2}}~\\unit{cm^2}$.",
+					"$$\\mathcal{V} = \\dfrac{{{eval:a^2}} \\times {{h}}}{3} = \\dfrac{{{eval:a^2*h}}}{3} = \\textcolor{{{color:primary.0}}}{{{eval:a^2*h/3}}~\\unit{cm^3}}$$"
+				]
+			},
+			"hint": "Le volume est demandé en $\\unit{cm^3}$ : écris d'abord la hauteur en $\\unit{cm}$."
 		}
 	],
 	"testSpecs": [
@@ -333,6 +382,58 @@
 			},
 			"description": "Erreur : même volume, 75",
 			"variationIndex": 5
+		},
+		{
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"h": "5",
+				"H": "50"
+			},
+			"description": "Côté 6 cm, hauteur 50 mm : 60",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["600"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"h": "5",
+				"H": "50"
+			},
+			"description": "Erreur : sans conversion, 600",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["180"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"h": "5",
+				"H": "50"
+			},
+			"description": "Erreur : ÷ 3 oublié, 180",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"h": "5",
+				"H": "50"
+			},
+			"description": "Erreur : mm converti ÷100, 6",
+			"variationIndex": 6
 		}
 	]
 }

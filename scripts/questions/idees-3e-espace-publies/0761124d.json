@@ -84,6 +84,53 @@
 					"${{L}}~\\unit{m} \\times {{l}}~\\unit{m} \\times {{h}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:L*l*h}}~\\unit{m^3}}$."
 				]
 			}
+		},
+		{
+			"statement": "Un **pavé droit** mesure ${{L}}~\\unit{dm}$ de longueur, ${{l}}~\\unit{cm}$ de largeur et ${{h}}~\\unit{cm}$ de hauteur.\n\nQuel est son volume en $\\unit{cm^3}$ ?\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "2..5"
+				},
+				{
+					"name": "l",
+					"expression": "3..9"
+				},
+				{
+					"name": "h",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*L*l*h}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L*l*h}}",
+							"message": "Les longueurs ne sont pas dans la même unité : convertis d'abord la longueur en $\\unit{cm}$ ($1~\\unit{dm} = 10~\\unit{cm}$).",
+							"label": "Sans conversion"
+						},
+						{
+							"answer": "{{eval:L*l*h/10}}",
+							"message": "Un volume ne se convertit pas comme une longueur : $1~\\unit{dm^3} = 1\\,000~\\unit{cm^3}$. Le plus simple : tout mettre en $\\unit{cm}$ avant de calculer.",
+							"label": "Volume converti ×10"
+						},
+						{
+							"answer": "{{eval:100*L*l*h}}",
+							"message": "$1~\\unit{dm} = 10~\\unit{cm}$, pas $100~\\unit{cm}$.",
+							"label": "dm converti ×100"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On met toutes les longueurs dans la même unité, le $\\unit{cm}$ : ${{L}}~\\unit{dm} = {{eval:10*L}}~\\unit{cm}$.",
+					"**Volume d'un pavé droit** : $\\text{longueur} \\times \\text{largeur} \\times \\text{hauteur}$.",
+					"${{eval:10*L}}~\\unit{cm} \\times {{l}}~\\unit{cm} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:10*L*l*h}}~\\unit{cm^3}}$."
+				]
+			},
+			"hint": "Avant de multiplier, écris les trois longueurs dans la même unité."
 		}
 	],
 	"testSpecs": [
@@ -184,6 +231,58 @@
 			},
 			"description": "Erreur : 16",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["600"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "3",
+				"l": "4",
+				"h": "5"
+			},
+			"description": "3 dm × 4 cm × 5 cm : 600",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "3",
+				"l": "4",
+				"h": "5"
+			},
+			"description": "Erreur : sans conversion, 60",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "3",
+				"l": "4",
+				"h": "5"
+			},
+			"description": "Erreur : volume converti ×10, 6",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["6000"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "3",
+				"l": "4",
+				"h": "5"
+			},
+			"description": "Erreur : dm converti ×100, 6 000",
+			"variationIndex": 3
 		}
 	]
 }

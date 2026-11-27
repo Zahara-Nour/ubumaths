@@ -123,6 +123,47 @@
 					"Demi-boule : ${{eval:4*r^3/3}}\\pi \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:2*r^3/3}}\\pi~\\unit{cm^3}}$."
 				]
 			}
+		},
+		{
+			"statement": "Une boule de rayon ${{r}}~\\unit{cm}$ est rangée dans une boîte cylindrique juste à sa taille : la base de la boîte a pour rayon ${{r}}~\\unit{cm}$ et sa hauteur est égale au diamètre de la boule. Donne la valeur **exacte** du volume laissé libre dans la boîte (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..12"
+				}
+			],
+			"conditions": ["r%3==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*r^3/3}}\\pi",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:4*r^3/3}}\\pi",
+							"message": "C'est le volume de la boule : il faut encore le retirer du volume de la boîte.",
+							"label": "Boule seule"
+						},
+						{
+							"answer": "{{eval:2*r^3}}\\pi",
+							"message": "C'est le volume de la boîte : retire celui de la boule.",
+							"label": "Cylindre seul"
+						},
+						{
+							"answer": "{{eval:10*r^3/3}}\\pi",
+							"message": "Le volume libre est ce qui reste dans la boîte : on **soustrait** le volume de la boule.",
+							"label": "Volumes ajoutés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Hauteur de la boîte : le diamètre de la boule, $2 \\times {{r}} = {{eval:2*r}}~\\unit{cm}$.",
+					"Volume de la boîte (cylindre) : $\\pi \\times {{r}}^2 \\times {{eval:2*r}} = {{eval:2*r^3}}\\pi~\\unit{cm^3}$.",
+					"Volume de la boule : $\\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = {{eval:4*r^3/3}}\\pi~\\unit{cm^3}$.",
+					"Volume libre : ${{eval:2*r^3}}\\pi - {{eval:4*r^3/3}}\\pi = \\textcolor{{{color:primary.0}}}{{{eval:2*r^3/3}}\\pi~\\unit{cm^3}}$. La boule occupe les deux tiers de la boîte (Archimède)."
+				]
+			},
+			"hint": "Le volume libre, c'est le volume de la boîte moins celui de la boule. Quelle est la hauteur de la boîte ?"
 		}
 	],
 	"testSpecs": [
@@ -281,6 +322,72 @@
 			},
 			"description": "Erreur : la boule entière",
 			"variationIndex": 4
+		},
+		{
+			"answers": ["18\\pi"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "3"
+			},
+			"description": "r = 3 : 54π − 36π = 18π",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["36\\pi"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "3"
+			},
+			"description": "Erreur : la boule seule",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["54\\pi"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "3"
+			},
+			"description": "Erreur : la boîte seule",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["90\\pi"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "3"
+			},
+			"description": "Erreur : volumes ajoutés",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["56{,}5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "3"
+			},
+			"description": "Valeur approchée, pas la valeur exacte",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["144\\pi"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "6"
+			},
+			"description": "r = 6 : 144π",
+			"variationIndex": 5
 		}
 	]
 }
