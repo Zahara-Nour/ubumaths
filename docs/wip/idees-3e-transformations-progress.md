@@ -8,8 +8,7 @@ _Mis à jour le 2026-11-27, après la relecture de David._
   `publier-lot.ts` : les 4 passent le contrôle.
 - **Prochaine action** : après la publication, relire le statut des 4 (`publier-lot.ts` en simulation : « publié »),
   puis clore le chantier (versement, journal archivé).
-- **En attente de David** : `! pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/idees-3e-transformations-neufs --publier`.
+- **En attente de David** : la publication, `publier-lot.ts --dir` sur le dossier du lot, avec `--publier`.
 - **Pièges en cours** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
   ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
   annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
