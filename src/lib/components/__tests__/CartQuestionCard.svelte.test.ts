@@ -589,7 +589,7 @@ describe('CartQuestionCard — durée jusqu’à 10 min (écart L92)', () => {
 		await expect.element(plus).toBeEnabled();
 		await plus.click({ force: true });
 		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.templateId, 305);
-		at300.unmount();
+		await at300.unmount();
 
 		const at600 = await renderCard({ item: { ...ITEM, delay: 600 } });
 		await expect.element(at600.getByRole('button', { name: 'Augmenter la durée' })).toBeDisabled();
