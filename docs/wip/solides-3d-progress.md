@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3239 (exemple « retrouver » de la page d'aide des cubes), lot 7a en cours._
+_Mis à jour le 2026-11-27, après #3241 (deux exemples « retrouver » dans la page d'aide des cubes : le facile `2 3 1`, puis le carré à deux vues ; demandé par David), lot 7a en cours._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195, #3200,
   #3211, #3216, #3222, #3227, #3229, #3235). Les lots 3 à 6 et #3229 ne sont pas en prod tant qu'un
@@ -20,7 +20,7 @@ _Mis à jour le 2026-11-27, après #3239 (exemple « retrouver » de la page d'a
   fréquente), doc `docs/systeme/ubumark.md`, `check:incremental`, `types:cliquet`, rendu vu à l'écran
   (`pnpm voir /aide-ecriture/blocs/solide --compte prof`, fixe et tourné), § 18 « ce qui est fait », revue
   `code-reviewer` en opus (géométrie), PR, `pnpm pr:merger`. Avant de pousser : `git merge origin/main`
-  (la branche est en retard).
+  (refait le 2026-11-27 après #3241, à refaire si `main` a bougé).
 - **En attente de David** : **son essai au doigt des lots 3 à 6 est fait, « c'est bon » (2026-11-27)**. Il n'a
   pas demandé de `deploy:prod` : ne pas le lancer sans sa demande. Il veut vérifier lui-même le lot 7 : lui
   donner le lien (`pnpm lien`, serveur 5176) dès que le 7a se voit à l'écran, avant de merger. Proposé, sans
