@@ -162,6 +162,7 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 311bf024 Convertir des durées                                | `idees-6e-durees`                                           | 2026-11-27 |                                      |
 | 37c13d51 Réciproque et contraposée de Thalès                 | `idees-3e-thales`                                           | 2026-11-27 |                                      |
 | f55d07b0 Calculer une longueur avec Thalès                   | `idees-3e-thales`                                           | 2026-11-27 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
