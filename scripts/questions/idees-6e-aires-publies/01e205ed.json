@@ -1,0 +1,451 @@
+{
+	"id": "01e205ed-e30a-402f-8517-fd308a2fb26a",
+	"title": "Calcul de l'aire d'un carré.",
+	"description": "A partir d'une description",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 15,
+	"status": "published",
+	"shared": {
+		"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+		"correction": {
+			"steps": ["L'aire d'un carré de côté ${{a}}$ est ${{a}} \\times {{a}} =$ {{solution:html}}."]
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a*a;[mm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[mm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a*a;[cm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[cm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a*a;[dm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[dm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a*a;[m^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[m]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a*a;[dam^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[dam]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a*a;[hm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[hm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a*a;[km^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[km]"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est l'aire de ce **carré** ?\n\n```figure\nfenetre: -1 ; {{eval:c+3}} ; -2 ; {{eval:c+1}}\ndescription: Un carré de {{c}} cm de côté.\n---\nA = point(0, 0, visible=faux)\nB = point({{c}}, 0, visible=faux)\nC = point({{c}}, {{c}}, visible=faux)\nD = point(0, {{c}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nM = milieu(A, B, visible=faux)\ntexte(M, \"{{c}} cm\", dy=-0.4, ancre=\"haut\")\n```\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*c}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:4*c}}\\unit{cm}",
+							"message": "Ça, c'est le périmètre (le tour) ; l'aire est le côté multiplié par lui-même.",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "{{eval:c*c}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						},
+						{
+							"answer": "{{eval:2*c}}\\unit{cm^2}",
+							"message": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même.",
+							"label": "Double du côté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les quatre côtés du carré mesurent ${{c}}$ cm.",
+					"$${{c}}~\\unit{cm} \\times {{c}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:c*c}}~\\unit{cm^2}}$$"
+				]
+			},
+			"hint": "Un seul côté est écrit : les autres ont la même longueur."
+		},
+		{
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{eval:n+q/10;d}}~\\unit{cm}$ ?\n\nL'aire du carré est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*n+q)^2/100;d}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*(n+q/10);d}}\\unit{cm^2}",
+							"message": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même.",
+							"label": "Double du côté"
+						},
+						{
+							"answer": "{{eval:(10*n+q)^2/10;d}}\\unit{cm^2}",
+							"message": "La virgule est mal placée : avec un chiffre après la virgule dans chaque facteur, le produit en a deux.",
+							"label": "Virgule décalée"
+						},
+						{
+							"answer": "{{eval:(100*n*n+q*q)/100;d}}\\unit{cm^2}",
+							"message": "On ne multiplie pas la partie entière et la partie décimale chacune de son côté : multiplie le nombre entier par lui-même.",
+							"label": "Parties multipliées à part"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${{eval:n+q/10;d}} \\times {{eval:n+q/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(10*n+q)^2/100;d}}~\\unit{cm^2}}$$",
+					"Pour calculer : ${{eval:10*n+q}} \\times {{eval:10*n+q}} = {{eval:(10*n+q)^2}}$, puis deux chiffres après la virgule (un dans chaque facteur)."
+				]
+			},
+			"hint": "Calcule ${{eval:10*n+q}} \\times {{eval:10*n+q}}$, puis place la virgule."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["49\\unit{mm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "7 mm × 7 mm = 49 mm²",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["28\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "périmètre 28 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["49\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "unité de longueur 49 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["49\\unit{cm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "7 cm × 7 cm = 49 cm²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["49\\unit{dm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "7 dm × 7 dm = 49 dm²",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["49\\unit{m^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "7 m × 7 m = 49 m²",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["49\\unit{dam^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "7 dam × 7 dam = 49 dam²",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["49\\unit{hm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "7 hm × 7 hm = 49 hm²",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["49\\unit{km^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "7 km × 7 km = 49 km²",
+			"variationIndex": 6
+		},
+		{
+			"description": "Figure 6 cm : 36 cm²",
+			"variationIndex": 7,
+			"variables": {
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36\\unit{cm^2}"]
+		},
+		{
+			"description": "Figure 6 cm : 24 cm",
+			"variationIndex": 7,
+			"variables": {
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire est le côté multiplié par lui-même."
+			},
+			"answers": ["24\\unit{cm}"]
+		},
+		{
+			"description": "Figure 6 cm : 36 cm",
+			"variationIndex": 7,
+			"variables": {
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+			},
+			"answers": ["36\\unit{cm}"]
+		},
+		{
+			"description": "Figure 6 cm : 12 cm²",
+			"variationIndex": 7,
+			"variables": {
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même."
+			},
+			"answers": ["12\\unit{cm^2}"]
+		},
+		{
+			"description": "2,5 × 2,5 = 6,25 cm²",
+			"variationIndex": 8,
+			"variables": {
+				"n": "2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6{,}25\\unit{cm^2}"]
+		},
+		{
+			"description": "2,5 : 5 cm²",
+			"variationIndex": 8,
+			"variables": {
+				"n": "2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même."
+			},
+			"answers": ["5\\unit{cm^2}"]
+		},
+		{
+			"description": "2,5 : 62,5 cm²",
+			"variationIndex": 8,
+			"variables": {
+				"n": "2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La virgule est mal placée : avec un chiffre après la virgule dans chaque facteur, le produit en a deux."
+			},
+			"answers": ["62{,}5\\unit{cm^2}"]
+		},
+		{
+			"description": "2,5 : 4,25 cm²",
+			"variationIndex": 8,
+			"variables": {
+				"n": "2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne multiplie pas la partie entière et la partie décimale chacune de son côté : multiplie le nombre entier par lui-même."
+			},
+			"answers": ["4{,}25\\unit{cm^2}"]
+		}
+	]
+}

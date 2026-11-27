@@ -1,0 +1,295 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Aires > rectangle",
+		"point": "6-201"
+	},
+	"title": "Aire en cm² sur un quadrillage",
+	"description": "Aire d'un rectangle ou d'un carré dessiné sur un quadrillage de carreaux de 1 cm, en cm², avec un côté demi-entier ; pièges : le périmètre, l'aire en cm, la somme des côtés",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Chaque carreau du quadrillage est un carré de $1$ cm de côté. Quelle est l'aire du rectangle colorié ?\n\n```figure\nfenetre: 0 ; {{eval:L+2}} ; 0 ; {{eval:l+2}}\ngrille: 1\ndescription: Un rectangle colorié de {{L}} carreaux sur {{l}} carreaux.\n---\nA = point(1, 1, visible=faux)\nB = point({{eval:L+1}}, 1, visible=faux)\nC = point({{eval:L+1}}, {{eval:l+1}}, visible=faux)\nD = point(1, {{eval:l+1}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\n```\n\nAire : $?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "3..9"
+				},
+				{
+					"name": "l",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["L>l"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*(L+l)}}\\unit{cm}",
+							"message": "Ça, c'est le périmètre (le tour) ; l'aire compte les carreaux à l'intérieur.",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "{{eval:L*l}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						},
+						{
+							"answer": "{{eval:L+l}}\\unit{cm^2}",
+							"message": "On ne compte pas les carreaux d'un côté plus ceux de l'autre : il y a ${{l}}$ rangées de ${{L}}$ carreaux.",
+							"label": "Somme des côtés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rectangle a ${{l}}$ rangées de ${{L}}$ carreaux, chacun de $1~\\unit{cm^2}$.",
+					"${{L}} \\times {{l}} = {{eval:L*l}}$ : l'aire est de $\\textcolor{{{color:primary.0}}}{{{eval:L*l}}~\\unit{cm^2}}$."
+				]
+			},
+			"hint": "Un carreau de $1$ cm de côté a une aire de $1~\\unit{cm^2}$. Combien de rangées, et combien de carreaux par rangée ?"
+		},
+		{
+			"statement": "Chaque carreau du quadrillage est un carré de $1$ cm de côté. Quelle est l'aire du carré colorié ?\n\n```figure\nfenetre: 0 ; {{eval:c+2}} ; 0 ; {{eval:c+2}}\ngrille: 1\ndescription: Un carré colorié de {{c}} carreaux de côté.\n---\nA = point(1, 1, visible=faux)\nB = point({{eval:c+1}}, 1, visible=faux)\nC = point({{eval:c+1}}, {{eval:c+1}}, visible=faux)\nD = point(1, {{eval:c+1}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\n```\n\nAire : $?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*c}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:4*c}}\\unit{cm}",
+							"message": "Ça, c'est le périmètre (le tour) ; l'aire compte les carreaux à l'intérieur.",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "{{eval:c*c}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						},
+						{
+							"answer": "{{eval:2*c}}\\unit{cm^2}",
+							"message": "Il y a ${{c}}$ rangées de ${{c}}$ carreaux : $c \\times c$, pas $2 \\times c$.",
+							"label": "Double du côté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le carré a ${{c}}$ rangées de ${{c}}$ carreaux.",
+					"${{c}} \\times {{c}} = {{eval:c*c}}$ : l'aire est de $\\textcolor{{{color:primary.0}}}{{{eval:c*c}}~\\unit{cm^2}}$."
+				]
+			},
+			"hint": "Compte les carreaux d'une rangée, puis le nombre de rangées."
+		},
+		{
+			"statement": "Chaque carreau du quadrillage est un carré de $1$ cm de côté. Quelle est l'aire du rectangle colorié ?\n\n```figure\nfenetre: 0 ; {{eval:k+3}} ; 0 ; {{eval:l+2}}\ngrille: 1\ndescription: Un rectangle colorié de {{k}} carreaux et demi sur {{l}} carreaux.\n---\nA = point(1, 1, visible=faux)\nB = point({{eval:k+1.5}}, 1, visible=faux)\nC = point({{eval:k+1.5}}, {{eval:l+1}}, visible=faux)\nD = point(1, {{eval:l+1}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\n```\n\nAire : $?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..7"
+				},
+				{
+					"name": "m",
+					"expression": "1..2"
+				},
+				{
+					"name": "l",
+					"expression": "eval:2*m"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(2*k+1)*m}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k*l}}\\unit{cm^2}",
+							"message": "Les demi-carreaux comptent aussi : deux demi-carreaux font un carreau.",
+							"label": "Demi-carreaux oubliés"
+						},
+						{
+							"answer": "{{eval:(k+1)*l}}\\unit{cm^2}",
+							"message": "La dernière colonne n'a que des demi-carreaux : elle ne compte pas comme une colonne entière.",
+							"label": "Demi-carreaux comptés entiers"
+						},
+						{
+							"answer": "{{eval:(2*k+1)*m}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rectangle mesure ${{k}}{,}5~\\unit{cm}$ sur ${{l}}~\\unit{cm}$.",
+					"${{k}}{,}5 \\times {{l}} = {{eval:(2*k+1)*m}}$ : l'aire est de $\\textcolor{{{color:primary.0}}}{{{eval:(2*k+1)*m}}~\\unit{cm^2}}$.",
+					"En comptant : ${{l}}$ rangées de ${{k}}$ carreaux et un demi-carreau."
+				]
+			},
+			"hint": "Deux demi-carreaux font un carreau entier."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 × 3 = 15 cm²",
+			"variationIndex": 0,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15\\unit{cm^2}"]
+		},
+		{
+			"description": "Périmètre 16 cm",
+			"variationIndex": 0,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire compte les carreaux à l'intérieur."
+			},
+			"answers": ["16\\unit{cm}"]
+		},
+		{
+			"description": "15 cm",
+			"variationIndex": 0,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+			},
+			"answers": ["15\\unit{cm}"]
+		},
+		{
+			"description": "5 + 3 = 8 cm²",
+			"variationIndex": 0,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne compte pas les carreaux d'un côté plus ceux de l'autre : il y a $3$ rangées de $5$ carreaux."
+			},
+			"answers": ["8\\unit{cm^2}"]
+		},
+		{
+			"description": "Carré de 4 : 16 cm²",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["16\\unit{cm^2}"]
+		},
+		{
+			"description": "Carré de 3 : 6 cm²",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $3$ rangées de $3$ carreaux : $c \\times c$, pas $2 \\times c$."
+			},
+			"answers": ["6\\unit{cm^2}"]
+		},
+		{
+			"description": "Carré de 3 : périmètre 12 cm",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire compte les carreaux à l'intérieur."
+			},
+			"answers": ["12\\unit{cm}"]
+		},
+		{
+			"description": "4,5 × 2 = 9 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"m": "1",
+				"l": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9\\unit{cm^2}"]
+		},
+		{
+			"description": "Demi-carreaux oubliés : 8 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"m": "1",
+				"l": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les demi-carreaux comptent aussi : deux demi-carreaux font un carreau."
+			},
+			"answers": ["8\\unit{cm^2}"]
+		},
+		{
+			"description": "Demi-carreaux comptés entiers : 10 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"m": "1",
+				"l": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La dernière colonne n'a que des demi-carreaux : elle ne compte pas comme une colonne entière."
+			},
+			"answers": ["10\\unit{cm^2}"]
+		},
+		{
+			"description": "5,5 × 4 = 22 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"m": "2",
+				"l": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["22\\unit{cm^2}"]
+		}
+	]
+}
