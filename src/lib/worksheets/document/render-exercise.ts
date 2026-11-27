@@ -20,6 +20,7 @@ import { parseMarkdown } from '#lib/ubumark/index.ts';
 import {
 	TYPST_BREAK_MARKER,
 	escapeTypst,
+	escapeTypstBrackets,
 	generateTypst,
 	processTableCellContent
 } from '#lib/ubumark/generators/typst-generator.ts';
@@ -190,8 +191,9 @@ function withSectionHeaders(
 // ============================================================================
 
 function renderSectionHeader(section: DocumentSection, layout: ExerciseLayout): string {
-	const title = escapeTypst(section.title);
-	const instructions = section.instructions ? escapeTypst(section.instructions) : null;
+	// Texte du prof : un `]` fermerait le bloc de contenu `[…]` qui l'entoure (T23)
+	const title = escapeTypstBrackets(section.title);
+	const instructions = section.instructions ? escapeTypstBrackets(section.instructions) : null;
 
 	switch (layout) {
 		case 'badge':
@@ -287,7 +289,7 @@ function renderTemplateExercise(
 
 	// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
 	if (form === 'worksheet' && exercise.instructions) {
-		content += `\n\n  #text(style: "italic", fill: gray)[${escapeTypst(exercise.instructions)}]`;
+		content += `\n\n  #text(style: "italic", fill: gray)[${escapeTypstBrackets(exercise.instructions)}]`;
 	}
 	content += `\n]\n`;
 

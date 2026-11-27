@@ -3703,7 +3703,12 @@ export function escapeTypst(text: string): string {
 		'>': '\\>'
 	};
 
-	return text.replace(/[\\#$@*_`<>]/g, (match) => replacements[match] || match);
+	return (
+		text
+			.replace(/[\\#$@*_`<>]/g, (match) => replacements[match] || match)
+			// `//` et `/*` ouvrent un commentaire Typst : la fin de la ligne disparaissait (L85)
+			.replace(/\/(?=[/*\\])/g, '\\/')
+	);
 }
 
 /** Formule réduite à une case en pointillés : `\text{……}` (points de suspension ou points) */
