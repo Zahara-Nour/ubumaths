@@ -19,6 +19,7 @@ import ModerationLayout from '../../../routes/(protected)/dashboard/teacher/mode
 import type { LayoutData as ModerationLayoutData } from '../../../routes/(protected)/dashboard/teacher/moderation/$types';
 import { bugReportsConfigStore } from '#lib/stores/bugReportsConfig.svelte.ts';
 import { DEFAULT_BUG_REPORTS_CONFIG } from '#lib/types/bug-reports.ts';
+import { flushErrors } from '#lib/utils/errorMonitoring.ts';
 import {
 	cleanupFreezeDetection,
 	clearFreezeDetectionData,
@@ -29,27 +30,22 @@ import {
 type LongTaskCallback = (list: { getEntries: () => { duration: number }[] }) => void;
 
 // Constantes
-const sent = vi.hoisted(() => ({ capturePerformance: vi.fn(), captureError: vi.fn() }));
+const ERRORS_ENDPOINT = '/api/errors/log';
 const children = createRawSnippet(() => ({ render: () => '<p>page</p>' }));
-
-vi.mock('#lib/utils/errorMonitoring.ts', () => sent);
 
 // Functions
 /**
- * Ce que le menu de modération donne à lire pour un compteur de signalements :
- * son texte, et les libellés portés par `aria-label` ou `title`.
+ * Le menu de modération tel qu'il est rendu pour un compteur de signalements :
+ * tout son HTML (texte, libellés, pastille, icône), sans les commentaires de Svelte.
  */
-async function menuLu(pendingReportsCount: number | null): Promise<string> {
+async function menuRendu(pendingReportsCount: number | null): Promise<string> {
 	const data = { pendingReportsCount } satisfies Pick<ModerationLayoutData, 'pendingReportsCount'>;
 	const { container, unmount } = await render(ModerationLayout, {
 		props: { data: data as ModerationLayoutData, children }
 	});
-	const libelles = [...container.querySelectorAll('[aria-label], [title]')].map(
-		(el) => `${el.getAttribute('aria-label') ?? ''}|${el.getAttribute('title') ?? ''}`
-	);
-	const lu = `${container.textContent?.replace(/\s+/g, ' ').trim()} ## ${libelles.join(' ; ')}`;
+	const rendu = container.innerHTML.replace(/<!--.*?-->/g, '');
 	unmount();
-	return lu;
+	return rendu;
 }
 
 describe('compteur de signalements illisible dans le menu de modération', () => {
@@ -59,22 +55,22 @@ describe('compteur de signalements illisible dans le menu de modération', () =>
 	let illisible: string;
 
 	beforeAll(async () => {
-		aucun = await menuLu(0);
-		aucunBis = await menuLu(0);
-		trois = await menuLu(3);
-		illisible = await menuLu(null);
+		aucun = await menuRendu(0);
+		aucunBis = await menuRendu(0);
+		trois = await menuRendu(3);
+		illisible = await menuRendu(null);
 	});
 
-	it('témoin : le menu se lit, et deux rendus du même compteur se lisent pareil', () => {
+	it('témoin : le menu est rendu, et deux rendus du même compteur sont identiques', () => {
 		expect(aucun).toContain('Gestion');
 		expect(aucunBis).toBe(aucun);
 	});
 
-	it('témoin : trois signalements en attente ne se lisent pas comme zéro', () => {
+	it('témoin : trois signalements en attente ne sont pas rendus comme zéro', () => {
 		expect(trois).not.toBe(aucun);
 	});
 
-	it.fails('écart L123 : un compteur illisible ne se lit pas comme zéro signalement', () => {
+	it.fails('écart L123 : un compteur illisible n’est pas rendu comme zéro signalement', () => {
 		expect(illisible).not.toBe(aucun);
 	});
 });
@@ -82,6 +78,7 @@ describe('compteur de signalements illisible dans le menu de modération', () =>
 describe('« Détection des freezes » coupée dans la configuration', () => {
 	let envoisActive: number;
 	let envoisCoupee: number;
+	let envoisRetablie: number;
 
 	beforeAll(async () => {
 		// Un faux observateur de tâches longues : le test décide quand une tâche
@@ -98,32 +95,47 @@ describe('« Détection des freezes » coupée dans la configuration', () => {
 			}
 		);
 
-		/** Règle la configuration, lance la détection, fait voir une tâche d'une minute. */
-		const envoisApresUneTacheLongue = async (freezeDetectionEnabled: boolean): Promise<number> => {
-			vi.stubGlobal(
-				'fetch',
-				vi.fn(async () => Response.json({ ...DEFAULT_BUG_REPORTS_CONFIG, freezeDetectionEnabled }))
-			);
+		// Le réseau : la configuration lue par le store, et le point d'envoi de la
+		// surveillance, dont on compte les appels. La surveillance elle-même est la
+		// vraie : une garde posée chez elle fermerait le test comme une garde posée
+		// dans la détection.
+		let freezeDetectionEnabled = true;
+		const reseau = vi.fn(async (adresse: RequestInfo | URL) =>
+			String(adresse) === ERRORS_ENDPOINT
+				? Response.json({ success: true })
+				: Response.json({ ...DEFAULT_BUG_REPORTS_CONFIG, freezeDetectionEnabled })
+		);
+		vi.stubGlobal('fetch', reseau);
+
+		/**
+		 * Règle la configuration, lance la détection, fait voir une tâche longue de
+		 * `duree` ms. Chaque appel prend une durée différente : la surveillance
+		 * n'envoie pas deux fois le même message.
+		 */
+		const envoisApresUneTacheLongue = async (active: boolean, duree: number): Promise<number> => {
+			freezeDetectionEnabled = active;
 			bugReportsConfigStore.reset();
 			await bugReportsConfigStore.load();
-			if (bugReportsConfigStore.freezeDetectionEnabled !== freezeDetectionEnabled) {
+			if (bugReportsConfigStore.freezeDetectionEnabled !== active) {
 				throw new Error('configuration non prise en compte');
 			}
 
-			sent.capturePerformance.mockClear();
-			sent.captureError.mockClear();
+			reseau.mockClear();
 			callbacks.length = 0;
 			initFreezeDetection();
-			for (const callback of callbacks) callback({ getEntries: () => [{ duration: 60_000 }] });
-			// L'envoi passe par un `import()` : le laisser aboutir avant de compter.
+			if (callbacks.length === 0) throw new Error('observateur de tâches longues non posé');
+			for (const callback of callbacks) callback({ getEntries: () => [{ duration: duree }] });
+			// L'envoi passe par un `import()`, puis par une file : les laisser aboutir.
 			await vi.dynamicImportSettled();
 			await new Promise((resolve) => setTimeout(resolve, 50));
+			await flushErrors();
 			cleanupFreezeDetection();
-			return sent.capturePerformance.mock.calls.length + sent.captureError.mock.calls.length;
+			return reseau.mock.calls.filter(([adresse]) => String(adresse) === ERRORS_ENDPOINT).length;
 		};
 
-		envoisActive = await envoisApresUneTacheLongue(true);
-		envoisCoupee = await envoisApresUneTacheLongue(false);
+		envoisActive = await envoisApresUneTacheLongue(true, 60_000);
+		envoisCoupee = await envoisApresUneTacheLongue(false, 61_000);
+		envoisRetablie = await envoisApresUneTacheLongue(true, 62_000);
 	});
 
 	afterAll(() => {
@@ -137,7 +149,11 @@ describe('« Détection des freezes » coupée dans la configuration', () => {
 		expect(envoisActive).toBe(1);
 	});
 
-	it.fails('écart L110 : détection coupée, la même tâche n’est pas envoyée', () => {
+	it('témoin : détection rétablie, la tâche suivante est de nouveau envoyée', () => {
+		expect(envoisRetablie).toBe(1);
+	});
+
+	it.fails('écart L110 : détection coupée, la tâche longue n’est pas envoyée', () => {
 		expect(envoisCoupee).toBe(0);
 	});
 });

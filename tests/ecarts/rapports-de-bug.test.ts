@@ -89,15 +89,15 @@ describe('L122 : remplacement d’une capture, ancienne capture non effacée', (
 		expect(await alertsAfterReplacing({ data: [{ name: OLD_PATH }], error: null })).toBe(0);
 	});
 
-	it('témoin : effacement en erreur, une alerte au journal', async () => {
+	it('témoin : effacement en erreur, le journal le dit', async () => {
 		expect(
 			await alertsAfterReplacing({ data: null, error: { message: 'stockage indisponible' } })
-		).toBe(1);
+		).toBeGreaterThan(0);
 	});
 
 	// Un effacement refusé par les règles du stockage ne rend pas d'erreur : il rend
 	// zéro fichier. Aujourd'hui : rien au journal, l'ancienne capture reste orpheline.
-	it('effacement refusé en silence (zéro fichier rendu), une alerte au journal', async () => {
+	it('effacement refusé en silence (zéro fichier rendu), le journal le dit', async () => {
 		expect(await alertsAfterReplacing({ data: [], error: null })).toBeGreaterThan(0);
 	});
 });

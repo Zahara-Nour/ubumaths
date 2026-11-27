@@ -56,6 +56,14 @@ describe('T26 : macros MathLive qui se développent en commande interdite', () =
 		expansion: string;
 	}
 
+	/** La chaîne que vaut un littéral JavaScript entre guillemets simples ou doubles. */
+	function unquote(literal: string): string {
+		if (literal.startsWith('"')) return JSON.parse(literal) as string;
+		// Guillemets simples : les passer en doubles, pour le même lecteur
+		const inner = literal.slice(1, -1).replace(/\\'/g, "'").replace(/"/g, '\\"');
+		return JSON.parse(`"${inner}"`) as string;
+	}
+
 	/** Les macros par défaut de la version installée de MathLive, avec leur développement. */
 	function defaultMacros(): Macro[] {
 		const source = readFileSync(
@@ -66,33 +74,48 @@ describe('T26 : macros MathLive qui se développent en commande interdite', () =
 		// Les dictionnaires de macros (`DEFAULT_MACROS`, et les paquets qu'il cite)
 		const blocks = [...source.matchAll(/^var [A-Z_]*MACROS = \{$/gm)];
 		if (blocks.length === 0) throw new Error('DEFAULT_MACROS introuvable dans mathlive.mjs');
-		const literal = String.raw`"(?:[^"\\]|\\.)*"`;
+		const text = String.raw`"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'`;
+		// `nom: "développement"`, ou `nom: { … def: "développement" … }` : le nom ouvre
+		// une ligne, à n'importe quelle profondeur (un paquet comme `mathtools` range
+		// ses macros dans `package: { … }`). `def` est lui-même lu comme un nom, puis écarté.
+		const entry = new RegExp(`^ +"?([A-Za-z]+)"?: (?:(${text})|\\{)`, 'gm');
+		const definition = new RegExp(`^\\s*(?:[a-zA-Z]+: [^\\n]*\\n\\s*)*?def: (${text})`);
 		for (const block of blocks) {
 			const body = source.slice(block.index, source.indexOf('\n};', block.index));
-			// Une entrée commence en début de ligne, indentée de deux espaces, et court
-			// jusqu'à la suivante : `nom: "développement"` ou `nom: { def: "développement", … }`.
-			const entries = body.split(/^ {2}(?="?[A-Za-z]+"?: )/m).slice(1);
-			for (const entry of entries) {
-				const head = /^"?([A-Za-z]+)"?: /.exec(entry);
-				if (!head) continue;
-				const rest = entry.slice(head[0].length);
-				const found = rest.startsWith('"')
-					? new RegExp(`^${literal}`).exec(rest)?.[0]
-					: new RegExp(`\\bdef: (${literal})`).exec(rest)?.[1];
-				if (found) macros.push({ name: head[1], expansion: JSON.parse(found) as string });
+			for (const m of body.matchAll(entry)) {
+				if (m[1] === 'def') continue;
+				const literal = m[2] ?? definition.exec(body.slice(m.index + m[0].length))?.[1];
+				if (literal) macros.push({ name: m[1], expansion: unquote(literal) });
 			}
 		}
 		return macros;
 	}
 
-	/** Tous les noms listés par le module de rendu restreint (interdits ou examinés). */
+	/**
+	 * Tous les noms listés par le module de rendu restreint (interdits ou examinés),
+	 * quelle que soit la forme de la liste : tableau, ensemble, ou clés d'un objet.
+	 */
 	function listedNames(): Set<string> {
 		const names = new Set<string>();
 		for (const value of Object.values(restrictedRendering)) {
-			if (!Array.isArray(value)) continue;
-			for (const item of value) if (typeof item === 'string') names.add(item);
+			const items =
+				Array.isArray(value) || value instanceof Set
+					? [...value]
+					: value && typeof value === 'object'
+						? Object.keys(value)
+						: [];
+			for (const item of items) if (typeof item === 'string') names.add(item);
 		}
 		return names;
+	}
+
+	/** La macro, écrite par un élève, est-elle rendue en texte par le mode restreint ? */
+	function refused(name: string): boolean {
+		const written = `\\${name}{x}`;
+		return (
+			restrictedRendering.hasUnsafeMathCommand(written) ||
+			restrictedRendering.isRefusedRestrictedFormula(written)
+		);
 	}
 
 	const macros = defaultMacros();
@@ -101,6 +124,9 @@ describe('T26 : macros MathLive qui se développent en commande interdite', () =
 	it('témoin : les macros de MathLive sont lues, `\\angl` comprise', () => {
 		expect(macros.length).toBeGreaterThan(100);
 		expect(macros.find((m) => m.name === 'angl')?.expansion).toBe('\\enclose{actuarial}{#1}');
+		// Une macro définie par un objet, et une macro rangée dans un paquet
+		expect(macros.find((m) => m.name === 'phase')?.expansion).toBe('\\enclose{phasorangle}{#1}');
+		expect(macros.find((m) => m.name === 'colondash')?.expansion).toContain('\\mkern');
 	});
 
 	it('témoin : une macro sans commande interdite n’est pas retenue', () => {
@@ -113,9 +139,7 @@ describe('T26 : macros MathLive qui se développent en commande interdite', () =
 	// mise à jour de MathLive passerait de la même façon.
 	it('chacune est refusée en mode restreint, ou listée comme examinée', () => {
 		const listed = listedNames();
-		const unclassified = risky.filter(
-			(m) => !listed.has(m.name) && !restrictedRendering.hasUnsafeMathCommand(`\\${m.name}{x}`)
-		);
+		const unclassified = risky.filter((m) => !listed.has(m.name) && !refused(m.name));
 		expect(unclassified.map((m) => m.name)).toEqual([]);
 	});
 });
