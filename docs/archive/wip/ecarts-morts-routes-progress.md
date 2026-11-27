@@ -1,16 +1,16 @@
 ---
 title: Chantier ecarts-morts-routes — code mort (routes d'API et fonctions sans appelant)
 date: 2026-11-28
-status: en cours
+status: clos (#3261)
 ---
 
 # Chantier `ecarts-morts-routes`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3261._
 
-- **État** : les 7 écarts corrigés, revues faites, PR ouverte · **Prochaine action** : CI verte → merge (`pnpm pr:merger`), puis clore le lot sur `main` (« fait (#PR) » dans [ecarts-lots.md](ecarts-lots.md), journal archivé ; le registre se barre à la tâche de nuit) · **En attente de David** : rien (lot sans décision) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-morts-routes`, `chore/ecarts-morts-routes`
+- **État** : lot fini — les 7 écarts corrigés par #3261 (mergée), barrés au registre, « fait » dans `docs/wip/ecarts-lots.md` · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés par `pnpm pr:merger`
 
 ## Écarts du lot
 
@@ -60,3 +60,4 @@ classes est vide (même adresse, même clé que la page vue).
   épuisées (403).
 - Hors lot, laissé : le RPC SQL `add_warning` n'a plus d'appelant dans le code (le retirer = une
   migration, à décider à part).
+- 2026-11-28 : #3261 mergée (CI verte) ; lot clos, journal archivé.
