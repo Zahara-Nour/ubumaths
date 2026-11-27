@@ -89,18 +89,6 @@ describe('V34 — tidy garde x + iy dans l’ordre', () => {
 	});
 });
 
-describe('V39 — le parseur lit \\ln 5^2 comme ln(5²)', () => {
-	it('met le carré sous le ln', () => {
-		const node = parseLatex('\\ln 5^2');
-
-		// Aujourd'hui : un `superscript` dont la base est ln(5).
-		expect(node.type).toBe('function');
-		if (node.type !== 'function') return;
-		expect(node.name).toBe('ln');
-		expect(node.args[0]?.type).toBe('superscript');
-	});
-});
-
 describe('V40 — valeur absolue hors périmètre : pas de « aucune solution » faux', () => {
 	// Aujourd'hui `solve` refuse par `no-solution` + `error`, pour des équations qui
 	// ont des solutions (−1/2 ; ±2). Aucune erreur n'est avalée : un test qui lève reste rouge.

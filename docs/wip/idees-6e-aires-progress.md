@@ -5,10 +5,11 @@
 _Mis à jour le 2026-11-27, phase 0 envoyée._
 
 - **État** : relevé fait ([idees-6e-aires-releve.md](idees-6e-aires-releve.md)), phase 0 écrite ci-dessous (8 fiches,
-  2 questions), page à cocher envoyée à David.
+  3 questions), page à cocher envoyée à David :
+  https://claude.ai/artifact/MJrYFZmJzEVpyPmJUFwjnq (verdicts dans sa base, collection `verdicts`).
 - **Prochaine action** : lire ses réponses (page à cocher + session), puis écrire le gros lot (7 modèles neufs,
   variations de 82748db8, fdd849f5, 01e205ed).
-- **En attente de David** : fiches N1 à N8, questions Q1 et Q2.
+- **En attente de David** : fiches N1 à N8, questions Q1 à Q3.
 - **Pièges en cours** : 82748db8, fdd849f5 et 01e205ed sont à réserver dans le tableau avant d'y toucher.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-aires`, `docs/idees-6e-aires` (sur `origin/main`, rien commité :
   la phase 0 est de la doc, commitée sur `main`).
@@ -80,10 +81,8 @@ _Mis à jour le 2026-11-27, phase 0 envoyée._
   l'automatisme de 6e est rangé sur CM2-071. Recommandation : modèle de **CM2 et de 6e** (`grades` les deux), point
   **CM2-071**.
 
-### Remarque (hors chantier)
-
-01e205ed, fdd849f5, 9f33998e et 059e3fc9 ont des variations en mm², dam², hm², km², alors que le BO de 6e ne nomme
-que cm², dm², m². Les bornes de ces points sont « général » : je n'y touche pas sans ta demande.
+- **Q3 — Unités mm², dam², hm², km² de nos modèles de 6e (hors chantier).** 01e205ed, fdd849f5, 9f33998e et 059e3fc9 ont des variations en mm², dam², hm², km², alors que le BO de 6e ne nomme
+  que cm², dm², m². Les bornes de ces points sont « général ». Recommandation : ne rien toucher.
 
 ## Historique
 

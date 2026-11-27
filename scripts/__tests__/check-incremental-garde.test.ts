@@ -62,6 +62,8 @@ beforeEach(() => {
 	mkdirSync(join(dir, 'src/lib'), { recursive: true });
 	writeFileSync(join(dir, 'src/lib/a.ts'), 'export const a = 1;\n');
 	writeFileSync(join(dir, 'src/lib/b.ts'), 'export const b = 2;\n');
+	mkdirSync(join(dir, 'scripts/nuit'), { recursive: true });
+	writeFileSync(join(dir, 'scripts/nuit/logique.ts'), 'export const n = 1;\n');
 	writeFileSync(join(dir, 'vite.config.ts'), "import './vitest.base.config';\n");
 	writeFileSync(join(dir, 'vitest.base.config.ts'), 'export {};\n');
 	writeFileSync(join(dir, 'package.json'), '{}\n');
@@ -132,6 +134,13 @@ describe('check:incremental — garde de rejeu', () => {
 	it('refait un passage quand un .env change (types de $env)', () => {
 		vieillirVersLeFutur(join(dir, '.env'));
 		lancer();
+		expect(passages()).toBe(2);
+	});
+
+	it('refait un passage quand un fichier de scripts/nuit change (dans le tsconfig)', () => {
+		vieillirVersLeFutur(join(dir, 'scripts/nuit/logique.ts'));
+		const r = lancer();
+		expect(r.sortie).not.toContain('REJOUÉ');
 		expect(passages()).toBe(2);
 	});
 });

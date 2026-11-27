@@ -11,7 +11,11 @@
 // Types
 // ============================================================================
 
-export type TestStatus = 'green' | 'red' | 'skipped';
+/** `flaky` : rouge à la suite complète, vert au second essai (charge, pas un défaut prouvé). */
+export type TestStatus = 'green' | 'red' | 'flaky' | 'skipped';
+
+/** Une panne qui peut durer : une étape qui ne tourne pas, ou le registre barré pas poussé. */
+export type OutageKey = 'proofs' | 'verifs' | 'guards' | 'push';
 
 /** Une étape a tourné (`data`) ou non (`failure` : pourquoi). */
 export type Step<T> = { ok: true; data: T } | { ok: false; failure: string };
@@ -34,6 +38,8 @@ export interface ProofsData {
 export interface VerifsData {
 	/** « navigateur › fichier › titre » → verdict. */
 	tests: Record<string, TestStatus>;
+	/** Le second essai des rouges n'a pas pu tourner : pourquoi. */
+	replay?: string;
 }
 
 export interface Guard {
@@ -53,6 +59,8 @@ export interface Night {
 	guards: Step<Guard[]>;
 	/** Rouges nouveaux dont la notification n'est pas partie : repris la nuit suivante. */
 	pending?: string[];
+	/** Pannes notifiées cette nuit (la première fois, ou en rappel). */
+	outages?: OutageKey[];
 }
 
 export interface ReplayLine {
@@ -67,8 +75,16 @@ export type Args = { command: 'show' } | { command: 'run'; trial: boolean };
 // Constantes
 // ============================================================================
 
-const WORST_FIRST: TestStatus[] = ['red', 'skipped', 'green'];
+const WORST_FIRST: TestStatus[] = ['red', 'flaky', 'skipped', 'green'];
 const DAY_MS = 86_400_000;
+/** Une panne qui dure renotifie tous les 7 jours (David, 2026-11-25). */
+const REMINDER_DAYS = 7;
+/** Une nuit dure moins que cela : un verrou plus vieux est celui d'une nuit morte. */
+const LOCK_MAX_MS = 8 * 3_600_000;
+const OUTAGE_KEYS: OutageKey[] = ['proofs', 'verifs', 'guards', 'push'];
+const TEST_STATUSES: TestStatus[] = ['green', 'red', 'flaky', 'skipped'];
+/** Préfixe d'un fichier de test qui ne se charge pas (rouge sans test à rejouer). */
+export const LOAD_ERROR = 'erreur de chargement ›';
 
 const STEP_NAMES = {
 	proofs: 'preuves des écarts pas jouées',
@@ -146,7 +162,7 @@ export function playwrightTests(report: unknown): Record<string, TestStatus> | n
 	for (const error of errors) {
 		const message = isRecord(error) && typeof error.message === 'string' ? error.message : '';
 		const first = message.split('\n')[0].trim().slice(0, 160) || 'sans message';
-		tests[`erreur de chargement › ${first}`] = 'red';
+		tests[`${LOAD_ERROR} ${first}`] = 'red';
 	}
 	return tests;
 }
@@ -195,7 +211,8 @@ function isVerifsData(data: unknown): boolean {
 	return (
 		isRecord(data) &&
 		isRecord(data.tests) &&
-		Object.values(data.tests).every((s) => s === 'green' || s === 'red' || s === 'skipped')
+		Object.values(data.tests).every((s) => TEST_STATUSES.includes(s as TestStatus)) &&
+		(data.replay === undefined || typeof data.replay === 'string')
 	);
 }
 
@@ -221,7 +238,10 @@ export function isNight(value: unknown): value is Night {
 		isStep(value.proofs, isProofsData) &&
 		isStep(value.verifs, isVerifsData) &&
 		isStep(value.guards, isGuards) &&
-		(value.pending === undefined || isStringArray(value.pending))
+		(value.pending === undefined || isStringArray(value.pending)) &&
+		(value.outages === undefined ||
+			(isStringArray(value.outages) &&
+				value.outages.every((k) => OUTAGE_KEYS.includes(k as OutageKey))))
 	);
 }
 
@@ -253,25 +273,11 @@ function redTests(data: VerifsData | null): string[] {
  * `previous` : les nuits passées, la plus récente d'abord.
  */
 export function newReds(previous: Night[], current: Night): string[] {
-	const reds: string[] = [];
-	const eve = previous.at(0);
-
-	// Une étape en panne : une fois, tant que la veille n'était pas déjà en panne.
-	for (const key of ['proofs', 'verifs', 'guards'] as const) {
-		const step = current[key];
-		if (!step.ok && (eve === undefined || eve[key].ok)) {
-			reds.push(`${STEP_NAMES[key]} : ${step.failure}`);
-		}
-	}
+	const reds = outageNotices(previous, current).map((notice) => notice.line);
 
 	if (current.proofs.ok) {
 		const before = lastData(previous, 'proofs');
-		const { struck, pushFailure, broken } = current.proofs.data;
-		if (pushFailure !== null && struck.length > 0 && (before?.pushFailure ?? null) === null) {
-			reds.push(
-				`lignes barrées mais pas poussées sur main (${pushFailure}) : ${struck.join(', ')}`
-			);
-		}
+		const { broken } = current.proofs.data;
 		const known = new Set((before?.broken ?? []).map((b) => b.id));
 		for (const proof of broken) {
 			if (!known.has(proof.id)) reds.push(`preuve cassée : ${proof.id} (${proof.detail})`);
@@ -294,6 +300,104 @@ export function newReds(previous: Night[], current: Night): string[] {
 	}
 
 	return reds;
+}
+
+/**
+ * La panne d'une nuit : vrai, faux, ou `null` quand la nuit ne permet pas de le
+ * savoir (registre : preuves pas jouées, ou rien à pousser). Une nuit `null` ne
+ * coupe pas une panne qui dure, elle est sautée.
+ */
+function outageIn(night: Night, key: OutageKey): boolean | null {
+	if (key !== 'push') return !night[key].ok;
+	if (!night.proofs.ok || night.proofs.data.struck.length === 0) return null;
+	return night.proofs.data.pushFailure !== null;
+}
+
+function outageLine(current: Night, key: OutageKey): string {
+	if (key === 'push' && current.proofs.ok) {
+		const { pushFailure, struck } = current.proofs.data;
+		return `lignes barrées mais pas poussées sur main (${pushFailure}) : ${struck.join(', ')}`;
+	}
+	const step = current[key as StepKey];
+	return `${STEP_NAMES[key as StepKey]} : ${step.ok ? '' : step.failure}`;
+}
+
+function daysBetween(from: string, to: string): number {
+	return Math.round((Date.parse(to) - Date.parse(from)) / DAY_MS);
+}
+
+/**
+ * Les pannes à notifier cette nuit : une panne neuve, ou une panne qui dure
+ * depuis 7 jours au moins sans avoir été notifiée. Le début d'une panne compte
+ * comme notifié (nuits écrites avant `outages`, notification pas partie : celle-ci
+ * est reprise par `pending`).
+ */
+function outageNotices(previous: Night[], current: Night): Array<{ key: OutageKey; line: string }> {
+	const notices: Array<{ key: OutageKey; line: string }> = [];
+	for (const key of OUTAGE_KEYS) {
+		if (outageIn(current, key) !== true) continue;
+		let start: string | null = null;
+		let lastNotified: string | null = null;
+		for (const night of previous) {
+			const down = outageIn(night, key);
+			if (down === null) continue;
+			if (!down) break;
+			start = night.date;
+			if (lastNotified === null && night.outages?.includes(key)) lastNotified = night.date;
+		}
+		const line = outageLine(current, key);
+		if (start === null) {
+			notices.push({ key, line });
+		} else if (daysBetween(lastNotified ?? start, current.date) >= REMINDER_DAYS) {
+			notices.push({ key, line: `rappel (panne depuis le ${start}) : ${line}` });
+		}
+	}
+	return notices;
+}
+
+/** Les pannes notifiées cette nuit, à garder dans son bilan (`outages`). */
+export function notifiedOutages(previous: Night[], current: Night): OutageKey[] {
+	return outageNotices(previous, current).map((notice) => notice.key);
+}
+
+/**
+ * Le second essai des rouges : un rouge vert au second essai devient instable.
+ * Absent du second essai (il ne s'est pas chargé) : rouge, jamais un vert par défaut.
+ */
+export function mergeReplay(
+	first: Record<string, TestStatus>,
+	replay: Record<string, TestStatus>
+): Record<string, TestStatus> {
+	const merged: Record<string, TestStatus> = { ...first };
+	for (const [name, status] of Object.entries(first)) {
+		if (status === 'red' && replay[name] === 'green') merged[name] = 'flaky';
+	}
+	return merged;
+}
+
+/** La phrase de la notification : un nombre, rien du contenu (ntfy est un service extérieur). */
+export function notificationPhrase(reds: string[]): string {
+	const n = reds.length;
+	return `bilan de la nuit à lire (${n} ${n > 1 ? 'rouges nouveaux' : 'rouge nouveau'})`;
+}
+
+/**
+ * `pnpm prevenir` sort en 0 même sans réseau : seule sa ligne « envoyé » fait foi.
+ * (« déjà envoyé » : même message il y a moins de 10 minutes, David est prévenu.)
+ */
+export function deliveredNotice(status: number | null, lastLine: string): boolean {
+	return status === 0 && /^(✅ envoyé|⏸ déjà envoyé)/.test(lastLine);
+}
+
+/** Les écarts que `pnpm ecarts rejouer --barrer` dit avoir barrés (sa sortie fait foi), ou `null`. */
+export function struckIds(output: string): string[] | null {
+	const struck = /^Barré dans le registre : (.+?)\. À commiter/m.exec(output);
+	return struck === null ? null : struck[1].split(', ');
+}
+
+/** Un verrou dont le processus a disparu, ou plus vieux qu'une nuit, est périmé. */
+export function lockIsStale(lock: { alive: boolean; ageMs: number }): boolean {
+	return !lock.alive || lock.ageMs >= LOCK_MAX_MS;
 }
 
 /** Ce dont David doit être prévenu : les rouges nouveaux, et ceux de la veille restés sans notification. */
@@ -354,12 +458,18 @@ function proofsBlock(current: Night, previous: Night[]): string {
 function verifsBlock(current: Night): string {
 	const title = 'Vérifications à l’écran';
 	if (!current.verifs.ok) return `${title} : ${STEP_NAMES.verifs} : ${current.verifs.failure}`;
-	const statuses = Object.values(current.verifs.data.tests);
+	const { tests, replay } = current.verifs.data;
+	const statuses = Object.values(tests);
 	const count = (status: TestStatus): number => statuses.filter((s) => s === status).length;
+	const flaky = count('flaky') > 0 ? `, ${plural(count('flaky'), 'instable')}` : '';
 	const lines = [
-		`${title} : ${plural(count('green'), 'vert')}, ${plural(count('red'), 'rouge')}, ${plural(count('skipped'), 'sauté')}`
+		`${title} : ${plural(count('green'), 'vert')}, ${plural(count('red'), 'rouge')}${flaky}, ${plural(count('skipped'), 'sauté')}`
 	];
+	if (replay !== undefined) lines.push(`  ⚠️ second essai pas joué : ${replay}`);
 	for (const name of redTests(current.verifs.data)) lines.push(`  rouge : ${name}`);
+	for (const [name, status] of Object.entries(tests)) {
+		if (status === 'flaky') lines.push(`  instable (vert au second essai) : ${name}`);
+	}
 	return lines.join('\n');
 }
 
@@ -378,10 +488,12 @@ function guardsBlock(current: Night): string {
 /** Le bilan d'une nuit, tel que `pnpm nuit` l'affiche. `previous` : la plus récente d'abord. */
 export function formatSummary(current: Night, previous: Night[]): string {
 	const reds = newReds(previous, current);
-	const head =
+	const list =
 		reds.length === 0
 			? 'Aucun rouge nouveau.'
 			: `Rouges nouveaux (${reds.length})\n${reds.map((r) => `  ${r}`).join('\n')}`;
+	const head =
+		previous.length === 0 ? `Première nuit : tout rouge compte comme nouveau.\n${list}` : list;
 	return [
 		`Nuit du ${current.date} (main ${current.commit})`,
 		head,

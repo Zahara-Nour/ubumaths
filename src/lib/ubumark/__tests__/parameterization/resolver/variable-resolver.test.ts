@@ -1531,3 +1531,23 @@ describe('{{eval:…}} : un multiple rationnel de π s’écrit \\dfrac{k\\pi}{n
 		expect(resolveExpression('{{eval:m*\\pi/12}}', [{ name: 'm', value: '24' }])).toBe('2 \\pi');
 	});
 });
+
+describe('{{eval:…}} : la puissance après un ln sans parenthèses porte sur son argument (V39)', () => {
+	const resolved = [{ name: 'a', value: '3' }];
+
+	// Les trois écritures d'un auteur disent la même chose : ln(3²) = 2 ln 3
+	it.each(['{{eval:\\ln a^2}}', '{{eval:\\ln {{a}}^2}}', '{{eval:\\ln(a^2)}}'])(
+		'%s',
+		(expression) => {
+			expect(resolveExpression(expression, resolved)).toBe(
+				resolveExpression('{{eval:2\\ln(3)}}', resolved)
+			);
+		}
+	);
+
+	it('avec des parenthèses écrites, {{eval:\\ln(a)^2}} reste (ln 3)²', () => {
+		expect(resolveExpression('{{eval:\\ln(a)^2}}', resolved)).not.toBe(
+			resolveExpression('{{eval:2\\ln(3)}}', resolved)
+		);
+	});
+});
