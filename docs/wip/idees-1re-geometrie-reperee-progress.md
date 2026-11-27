@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-27, PR de rangement en cours._
 
-- **État** : 2 brouillons en prod (75a03073 N1, bbafb6dd N2) ; migration de rangement `20261127105154` écrite, prouvée (verte avec, rouge sans) · **Prochaine action** : verdict `security-auditor` sur la migration (lancé le 2026-11-27 ; à relancer s'il est perdu par un /clear), puis push et PR, merge, `db:migrate` (4 conditions), puis relecture des 2 brouillons dans `/dev/modeles?noeud=` (projeté orthogonal) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-1re-geometrie-reperee`, `feat/idees-1re-geometrie-reperee-rangement`
+- **État** : 2 brouillons en prod (75a03073 N1, bbafb6dd N2) ; migration de rangement `20261127105154` écrite, prouvée (verte avec, rouge sans) · **Prochaine action** : merge de la PR de rangement, `db:migrate` (4 conditions), puis relecture des 2 brouillons dans `/dev/modeles?noeud=` (projeté orthogonal) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-1re-geometrie-reperee`, `feat/idees-1re-geometrie-reperee-rangement`
 
 ## Historique
 
@@ -51,3 +51,7 @@ _Mis à jour le 2026-11-27, PR de rangement en cours._
   projeté orthogonal (point sur la notion, admis par la règle). Test d'intégration vert (155),
   **rouge sans la migration** (5 échecs, fichier écarté le temps d'un passage puis remis depuis une
   copie, `cmp` identique) ; `garde-niveaux-tags` : aucun niveau manquant.
+- `security-auditor` sur la migration : **aucun finding bloquant** (aucune policy, grant ni `SECURITY
+DEFINER` ; additive ; rollback correct ; trigger toujours réactivé sous `db push` ; seule migration
+  en attente en prod). Non bloquant : `set local lock_timeout` peut rester sans effet hors bloc de
+  transaction (au pire une attente de verrou). Personne ne gagne ni ne perd d'accès.
