@@ -30,7 +30,13 @@
  *   milieu (pavé, cylindre ⊥), par l'axe ou le centre (cylindre ‖, boule).
  * - `points:` (facultatif, polyèdres) : `I milieu AE, O centre ABCD` (centre
  *   d'une face ; cube, pavé : `centre ABCDEFGH`, le centre du solide) ; un
- *   milieu peut prendre un point déjà déclaré (`J milieu IG`).
+ *   milieu peut prendre un point déjà déclaré (`J milieu IG`). Avec `repere:`,
+ *   un point par ses coordonnées : `M (1 ; 0,5 ; 1)` (au plus 3 décimales ; refusé
+ *   hors du solide agrandi d'une marge).
+ * - `repere:` (facultatif, polyèdres, lot 7c) : `A ; AB, AD, AE`, une origine et
+ *   trois vecteurs qui en partent, pas dans un même plan, entre sommets ou points
+ *   déclarés sans coordonnées, avant le premier point à coordonnées. Pas avec
+ *   `section:` ni `tracer:`.
  * - `vecteurs:` (facultatif, polyèdres) : `AB, AE, u = AI`, entre points nommés
  *   (sommets, points déclarés) ; `u =` pose la lettre sur la flèche.
  * - `tracer:` (facultatif, polyèdres, geste de l'élève) : `vecteur AB + AD + AE`,
@@ -69,6 +75,7 @@ import {
 	type SolideMark,
 	type SolidePlan,
 	type SolidePoint,
+	type SolideRepere,
 	type SolideSection,
 	type SolideSpec,
 	type SolideTask,
@@ -76,8 +83,10 @@ import {
 	type SolideVectorTerm
 } from '../types/espace';
 import {
+	DROITE_OVERHANG,
 	SOLIDE_FLAT_CONE,
 	SOLIDE_PLACES,
+	frenchNumber,
 	polyhedronVertices,
 	solidePoints3,
 	solideTopology,
@@ -125,6 +134,11 @@ const TRACER_USAGE = 'ex. tracer: vecteur AB + AD + AE, ou … depuis A';
 
 /** Deux points plus proches que cela sont confondus (vecteur nul, milieu d'un point avec lui-même) */
 const SAME_POINT = 1e-9;
+
+/** Une coordonnée d'un point : un nombre, négatif ou non (`1`, `0,5`, `-0.25`) */
+const COORDINATE_REGEX = /^-?\d+(?:[.,]\d+)?$/;
+
+const REPERE_USAGE = 'ex. repere: A ; AB, AD, AE';
 
 /** Un point est sur une droite quand il en est à moins de cette part de la plus grande dimension */
 const SAME_LINE = 1e-9;
@@ -484,24 +498,157 @@ const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
 const samePosition = (a: Point3, b: Point3) =>
 	Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z) < SAME_POINT;
 
-/** Les points de `points:` ; une phrase d'erreur sinon */
+/** Les éléments d'une liste séparés par des virgules, hors parenthèses (`M (1 ; 0,5 ; 1), I milieu AE`) */
+function splitItems(value: string): string[] {
+	const items: string[] = [];
+	let depth = 0;
+	let current = '';
+	for (const char of value) {
+		if (char === '(') depth++;
+		if (char === ')') depth = Math.max(0, depth - 1);
+		if (char === ',' && depth === 0) {
+			items.push(current);
+			current = '';
+		} else current += char;
+	}
+	items.push(current);
+	return items.filter((i) => i.trim() !== '');
+}
+
+/** Un élément de `points:` qui donne des coordonnées : un nom, puis une parenthèse */
+const coordsItem = (item: string) => /^([^\s(]+)\s*\((.*)$/.exec(item.trim());
+
+/** Les noms des points de `points:` donnés par leurs coordonnées, et de ceux déclarés après le premier d'entre eux */
+function pointsAfterCoords(value: string): { coords: string[]; later: string[] } {
+	const coords: string[] = [];
+	const later: string[] = [];
+	for (const item of splitItems(value)) {
+		const match = coordsItem(item);
+		if (match !== null) coords.push(match[1]);
+		else if (coords.length > 0) later.push(item.trim().split(/\s+/)[0]);
+	}
+	return { coords, later };
+}
+
+/**
+ * Le repère de `repere:` (`A ; AB, AD, AE`) ; une phrase d'erreur sinon.
+ * `points` : les points déclarés avant le premier point à coordonnées
+ */
+function readRepere(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	names: (string | null)[],
+	points: SolidePoint[],
+	after: { coords: string[]; later: string[] }
+): SolideRepere | string {
+	const inner = /^\((.*)\)$/.exec(value.trim())?.[1] ?? value;
+	const parts = inner.split(';');
+	if (parts.length !== 2 || parts[0].trim() === '') {
+		return `repère « ${value} » non compris (${REPERE_USAGE})`;
+	}
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	/** Les points nommés, ou pourquoi le repère ne peut pas s'appuyer sur l'un d'eux */
+	const pointsOf = (text: string): number[] | string => {
+		const written = text.replace(/[[\]()\s]/g, '').match(NAMES_IN_TEXT_REGEX) ?? [];
+		// Un nom déjà connu (sommet, point déclaré avant) n'est pas en cause : s'il est
+		// repris plus loin dans points:, c'est l'erreur de points: qui le dira
+		const unknown = written.filter((n) => !known.includes(n));
+		const byCoords = unknown.find((n) => after.coords.includes(n));
+		if (byCoords !== undefined) {
+			return `${byCoords} est donné par ses coordonnées : le repère ne peut pas s’appuyer sur lui`;
+		}
+		const late = unknown.find((n) => after.later.includes(n));
+		if (late !== undefined) {
+			return `déclare ${late} avant les points donnés par leurs coordonnées, pour que le repère s’appuie sur lui`;
+		}
+		return namedPoints(text, known);
+	};
+	const origin = pointsOf(parts[0]);
+	if (typeof origin === 'string') return origin;
+	if (origin.length !== 1) {
+		return `origine « ${parts[0].trim()} » : un seul point (${REPERE_USAGE})`;
+	}
+	const items = parts[1].split(',').filter((i) => i.trim() !== '');
+	if (items.length !== 3) return `un repère de l’espace a trois vecteurs (${REPERE_USAGE})`;
+	const axes: number[] = [];
+	for (const item of items) {
+		const refs = pointsOf(item);
+		if (typeof refs === 'string') return refs;
+		const written = refs.map((i) => known[i]).join('');
+		if (refs.length !== 2) {
+			return `« ${item.trim()} » : un vecteur se désigne par deux points (ex. AB)`;
+		}
+		if (samePosition(at[refs[0]], at[refs[1]])) {
+			return `${written} : vecteur nul (origine et extrémité confondues)`;
+		}
+		if (refs[0] !== origin[0]) {
+			return `${written} : chaque vecteur du repère part de ${known[origin[0]]}, son origine (${REPERE_USAGE})`;
+		}
+		axes.push(refs[1]);
+	}
+	// Volume du pavé porté par les trois vecteurs, rapporté à la taille du solide : nul, ils sont dans un même plan
+	const o = at[origin[0]];
+	const [u, v, w] = axes.map((i) => ({ x: at[i].x - o.x, y: at[i].y - o.y, z: at[i].z - o.z }));
+	const volume =
+		u.x * (v.y * w.z - v.z * w.y) - u.y * (v.x * w.z - v.z * w.x) + u.z * (v.x * w.y - v.y * w.x);
+	const size = Math.max(...shape.dims);
+	if (Math.abs(volume) < size ** 3 * SAME_LINE) {
+		return 'les trois vecteurs sont dans un même plan : ils ne font pas un repère de l’espace';
+	}
+	return { origin: origin[0], axes: [axes[0], axes[1], axes[2]] };
+}
+
+/**
+ * Les points de `points:` ; une phrase d'erreur sinon. `frame` : le repère, lu
+ * avec les points déclarés jusque-là ; `'absent'` : pas de `repere:` ; `'failed'` :
+ * mal écrit, erreur déjà dite (rendu : null, sans phrase de plus)
+ */
 function readPoints(
 	value: string,
 	shape: { form: SolideForm; dims: number[] },
 	topology: SolideTopology,
-	names: (string | null)[]
-): SolidePoint[] | string {
-	const items = value.split(',').filter((i) => i.trim() !== '');
+	names: (string | null)[],
+	frame: (declared: SolidePoint[]) => SolideRepere | 'absent' | 'failed'
+): SolidePoint[] | string | null {
+	const items = splitItems(value);
 	if (items.length > SOLIDE_MAX_POINTS) return `au plus ${SOLIDE_MAX_POINTS} points`;
 	const known = names.map((n) => n ?? '');
 	const points: SolidePoint[] = [];
 	const usage = 'ex. I milieu AE, O centre ABCD';
+	const coordsUsage = 'ex. M (1 ; 0,5 ; 1)';
+	// Le solide est convexe : un point en est à plus de la marge dès qu'il dépasse
+	// d'autant le plan d'une de ses faces (la boîte des sommets ne suffit pas : une
+	// pyramide est mince en haut, un prisme n'occupe que la moitié de la sienne)
+	const corners = polyhedronVertices(shape.form, shape.dims);
+	const margin = DROITE_OVERHANG * Math.max(...shape.dims);
+	const inside = {
+		x: corners.reduce((sum, c) => sum + c.x, 0) / corners.length,
+		y: corners.reduce((sum, c) => sum + c.y, 0) / corners.length,
+		z: corners.reduce((sum, c) => sum + c.z, 0) / corners.length
+	};
+	/** Ce dont le point p dépasse le plan de la face, vers l'extérieur du solide */
+	const beyondFace = (p: Point3, face: number[]): number => {
+		const [a, b, c] = face.map((i) => corners[i]);
+		const u = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z };
+		const v = { x: c.x - a.x, y: c.y - a.y, z: c.z - a.z };
+		const n = { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x };
+		const length = Math.hypot(n.x, n.y, n.z);
+		const side = (q: Point3) =>
+			((q.x - a.x) * n.x + (q.y - a.y) * n.y + (q.z - a.z) * n.z) / length;
+		// Le centre du solide est du côté intérieur
+		return side(inside) > 0 ? -side(p) : side(p);
+	};
 	for (const item of items) {
-		const match = /^(\S+)\s+(\S+)\s*(.*)$/.exec(item.trim());
-		const name = match?.[1] ?? item.trim();
+		const byCoords = coordsItem(item);
+		const match = byCoords === null ? /^(\S+)\s+(\S+)\s*(.*)$/.exec(item.trim()) : null;
+		const name = byCoords?.[1] ?? match?.[1] ?? item.trim();
 		const kind = plain(match?.[2] ?? '');
-		if (match === null || (kind !== 'milieu' && kind !== 'centre')) {
+		if (byCoords === null && (match === null || (kind !== 'milieu' && kind !== 'centre'))) {
 			return `point « ${item.trim()} » non compris (${usage})`;
+		}
+		if (byCoords !== null && !byCoords[2].trim().endsWith(')')) {
+			return `point « ${item.trim()} » non compris (${coordsUsage})`;
 		}
 		if (!NAME_REGEX.test(name)) {
 			return `« ${name} » : un nom de point est une majuscule, puis éventuellement ' ou un nombre (I, I', O1)`;
@@ -509,6 +656,46 @@ function readPoints(
 		if (names.includes(name)) return `« ${name} » est déjà le nom d’un sommet`;
 		if (points.some((p) => p.name === name))
 			return `« ${name} » deux fois : chaque point a son nom`;
+		if (byCoords !== null) {
+			const written = byCoords[2]
+				.trim()
+				.slice(0, -1)
+				.split(';')
+				.map((w) => w.trim().replace(/−/g, '-'));
+			if (written.length !== 3) return `${name} : trois coordonnées (${coordsUsage})`;
+			const bad = written.find((w) => !COORDINATE_REGEX.test(w));
+			if (bad !== undefined) {
+				return `« ${bad} » : une coordonnée est un nombre (${coordsUsage})`;
+			}
+			const tooPrecise = written.find(
+				(w) => (w.split(/[.,]/)[1]?.length ?? 0) > SOLIDE_MAX_DECIMALS
+			);
+			if (tooPrecise !== undefined) {
+				return `« ${tooPrecise} » : au plus ${SOLIDE_MAX_DECIMALS} chiffres après la virgule`;
+			}
+			const repere = frame(points.filter((p) => p.coords === undefined));
+			if (repere === 'failed') return null;
+			if (repere === 'absent') {
+				return `${name} : des coordonnées demandent un repère (repere:, ${REPERE_USAGE})`;
+			}
+			const values = written.map((w) => Number(w.replace(',', '.')));
+			const shown = `(${values.map((v) => frenchNumber(v).replace('-', '−')).join(' ; ')})`;
+			const point: SolidePoint = {
+				name,
+				of: [],
+				label: `de coordonnées ${shown}`,
+				coords: { ...repere, values: [values[0], values[1], values[2]] }
+			};
+			const at = solidePoints3(shape.form, shape.dims, [...points, point]);
+			const p = at[at.length - 1];
+			if (topology.faces.some((face) => beyondFace(p, face) > margin)) {
+				return `${name} ${shown} tombe hors de la figure : un point reste dans le solide, ou tout près`;
+			}
+			points.push(point);
+			known.push(name);
+			continue;
+		}
+		if (match === null) continue;
 		if (match[3].trim() === '') return `${kind} de quels points ? (${usage})`;
 		const refs = namedPoints(match[3], known);
 		if (typeof refs === 'string') return refs;
@@ -886,7 +1073,7 @@ export function parseSolideContent(source: string): {
 	let vectors: SolideVector[] = [];
 	const needs = (
 		entry: { line: number },
-		what: 'points' | 'vecteurs' | 'droites' | 'plans' | 'tracer'
+		what: 'points' | 'vecteurs' | 'droites' | 'plans' | 'repere' | 'tracer'
 	): boolean => {
 		if (topology.curved) {
 			fail(entry.line, `${what} : polyèdres seulement (pas ${topology.indefinite})`);
@@ -898,6 +1085,7 @@ export function parseSolideContent(source: string): {
 				vecteurs: 'dessiner des vecteurs',
 				droites: 'dessiner des droites',
 				plans: 'dessiner des plans',
+				repere: 'poser un repère',
 				tracer: 'faire tracer un vecteur'
 			}[what];
 			fail(entry.line, `nomme les sommets (sommets:) pour ${purpose}`);
@@ -905,18 +1093,47 @@ export function parseSolideContent(source: string): {
 		}
 		return names !== null;
 	};
+	// Repère (`repere:`, chantier `solides-3d`, lot 7c) : lu à la demande, au premier point
+	// donné par ses coordonnées (il s'appuie sur les points déclarés avant), sinon après les points
+	const repereEntry = seen.get('repere');
+	let repere: SolideRepere | undefined;
+	let repereAsked = false;
+	const frame = (declared: SolidePoint[]): SolideRepere | 'absent' | 'failed' => {
+		if (repereEntry === undefined) return 'absent';
+		if (!repereAsked) {
+			repereAsked = true;
+			// Pas dans ce lot : le plan de coupe et le geste (comportement 83)
+			for (const other of ['section', 'tracer'] as const) {
+				if (seen.has(other)) fail(repereEntry.line, `repere: ne va pas encore avec ${other}:`);
+			}
+			if (needs(repereEntry, 'repere') && names !== null) {
+				const read = readRepere(
+					repereEntry.value,
+					shape,
+					names,
+					declared,
+					pointsAfterCoords(pointsEntry?.value ?? '')
+				);
+				if (typeof read === 'string') fail(repereEntry.line, read);
+				else repere = read;
+			}
+		}
+		return repere ?? 'failed';
+	};
 	let pointsRead = true;
 	if (pointsEntry !== undefined) {
 		pointsRead = false;
 		if (needs(pointsEntry, 'points') && names !== null) {
-			const read = readPoints(pointsEntry.value, shape, topology, names);
+			const read = readPoints(pointsEntry.value, shape, topology, names, frame);
 			if (typeof read === 'string') fail(pointsEntry.line, read);
-			else {
+			else if (read !== null) {
 				points = read;
 				pointsRead = true;
 			}
 		}
 	}
+	// Des points faux rendent le repère illisible : une seule erreur, celle des points
+	if (pointsRead) frame(points.filter((p) => p.coords === undefined));
 	// `tracer:` peut nommer un vecteur de `vecteurs:` : une ligne fausse ne doit pas en ajouter une seconde
 	let vectorsRead = true;
 	if (vectorsEntry !== undefined) {
@@ -1014,6 +1231,7 @@ export function parseSolideContent(source: string): {
 			vectors,
 			...(droites.length > 0 && { droites }),
 			...(plans.length > 0 && { plans }),
+			...(repere !== undefined && { repere }),
 			...(task !== undefined && { task }),
 			...(rotate && { rotate: true as const })
 		},

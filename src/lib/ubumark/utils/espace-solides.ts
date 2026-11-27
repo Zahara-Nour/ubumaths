@@ -259,8 +259,12 @@ const NAME_PLACES: { gap: number; turn: number }[] = [
  */
 const TURN_PAD = 0.75;
 
-/** Ce qu'une droite dépasse du solide, de chaque côté, en part de sa plus grande dimension */
-const DROITE_OVERHANG = 0.18;
+/**
+ * Ce qu'une droite dépasse du solide, de chaque côté, en part de sa plus grande
+ * dimension ; un point donné par ses coordonnées ne sort pas du solide de plus
+ * que cela (`solide-parser.ts`)
+ */
+export const DROITE_OVERHANG = 0.18;
 
 /** Nom d'un point déclaré sur une figure à droites : second tour de places, à cette part de l'écart habituel */
 const POINT_NAME_FAR = 1.7;
@@ -463,15 +467,25 @@ export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 
 /**
  * Les points nommables d'un polyèdre, en 3D : les sommets, puis chaque point
- * déclaré (isobarycentre de ses points `of`, sommets ou points déclarés avant lui)
+ * déclaré (isobarycentre de ses points `of`, sommets ou points déclarés avant lui ;
+ * ou point donné par ses coordonnées dans le repère du solide, `coords`)
  */
 export function solidePoints3(
 	form: SolideForm,
 	dims: number[],
-	points: Pick<SolidePoint, 'of'>[]
+	points: Pick<SolidePoint, 'of' | 'coords'>[]
 ): Point3[] {
 	const all = polyhedronVertices(form, dims);
 	for (const point of points) {
+		// Par ses coordonnées : origine + x × premier vecteur + y × deuxième + z × troisième
+		if (point.coords !== undefined) {
+			const { origin, axes, values } = point.coords;
+			const o = all[origin];
+			const along = (pick: (p: Point3) => number) =>
+				pick(o) + axes.reduce((sum, axis, i) => sum + values[i] * (pick(all[axis]) - pick(o)), 0);
+			all.push({ x: along((p) => p.x), y: along((p) => p.y), z: along((p) => p.z) });
+			continue;
+		}
 		const of = point.of.map((i) => all[i]);
 		all.push({
 			x: of.reduce((s, p) => s + p.x, 0) / of.length,
@@ -1650,7 +1664,12 @@ function layoutSolide(
 	}
 
 	// Flèches des vecteurs donnés ; les traits que les noms des points et des vecteurs évitent
-	const arrows: SolideArrow[] = spec.vectors.map((v) =>
+	// Le repère (lot 7c) : ses trois vecteurs, depuis l'origine, après les vecteurs donnés
+	const repereVectors = (spec.repere?.axes ?? []).map((to) => ({
+		from: spec.repere?.origin ?? 0,
+		to
+	}));
+	const arrows: SolideArrow[] = [...spec.vectors, ...repereVectors].map((v) =>
 		arrowOf(named[v.from], named[v.to], SOLIDE_ARROW, false)
 	);
 	const segments: [EspacePoint, EspacePoint][] = [
@@ -1936,6 +1955,7 @@ export function solideLabel(spec: SolideSpec): string {
 		const ends = `${known[vector.from]}${known[vector.to]}`;
 		parts.push(vector.name === null ? `vecteur ${ends}` : `vecteur ${vector.name} égal à ${ends}`);
 	}
+	if (spec.repere !== undefined) parts.push(`repère d’origine ${known[spec.repere.origin]}`);
 	// Droites données : leurs points seulement, jamais une position relative (la réponse)
 	for (const droite of spec.droites ?? []) {
 		const through = `(${known[droite.from]}${known[droite.to]})`;

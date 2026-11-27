@@ -142,23 +142,6 @@ export const updateChapterSchema = z
 
 export type UpdateChapterInput = z.infer<typeof updateChapterSchema>;
 
-/**
- * Schema for reordering chapters
- */
-export const reorderChaptersSchema = z.object({
-	chapters: z
-		.array(
-			z.object({
-				id: uuidSchema,
-				displayOrder: displayOrderSchema
-			})
-		)
-		.min(1, 'Au moins un chapitre requis')
-		.max(100, 'Trop de chapitres (max 100)')
-});
-
-export type ReorderChaptersInput = z.infer<typeof reorderChaptersSchema>;
-
 // ============================================================================
 // DOCUMENT SCHEMAS
 // ============================================================================
@@ -230,48 +213,6 @@ export const createDocumentSchema = z.discriminatedUnion('sourceType', [
 ]);
 
 export type CreateDocumentInput = z.infer<typeof createDocumentSchema>;
-
-/**
- * Schema for updating a document
- */
-export const updateDocumentSchema = z
-	.object({
-		title: z
-			.string()
-			.trim()
-			.min(1, 'Le titre est requis')
-			.max(200, 'Le titre est trop long (max 200 caracteres)')
-			.optional(),
-		description: z
-			.string()
-			.trim()
-			.max(1000, 'La description est trop longue (max 1000 caracteres)')
-			.optional()
-			.nullable(),
-		displayOrder: displayOrderSchema.optional()
-	})
-	.refine((data) => Object.keys(data).length > 0, {
-		message: 'Au moins un champ doit etre fourni pour la mise a jour'
-	});
-
-export type UpdateDocumentInput = z.infer<typeof updateDocumentSchema>;
-
-/**
- * Schema for reordering documents
- */
-export const reorderDocumentsSchema = z.object({
-	documents: z
-		.array(
-			z.object({
-				id: uuidSchema,
-				displayOrder: displayOrderSchema
-			})
-		)
-		.min(1, 'Au moins un document requis')
-		.max(100, 'Trop de documents (max 100)')
-});
-
-export type ReorderDocumentsInput = z.infer<typeof reorderDocumentsSchema>;
 
 // ============================================================================
 // CHECKLIST SCHEMAS
@@ -366,17 +307,6 @@ export const linkExerciseSchema = z.object({
 export type LinkExerciseInput = z.infer<typeof linkExerciseSchema>;
 
 /**
- * Schema for linking a worksheet to a chapter
- */
-export const linkWorksheetSchema = z.object({
-	chapterId: uuidSchema.describe('ID du chapitre'),
-	worksheetId: uuidSchema.describe('ID de la fiche'),
-	displayOrder: displayOrderSchema.optional()
-});
-
-export type LinkWorksheetInput = z.infer<typeof linkWorksheetSchema>;
-
-/**
  * Schema for linking multiple exercises
  */
 export const linkBulkExercisesSchema = z.object({
@@ -393,23 +323,6 @@ export const linkBulkExercisesSchema = z.object({
 });
 
 export type LinkBulkExercisesInput = z.infer<typeof linkBulkExercisesSchema>;
-
-/**
- * Schema for reordering exercises
- */
-export const reorderExercisesSchema = z.object({
-	exercises: z
-		.array(
-			z.object({
-				id: uuidSchema,
-				displayOrder: displayOrderSchema
-			})
-		)
-		.min(1, 'Au moins un exercice requis')
-		.max(100, "Trop d'exercices (max 100)")
-});
-
-export type ReorderExercisesInput = z.infer<typeof reorderExercisesSchema>;
 
 // ============================================================================
 // QUERY SCHEMAS

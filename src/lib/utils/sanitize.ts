@@ -148,30 +148,3 @@ export function sanitizePlainText(dirty: string): string {
 		KEEP_CONTENT: true // Keep text content
 	});
 }
-
-/**
- * Check if string contains potentially dangerous HTML
- * Use for validation before sanitization
- *
- * @param input - String to check
- * @returns true if input contains script/dangerous tags
- */
-export function containsDangerousHtml(input: string): boolean {
-	if (!input || typeof input !== 'string') {
-		return false;
-	}
-
-	// Check for dangerous patterns
-	const dangerousPatterns = [
-		/<script/i,
-		/<iframe/i,
-		/<object/i,
-		/<embed/i,
-		/<link/i,
-		/javascript:/i,
-		/on\w+\s*=/i, // Event handlers (onclick, onload, etc.)
-		/<meta/i
-	];
-
-	return dangerousPatterns.some((pattern) => pattern.test(input));
-}

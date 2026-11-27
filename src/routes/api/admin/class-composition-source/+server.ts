@@ -3,7 +3,8 @@
  * =======================================================
  *
  * Les candidats à la composition d'une classe : les élèves des classes des
- * AUTRES années scolaires de la même école, groupés par ancienne classe.
+ * AUTRES années scolaires, toutes écoles confondues, groupés par ancienne
+ * classe.
  *
  * La portée franchit les écoles, et c'est le cas d'usage principal : reprendre
  * d'anciens élèves d'un établissement quitté dans une école « Cours

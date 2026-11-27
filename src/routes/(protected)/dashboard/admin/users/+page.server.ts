@@ -35,7 +35,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(401, 'Connexion requise');
 	}
 
-	// Allow admin and teacher roles (teachers will only see pending users due to RLS)
+	// Admin et prof seulement. Mono-professeur : le prof voit tous les élèves (RLS
+	// is_my_student), pas seulement les comptes en attente.
 	if (!profile || (profile.role !== 'admin' && profile.role !== 'teacher')) {
 		throw error(403, 'Accès réservé aux administrateurs et enseignants');
 	}

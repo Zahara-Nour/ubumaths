@@ -7,7 +7,8 @@
  * SECURITY:
  * - Requires teacher role
  * - Validates student_id as UUID
- * - Verifies teacher teaches the student
+ * - Vérifie les rôles (appelant prof ou admin, cible élève) ; mono-professeur :
+ *   aucune vérification de classe
  *
  * DATA LOADED:
  * - Student profile (id, firstname, lastname, email)
@@ -48,7 +49,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 	const { student_id } = validation.data;
 
-	// Verify teacher-student relationship
+	// Vérifier les rôles (appelant prof ou admin, cible élève)
 	const hasAccess = await verifyTeacherStudent(user.id, student_id, supabase);
 	if (!hasAccess) {
 		throw error(403, "Envoi d'emails réservé aux élèves du professeur");

@@ -298,7 +298,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 ### OpenAPI et la page Swagger
 
 - `src/lib/server/openapi/generator.ts` : `generateOpenAPISpec()` écrit **à la main** une
-  spécification OpenAPI 3.1 de 11 chemins.
+  spécification OpenAPI 3.1 de 7 chemins.
 - `GET /api/openapi.json` : admin seul, `Cache-Control: private, no-store`.
 - `/dev/api` (ex-`/dashboard/admin/debug/api-docs` ; admin seul : garde de `/dev` et `requireAdmin`
   dans `+page.server.ts` ; `ssr = false`, entrée « API (Swagger) » de `/dev`) :

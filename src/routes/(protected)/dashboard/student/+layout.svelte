@@ -22,11 +22,11 @@
 	 * 3. Client (this file): Hydrate cache in onMount
 	 * 4. Child pages: Access data via studentCache getters
 	 *
-	 * CACHE BENEFITS:
-	 * - Zero API calls on page load
-	 * - Instant data access in child components
-	 * - Reactive updates with Svelte 5 $state
-	 * - Automatic TTL-based expiration
+	 * CE QUE ÇA APPORTE :
+	 * - les données hydratées ici ne sont pas redemandées par les pages filles
+	 *   (les autres données restent chargées par chaque page)
+	 * - accès immédiat dans les composants enfants, réactif ($state)
+	 * - rechargement selon la durée de vie de chaque entrée (studentDashboardCache)
 	 *
 	 * CONSENT INTEGRATION (RGPD Article 8):
 	 * - Consent status is passed from protected layout

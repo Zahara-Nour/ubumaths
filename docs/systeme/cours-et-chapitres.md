@@ -11,14 +11,17 @@ couvre:
   - 'src/lib/components/templates/{Chapter,Template}*.svelte'
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
-  - 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
+  - 'src/lib/types/{chapter*,chapters,journal}.ts'
   - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching,programme-tree,programme-map,template-select-items}.ts'
-  - 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
+  - 'src/routes/api/teacher/{chapter-templates,curriculum,periods}/**'
+  - src/routes/api/teacher/chapters/+server.ts
+  - 'src/routes/api/teacher/chapters/*/+server.ts'
+  - 'src/routes/api/teacher/chapters/*/{checklist,document-upload-url,documents,exercises,progress,reorder,sections}/**'
   - 'src/routes/api/student/{chapters,checklist}/**'
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
   - 'src/routes/(protected)/dashboard/teacher/contenu/templates/**'
   - 'src/routes/(protected)/dashboard/student/{cours,cahier-texte,progression,notions}/**'
-  - 'src/routes/(public)/cahier/**'
+  - 'src/routes/(public)/cahier/*/+page.{server.ts,svelte}'
   - 'src/routes/(public)/cours/**'
 ---
 
@@ -73,7 +76,7 @@ Docs voisines, à lire plutôt que recopier :
 
 | Fichier                    | Rôle                                                                                                                                                                                                                                                                                                      |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `chapters.ts`              | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getStudentChapters`, `getChapterWithContent`, `toggleChecklistItem`, `getMyChecklistProgress`.                                                                                                        |
+| `chapters.ts`              | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getChapterWithContent`, `toggleChecklistItem`.                                                                                                                                                        |
 | `chapters-publication.ts`  | `setContentPublication` : écrit `published_at` sur un contenu, via la table de correspondance **fermée** `TABLES` (type de contenu → table) ; `listDistributedWorksheetIds`.                                                                                                                              |
 | `chapter-sections.ts`      | Sections : `listSections`, `createSection`, `renameSection`, `deleteSection`, `reorderSections`, `assignToSection`, `placeInSection`.                                                                                                                                                                     |
 | `chapter-series.ts`        | Séries rattachées : `linkSeries`, `setSeriesForm`, `unlinkSeries`, `listChapterSeries`, `listAvailableSeries` ; erreurs typées `ChapterSeriesError` (→ 404 / 409 / 500).                                                                                                                                  |
@@ -165,9 +168,9 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   `api/teacher/chapters/[id]/document-upload-url` et `…/documents` (dépôt d'un fichier), et leur
   miroir pour un modèle : `api/teacher/chapter-templates/[id]/sections/**`,
   `…/document-upload-url`, `…/documents` (seules routes restantes sous
-  `api/teacher/chapter-templates/`). Le reste de `api/teacher/chapters/**`,
-  `api/student/chapters/**` et `api/student/checklist/**` n'a pas d'appelant dans `src/` (voir
-  « Écarts connus », qui renvoie au registre).
+  `api/teacher/chapter-templates/`). Ce sont aussi les seules sous `api/teacher/chapters/` :
+  le reste du travail passe par les actions de formulaire des pages (les routes sans appelant ont
+  été retirées le 2026-11-28).
 
 ### Cahier de texte
 

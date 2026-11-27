@@ -2,11 +2,13 @@
  * Teacher Chapter Content Editor Server
  * ======================================
  *
- * Manages chapter content:
- * - Documents (add/remove/reorder)
- * - Checklist items (CRUD/reorder)
- * - Exercises (link/unlink/reorder)
- * - View student progress
+ * Contenu d'un chapitre :
+ * - documents (ajout, Google Drive, suppression)
+ * - points de la checklist (ajout, modification, suppression)
+ * - exercices, fiches et séries (lier, délier), modèles de chapitre
+ * - publication et masquage (chapitre, section)
+ * - progression des élèves sur la checklist
+ * Aucun réordonnancement ici.
  */
 
 import type { PageServerLoad, Actions } from './$types';
