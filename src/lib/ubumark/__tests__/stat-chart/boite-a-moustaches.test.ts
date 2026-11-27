@@ -154,6 +154,7 @@ describe('```boite-a-moustaches — refus situés', () => {
 		expect(errorsOf('A = 1 ; 2 ; abc ; 4 ; 5')[0]).toContain('« abc » n’est pas un nombre');
 		expect(errorsOf('A = 1 ; 2 ; ; 4 ; 5')[0]).toContain('valeur vide');
 		expect(errorsOf('A = 1/0 ; 2 ; 3 ; 4 ; 5')[0]).toContain('« 1/0 » n’est pas un nombre');
+		expect(errorsOf('A = 1 ; 2 ; 3 ; 4 ; 5000000000/1')[0]).toContain('nombre trop grand');
 	});
 
 	it('valeurs dans le désordre : la paire fautive est nommée', () => {

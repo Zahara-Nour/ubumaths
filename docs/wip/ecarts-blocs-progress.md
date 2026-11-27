@@ -48,4 +48,8 @@ Pris le 2026-11-28 ([ecarts-lots.md](ecarts-lots.md)) : V110, L88, L89, L90, L91
 - L93 : vu à l'écran par deux tests de composant avec capture (listes ouvertes, valeur changée).
   Vu en passant, hors lot : le badge « Variation 1 / 2 » de l'aperçu ne suit pas la variation choisie
   (déjà avant ; pas de cas réel, non inscrit).
-- Doc : `ubumark.md` (droite à tracer, boîte, restes), `questions.md`, `evaluations.md`.
+- Doc : `ubumark.md` (droite à tracer, boîte, restes), `questions.md`, `evaluations.md`,
+  `statistiques.md`.
+- Revue `code-reviewer` (Opus) : aucun bloquant ; trois mineurs corrigés (plafond 10^9 aussi pour une
+  fraction de boîte, commentaire de constante déplacé, `for=` des libellés retirés : `MySelect` ne
+  pose pas l'`id` sur le déclencheur, le nom passe par `triggerAriaLabel`).

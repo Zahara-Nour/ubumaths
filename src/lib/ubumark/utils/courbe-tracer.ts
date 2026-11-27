@@ -57,10 +57,10 @@ export interface TracedLineMistake {
 
 // Constantes
 
-/** Écart relatif toléré (calculs en virgule flottante) */
 /** Commande LaTeX autre que `\pi` (que la syntaxe maison lit) : `\frac`, `\dfrac`… */
 const LATEX_COMMAND = /\\(?!pi(?![A-Za-z]))[A-Za-z]+/;
 
+/** Écart relatif toléré (calculs en virgule flottante) */
 const RELATIVE_TOLERANCE = 1e-9;
 
 /** Points où l'on vérifie que l'équation est affine (hors des trois de calcul) */

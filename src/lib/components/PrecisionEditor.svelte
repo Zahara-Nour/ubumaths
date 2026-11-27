@@ -94,10 +94,9 @@
 	<Card.Content class="space-y-4">
 		<!-- Precision type selector -->
 		<div class="space-y-2">
-			<Label for="precision-type">Type de précision</Label>
+			<Label>Type de précision</Label>
 			<MySelect
 				type="single"
-				id="precision-type"
 				value={precision.type}
 				items={PRECISION_ITEMS}
 				triggerAriaLabel="Type de précision : {PRECISION_ITEMS.find(
@@ -149,10 +148,9 @@
 		{#if precision.type === 'tolerance' && 'mode' in precision && 'tolerance' in precision}
 			<div class="space-y-4">
 				<div class="space-y-2">
-					<Label for="tolerance-mode">Mode de tolérance</Label>
+					<Label>Mode de tolérance</Label>
 					<MySelect
 						type="single"
-						id="tolerance-mode"
 						value={precision.mode}
 						items={TOLERANCE_MODES}
 						triggerAriaLabel="Mode de tolérance : {precision.mode === 'relative'

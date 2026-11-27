@@ -3037,6 +3037,9 @@ function boxValue(raw: string): number {
 	if (value === null || !Number.isFinite(value)) {
 		throw new LineError(`« ${raw.trim()} » n’est pas un nombre (écrire par exemple 12 ou 12,5)`);
 	}
+	if (Math.abs(value) > STAT_CHART_LIMITS.maxValue) {
+		throw new LineError('nombre trop grand (au plus 10^9 en valeur absolue)');
+	}
 	return value;
 }
 

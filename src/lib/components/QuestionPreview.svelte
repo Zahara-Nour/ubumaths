@@ -197,12 +197,9 @@
 			<!-- Variation Selector (only show if multiple variations) -->
 			{#if variationCount > 1}
 				<div class="flex items-center gap-4">
-					<Label for="variation-select" class="text-sm font-medium">
-						Variation à prévisualiser:
-					</Label>
+					<Label class="text-sm font-medium">Variation à prévisualiser:</Label>
 					<MySelect
 						type="single"
-						id="variation-select"
 						value={selectedVariationIndex === 'random' ? 'random' : String(selectedVariationIndex)}
 						items={variationItems}
 						triggerAriaLabel="Variation à prévisualiser : {variationItems.find(
@@ -287,10 +284,9 @@
 
 							<!-- Size -->
 							<div class="space-y-2">
-								<Label for="display-size" class="text-sm font-medium">Taille</Label>
+								<Label class="text-sm font-medium">Taille</Label>
 								<MySelect
 									type="single"
-									id="display-size"
 									value={displaySize}
 									items={DISPLAY_SIZES}
 									triggerAriaLabel="Taille : {DISPLAY_SIZES.find(
