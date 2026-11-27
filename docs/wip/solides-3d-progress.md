@@ -2,19 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, lot 7c relu et corrigé, choix confirmés par David, PR ouverte._
+_Mis à jour le 2026-11-28, après #3257 (lot 7c mergé)._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b et bord en
-  butée mergés (#3195 à #3252). **Lot 7c** (repère du solide, points par coordonnées, § 21) : écrit, vu à
-  l'écran, **relu** (`code-reviewer`, opus : deux défauts corrigés, tests rouges avant), 34 tests, typecheck
-  et cliquet verts, poussé sur `feat/solides-3d-repere`, **PR ouverte** (`gh pr list --head
-feat/solides-3d-repere`). Les lots 3 à 7b ne sont pas en prod sans `deploy:prod` demandé par David (le
-  vérifier avant de l'affirmer).
-- **Prochaine action** : suivre la CI de la PR du lot 7c ; **merge seulement après l'essai de David**
-  (`pnpm pr:merger <n>`) ; ensuite la petite PR des deux propositions (ci-dessous).
-- **En attente de David** : essai du lot 7c (lien `pnpm lien`, serveur du worktree sur 5176, à relancer s'il
-  est tombé ; page `/aide-ecriture/blocs/solide`, compte prof). Pendant l'essai, regarder le cube à deux
-  plans : « (Q) » de (BDE) est écrit sur la zone teintée de (P), contre son propre bord.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b, bord en
+  butée et **7c** (repère du solide, points par coordonnées, § 21) mergés (#3195 à #3257) ; lot 7c essayé
+  par David le 2026-11-28 (« c'est bon »). Les lots 3 à 7c ne sont pas en prod sans `deploy:prod` demandé
+  par David (le vérifier avant de l'affirmer).
+- **Prochaine action** : la **petite PR d'après le 7c** (description des réglages sous le réglage dans la
+  page d'aide ; cases de saisie de `retrouver:` teintées), puis le **lot 7e** (point d'intersection demandé
+  par l'auteur, § 17 question (d)) avec sa phase 0. Le 7d (repère sans solide) reste laissé tant qu'aucun
+  modèle n'en a besoin.
+- **En attente de David** : rien. Il n'a rien dit de « (Q) » écrit sur la zone teintée de (P) après son
+  essai : laissé.
 - **Tranché par David le 2026-11-28 (lot 7c, « je te suis »)** : les trois choix du § 21 sont gardés
   (vecteurs du repère qui partent tous de l'origine ; coordonnées décimales seulement, les fractions le jour
   où un modèle en a besoin ; point à coordonnées accepté sur un sommet) ; **petite PR à part, après le 7c** :
@@ -41,8 +40,9 @@ feat/solides-3d-repere`). Les lots 3 à 7b ne sont pas en prod sans `deploy:prod
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-repere` (poussée, sans PR) ;
-  serveur de dev sur 5176, lien du tailnet publié par `pnpm lien`.
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger 3257`) ; à recréer sous le nom
+  `../ubumaths-wt-solides-3d`. Le lien du tailnet 8444 → 5176 est resté publié (serveur arrêté) : `pnpm lien`
+  le reprend depuis le nouveau worktree, `--stop` est refusé dans le dépôt principal.
 
 ## 1. D'où l'on part
 
