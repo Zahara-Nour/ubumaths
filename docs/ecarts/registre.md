@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V137 · L139 · M60 · C44 · D45 · T37 · E92
+Derniers numéros : V137 · L140 · M60 · C44 · D45 · T38 · E92
 
 ## Écarts
 
@@ -361,3 +361,5 @@ Derniers numéros : V137 · L139 · M60 · C44 · D45 · T37 · E92
 - L137 · bug latent · mathAST · areEquivalent juge différentes deux écritures égales d'un exposant ou d'une base imaginaire : x^{i/2} et x^{(1/2)i}, (i/2)^x et ((1/2)i)^x ; depuis #3240, tidy rend la seconde forme, donc une entrée et son tidy ne sont plus reconnus égaux dans ces cas (aucune réponse réelle d'élève) · preuve : à la main · à trier (revue de #3240, mesuré par sonde ; test de preuve à écrire)
 - L138 · bug latent · mathAST · une factorielle après une fonction écrite sans parenthèses est posée sur la fonction : \ln x! est lu (ln x)! au lieu de ln(x!) ; depuis #3243 la puissance, elle, passe sous la fonction (\ln x^2 = ln(x²)), la règle n'est donc pas la même pour les deux (aucune réponse réelle d'élève) · preuve : à la main · à trier (revue de #3243, mesuré par sonde ; test de preuve à écrire)
 - L139 · bug latent · mathAST · un indice après une fonction écrite sans parenthèses est posé sur la fonction : \ln u_n est lu (ln u)_n au lieu de ln(u_n), donc \ln u_n^2 est lu ((ln u)_n)² et \ln x^2_1 est lu (ln(x²))_1 ; incohérent avec \ln q^n = ln(q^n) depuis #3243 (suites : aucune réponse réelle d'élève mesurée) · preuve : à la main · à trier (revue de #3243, mesuré par sonde ; test de preuve à écrire)
+- T38 · RGPD · fiches · un titre d'exercice qui contient du code Typst dans une formule ($#panic(1)$) l'évalue à la compilation du PDF (convertLatexToTypstMath n'échappe pas # en mode maths) : PDF de l'élève ou d'un lien de partage qui ne compile plus ; texte du prof ou de l'admin, aucun accès aux données (relevé par security-auditor, revue de la PR du lot fiches) · preuve : à la main · à faire
+- L140 · bug latent · fiches · un ] hors formule dans le titre d'un exercice (processTableCellContent) ou dans la consigne d'une affectation (render-exercise.ts, escapeTypst seul) ferme le bloc qui l'entoure : le PDF ne compile plus (relevé par security-auditor, revue de la PR du lot fiches) · preuve : à la main · à faire
