@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-27, après #3212._
 
-- **État** : une seule PR, sur la branche `chore/ecarts-m60`. Migration `20261126224009_suppression_modeles_de_message.sql` (DESTRUCTIVE) écrite, tests adaptés, types régénérés, doc à jour.
-- **Prochaine action** : ⛔ NE PAS MERGER avant le go de David (migration destructive : le `db:migrate` de n'importe quelle session la jouerait en prod). Après son go : `pnpm check:migrations --pr <n>`, merge, puis `pnpm db:migrate` depuis le dépôt principal (vérifier d'abord `migration list --linked` : aucune autre migration en attente), relire en prod (lecture seule) que les cinq tables n'existent plus, barrer M60 au registre, archiver ce journal.
-- **En attente de David** : son go pour le merge. Lui dire ce qui dépasse la ligne du registre : une cinquième table (`user_favorite_templates`, 0 ligne en prod) et la fonction de suppression de compte (`delete_user_account`), réécrite sans le bloc qui effaçait dans `template_audit_log`.
-- **Pièges en cours** : la migration ne passe en prod qu'APRÈS le merge ; le code de prod (0.115.0) ne lit déjà plus ces tables. Sans `CASCADE` : une dépendance oubliée fait échouer la migration au lieu d'emporter autre chose.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-m60`, `chore/ecarts-m60`.
+- **État** : #3212 mergée le 2026-11-27 (go de David). Migration `20261126224009_suppression_modeles_de_message.sql` (DESTRUCTIVE) sur `main`, PAS encore jouée en prod : seule migration en attente (`migration list --linked` du 2026-11-27).
+- **Prochaine action** : David lance `pnpm db:migrate` depuis le dépôt principal (la session n'a pas le droit de le lancer : refus du mode auto). Puis la session relit en prod, en lecture seule, que les cinq tables et les huit fonctions n'existent plus et que `delete_user_account` ne cite plus `template_audit_log` ; barre M60 au registre ; archive ce journal.
+- **En attente de David** : `! pnpm db:migrate` dans le dépôt principal.
+- **Pièges en cours** : tant que la migration n'est pas jouée, le `db:migrate` de n'importe quelle autre session la jouera avec la sienne. Le code de prod (0.115.0) ne lit déjà plus ces tables : rien ne casse dans l'intervalle.
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
 
 ## Ce qui est supprimé
 
