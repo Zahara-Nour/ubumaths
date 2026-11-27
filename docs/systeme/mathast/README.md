@@ -1908,7 +1908,8 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   ses lettres impaires sous une seule racine (`±√(ab)` si `ab ⩾ 0`, `x² − 4ab` → `±2√(ab)`,
   `x² − πab` → `±√π√(ab)`, `x² − abc` → `±√(abc)`, `x⁴ − ab` déjà `±⁴√(ab)`) ; les carrés et le
   coefficient sortent, et la condition est celle de la racine écrite (`x² − a²b` → `±|a|√b` si
-  `b ⩾ 0`, `x² − a²bc` → si `bc ⩾ 0` : la solution 0 pour a = 0, bc < 0 n'est pas dite).
+  `b ⩾ 0`, `x² − a²bc` → si `bc ⩾ 0`) ; une lettre sortie en entier de la racine annule Δ quand elle est
+  nulle : la racine double de ce cas s'ajoute avec sa condition (V124 : `0 si a = 0`).
   Filet : un discriminant non lu dont la forme canonique écrirait deux racines de lettres garde
   `√Δ` entière ; `ax² − 1 = 0` → condition `a ≥ 0` au lieu de `a > 0` ; conditions non
   réduites (`4α ≥ 0`, `4a + 4b ≥ 0`), racines peu lisibles (`½√(−4a)`) ; une condition réduite à
