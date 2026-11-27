@@ -2,7 +2,7 @@
 (N1, H1, H2).
 
 Phase 0 validée par David le 2026-11-27 (« je valide tes recos, en gardant les modèles qui seraient
-hors programme, comme d'habitude » ; journal docs/wip/idees-3e-thales-progress.md, § Décisions).
+hors programme, comme d'habitude » ; journal docs/archive/wip/idees-3e-thales/idees-3e-thales-progress.md, § Décisions).
 
 Rangement :
 - N1 : « Géométrie > Théorème de Thalès > calcul de longueurs », point 3-060, niveau 2 (les trois
