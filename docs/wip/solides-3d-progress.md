@@ -2,28 +2,31 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3211._
+_Mis à jour le 2026-11-27, après #3216._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1 et 2 mergés** (#3195, #3200) ; **noms tenus mergés** (#3211, § 7) ; **lot 3 (cylindre,
-  cône, boule) codé sur la branche**, comportements du § 8 validés par David (« je te suis », 2026-11-27),
-  détail au § 9. Rien n'est en prod.
-- **Prochaine action** : PR du lot 3 ouverte, revue `code-reviewer` opus faite (aucun bloquant, § 9) : suivre
-  la CI et merger (`pnpm pr:merger`). Ensuite lot 4 — sections et cotes sur figure tournée (Q1 du § 3),
-  nouvelle session, comportements à écrire d'abord.
-- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
+  du § 3) ; **lots 1, 2 et 3 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216
+  cylindre, cône, boule, § 8 et 9). Le lot 3 n'est pas en prod (un `deploy:prod` d'une autre session tournait
+  pendant son merge : vérifier s'il l'a emporté avant de l'affirmer).
+- **Prochaine action** : lot 4 — sections et cotes sur figure tournée (§ 4 ; Q1 du § 3 : cotes à la vue de
+  départ seulement), revue `code-reviewer` en opus. Comportements à écrire et à faire valider avant de coder.
+- **En attente de David** : **Q7 et Q8 du § 10** (comportements 27 à 37 du lot 4, proposés le 2026-11-27 : rien
+  n'est codé avant sa réponse) ; son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
   noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
   session) ; (2) les solides ronds (§ 9 : le point posé sur le sommet NOMMÉ du cône quand ses deux traits ont
-  disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque).
+  disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque — question
+  posée le 2026-11-27, sans réponse).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; solides ronds : le dessin à plat
   est la vraie vue d'un œil à asin 0,3 ≈ 17,5° au-dessus de l'horizontale, hauteurs non raccourcies —
-  `turnVue` doit recevoir `solideTilt(form)`, sinon la bascule s'arrête 5° avant la vue de dessus ; tourner
-  autour de l'axe ne change rien au dessin (Q5, accepté) : au lot 4, le rayon coté devra, lui, tourner ; une
-  ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; « moins d'animations » et le
-  geste tactile réel n'ont pas de test.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-ronds`. Serveur d'essai en
-  marche sur 5176, lien du tailnet publié (`pnpm lien --stop` depuis le worktree pour le retirer).
+  `turnVue` doit recevoir `solideTilt(form)` ; tourner autour de l'axe ne change rien au dessin (Q5, accepté) :
+  au lot 4, le rayon coté et la section parallèle à l'axe devront, eux, tourner (`vue.yaw`) ; une ligne
+  `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; « moins d'animations » et le geste
+  tactile réel n'ont pas de test ; `pnpm pr:merger` ne retire pas le worktree si son serveur de dev tourne
+  (« Directory not empty », carcasse à retirer après avoir arrêté le serveur).
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-sections` (neuve, journal
+  seul commité). Serveur d'essai en marche sur 5176, lien du tailnet publié (`pnpm lien --stop` depuis le
+  worktree pour le retirer).
 
 ## 1. D'où l'on part
 
@@ -262,3 +265,83 @@ et du sommet du cône), `marquer: sommet` et `cachees:`. `section:` et `cotes:` 
   0,235 cm), pas de NaN. Corrigé : test de l'arc caché du cône (ses bouts sont les pieds des deux traits),
   test tautologique retiré, commentaires déplacés. Laissé à David : le point du sommet nommé est aussi posé vu
   de dessous, où le sommet est caché par le disque.
+
+## 10. Lot 4 — sections et cotes : comportements (validés par David le 2026-11-27)
+
+Exemples suivis : un pavé ABCDEFGH coté en cm et coupé parallèlement à sa face du dessus (section IJKL) ; un
+cylindre coté coupé parallèlement à son axe. Blocs ` ```solide ` avec `tourner: oui`. Les comportements 1 à 26
+valent tels quels ; ne sont écrits ici que ceux propres aux sections et aux cotes.
+
+### Nominal
+
+27. Au repos, un solide coupé ou coté qui peut tourner est dessiné exactement comme aujourd'hui : section
+    teintée, contour épais, noms I, J, K, L, longueurs écrites.
+28. Cotes (Q1, tranchée) : dès que l'élève fait glisser le doigt, les longueurs écrites (« 4 cm ») s'effacent.
+    Elles reviennent quand la figure est revenue à la vue de départ (bouton, Échap).
+29. La section tourne avec le solide : même teinte, même contour épais, à chaque angle. Ses noms (I, J, K, L)
+    suivent, tenus pendant le mouvement et replacés à l'arrêt, comme les noms des sommets.
+30. Pavé et cube coupés : les arêtes du solide gardent leurs tirets recalculés à chaque angle ; le contour de
+    la section reste en trait plein.
+31. Cylindre coupé à l'horizontale : la section est un ovale qui s'ouvre et se referme avec ceux des bases.
+32. Cylindre coupé parallèlement à l'axe : glisser le doigt de côté fait tourner le rectangle autour de l'axe
+    (de face on le voit en vraie grandeur, de profil il se réduit à un trait). C'est le premier solide rond où
+    tourner à gauche ou à droite se voit.
+33. Boule coupée : le contour reste un cercle, la section est un ovale qui s'ouvre quand on bascule, jusqu'au
+    cercle vu de dessus.
+34. Sur la fiche PDF : la vue de départ, avec ses cotes, comme aujourd'hui.
+
+### Limites
+
+35. Une section regardée exactement par la tranche se réduit à un trait. Accepté.
+36. Le lecteur d'écran lit la même description qu'aujourd'hui (cotes comprises, jamais la nature de la
+    section), plus « figure que l'on peut tourner ».
+
+### Erreurs
+
+37. `tourner: oui` avec `tracer:` : toujours figure fixe et message pour l'auteur (lot 5). Il n'y a plus de
+    message pour `section:` ni `cotes:`.
+
+### Questions pour David (réponse du 2026-11-27 : « je te suis » — (a) aux deux)
+
+- **Q7 — Les traits qui accompagnent une cote.** Une pyramide cotée a sa hauteur dessinée en tirets, avec
+  « 5 cm » à côté ; un cylindre coté a un rayon en tirets. Quand la figure tourne, le « 5 cm » s'efface (Q1).
+  Et le trait en tirets ? (a) il reste et tourne avec le solide — on voit la hauteur de la pyramide sous tous
+  les angles, et le rayon du cylindre tourne quand on glisse de côté ; (b) il s'efface avec le nombre.
+  Recommandation : (a).
+- **Q8 — La section vue de derrière.** Un cylindre coupé parallèlement à l'axe, que l'on retourne : le
+  rectangle est alors derrière l'axe, vu à travers le solide. (a) le dessiner toujours pareil, teinté, contour
+  plein, comme si le solide était transparent — c'est ce que fait déjà le dessin fixe ; (b) mettre en tirets
+  les parties du contour cachées par le solide. Recommandation : (a), plus lisible et plus simple.
+
+## 11. Lot 4 — ce qui est fait (2026-11-27)
+
+- **Parseur** : `tourner: oui` accepté avec `section:` et `cotes:`, toutes formes ; reste refusé avec
+  `tracer:` (lot 5).
+- **Cotes** (Q1, Q7) : `buildSolideScene` n'écrit les longueurs (et le trait de renvoi de la hauteur d'une
+  pyramide) qu'à la vue de départ ; les traits de hauteur, de rayon et de distance du plan restent et
+  tournent. Le rayon du haut d'un cylindre passe en tirets vu de dessous.
+- **Cadre** : le carré fixe, agrandi de la place des cotes du repos (`layoutSolide`, `coteMarks`) — plus
+  forcément carré ni centré sur le solide ; il ne bouge pas quand les cotes s'effacent.
+- **Sections** (Q8) : pavé et cube par la projection de la vue ; solides ronds par `place(x, y, z)` dans
+  `turnedRoundDraft`. Le rectangle du cylindre coupé parallèlement à l'axe et le rayon coté tournent avec
+  `vue.yaw`. Noms IJKL tenus pendant la rotation (`labelOffsets` : une place par nom, jamais pour une cote).
+- **Trouvé en route, corrigé** : sur le pavé 4 × 2 × 3, ajouter `tourner: oui` déplaçait le nom F au repos
+  (depuis le lot 2). Deux angles libres égaux autour de F, départagés par le dernier chiffre, qui n'était pas
+  le même dans le repère de la figure à tourner. L'angle libre se calcule maintenant dans le repère du dessin
+  fixe ; le dessin fixe ne change pas (deux scènes figées ajoutées, prises sur le code de `main`).
+- **Vu par la session** : planche de sept solides coupés ou cotés sous neuf vues (section, tirets, hauteur de
+  la pyramide, rayon et rectangle qui tournent, cadre) ; `/aide-ecriture/blocs/solide` chargée sans erreur de
+  console ; le composant réel dans Chromium (tests : longueurs effacées au glissement et revenues au retour,
+  rectangle du cylindre réduit à un trait au quart de tour). **Pas vu** : le geste du doigt sur un vrai
+  téléphone.
+- Tests : `solide-sections-tourner.test.ts` (rouges avant le code), `SolideTourner.svelte.test.ts` (lot 4).
+  Catalogue : deux exemples (pavé coupé et coté, cylindre coupé parallèlement à l'axe). Doc :
+  `docs/systeme/ubumark.md`, `utilitaires-et-demos.md`.
+- Revue (`code-reviewer`, opus) : géométrie de `place` juste (signes, dessous, passage, boule), repos = dessin
+  fixe sur 418 blocs, cadre fixe sur 448 vues, ordre des places tenues. Corrigé avant la PR : un premier
+  correctif du nom F (seuil d'égalité) déplaçait des noms sur 36 dessins fixes — remplacé par le calcul dans
+  le repère du dessin fixe ; le renvoi d'une pyramide pouvait sauter à la fin du retour — il reprend sa place
+  du repos. **Laissé, hors du lot** : pavés très profonds (2 × 9 × 1, 1 × 6 × 1) avec `points:` ou
+  `vecteurs:`, pendant le passage et déjà tournés : un nom de vecteur dépasse le cadre d'environ 0,08 cm
+  (existe depuis le lot 2). Dessin fixe d'une boule coupée et cotée : « 1,5 cm » touche le nom du centre
+  (dessin d'avant le chantier).

@@ -24,6 +24,9 @@ const BLOCS: Record<string, string[]> = {
 	cube: ['forme: cube 3', 'sommets: A B C D E F G H'],
 	pavé: ['forme: pave 4 2 3', 'sommets: A B C D E F G H'],
 	'pavé très profond': ['forme: pave 2 9 1'],
+	// Sommets D et F : deux angles libres égaux, le nom se pose du côté que le dernier chiffre choisit
+	'pavé haut et mince': ['forme: pave 3 1 4', 'sommets: A B C D E F G H'],
+	'pavé long': ['forme: pave 6 1 1', 'sommets: A B C D E F G H'],
 	'prisme à base isocèle': ['forme: prisme triangle 3 2 5', 'sommets: A B C D E F'],
 	'prisme à base rectangle': ['forme: prisme triangle-rectangle 3 4 6', 'sommets: A B C D E F'],
 	'pyramide carrée': ['forme: pyramide carree 3 4', 'sommets: S A B C D'],

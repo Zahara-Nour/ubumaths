@@ -90,7 +90,7 @@ export const solideEntry: BlockCatalogEntry = {
 					values: 'oui | non',
 					defaultValue: 'non',
 					description:
-						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Cylindre, cône, boule : la figure part du dessin à plat ; basculer ouvre les ovales jusqu’au cercle (vue de dessus), le bord caché est recalculé, les deux traits du cône disparaissent quand le sommet passe dans l’ovale ; tourner à gauche ou à droite ne change rien, un solide rond a le même aspect tout autour de son axe. Pour l’instant : sans section:, cotes: ni tracer: ; sinon la figure reste fixe et un message le dit à l’auteur.'
+						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Cylindre, cône, boule : la figure part du dessin à plat ; basculer ouvre les ovales jusqu’au cercle (vue de dessus), le bord caché est recalculé, les deux traits du cône disparaissent quand le sommet passe dans l’ovale ; tourner à gauche ou à droite ne change rien, un solide rond a le même aspect tout autour de son axe. Solide coté (cotes:) : les longueurs écrites ne se voient qu’à la vue de départ, elles s’effacent dès que la figure tourne ; les traits en tirets qui les accompagnent (hauteur d’une pyramide, rayon) restent et tournent. Solide coupé (section:) : la section, toujours teintée avec son contour épais, tourne avec le solide ; le rectangle d’un cylindre coupé parallèlement à son axe tourne autour de l’axe. Pas encore avec tracer: — la figure reste alors fixe et un message le dit à l’auteur.'
 				}
 			]
 		}
@@ -248,6 +248,25 @@ export const solideEntry: BlockCatalogEntry = {
 			source: fence('solide', 'forme: cone 2 4', 'sommets: S O', 'tourner: oui'),
 			explanation:
 				'Faire glisser la figure vers le bas montre le cône de dessus : l’ovale de la base s’ouvre, puis les deux traits disparaissent quand le sommet passe au-dessus du disque. Vers le haut, on le voit par-dessous.'
+		},
+		{
+			title: 'Un pavé coupé et coté que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: pave 4 2 3',
+				'sommets: A B C D E F G H',
+				'section: parallele dessus 1 IJKL',
+				'cotes: cm',
+				'tourner: oui'
+			),
+			explanation:
+				'Au départ, les longueurs sont écrites. Dès que la figure tourne, elles s’effacent ; la section IJKL suit le pavé. « Vue de départ » les fait revenir.'
+		},
+		{
+			title: 'Un cylindre coupé parallèlement à son axe, à tourner',
+			source: fence('solide', 'forme: cylindre 2 4', 'section: parallele 1', 'tourner: oui'),
+			explanation:
+				'Faire glisser la figure de côté fait tourner le rectangle autour de l’axe : de face on le voit en vraie grandeur, de profil il se réduit à un trait.'
 		},
 		{
 			title: 'Sans arêtes cachées',

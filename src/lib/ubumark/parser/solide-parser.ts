@@ -41,10 +41,10 @@
  *   déclarés) depuis l'origine imposée, ou depuis aucun point si elle est libre.
  *   `case: N` y est posée par le générateur de questions.
  * - `tourner:` (facultatif, `oui` ou `non`, chantier `solides-3d`) : l'élève peut
- *   faire tourner la figure à l'écran. Toutes les formes, sans `section:`,
- *   `cotes:` ni `tracer:` pour l'instant. Une valeur mal écrite ou un réglage pas encore pris
- *   en charge ne met PAS le bloc en erreur : phrase pour l'auteur
- *   (`rotationErrors`), figure fixe.
+ *   faire tourner la figure à l'écran. Toutes les formes, coupées (`section:`)
+ *   et cotées (`cotes:`) comprises ; pas encore avec `tracer:`. Une valeur mal
+ *   écrite ou un réglage pas encore pris en charge ne met PAS le bloc en
+ *   erreur : phrase pour l'auteur (`rotationErrors`), figure fixe.
  *
  * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034 ; points et
  * vecteurs : chantier `solide-vecteur`, lot 1 ; `tracer:` : lot 2.
@@ -835,9 +835,7 @@ export function parseSolideContent(source: string): {
 		let problem: string | null = null;
 		if (value !== 'oui' && value !== 'non') problem = `tourner « ${turnEntry.value} » : oui ou non`;
 		else if (value === 'oui') {
-			if (section !== null) problem = notYet('un solide coupé (section:)');
-			else if (cotes !== null) problem = notYet('un solide coté (cotes:)');
-			else if (task !== undefined) problem = notYet('un solide à geste (tracer:)');
+			if (task !== undefined) problem = notYet('un solide à geste (tracer:)');
 			else rotate = true;
 		}
 		if (problem !== null) rotationErrors = [`Ligne ${turnEntry.line} : ${problem}`];

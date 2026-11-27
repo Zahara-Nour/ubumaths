@@ -303,18 +303,6 @@ describe('Solide — tourner: oui', () => {
 		expect(teacher.container.textContent).toContain('tourner « 90 » : oui ou non');
 		expect(teacher.container.querySelectorAll('polyline')).toHaveLength(12);
 	});
-
-	it('réglage pas encore pris en charge (cylindre coté) : figure fixe, message pour le prof', async () => {
-		const round = node('forme: cylindre 2 5', 'cotes: cm', 'tourner: oui');
-		const pupil = await render(Espace, { target: mainElement(), props: { node: round } });
-		expect(svgOf(pupil.container).hasAttribute('tabindex')).toBe(false);
-		expect(pupil.container.querySelectorAll('button')).toHaveLength(0);
-		const teacher = await render(Espace, {
-			target: mainElement(),
-			props: { node: round, showErrors: true }
-		});
-		expect(teacher.container.textContent).toContain('un solide coté (cotes:) ne tourne pas encore');
-	});
 });
 
 describe('Solide rond — tourner: oui (lot 3)', () => {
@@ -373,5 +361,70 @@ describe('Solide rond — tourner: oui (lot 3)', () => {
 		drag(svg, 0, -30);
 		await expect.poll(() => Math.max(...sideHeights(screen.container))).toBeGreaterThan(10);
 		expect(screen.container.querySelectorAll('polyline')).toHaveLength(5);
+	});
+});
+
+describe('Solide coupé ou coté — tourner: oui (lot 4)', () => {
+	const texts = (container: Element) =>
+		[...container.querySelectorAll('text')].map((t) => t.textContent ?? '');
+	const cotes = (container: Element) => texts(container).filter((t) => /^\d/.test(t));
+
+	it('pavé coupé et coté : les longueurs s’effacent quand la figure tourne, la section et ses noms restent', async () => {
+		const lines = [
+			'forme: pave 4 2 3',
+			'sommets: A B C D E F G H',
+			'section: parallele dessus 1 IJKL',
+			'cotes: cm'
+		];
+		const fixed = await render(Espace, { target: mainElement(), props: { node: node(...lines) } });
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node(...lines, 'tourner: oui') }
+		});
+		const svg = svgOf(screen.container);
+		expect(svg.getAttribute('tabindex')).toBe('0');
+		expect(screen.container.textContent).not.toContain('ne tourne pas encore');
+		// Au repos : le dessin fixe, ses quatre longueurs, la section teintée
+		expect(texts(screen.container)).toEqual(texts(fixed.container));
+		expect(cotes(screen.container)).toEqual(['4 cm', '2 cm', '3 cm', '1 cm']);
+		expect(screen.container.querySelectorAll('polygon.solide-section')).toHaveLength(1);
+		const before = traits(screen.container);
+		const places = namePlaces(screen.container);
+		const box = svg.getBoundingClientRect();
+
+		drag(svg, 120, 30);
+		await expect.poll(() => resetButton(screen.container)).toBeDefined();
+		expect(cotes(screen.container)).toEqual([]);
+		expect(texts(screen.container)).toEqual([...'ABCDEFGHIJKL']);
+		expect(screen.container.querySelectorAll('polygon.solide-section')).toHaveLength(1);
+		expect(traits(screen.container)).not.toBe(before);
+		// 12 arêtes et les 4 côtés épais de la section
+		expect(screen.container.querySelectorAll('polyline')).toHaveLength(16);
+		expect(svg.getBoundingClientRect().width).toBe(box.width);
+		expect(svg.getBoundingClientRect().height).toBe(box.height);
+
+		// Retour à la vue de départ : les longueurs reviennent, le dessin aussi
+		resetButton(screen.container)!.click();
+		await expect.poll(() => resetButton(screen.container)).toBeUndefined();
+		await expect.poll(() => cotes(screen.container)).toEqual(['4 cm', '2 cm', '3 cm', '1 cm']);
+		// Les noms ont fini de se replacer : chacun à sa place du repos
+		await expect.poll(() => namePlaces(screen.container)).toBe(places);
+		expect(traits(screen.container)).toBe(before);
+	});
+
+	it('cylindre coupé parallèlement à l’axe : glisser de côté fait tourner le rectangle', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node('forme: cylindre 2 5', 'section: parallele 1', 'tourner: oui') }
+		});
+		const svg = svgOf(screen.container);
+		const section = () =>
+			screen.container.querySelector('polygon.solide-section')!.getBoundingClientRect().width;
+		const wide = section();
+		expect(wide).toBeGreaterThan(40);
+		// 131 px de côté : un quart de tour, le rectangle vu par la tranche
+		drag(svg, 131, 0);
+		await expect.poll(() => resetButton(screen.container)).toBeDefined();
+		await expect.poll(section).toBeLessThan(wide / 10);
 	});
 });

@@ -79,19 +79,19 @@ describe('```solide — tourner:', () => {
 		expect(node.rotationErrors).toEqual(['Ligne 3 : tourner « 90 » : oui ou non']);
 	});
 
-	it.each([
-		['section: parallele ABCD 1', 'section:'],
-		['cotes: cm', 'cotes:'],
-		['tracer: vecteur AB + AD', 'tracer:']
-	])('avec %s : pas encore, la figure reste fixe et le réglage est gardé', (line, key) => {
-		const node = read(...PAVE, line, 'tourner: oui');
-		expect(node.errors).toEqual([]);
-		expect(node.spec).not.toBeNull();
-		expect(node.spec).not.toHaveProperty('rotate');
-		expect(node.rotationErrors).toHaveLength(1);
-		expect(node.rotationErrors?.[0]).toContain('Ligne 4');
-		expect(node.rotationErrors?.[0]).toContain(key);
-	});
+	// `section:` et `cotes:` tournent depuis le lot 4 (`solide-sections-tourner.test.ts`)
+	it.each([['tracer: vecteur AB + AD', 'tracer:']])(
+		'avec %s : pas encore, la figure reste fixe et le réglage est gardé',
+		(line, key) => {
+			const node = read(...PAVE, line, 'tourner: oui');
+			expect(node.errors).toEqual([]);
+			expect(node.spec).not.toBeNull();
+			expect(node.spec).not.toHaveProperty('rotate');
+			expect(node.rotationErrors).toHaveLength(1);
+			expect(node.rotationErrors?.[0]).toContain('Ligne 4');
+			expect(node.rotationErrors?.[0]).toContain(key);
+		}
+	);
 
 	it('cotes: non ne gêne pas la rotation', () => {
 		expect(spec(...PAVE, 'cotes: non', 'tourner: oui').rotate).toBe(true);
