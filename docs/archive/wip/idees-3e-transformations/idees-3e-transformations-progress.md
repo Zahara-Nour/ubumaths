@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après la relecture de David._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : 4 brouillons en prod, rangés, **validés par David** (« je valide », 2026-11-27). Simulation de
-  `publier-lot.ts` : les 4 passent le contrôle.
-- **Prochaine action** : après la publication, relire le statut des 4 (`publier-lot.ts` en simulation : « publié »),
-  puis clore le chantier (versement, journal archivé).
-- **En attente de David** : la publication, `publier-lot.ts --dir` sur le dossier du lot, avec `--publier`.
-- **Pièges en cours** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
+- **État** : **clos**. Les 4 modèles (4c82bef9, a5e70b85, 277be356, bc6321ed) sont **publiés** en prod (publication
+  lancée par David, statut relu par `publier-lot.ts` en simulation). Journal archivé.
+- **Prochaine action** : aucune. L'outil manquant n° 71 (papier uni) reste dans `outils-manquants.md`.
+- **En attente de David** : rien.
+- **Pièges notés** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
   ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
   annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
   dans la base locale seulement.
@@ -94,3 +93,9 @@ bc6321ed (N4), `draft`, `grades` = 3, vérifiés en prod. Migration de rangement
 ## Relecture (2026-11-27)
 
 David : « je valide », les 4 sans correction. `publier-lot.ts` en simulation : 4 brouillons passent le contrôle.
+
+## Publication (2026-11-27)
+
+David a lancé `publier-lot.ts --publier`. Relu en simulation : les 4 sont « publié ». Chantier clos, journal et
+relevé archivés sous `docs/archive/wip/idees-3e-transformations/`, rubrique 3G1 « publiée » dans
+`idees-ailleurs-repartition.md`.
