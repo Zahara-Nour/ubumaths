@@ -19,6 +19,7 @@ import {
 	Sparkles,
 	Bug,
 	MessageCircle,
+	Mail,
 	BookOpen,
 	FileText,
 	Book,
@@ -100,6 +101,8 @@ export function getNavLinks(
 			},
 			// Ce que voient ses parents (ADR 0040, Q3) : toujours visible, même carnet fermé
 			{ href: '/dashboard/student/carnet', label: 'Carnet de liaison', icon: NotebookText },
+			// Messagerie privée élève ↔ prof (V104) : avant les amis et le chat
+			{ href: '/messages', label: 'Messages', icon: Mail },
 			{ href: '/dashboard/friends', label: lore.entities.friends, icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle }
 		];
@@ -157,6 +160,7 @@ export function getNavLinks(
 				badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined
 			},
 			{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert },
+			{ href: '/messages', label: 'Messages', icon: Mail },
 			{ href: '/dashboard/friends', label: lore.entities.friends, icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 			// Entry point to the admin section. Visible to teachers (who step up via

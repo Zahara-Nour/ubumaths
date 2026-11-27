@@ -51,6 +51,17 @@ describe('getNavLinks', () => {
 			expect(labels(getNavLinks('teacher'))).not.toContain('La Chatterie');
 		});
 
+		it('mène à la messagerie privée, juste avant les amis et le chat (V104)', () => {
+			for (const role of ['student', 'teacher'] as const) {
+				const links = getNavLinks(role);
+				const index = links.findIndex((l) => l.label === 'Messages');
+				expect(links[index]?.href).toBe('/messages');
+				expect(links[index + 1]?.href).toBe('/dashboard/friends');
+				expect(links[index + 2]?.href).toBe('/dashboard/chat');
+			}
+			expect(labels(getNavLinks('admin'))).not.toContain('Messages');
+		});
+
 		it('expose Boutique uniquement quand marketplaceEnabled=true', () => {
 			expect(labels(getNavLinks('student', 0, false))).not.toContain(lore.nav.shop);
 			expect(labels(getNavLinks('student', 0, true))).toContain(lore.nav.shop);
