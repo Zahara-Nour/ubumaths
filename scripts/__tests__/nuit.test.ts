@@ -12,12 +12,28 @@
  * - la veille en panne ne fait pas oublier ce qui était rouge avant elle ;
  * - le bilan dit les écarts clos, les preuves cassées, les écarts entrés au
  *   registre depuis la veille, les tests rouges et les gardes.
+ *
+ * Défauts corrigés (phase 0 validée par David le 2026-11-27) :
+ * - une panne qui dure renotifie tous les 7 jours (rappel) ;
+ * - un rouge vert au second essai est « instable » : ni rouge ni notifié ;
+ * - la notification dit combien de rouges nouveaux ; la première nuit le dit ;
+ * - un second `--lancer` le même jour ne touche pas au bilan de la nuit.
  */
 
-import { describe, it, expect } from 'vitest';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { afterEach, describe, it, expect } from 'vitest';
 import {
+	deliveredNotice,
 	formatSummary,
 	isNight,
+	lockIsStale,
+	mergeReplay,
+	notificationPhrase,
+	notifiedOutages,
+	struckIds,
 	newGaps,
 	newReds,
 	parseArgs,
@@ -385,4 +401,221 @@ describe('parseArgs', () => {
 			expect(parseArgs(args)).toBeNull();
 		}
 	);
+});
+
+describe('rappel d’une panne qui dure', () => {
+	const down = (date: string, outages?: Night['outages']): Night =>
+		night({
+			date,
+			verifs: { ok: false, failure: 'le port 5190 est déjà pris' },
+			...(outages === undefined ? {} : { outages })
+		});
+	const reminder =
+		'rappel (panne depuis le 2026-11-01) : vérifications à l’écran pas jouées : le port 5190 est déjà pris';
+
+	it('notifiée le 1er : rien du 2 au 7, rappel le 8', () => {
+		const first = down('2026-11-01', ['verifs']);
+		const nights = [first];
+		for (let day = 2; day <= 7; day++) {
+			const current = down(`2026-11-0${day}`);
+			expect(newReds(nights, current)).toEqual([]);
+			nights.unshift(current);
+		}
+		expect(newReds(nights, down('2026-11-08'))).toEqual([reminder]);
+		expect(notifiedOutages(nights, down('2026-11-08'))).toEqual(['verifs']);
+	});
+
+	it('nuit d’avant la règle (sans `outages`) : le début de la panne compte comme notifié', () => {
+		const nights = [down('2026-11-07'), down('2026-11-01'), night({ date: '2026-10-31' })];
+		expect(newReds(nights, down('2026-11-08'))).toEqual([reminder]);
+	});
+
+	it('rappelée le 8 : rien jusqu’au 14, rappel le 15', () => {
+		const nights = [down('2026-11-14'), down('2026-11-08', ['verifs']), down('2026-11-01')];
+		expect(newReds(nights, down('2026-11-14'))).toEqual([]);
+		expect(newReds(nights, down('2026-11-15'))).toEqual([reminder]);
+	});
+
+	it('Mac éteint plusieurs nuits : rappel dès que 7 jours sont passés', () => {
+		expect(newReds([down('2026-11-01', ['verifs'])], down('2026-11-10'))).toEqual([reminder]);
+	});
+
+	it('une nuit saine entre deux : la nouvelle panne est notifiée comme neuve', () => {
+		const nights = [night({ date: '2026-11-05' }), down('2026-11-01', ['verifs'])];
+		expect(newReds(nights, down('2026-11-06'))).toEqual([
+			'vérifications à l’écran pas jouées : le port 5190 est déjà pris'
+		]);
+		expect(notifiedOutages(nights, down('2026-11-06'))).toEqual(['verifs']);
+	});
+
+	it('push refusé chaque nuit : rappel au bout de 7 jours', () => {
+		const stuck = (date: string, outages?: Night['outages']): Night =>
+			night({
+				date,
+				proofs: {
+					ok: true,
+					data: { struck: ['L9'], pushFailure: 'push refusé', broken: [], open: ['V35'] }
+				},
+				...(outages === undefined ? {} : { outages })
+			});
+		expect(notifiedOutages([night({ date: '2026-10-31' })], stuck('2026-11-01'))).toEqual(['push']);
+		expect(newReds([stuck('2026-11-01', ['push'])], stuck('2026-11-07'))).toEqual([]);
+		expect(newReds([stuck('2026-11-01', ['push'])], stuck('2026-11-08'))).toEqual([
+			'rappel (panne depuis le 2026-11-01) : lignes barrées mais pas poussées sur main (push refusé) : L9'
+		]);
+	});
+
+	it('aucune panne : aucune notée', () => {
+		expect(notifiedOutages([night()], night())).toEqual([]);
+	});
+
+	it('relu du disque avec `outages`', () => {
+		expect(isNight({ ...night(), outages: ['verifs', 'push'] })).toBe(true);
+		expect(isNight({ ...night(), outages: ['autre'] })).toBe(false);
+	});
+});
+
+describe('mergeReplay : second essai des rouges', () => {
+	it('un rouge vert au second essai devient instable, un rouge rouge le reste', () => {
+		const first = { [TEST_A]: 'red', [TEST_B]: 'red', 'x › y': 'green' } as const;
+		const replay = { [TEST_A]: 'green', [TEST_B]: 'red' } as const;
+		expect(mergeReplay(first, replay)).toEqual({
+			[TEST_A]: 'flaky',
+			[TEST_B]: 'red',
+			'x › y': 'green'
+		});
+	});
+
+	it('absent du second essai (fichier qui ne se charge pas) : rouge', () => {
+		expect(mergeReplay({ [TEST_A]: 'red' }, {})).toEqual({ [TEST_A]: 'red' });
+	});
+
+	it('un instable ne compte pas comme rouge nouveau, ni dans le bilan', () => {
+		const current = night({ verifs: verifs({ [TEST_A]: 'flaky', [TEST_B]: 'green' }) });
+		expect(newReds([night()], current)).toEqual([]);
+		const text = formatSummary(current, [night()]);
+		expect(text).toContain('1 vert, 0 rouge, 1 instable, 0 sauté');
+		expect(text).toContain(`instable (vert au second essai) : ${TEST_A}`);
+	});
+
+	it('second essai pas joué : le bilan le dit', () => {
+		const current = night({
+			verifs: { ok: true, data: { tests: { [TEST_A]: 'red' }, replay: 'délai dépassé' } }
+		});
+		expect(formatSummary(current, [night()])).toContain('second essai pas joué : délai dépassé');
+		expect(isNight(current)).toBe(true);
+	});
+});
+
+describe('notification et première nuit', () => {
+	it('la phrase dit combien, sans rien du contenu', () => {
+		expect(notificationPhrase(['a'])).toBe('bilan de la nuit à lire (1 rouge nouveau)');
+		expect(notificationPhrase(['a', 'b'])).toBe('bilan de la nuit à lire (2 rouges nouveaux)');
+		expect(notificationPhrase(Array.from({ length: 44 }, String)).length).toBeLessThanOrEqual(80);
+	});
+
+	it('première nuit : le bilan dit que tout rouge compte comme nouveau', () => {
+		const current = night({ verifs: verifs({ [TEST_A]: 'red' }) });
+		expect(formatSummary(current, [])).toContain(
+			'Première nuit : tout rouge compte comme nouveau.'
+		);
+		expect(formatSummary(current, [night()])).not.toContain('Première nuit');
+	});
+
+	it('seule la ligne « envoyé » de `pnpm prevenir` fait foi', () => {
+		expect(deliveredNotice(0, '✅ envoyé : Session « tache-de-nuit » : …')).toBe(true);
+		expect(deliveredNotice(0, '⏸ déjà envoyé il y a 2 min')).toBe(true);
+		expect(deliveredNotice(0, '⚠️ réseau coupé : pas envoyé')).toBe(false);
+		expect(deliveredNotice(1, '✅ envoyé')).toBe(false);
+	});
+});
+
+describe('struckIds', () => {
+	it('les écarts que `pnpm ecarts rejouer --barrer` dit avoir barrés', () => {
+		const output = 'V35 rouge\nBarré dans le registre : L9, M40. À commiter.\n';
+		expect(struckIds(output)).toEqual(['L9', 'M40']);
+	});
+
+	it('rien de barré : null', () => {
+		expect(struckIds('V35 rouge\n')).toBeNull();
+	});
+});
+
+describe('lockIsStale', () => {
+	const HOUR = 3_600_000;
+
+	it('processus vivant et verrou récent : une nuit tourne', () => {
+		expect(lockIsStale({ alive: true, ageMs: HOUR })).toBe(false);
+	});
+
+	it('processus disparu, ou verrou de plus de 8 h : périmé', () => {
+		expect(lockIsStale({ alive: false, ageMs: HOUR })).toBe(true);
+		expect(lockIsStale({ alive: true, ageMs: 9 * HOUR })).toBe(true);
+	});
+});
+
+describe('pnpm nuit (le script)', () => {
+	const TSX = resolve(__dirname, '../../node_modules/.bin/tsx');
+	const INDEX = resolve(__dirname, '../nuit/index.ts');
+	let state = '';
+
+	afterEach(() => {
+		if (state !== '') rmSync(state, { recursive: true, force: true });
+		state = '';
+	});
+
+	function nuit(args: string[]): { status: number | null; out: string } {
+		const result = spawnSync(TSX, [INDEX, ...args], {
+			encoding: 'utf8',
+			// Filet : si la garde du second lancement manquait, la nuit s'arrêterait à la
+			// préparation (worktree et commit introuvables) au lieu de jouer pour de vrai.
+			env: {
+				...process.env,
+				NUIT_ETAT: state,
+				NUIT_WORKTREE: join(state, 'pas-de-worktree'),
+				NUIT_REF: 'refs/nuit/inexistante'
+			},
+			timeout: 30_000
+		});
+		return { status: result.status, out: `${result.stdout}${result.stderr}` };
+	}
+
+	function localToday(): string {
+		return new Date().toLocaleDateString('sv-SE');
+	}
+
+	it('sans nuit : le dit', () => {
+		state = mkdtempSync(join(tmpdir(), 'nuit-'));
+		const { status, out } = nuit([]);
+		expect(status).toBe(0);
+		expect(out).toContain('Aucune nuit jouée');
+	});
+
+	it('affiche le bilan de la dernière nuit écrite', () => {
+		state = mkdtempSync(join(tmpdir(), 'nuit-'));
+		const current = night({ date: localToday(), verifs: verifs({ [TEST_A]: 'red' }) });
+		writeFileSync(join(state, `${localToday()}.json`), JSON.stringify(current));
+		const { status, out } = nuit([]);
+		expect(status).toBe(0);
+		expect(out).toContain(`Nuit du ${localToday()} (main abc1234)`);
+		expect(out).toContain(`rouge : ${TEST_A}`);
+	});
+
+	it('--lancer une seconde fois le même jour : refusé, bilan de la nuit intact', () => {
+		state = mkdtempSync(join(tmpdir(), 'nuit-'));
+		const file = join(state, `${localToday()}.json`);
+		const written = JSON.stringify(night({ date: localToday() }));
+		writeFileSync(file, written);
+		const { status, out } = nuit(['--lancer']);
+		expect(status).toBe(1);
+		expect(out).toContain('déjà jouée');
+		expect(out).toContain('--essai');
+		expect(readFileSync(file, 'utf8')).toBe(written);
+		expect(readdirSync(state).sort()).toEqual([`${localToday()}.json`]);
+	});
+
+	it('argument inconnu : usage, code 2', () => {
+		state = mkdtempSync(join(tmpdir(), 'nuit-'));
+		expect(nuit(['--lancer', '--force']).status).toBe(2);
+	});
 });

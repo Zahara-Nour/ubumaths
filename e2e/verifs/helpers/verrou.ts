@@ -1,4 +1,5 @@
 import { mkdirSync, rmSync, statSync, utimesSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 /**
@@ -10,9 +11,12 @@ import { join } from 'node:path';
  * non récursif (atomique : un seul appelant le crée). Un verrou de plus de 30 min est
  * considéré abandonné (passage interrompu) et repris : un fichier qui dure plus longtemps
  * rafraîchit le sien à chaque test (`refreshLock`).
+ *
+ * Le dossier est le même pour toute la machine (`~/.local/state/verifs/verrous`,
+ * `VERIFS_VERROUS` pour un autre) : il n'y a qu'une base locale, et deux worktrees
+ * (tâche de nuit comprise) qui jouent les vérifications doivent se voir.
  */
 
-const LOCKS_DIR = '.captures/verifs/verrous';
 const RETRY_MS = 500;
 const WAIT_MAX_MS = 30 * 60 * 1000;
 const STALE_MS = 30 * 60 * 1000;
@@ -20,8 +24,13 @@ const STALE_MS = 30 * 60 * 1000;
 /** Durée max d'attente du verrou : à ajouter au délai du `beforeAll` (`testInfo.setTimeout`). */
 export const LOCK_WAIT_MAX_MS = WAIT_MAX_MS;
 
+/** Le dossier des verrous, partagé par tous les worktrees de la machine. */
+export function locksDir(): string {
+	return process.env.VERIFS_VERROUS ?? join(homedir(), '.local/state/verifs/verrous');
+}
+
 function lockPath(name: string): string {
-	return join(LOCKS_DIR, name);
+	return join(locksDir(), name);
 }
 
 function isStale(path: string): boolean {
@@ -33,7 +42,7 @@ function isStale(path: string): boolean {
 }
 
 export async function acquireLock(name: string): Promise<void> {
-	mkdirSync(LOCKS_DIR, { recursive: true });
+	mkdirSync(locksDir(), { recursive: true });
 	const path = lockPath(name);
 	const deadline = Date.now() + WAIT_MAX_MS;
 	for (;;) {

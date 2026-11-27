@@ -13,6 +13,11 @@
 # Crée au besoin le canal ntfy (nom aléatoire, ~/.config/surveillance-machine/
 # ntfy-topic, lisible par soi seul) et l'affiche : s'y abonner dans l'appli ntfy.
 # Journal : ~/.local/state/surveillance-machine/journal.log.
+#
+# Les chemins écrits dans les plists sont échappés (XML) et le dépôt passe en
+# argument de bash, jamais collé dans sa commande : un chemin à « & » ou à
+# guillemet ne casse rien. SURVEILLANCE_SANS_LAUNCHCTL=1 écrit les plists sans
+# les charger (tests : scripts/__tests__/surveillance-installer.test.ts).
 set -euo pipefail
 
 LABEL="local.surveillance-machine"
@@ -26,6 +31,18 @@ ETAT_DUREES="$HOME/.local/state/durees"
 LABEL_NUIT="local.tache-de-nuit"
 PLIST_NUIT="$HOME/Library/LaunchAgents/$LABEL_NUIT.plist"
 ETAT_NUIT="$HOME/.local/state/nuit"
+
+# Une valeur placée dans un plist : &, < et > échappés.
+xml() {
+	printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'
+}
+
+# Charge un plist dans launchd (sauf essai) : retire l'ancien, charge le nouveau.
+charger() {
+	[ "${SURVEILLANCE_SANS_LAUNCHCTL:-}" = "1" ] && return 0
+	launchctl bootout "$DOMAINE/$1" 2>/dev/null || true
+	launchctl bootstrap "$DOMAINE" "$2"
+}
 
 if [ "${1:-}" = "--desinstaller" ]; then
 	launchctl bootout "$DOMAINE/$LABEL" 2>/dev/null || true
@@ -60,7 +77,7 @@ cat >"$PLIST" <<EOF
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>$script</string>
+		<string>$(xml "$script")</string>
 	</array>
 	<key>EnvironmentVariables</key>
 	<dict>
@@ -72,15 +89,14 @@ cat >"$PLIST" <<EOF
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardOutPath</key>
-	<string>$ETAT/launchd.log</string>
+	<string>$(xml "$ETAT/launchd.log")</string>
 	<key>StandardErrorPath</key>
-	<string>$ETAT/launchd.log</string>
+	<string>$(xml "$ETAT/launchd.log")</string>
 </dict>
 </plist>
 EOF
 
-launchctl bootout "$DOMAINE/$LABEL" 2>/dev/null || true
-launchctl bootstrap "$DOMAINE" "$PLIST"
+charger "$LABEL" "$PLIST"
 
 # ── Relevé des durées, chaque matin ───────────────────────────────────────────
 # launchd ne lit pas le profil du shell : le dossier de node et de pnpm (mise,
@@ -103,12 +119,14 @@ else
 	<array>
 		<string>/bin/bash</string>
 		<string>-c</string>
-		<string>cd "$depot" &amp;&amp; pnpm durees --releve</string>
+		<string>cd "\$1" &amp;&amp; pnpm durees --releve</string>
+		<string>durees</string>
+		<string>$(xml "$depot")</string>
 	</array>
 	<key>EnvironmentVariables</key>
 	<dict>
 		<key>PATH</key>
-		<string>$dossier_pnpm:$dossier_node:$dossier_gh:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+		<string>$(xml "$dossier_pnpm:$dossier_node:$dossier_gh"):/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
 	</dict>
 	<key>StartCalendarInterval</key>
 	<dict>
@@ -118,14 +136,13 @@ else
 		<integer>40</integer>
 	</dict>
 	<key>StandardOutPath</key>
-	<string>$ETAT_DUREES/launchd.log</string>
+	<string>$(xml "$ETAT_DUREES/launchd.log")</string>
 	<key>StandardErrorPath</key>
-	<string>$ETAT_DUREES/launchd.log</string>
+	<string>$(xml "$ETAT_DUREES/launchd.log")</string>
 </dict>
 </plist>
 EOF
-	launchctl bootout "$DOMAINE/$LABEL_DUREES" 2>/dev/null || true
-	launchctl bootstrap "$DOMAINE" "$PLIST_DUREES"
+	charger "$LABEL_DUREES" "$PLIST_DUREES"
 	echo "✅ Relevé des durées installé : pnpm durees --releve, chaque matin à 6 h 40."
 
 	# ── Tâche de nuit, à 2 h ────────────────────────────────────────────────────
@@ -145,12 +162,14 @@ EOF
 	<array>
 		<string>/bin/bash</string>
 		<string>-c</string>
-		<string>cd "$depot" &amp;&amp; date &amp;&amp; pnpm nuit --lancer</string>
+		<string>cd "\$1" &amp;&amp; date &amp;&amp; pnpm nuit --lancer</string>
+		<string>nuit</string>
+		<string>$(xml "$depot")</string>
 	</array>
 	<key>EnvironmentVariables</key>
 	<dict>
 		<key>PATH</key>
-		<string>$dossier_pnpm:$dossier_node:$dossier_gh:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+		<string>$(xml "$dossier_pnpm:$dossier_node:$dossier_gh"):/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
 	</dict>
 	<key>StartCalendarInterval</key>
 	<dict>
@@ -160,14 +179,13 @@ EOF
 		<integer>0</integer>
 	</dict>
 	<key>StandardOutPath</key>
-	<string>$ETAT_NUIT/launchd.log</string>
+	<string>$(xml "$ETAT_NUIT/launchd.log")</string>
 	<key>StandardErrorPath</key>
-	<string>$ETAT_NUIT/launchd.log</string>
+	<string>$(xml "$ETAT_NUIT/launchd.log")</string>
 </dict>
 </plist>
 EOF
-		launchctl bootout "$DOMAINE/$LABEL_NUIT" 2>/dev/null || true
-		launchctl bootstrap "$DOMAINE" "$PLIST_NUIT"
+		charger "$LABEL_NUIT" "$PLIST_NUIT"
 		echo "✅ Tâche de nuit installée : pnpm nuit --lancer, chaque nuit à 2 h (bilan : pnpm nuit)."
 	fi
 fi

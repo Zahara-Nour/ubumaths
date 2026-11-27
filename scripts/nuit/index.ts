@@ -15,18 +15,20 @@
  *      verte sont barrées et poussées sur `main` (commit de doc, seul commit de la
  *      tâche : elle ne merge rien, n'ouvre aucune PR) ;
  *   2. vérifications à l'écran : `pnpm test:verifs:tout` (six navigateurs, serveur
- *      de dev du worktree, base locale) ;
+ *      de dev du worktree lancé par la tâche, base locale), puis un second essai
+ *      des seuls rouges, deux à la fois : un vert au second essai est « instable » ;
  *   3. gardes de doc : liens, renvois vers le code, couverture.
  *
  * Bilan : un fichier par nuit, hors dépôt (`~/.local/state/nuit/AAAA-MM-JJ.json`).
  * David n'est prévenu (`pnpm prevenir`) que d'un rouge NOUVEAU par rapport aux
- * nuits d'avant ; une étape qui n'a pas pu tourner en est un.
+ * nuits d'avant ; une étape qui n'a pas pu tourner en est un, rappelé tous les
+ * 7 jours tant qu'elle dure. Un second `--lancer` le même jour est refusé.
  *
  * Variables : `NUIT_ETAT` (dossier des bilans), `NUIT_WORKTREE`, `NUIT_PORT`
  * (5190), `NUIT_REF` (`origin/main` ; une branche pour essayer avant un merge),
  * `NUIT_VERIFS` (arguments de Playwright en plus : un fichier, pour un essai court).
  * Sorties : 0 fait (même avec des rouges : c'est le bilan qui le dit) · 1 une
- * autre nuit tourne déjà · 2 usage.
+ * autre nuit tourne déjà, ou celle du jour est déjà jouée · 2 usage.
  * Règles et tests : logique.ts, scripts/__tests__/nuit.test.ts.
  * Doc : docs/pratiques/tache-de-nuit.md.
  */
@@ -48,19 +50,26 @@ import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+	deliveredNotice,
 	formatSummary,
 	isNight,
+	lockIsStale,
+	mergeReplay,
+	notificationPhrase,
+	notifiedOutages,
 	parseArgs,
 	playwrightTests,
 	processTree,
 	readReplay,
 	redsToNotify,
 	staleDays,
+	struckIds,
 	type BrokenProof,
 	type Guard,
 	type Night,
 	type ProofsData,
 	type Step,
+	type TestStatus,
 	type VerifsData
 } from './logique.ts';
 
@@ -82,6 +91,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const STATE = process.env.NUIT_ETAT ?? join(homedir(), '.local/state/nuit');
 const LOCK = join(STATE, 'verrou');
 const OUTPUTS = join(STATE, 'sorties');
+/** Les rouges de la suite, pour son second essai (`--last-failed`). */
+const LAST_RUN = join(OUTPUTS, 'dernier-passage.json');
 const PORT = Number(process.env.NUIT_PORT ?? 5190);
 const REF = process.env.NUIT_REF ?? 'origin/main';
 /** Pour essayer sans jouer toute la suite : `NUIT_VERIFS="carnet.spec.ts"` (arguments de Playwright). */
@@ -90,8 +101,6 @@ const REGISTRY = 'docs/ecarts/registre.md';
 const NIGHT_FILE = /^\d{4}-\d{2}-\d{2}\.json$/;
 const NIGHTS_KEPT = 60;
 const MINUTE = 60_000;
-/** Une nuit dure moins que cela : un verrou plus vieux est celui d'une nuit morte. */
-const LOCK_MAX_MS = 8 * 60 * MINUTE;
 /** Ce qui est gardé de la sortie d'une commande : la fin suffit à dire la cause. */
 const OUTPUT_KEPT = 200_000;
 /** Démarrage à froid du serveur de dev (migrations locales comprises). */
@@ -318,9 +327,9 @@ async function proofsStep(worktree: string, trial: boolean): Promise<Step<Proofs
 	};
 
 	// Ce que la commande dit avoir barré fait foi (elle relit le registre avant d'écrire).
-	const struck = /^Barré dans le registre : (.+?)\. À commiter/m.exec(replay.output);
+	const struck = struckIds(replay.output);
 	if (struck === null) return { ok: true, data };
-	data.struck = struck[1].split(', ');
+	data.struck = struck;
 
 	const message = `docs(ecarts): preuves vertes de la nuit, ${data.struck.length} écart(s) barré(s)`;
 	const commit = await run('git', ['commit', '-m', message, '--', REGISTRY], worktree, {
@@ -399,8 +408,17 @@ async function verifsStep(worktree: string): Promise<Step<VerifsData>> {
 	}
 }
 
-async function playVerifs(worktree: string): Promise<Step<VerifsData>> {
-	const file = join(OUTPUTS, 'verifs.json');
+/**
+ * Joue la suite (ou, `again`, ses seuls rouges de la fois d'avant, deux à la fois)
+ * et lit son compte rendu. Chaque passage a son dossier : `--output` efface celui
+ * qu'il reçoit, le second essai garderait sinon les traces des seuls rouges.
+ */
+async function playSuite(
+	worktree: string,
+	again: boolean
+): Promise<Step<Record<string, TestStatus>>> {
+	const name = again ? 'verifs-second-essai' : 'verifs';
+	const file = join(OUTPUTS, `${name}.json`);
 	rmSync(file, { force: true });
 	const played = await run(
 		'pnpm',
@@ -408,13 +426,19 @@ async function playVerifs(worktree: string): Promise<Step<VerifsData>> {
 			'--silent',
 			'test:verifs:tout',
 			'--reporter=json',
-			`--output=${join(OUTPUTS, 'verifs')}`,
+			`--output=${join(OUTPUTS, name)}`,
+			...(again ? ['--last-failed', '--workers=2'] : []),
 			...VERIFS_FILTER
 		],
 		worktree,
 		{
-			minutes: 240,
-			env: { VERIFS_PORT: String(PORT), PLAYWRIGHT_JSON_OUTPUT_NAME: file }
+			minutes: again ? 120 : 240,
+			env: {
+				VERIFS_PORT: String(PORT),
+				PLAYWRIGHT_JSON_OUTPUT_NAME: file,
+				// Les rouges du premier passage, relus par `--last-failed` au second.
+				PLAYWRIGHT_LAST_RUN_OUTPUT_FILE: LAST_RUN
+			}
 		}
 	);
 	if (played.status === null) return { ok: false, failure: 'arrêtées (délai dépassé)' };
@@ -428,7 +452,19 @@ async function playVerifs(worktree: string): Promise<Step<VerifsData>> {
 	}
 	const tests = playwrightTests(report);
 	if (tests === null) return { ok: false, failure: `aucun test joué (${cause(played)})` };
-	return { ok: true, data: { tests } };
+	return { ok: true, data: tests };
+}
+
+/** La suite, puis un second essai de ses rouges : un vert au second essai est « instable ». */
+async function playVerifs(worktree: string): Promise<Step<VerifsData>> {
+	rmSync(LAST_RUN, { force: true });
+	const first = await playSuite(worktree, false);
+	if (!first.ok) return first;
+	const tests = first.data;
+	if (!Object.values(tests).includes('red')) return { ok: true, data: { tests } };
+	const again = await playSuite(worktree, true);
+	if (!again.ok) return { ok: true, data: { tests, replay: again.failure } };
+	return { ok: true, data: { tests: mergeReplay(tests, again.data) } };
 }
 
 async function guardsStep(worktree: string): Promise<Step<Guard[]>> {
@@ -454,7 +490,7 @@ function takeLock(): boolean {
 	mkdirSync(OUTPUTS, { recursive: true });
 	if (existsSync(LOCK)) {
 		const pid = Number(readFileSync(LOCK, 'utf8').trim());
-		const recent = Date.now() - statSync(LOCK).mtimeMs < LOCK_MAX_MS;
+		const ageMs = Date.now() - statSync(LOCK).mtimeMs;
 		let alive = false;
 		try {
 			if (Number.isInteger(pid) && pid > 0) {
@@ -464,7 +500,7 @@ function takeLock(): boolean {
 		} catch {
 			// Processus disparu.
 		}
-		if (alive && recent) return false;
+		if (!lockIsStale({ alive, ageMs })) return false;
 		rmSync(LOCK, { force: true });
 	}
 	try {
@@ -510,6 +546,13 @@ async function play(date: string, trial: boolean): Promise<Night> {
 }
 
 async function launch(trial: boolean): Promise<void> {
+	// Le bilan de 2 h ne s'écrase pas : il sert de veille à la nuit suivante.
+	if (!trial && existsSync(join(STATE, `${today()}.json`))) {
+		console.error(
+			`⛔ La nuit du ${today()} est déjà jouée (pnpm nuit pour la lire). Pour rejouer sans rien effacer : pnpm nuit --lancer --essai`
+		);
+		process.exit(1);
+	}
 	if (!takeLock()) {
 		console.error('⛔ Une nuit tourne déjà.');
 		process.exit(1);
@@ -526,20 +569,19 @@ async function launch(trial: boolean): Promise<void> {
 		}
 
 		const reds = redsToNotify(previous, night);
+		const outages = notifiedOutages(previous, night);
+		if (outages.length > 0) night.outages = outages;
 		if (reds.length > 0) {
-			// Le message ne dit rien du contenu : David lit le bilan par `pnpm nuit`.
+			// Le message dit combien, rien du contenu : David lit le bilan par `pnpm nuit`.
 			const sent = await run(
 				'pnpm',
-				['--silent', 'prevenir', 'geste', 'bilan de la nuit à lire', '--session', 'tache-de-nuit'],
+				['--silent', 'prevenir', 'geste', notificationPhrase(reds), '--session', 'tache-de-nuit'],
 				ROOT,
 				{ minutes: 2 }
 			);
 			const line = lastLines(sent.output, 1);
 			console.log(line);
-			// `pnpm prevenir` sort en 0 même sans réseau : seule sa ligne « envoyé » fait foi.
-			// (« déjà envoyé » : même message il y a moins de 10 minutes, David est prévenu.)
-			const delivered = sent.status === 0 && /^(✅ envoyé|⏸ déjà envoyé)/.test(line);
-			if (!delivered) night.pending = reds;
+			if (!deliveredNotice(sent.status, line)) night.pending = reds;
 		}
 		writeFileSync(join(STATE, `${date}.json`), `${JSON.stringify(night, null, '\t')}\n`);
 		forget();
