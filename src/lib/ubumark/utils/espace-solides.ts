@@ -274,7 +274,7 @@ const TURN_PAD = 0.75;
 export const DROITE_OVERHANG = 0.18;
 
 /** Le côté du carré d'un angle droit codé, en part de la plus grande dimension du solide */
-const RIGHT_ANGLE_SIZE = 0.07;
+const RIGHT_ANGLE_SIZE = 0.1;
 
 /** Nom d'un point déclaré sur une figure à droites : second tour de places, à cette part de l'écart habituel */
 const POINT_NAME_FAR = 1.7;
