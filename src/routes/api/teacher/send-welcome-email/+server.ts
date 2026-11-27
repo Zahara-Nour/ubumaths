@@ -19,13 +19,14 @@
  * SECURITY:
  * - Requires teacher role
  * - Validates student_id as UUID
- * - Verifies teacher teaches the student
+ * - Vérifie les rôles (appelant prof ou admin, cible élève) ; mono-professeur :
+ *   aucune vérification de classe
  *
  * Flow:
  * 1. Verify teacher role
  * 2. Check the transactional email service (Brevo) is configured
  * 3. Validate input with Zod
- * 4. Verify teacher-student relationship
+ * 4. Vérifier les rôles (appelant prof ou admin, cible élève)
  * 5. Fetch student info (email, firstname)
  * 6. Send email via Brevo (reply-to = teacher email)
  * 7. Record in welcome_emails_sent

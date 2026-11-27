@@ -1,9 +1,6 @@
 /**
  * Health Statistics Utilities
  * Fetches and caches expensive admin dashboard statistics
- *
- * NOTE: This file uses type assertions for new tables/views (server_cache, admin_* views, background_job_runs)
- * that are not yet in the generated database.ts types. Run `pnpm db:types` after migrations are pushed.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

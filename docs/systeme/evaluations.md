@@ -1,9 +1,8 @@
 ---
 couvre:
   - 'src/routes/(protected)/dashboard/teacher/{assessments,evaluation-tasks,presques-evaluations}/**'
-  - 'src/routes/(protected)/dashboard/student/{assessments,competences,work,reports}/**'
+  - 'src/routes/(protected)/dashboard/student/{assessments,competences,work}/**'
   - 'src/routes/api/{evaluations,tests,test-mode,series}/**'
-  - 'src/routes/api/student/reports/**'
   - 'src/routes/(public)/presques-evaluations/**'
   - 'src/lib/components/{test,assessments,series}/**'
   - src/lib/components/teacher/TestModeToggle.svelte
@@ -11,9 +10,9 @@ couvre:
   - src/lib/stores/classroomSettings.svelte.ts
   - src/lib/utils/chime.ts
   - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
-  - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades,chapter-series}.ts'
-  - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,duration-signals,test,grades,skills}.ts'
-  - 'src/lib/utils/{test-launch,test-score,grades,duration-signals}.ts'
+  - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,chapter-series}.ts'
+  - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,duration-signals,test,skills}.ts'
+  - 'src/lib/utils/{test-launch,test-score,duration-signals}.ts'
 ---
 
 # Séries, contrôles, observations

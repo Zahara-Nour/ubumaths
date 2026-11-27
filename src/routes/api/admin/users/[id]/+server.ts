@@ -38,11 +38,11 @@ type ExtendedProfile = Profile & {
  * {
  *   firstname?: string | null,
  *   lastname?: string | null,
- *   email?: string,
  *   role?: 'admin' | 'teacher' | 'student',
  *   school_id?: string | null,  // UUID
  *   is_test?: boolean
  * }
+ * Le courriel ne se modifie pas ici : le schéma l'ignore.
  *
  * Response: 200 with updated full profile including relations
  * {

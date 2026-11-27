@@ -9,12 +9,10 @@
   - user: Verified user from server (safe to display)
   - supabase: Supabase client for making authenticated requests
 
-  UI BEHAVIOR:
-  1. When logged OUT: Shows "Login" button
-  2. When logged IN: Shows user avatar with popup menu containing:
-     - User email
-     - Dashboard link
-     - Logout button
+  AFFICHAGE :
+  1. Déconnecté : bouton de connexion
+  2. Connecté : l'avatar est un lien direct vers /dashboard (Mon cabinet), sans menu ;
+     sur mobile, le menu latéral a une section « Compte » (Mon cabinet + déconnexion)
 
   REACTIVITY:
   - Props automatically update when auth state changes
@@ -26,14 +24,11 @@
   - Session and user have been authenticated via getUser()
   - Safe to trust and display to the user
 
-  LOGOUT FLOW:
-  1. POST /auth/logout (src/lib/utils/auth.ts): server-side signOut(), and the admin
-     elevation cookie is revoked and cleared
-  2. Call invalidate('supabase:auth') to trigger server re-verification
-  3. Navigate to home page
-  4. The invalidate triggers the reactive chain:
-     - +layout.ts re-runs → +layout.server.ts re-runs → safeGetSession() → returns null
-     - Updated props flow to this component → Login button appears
+  DÉCONNEXION (submitLogoutForm, src/lib/utils/auth.ts) :
+  1. Efface les données de travail du localStorage (tablette partagée, T17)
+  2. Soumet un vrai formulaire POST /auth/logout : signOut() côté serveur, cookie
+     d'élévation admin révoqué, puis redirection
+  3. Le navigateur recharge la page avec la nouvelle session : pas d'invalidate()
 -->
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
