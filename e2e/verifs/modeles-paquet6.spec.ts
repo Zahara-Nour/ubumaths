@@ -144,18 +144,21 @@ test.describe('#2536 #2538 — choix `<`, `=`, `>`', () => {
 			timeout: 30_000
 		});
 		await page.waitForLoadState('networkidle');
+		// Les tuiles de ce modèle seulement : depuis la recherche du 2026-11-26 (#3172), la même
+		// recherche ramène d'autres modèles (« comparer deux jeux… »), dont les choix ne sont pas
+		// des symboles et dont les groupes repliés ont des cartes de largeur nulle
+		const tiles = page.getByRole('group', { name: 'Comparer deux nombres entiers', exact: true });
 		// Les cartes du catalogue : une carte par modèle homonyme (au moins les quatre niveaux)
 		await expect
-			.poll(async () => page.locator('[data-letter]').count(), { timeout: 30_000 })
+			.poll(async () => tiles.locator('[data-letter]').count(), { timeout: 30_000 })
 			.toBeGreaterThanOrEqual(12);
 		await expect
 			.poll(
-				async () =>
-					(await choiceRows(page.locator('main .flip-card-front'))).every((r) => r.width > 0),
+				async () => (await choiceRows(tiles.locator('.flip-card-front'))).every((r) => r.width > 0),
 				{ timeout: 30_000 }
 			)
 			.toBe(true);
-		const rows = await choiceRows(page.locator('main .flip-card-front'));
+		const rows = await choiceRows(tiles.locator('.flip-card-front'));
 		expect(rows.length, 'au moins quatre cartes de trois choix').toBeGreaterThanOrEqual(12);
 		// Chaque choix de symbole : lettre puis formule, calée à gauche (pas au milieu de la ligne)
 		const symbolRows = rows.filter((r) =>
@@ -172,10 +175,12 @@ test.describe('#2536 #2538 — choix `<`, `=`, `>`', () => {
 		}
 		await shot(page, '2536-catalogue');
 		// Le verso de la première carte (« Voir la correction ») : mêmes symboles, bonne réponse marquée
-		await press(page.getByRole('button', { name: 'Voir la correction' }).first());
-		await expect(page.getByRole('button', { name: 'Retour à la question' }).first()).toBeVisible();
+		await press(tiles.first().getByRole('button', { name: 'Voir la correction' }).first());
+		await expect(
+			tiles.first().getByRole('button', { name: 'Retour à la question' }).first()
+		).toBeVisible();
 		await settle(page);
-		const back = page.locator('main .flip-card-back').first();
+		const back = tiles.first().locator('.flip-card-back').first();
 		await expect
 			.poll(async () => (await choiceRows(back)).every((r) => r.width > 0), { timeout: 15_000 })
 			.toBe(true);
@@ -416,7 +421,11 @@ test.describe('#2492 — liste admin des modèles', { tag: '@bureau' }, () => {
 	test.afterAll(() => sql(ELEVATION_LIMITS));
 
 	const FILTERED = '/dashboard/admin/questions?grades=1_SPE&minLevel=6&maxLevel=6';
-	/** Les modèles que ces filtres gardent, lus en base (brouillons et publiés) */
+	/**
+	 * Les modèles que ces filtres gardent, lus en base (brouillons et publiés). La page les range
+	 * en deux onglets : « N templates trouvés » compte les publiés seuls, l'onglet « Brouillons »
+	 * dit « N brouillons ».
+	 */
 	const expected = (search?: string) =>
 		sql<{ id: string; title: string; status: string }>(
 			`select id::text, title, status from question_templates
@@ -425,8 +434,13 @@ test.describe('#2492 — liste admin des modèles', { tag: '@bureau' }, () => {
 			[search ?? null]
 		);
 
+	const publishedOnly = <T extends { status: string }>(rows: T[]): T[] =>
+		rows.filter((row) => row.status === 'published');
+
+	/** Titres des lignes de l'onglet « Publiés » */
 	async function shown(page: Page): Promise<string[]> {
 		return page
+			.getByRole('tabpanel', { name: 'Publiés' })
 			.locator('tbody tr:has([role="checkbox"])')
 			.evaluateAll((rows) =>
 				rows.map((row) =>
@@ -470,13 +484,24 @@ test.describe('#2492 — liste admin des modèles', { tag: '@bureau' }, () => {
 			url.searchParams.get('minLevel'),
 			url.searchParams.get('maxLevel')
 		]).toEqual(['1_SPE', '6', '6']);
-		await expect.poll(() => countOf(page), { timeout: 30_000 }).toBe(filtered.length);
+		const filteredPublished = publishedOnly(filtered);
+		await expect.poll(() => countOf(page), { timeout: 30_000 }).toBe(filteredPublished.length);
 		await expect(page.getByText('Page 1 sur 1')).toBeVisible();
-		expect((await shown(page)).length, 'une ligne par modèle').toBe(filtered.length);
+		expect((await shown(page)).length, 'une ligne par modèle publié').toBe(
+			filteredPublished.length
+		);
+		const drafts = filtered.length - filteredPublished.length;
+		await page.getByRole('tab', { name: 'Brouillons' }).click();
+		await expect(
+			page.getByText(new RegExp(`^${drafts} brouillons?$`)),
+			'les brouillons du filtre, dans leur onglet'
+		).toBeVisible();
+		await page.getByRole('tab', { name: 'Publiés' }).click();
 		await shot(page, '2492-filtre');
 
 		const search = page.getByLabel("Titre ou début d'identifiant");
 		const apply = page.getByRole('button', { name: 'Appliquer les filtres' });
+		/** `count` : les publiés que la recherche garde (ceux que compte « N templates trouvés ») */
 		const searchFor = async (text: string, count: number): Promise<void> => {
 			await search.fill(text);
 			await apply.click();
@@ -487,7 +512,7 @@ test.describe('#2492 — liste admin des modèles', { tag: '@bureau' }, () => {
 		const word = 'SUITE';
 		const byWord = await expected(word);
 		expect(byWord.length, 'le mot est dans au moins un titre').toBeGreaterThan(0);
-		await searchFor(word, byWord.length);
+		await searchFor(word, publishedOnly(byWord).length);
 		for (const title of await shown(page)) {
 			expect(title.toLowerCase(), `« ${title} » contient « suite »`).toContain('suite');
 		}
@@ -499,14 +524,14 @@ test.describe('#2492 — liste admin des modèles', { tag: '@bureau' }, () => {
 
 		// « 2024 » : seulement les titres (aucune date, aucun identifiant n'est cherché)
 		const byYear = await expected('2024');
-		await searchFor('2024', byYear.length);
+		await searchFor('2024', publishedOnly(byYear).length);
 		for (const title of await shown(page)) expect(title).toContain('2024');
 
 		// « Tout cocher (filtrés) » : ne coche que les résultats de la recherche, dans l'onglet ouvert (jamais les
 		// autres pages ni la base) ; l'onglet « Publiés » est celui de la liste
-		await searchFor(word, byWord.length);
+		await searchFor(word, publishedOnly(byWord).length);
 		const published = page.getByRole('tabpanel', { name: 'Publiés' });
-		const expectedChecked = byWord.filter((m) => m.status === 'published').length;
+		const expectedChecked = publishedOnly(byWord).length;
 		expect(expectedChecked, 'des résultats publiés').toBeGreaterThan(0);
 		await published.getByText('Tout cocher (filtrés)').click();
 		const rows = published.locator('tbody tr:has([role="checkbox"])');

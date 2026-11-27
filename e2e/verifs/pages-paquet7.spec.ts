@@ -78,8 +78,9 @@ async function exercice(
 ): Promise<{ id: string; title: string }> {
 	const rows = await sql<{ id: string }>(
 		withFirstVersion(
-			`insert into exercises (title, source, grades, topic, created_by, category, variations)
-			 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme', $3::jsonb) returning id`
+			`insert into exercises (title, source, grades, topic, created_by, category)
+			 values ($1, $4, '{}', 'Verifs7', $2, 'automatisme') returning id`,
+			{ variations: '$3::jsonb' }
 		),
 		[
 			titre,

@@ -116,13 +116,19 @@ export const LATEST_VERSION_OF = (exerciseParam: string): string =>
 
 /**
  * Un exercice créé par le décor reçoit sa version 1 dans la même requête : depuis les versions
- * d'exercices (ADR 0044), le contenu se lit dans `exercise_versions` et une ligne de fiche exige
- * une version. `insert` est un `insert into exercises … returning id` ; la requête rend toujours `id`.
+ * d'exercices (ADR 0044), le contenu ne vit plus que dans `exercise_versions` (les colonnes
+ * `exercises.variations`, `shared` et `generic_functions` sont retirées) et une ligne de fiche
+ * exige une version. `insert` est un `insert into exercises … returning id`, sans contenu ;
+ * `content` donne les expressions SQL du contenu de la version (`'$3::jsonb'`, une sous-requête…).
+ * La requête rend toujours `id`.
  */
-export function withFirstVersion(insert: string): string {
-	return `with e as (${insert}, variations, shared, generic_functions, created_by),
+export function withFirstVersion(
+	insert: string,
+	content: { variations: string; shared?: string; genericFunctions?: string }
+): string {
+	return `with e as (${insert}, created_by),
 	 v as (insert into exercise_versions (exercise_id, number, variations, shared, generic_functions, created_by)
-	       select id, 1, variations, shared, generic_functions, created_by from e)
+	       select id, 1, ${content.variations}, ${content.shared ?? 'null'}, ${content.genericFunctions ?? 'null'}, created_by from e)
 	 select id from e`;
 }
 

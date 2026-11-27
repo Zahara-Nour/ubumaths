@@ -497,8 +497,9 @@ test('#1581 — exercice rangé : « Points de programme » ne montre que les po
 	const insert = async (title: string) => {
 		const rows = await sql<{ id: string }>(
 			withFirstVersion(
-				`insert into exercises (title, source, grades, topic, created_by, category, variations)
-				 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`
+				`insert into exercises (title, source, grades, topic, created_by, category)
+				 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme') returning id`,
+				{ variations: '$3::jsonb' }
 			),
 			[
 				title,
@@ -619,8 +620,9 @@ test('#1583 — point de 5e archivé déjà coché : « archivé » au cahier, d
 	const make = async (title: string, nodeId: string, pointId: string) => {
 		const rows = await sql<{ id: string }>(
 			withFirstVersion(
-				`insert into exercises (title, source, grades, topic, created_by, category, variations)
-				 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`
+				`insert into exercises (title, source, grades, topic, created_by, category)
+				 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme') returning id`,
+				{ variations: '$3::jsonb' }
 			),
 			[
 				title,
