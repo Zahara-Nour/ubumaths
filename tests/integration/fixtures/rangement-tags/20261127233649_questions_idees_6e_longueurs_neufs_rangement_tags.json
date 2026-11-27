@@ -1,0 +1,60 @@
+{
+	"migration": "supabase/migrations/20261127233649_questions_idees_6e_longueurs_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "c26b4d4c-ce49-4f6b-98ec-0df2f7c4215a",
+			"title": "La formule du périmètre du carré",
+			"fichier": "n1-formule-perimetre-carre.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Périmètres",
+			"sousNotion": "carré",
+			"point": "6-144"
+		},
+		{
+			"id": "0d55c1de-d67f-472f-97aa-7680fae761b4",
+			"title": "La formule du périmètre du rectangle",
+			"fichier": "n1-formule-perimetre-rectangle.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Périmètres",
+			"sousNotion": "rectangle",
+			"point": "6-199"
+		},
+		{
+			"id": "8ac28cf5-dd60-47af-b7aa-a84044ec42d4",
+			"title": "Périmètre d'une portion de disque",
+			"fichier": "n2-perimetre-portion-disque.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Périmètres",
+			"sousNotion": null,
+			"point": "6-148"
+		},
+		{
+			"id": "84648b3b-b4ae-417e-97cc-e088a985fba8",
+			"title": "Comparer des périmètres sans mesurer",
+			"fichier": "n3-comparer-perimetres-sans-mesurer.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Périmètres",
+			"sousNotion": null,
+			"point": "6-148"
+		},
+		{
+			"id": "0031e3ea-237f-4b7a-8acd-75a18ca2c5b7",
+			"title": "Le sens des préfixes",
+			"fichier": "n4-sens-des-prefixes.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Unités et conversions",
+			"sousNotion": "unités simples",
+			"point": null
+		},
+		{
+			"id": "10dc7b1c-e3b6-4c97-9be8-17170eea29e6",
+			"title": "Convertir en mètre, et du mètre vers une autre unité",
+			"fichier": "n5-convertir-en-metre.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Unités et conversions",
+			"sousNotion": "unités simples",
+			"point": null
+		}
+	],
+	"niveaux": []
+}

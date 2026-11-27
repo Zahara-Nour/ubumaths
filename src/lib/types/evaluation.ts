@@ -163,19 +163,6 @@ export const DEFAULT_EVALUATION_SETTINGS: EvaluationSettingsInput = {
 };
 
 // ===========================================================================
-// TENTATIVES
-// ===========================================================================
-
-/** Un élève peut-il commencer une tentative ? */
-export interface AttemptValidation {
-	can_attempt: boolean;
-	reason?: string;
-	attempts_remaining: number | null;
-	deadline_passed: boolean;
-	current_attempts: number;
-}
-
-// ===========================================================================
 // STATISTIQUES
 // ===========================================================================
 

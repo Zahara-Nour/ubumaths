@@ -309,8 +309,8 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
   `get_teacher_classes_with_data`), `getTeacherClassesWithStudents` (fonction SQL
   `get_teacher_classes_with_students`), `getUnassignedStudents`. Toutes lisent la préférence de mode
   test par `getTeacherTestMode` (`src/lib/server/test-mode.ts`).
-- Routes JSON des classes : `src/routes/api/classes/+server.ts` et
-  `src/routes/api/teacher/classes/+server.ts` (mêmes données, voir Écarts),
+- Routes JSON des classes : `src/routes/api/teacher/classes/+server.ts` (les classes du prof,
+  avec leurs effectifs),
   `src/routes/api/classes/[classId]/students/+server.ts`,
   `src/routes/api/classes/[classId]/warnings/+server.ts`.
 - **Courriel de bienvenue** : page `src/routes/(protected)/dashboard/teacher/welcome-email/+page.server.ts`
@@ -363,7 +363,7 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
   (`locals.adminSupabase`) si l'élévation est active, sinon le client de l'admin connecté, sinon 403.
 - **Prof ou admin** (`requireRoles`) : approbation des comptes, liste des comptes en attente,
   avertissements, journal d'un élève. **Prof seul** (`requireRole(locals, 'teacher')`) : courriel de
-  bienvenue, codes d'inscription, `api/classes`, suivi d'un élève.
+  bienvenue, codes d'inscription, `api/teacher/classes`, suivi d'un élève.
 - `verifyTeacherStudent` (`src/lib/server/middleware/student-access.ts`) vérifie seulement que
   l'appelant est prof ou admin et que la cible est un élève : la classe n'est pas une frontière.
 

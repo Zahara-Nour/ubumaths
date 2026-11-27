@@ -1,7 +1,7 @@
 ---
 couvre:
   - src/lib/components/rich-text/ImageGalleryModal.svelte
-  - src/lib/components/rich-text/MarkdownCodeEditor.svelte
+  - src/lib/components/CodeEditor.svelte
   - src/lib/components/rich-text/RestrictedRichText.svelte
   - src/lib/components/rich-text/config.ts
   - src/lib/components/rich-text/editor-config.ts
@@ -78,11 +78,12 @@ une ou d'en téléverser une nouvelle. Montée par `RichTextEditor` seulement si
 `src/lib/components/exercises/ExerciseRichTextEditor.svelte` et
 `src/lib/components/markdown/MarkdownEditor.svelte`.
 
-### Mode markdown brut : `MarkdownCodeEditor.svelte`
+### Mode markdown brut : `CodeEditor.svelte` (`language="markdown"`)
 
 Éditeur CodeMirror 6 (markdown, numéros de ligne, thème `oneDark`), modules chargés à la
 demande. `RichTextEditor` l'affiche quand on bascule en mode markdown : le contenu passe par
-`tipTapToMarkdown` à l'aller et `markdownToTipTap` au retour. Seul appelant : `RichTextEditor`.
+`tipTapToMarkdown` à l'aller et `markdownToTipTap` au retour. Le même composant, sans langage,
+sert à `/dev/latex-vers-ubumark` ([utilitaires-et-demos.md](utilitaires-et-demos.md)).
 
 ### Afficher un contenu écrit par un autre : `RestrictedRichText.svelte`
 
@@ -101,9 +102,8 @@ de planter. 8 appelants (messages, signalements de fiches, notebook).
 | `sanitizeHtml`                    | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs     | notebook, aperçu de variante                                                                                       |
 | `sanitizePlainText`               | retire toute balise, garde le texte                                             | `ReportErrorDialog.svelte`                                                                                         |
 | `sanitizeUrl` (`sanitize-url.ts`) | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`      | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference`, `ImageDisplay`, `VideoDisplay` |
-| `containsDangerousHtml`           | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                            | aucun (doublon, voir Écarts)                                                                                       |
 | `NOTIFICATION_SANITIZE_CONFIG`    | 13 balises, aucun attribut : config partagée serveur / client des notifications | `server/sanitization.ts`, `utils/sanitize-notification.ts`                                                         |
-| `escapeHtml` (`html-escape.ts`)   | échappe `< > & " '` ; `null`/`undefined` → `''`                                 | `server/notifications.ts`, `auto-notifications.ts`, marché                                                         |
+| `escapeHtml` (`html-escape.ts`)   | échappe `< > & " '` ; `null`/`undefined` → `''`                                 | `server/notifications.ts`, `auto-notifications.ts`, marché, rendu markdown, courriel de consentement, géométrie    |
 
 `sanitizeUrl` décide sur la forme que lira le **navigateur** : espaces et caractères de contrôle
 de tête retirés, tabulations et retours à la ligne supprimés partout (`java\nscript:` devient

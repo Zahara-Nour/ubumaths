@@ -5,6 +5,8 @@
  * The email contains a unique link for the parent to grant consent.
  */
 
+import { escapeHtml } from '#lib/utils/html-escape.ts';
+
 export const CONSENT_EMAIL_SUBJECT = 'Consentement parental requis - Chiphre';
 
 /**
@@ -14,19 +16,6 @@ export const CONSENT_EMAIL_SUBJECT = 'Consentement parental requis - Chiphre';
  */
 export function getSiteUrl(): string {
 	return 'https://www.chiph.re';
-}
-
-/**
- * Escape HTML entities to prevent XSS in emails
- */
-function escapeHtml(text: string | null): string {
-	if (!text) return '';
-	return text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#039;');
 }
 
 export interface ConsentEmailData {

@@ -40,7 +40,7 @@
  * // Returns: first 100 characters only
  * ```
  */
-export function sanitizeSearchQuery(search: string): string {
+function sanitizeSearchQuery(search: string): string {
 	if (!search) return '';
 
 	return (

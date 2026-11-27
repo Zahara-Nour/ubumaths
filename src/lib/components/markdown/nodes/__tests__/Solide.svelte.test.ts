@@ -108,6 +108,26 @@ describe('Solide — figure', () => {
 		);
 	});
 
+	it('repère et point par coordonnées : trois flèches, le point nommé, lus par le lecteur d’écran', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node(
+					'forme: cube 2',
+					'sommets: A B C D E F G H',
+					'repere: A ; AB, AD, AE',
+					'points: M (1 ; 0,5 ; 1)'
+				)
+			}
+		});
+		expect(screen.container.querySelectorAll('polygon.solide-pointe')).toHaveLength(3);
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('M');
+		const label = screen.container.querySelector('svg')!.getAttribute('aria-label');
+		expect(label).toContain('repère d’origine A');
+		expect(label).toContain('point M de coordonnées (1 ; 0,5 ; 1)');
+	});
+
 	it('plans donnés : teintés, bord en couleur, tirets pour le bord caché, nom entre parenthèses', async () => {
 		const screen = await render(Espace, {
 			target: mainElement(),

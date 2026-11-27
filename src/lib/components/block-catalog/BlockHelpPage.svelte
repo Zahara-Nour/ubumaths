@@ -61,18 +61,17 @@
 							{#if entry.settingsKind === 'instructions'}
 								<Table.Head>Instruction</Table.Head>
 								<Table.Head>Ce qu’on y écrit</Table.Head>
-								<Table.Head>Effet</Table.Head>
 							{:else}
 								<Table.Head>Clé</Table.Head>
 								<Table.Head>Valeurs</Table.Head>
 								<Table.Head>Par défaut</Table.Head>
-								<Table.Head>Effet</Table.Head>
 							{/if}
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#each group.settings as setting (setting.key)}
-							<Table.Row>
+							<!-- La description sous le réglage, sur toute la largeur : une colonne « Effet » étroite s'étirait sur dix lignes -->
+							<Table.Row class="border-b-0">
 								{#if entry.settingsKind === 'instructions'}
 									<Table.Cell class="align-top whitespace-normal"
 										><code>{setting.key}</code></Table.Cell
@@ -89,7 +88,14 @@
 										{/if}
 									</Table.Cell>
 								{/if}
-								<Table.Cell class="align-top whitespace-normal">{setting.description}</Table.Cell>
+							</Table.Row>
+							<Table.Row>
+								<Table.Cell
+									colspan={entry.settingsKind === 'instructions' ? 2 : 3}
+									class="pt-0 pb-3 whitespace-normal text-muted-foreground"
+								>
+									{setting.description}
+								</Table.Cell>
 							</Table.Row>
 						{/each}
 					</Table.Body>

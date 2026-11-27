@@ -66,10 +66,11 @@ export const solideEntry: BlockCatalogEntry = {
 				},
 				{
 					key: 'points',
-					values: 'I milieu AE | O centre ABCD | O centre ABCDEFGH (séparés par des virgules)',
+					values:
+						'I milieu AE | O centre ABCD | O centre ABCDEFGH | M (1 ; 0,5 ; 1) (séparés par des virgules)',
 					defaultValue: null,
 					description:
-						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. Les sommets doivent être nommés ; au plus 8 points.'
+						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. M (1 ; 0,5 ; 1) : le point par ses coordonnées dans le repère de repere: (nombres séparés par des points-virgules, virgule ou point pour les décimales, au plus 3 chiffres après la virgule, négatifs permis) ; il doit rester dans le solide, ou tout près. Les sommets doivent être nommés ; au plus 8 points.'
 				},
 				{
 					key: 'vecteurs',
@@ -91,6 +92,13 @@ export const solideEntry: BlockCatalogEntry = {
 					defaultValue: null,
 					description:
 						'Cube, pavé, prisme, pyramide : des plans qui passent par trois points nommés non alignés (sommets ou points de points:). On voit la partie du plan qui est dans le solide, teintée : le triangle BDE pour (BDE) dans un cube ; un plan qui contient une face teinte cette face. Le bord est en tirets là où une face du solide passe devant lui, en trait plein ailleurs ; avec cachees: non, en trait plein partout. P = (BDE) écrit (P) dans le plan (une majuscule qui n’est pas le nom d’un point, puis éventuellement un chiffre ou ’). Les parenthèses sont facultatives. Le premier plan est vert, le second violet ; au plus 2 plans. Va avec droites: ; le point où une droite perce un plan n’est pas dessiné : ce peut être la réponse. Le lecteur d’écran lit « plan (BDE) », jamais une position relative. Pas encore avec section: ni tracer:.'
+				},
+				{
+					key: 'repere',
+					values: 'A ; AB, AD, AE',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : le repère du solide. Une origine, un point-virgule, puis trois vecteurs qui partent de cette origine et ne sont pas dans un même plan (sommets, ou points de points: déclarés par milieu ou centre avant tout point à coordonnées). Les trois vecteurs sont dessinés en flèches depuis l’origine. Le repère permet de déclarer un point par ses coordonnées dans points: (M (1 ; 0,5 ; 1)), qui sert ensuite comme un autre point dans vecteurs:, droites: et plans:. Les parenthèses autour sont facultatives. Le lecteur d’écran lit « repère d’origine A ». Pas encore avec section: ni tracer:.'
 				},
 				{
 					key: 'tracer',
@@ -322,6 +330,20 @@ export const solideEntry: BlockCatalogEntry = {
 				'Pour « la droite (IG) et le plan (BDE) sont-ils sécants ? » : le plan est montré par sa partie dans le cube, le triangle BDE. Le point où la droite le perce n’est pas dessiné ; en tournant la figure, l’élève voit la droite traverser le plan.'
 		},
 		{
+			title: 'Un repère du cube et un point par ses coordonnées',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'repere: A ; AB, AD, AE',
+				'points: M (1 ; 0,5 ; 1)',
+				'droites: (AM)',
+				'tourner: oui'
+			),
+			explanation:
+				'Dans le repère (A ; AB, AD, AE), M a pour coordonnées (1 ; 0,5 ; 1) : c’est le milieu de [FG]. Les trois flèches partent de A ; le point sert à la droite (AM) comme un sommet.'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -411,6 +433,29 @@ export const solideEntry: BlockCatalogEntry = {
 			message: 'alignés',
 			explanation:
 				'I est le milieu de [AE] : A, I et E sont sur une même droite, ils ne donnent pas un plan.'
+		},
+		{
+			title: 'Un repère dont les trois vecteurs sont dans un même plan',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'repere: A ; AB, AD, AC'
+			),
+			message: 'même plan',
+			explanation:
+				'AB, AD et AC sont tous les trois dans la face ABCD : il faut un vecteur qui en sort, comme AE.'
+		},
+		{
+			title: 'Des coordonnées sans repère',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: M (1 ; 0,5 ; 1)'
+			),
+			message: 'demandent un repère',
+			explanation: 'Les coordonnées se lisent dans un repère : ajoute repere: A ; AB, AD, AE.'
 		},
 		{
 			title: 'Un plan qui ne coupe pas le solide',

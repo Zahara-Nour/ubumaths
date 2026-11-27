@@ -18,13 +18,3 @@ export function formatDuration(seconds: number): string {
 	const s = seconds % 60;
 	return `${m}m ${s.toString().padStart(2, '0')}s`;
 }
-
-/**
- * Format a number with proper French decimal separator
- * @param value - Number to format
- * @param decimals - Number of decimal places (default: 2)
- * @returns Formatted number string
- */
-export function formatNumber(value: number, decimals: number = 2): string {
-	return value.toFixed(decimals).replace('.', ',');
-}

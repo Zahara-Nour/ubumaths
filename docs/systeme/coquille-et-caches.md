@@ -3,9 +3,9 @@ couvre:
   - src/routes/+layout.svelte
   - 'src/routes/(protected)/+layout.svelte'
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
-  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,FlipCard,FontSelector,Wheel}.svelte'
+  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,FlipCard,Wheel}.svelte'
   - 'src/lib/components/{skeleton,modals}/**'
-  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack,input-capability,auth}.svelte.ts'
+  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
   - src/lib/utils/cache-sync.ts
   - src/lib/utils/app-version.ts
@@ -226,8 +226,6 @@ aussi par le Démineur (`minesweeper.svelte.ts`), `RewardsBlock` et la page
 - `mobileStore` (`mobile.svelte.ts`) : largeur de fenêtre suivie par un écouteur `resize`,
   `isMobile` (< 768), `isTablet`, `isDesktop` (≥ 1024). Côté serveur, largeur supposée 1024. Seul
   utilisateur : `MinesweeperBoard`.
-- `inputCapability` (`input-capability.svelte.ts`) : `hasTouch`, `hasMouse`, `canHover`,
-  `primaryIsTouch`, par `matchMedia`. Aucun composant ne l'importe.
 
 La navigation elle-même choisit entre barre et tiroir par CSS (`md:hidden`, `hidden md:block`), pas
 par ces stores.
@@ -256,8 +254,8 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 
 - `FlipCard` : carte à deux faces de même hauteur (grille CSS), face cachée `inert`. Utilisée par
   `FlashCard` et `/demo`.
-- `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` sont utilisés
-  (layouts, marché) ; `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem` non.
+- `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` (layouts,
+  marché).
 
 ### Onglet resté ouvert pendant un déploiement
 
@@ -294,8 +292,10 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 - **L'hydratation des layouts est dans `onMount`** : elle ne se rejoue pas quand les `load`
   repassent (`refreshAll()`). Les données neuves du layout n'atteignent pas le cache.
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
-  `/dashboard/teacher` (`documents/+page.server.ts:25`) ne rend pas la
-  page accessible à l'admin : le 403 du layout passe avant.
+  `/dashboard/teacher` ne rendrait pas la page accessible à l'admin : le 403 du layout passe
+  avant. Mais le load d'une page tourne **en parallèle** de celui du layout : il ne lit rien de
+  sensible sans `await parent()` ou sa propre garde de rôle (`documents/+page.server.ts` ne rend
+  rien et ne relit plus le rôle, M32).
 - **Deux listes de liens publics** : `Header.svelte` (tiroir mobile) et `Sidebar.svelte` (barre)
   ont chacun leur copie. Une entrée ajoutée à l'une manque à l'autre.
 

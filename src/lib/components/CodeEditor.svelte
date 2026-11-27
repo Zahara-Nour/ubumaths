@@ -1,12 +1,18 @@
 <script lang="ts">
 	/**
-	 * LaTeXEditor - CodeMirror 6 editor for LaTeX code
+	 * CodeEditor — éditeur CodeMirror 6 modifiable, chargé à la demande.
 	 *
-	 * Features:
-	 * - Line numbers
-	 * - Dark/light theme support
-	 * - Lazy loading of CodeMirror
-	 * - Bracket matching
+	 * Un seul exemplaire pour le texte brut (LaTeX de `/dev/latex-vers-ubumark`) et le
+	 * markdown (mode markdown brut de `RichTextEditor`) : avant, deux copies presque
+	 * identiques (`LaTeXEditor`, `MarkdownCodeEditor`).
+	 *
+	 * - `language="markdown"` : coloration markdown, fermeture des crochets,
+	 *   indentation automatique.
+	 * - `height` donné : boîte bordée de cette hauteur ; sinon l'éditeur remplit son parent.
+	 * - Thème sombre (oneDark), numéros de ligne, crochets appariés.
+	 * - Si CodeMirror ne se charge pas : simple zone de texte.
+	 *
+	 * Lecture seule : `CodeViewer.svelte`.
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
@@ -14,37 +20,51 @@
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
 
-	// Props
-	let {
-		value = $bindable(''),
-		disabled = false,
-		fontSize = 14,
-		height = '400px',
-		placeholder = '',
-		lineWrapping = false
-	}: {
+	interface Props {
 		value?: string;
 		disabled?: boolean;
 		fontSize?: number;
 		height?: string;
 		placeholder?: string;
 		lineWrapping?: boolean;
-	} = $props();
+		language?: 'plain' | 'markdown';
+		ariaLabel?: string;
+	}
 
-	// State
-	let editorContainer: HTMLDivElement | null = null;
+	let {
+		value = $bindable(''),
+		disabled = false,
+		fontSize = 14,
+		height,
+		placeholder = '',
+		lineWrapping = false,
+		language = 'plain',
+		ariaLabel = 'Éditeur de code'
+	}: Props = $props();
+
+	let editorContainer: HTMLDivElement | null = $state(null);
 	let editor = $state.raw<EditorView | null>(null);
 	let isLoading = $state(true);
 	let loadError = $state<string | null>(null);
 
-	// Update value from editor
 	function updateValue(newValue: string): void {
 		if (value !== newValue) {
 			value = newValue;
 		}
 	}
 
-	// Initialize CodeMirror with lazy loading
+	/** Extensions propres au markdown, chargées seulement pour lui */
+	async function loadMarkdownExtensions(): Promise<Extension[]> {
+		const [{ markdown }, { indentOnInput }, { closeBrackets, closeBracketsKeymap }, { keymap }] =
+			await Promise.all([
+				import('@codemirror/lang-markdown'),
+				import('@codemirror/language'),
+				import('@codemirror/autocomplete'),
+				import('@codemirror/view')
+			]);
+		return [closeBrackets(), indentOnInput(), markdown(), keymap.of(closeBracketsKeymap)];
+	}
+
 	async function initEditor(): Promise<void> {
 		if (!browser || !editorContainer) return;
 
@@ -52,7 +72,6 @@
 			isLoading = true;
 			loadError = null;
 
-			// Lazy load all CodeMirror modules
 			const [
 				{
 					EditorView,
@@ -65,16 +84,19 @@
 				{ EditorState },
 				{ defaultHighlightStyle, syntaxHighlighting, bracketMatching },
 				{ history, defaultKeymap, historyKeymap },
-				{ oneDark }
+				{ oneDark },
+				languageExtensions
 			] = await Promise.all([
 				import('@codemirror/view'),
 				import('@codemirror/state'),
 				import('@codemirror/language'),
 				import('@codemirror/commands'),
-				import('@codemirror/theme-one-dark')
+				import('@codemirror/theme-one-dark'),
+				language === 'markdown' ? loadMarkdownExtensions() : Promise.resolve([])
 			]);
 
-			// Build extensions
+			const wrap = lineWrapping || language === 'markdown';
+
 			const extensions: Extension[] = [
 				lineNumbers(),
 				highlightActiveLineGutter(),
@@ -82,36 +104,18 @@
 				history(),
 				bracketMatching(),
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-
-				// Key bindings
+				...languageExtensions,
 				keymap.of([...defaultKeymap, ...historyKeymap]),
-
-				// Placeholder
 				...(placeholder ? [placeholderExt(placeholder)] : []),
-
-				// Line wrapping
-				...(lineWrapping ? [EditorView.lineWrapping] : []),
-
-				// Update listener
+				...(wrap ? [EditorView.lineWrapping] : []),
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged) {
-						const newValue = update.state.doc.toString();
-						updateValue(newValue);
+						updateValue(update.state.doc.toString());
 					}
 				}),
-
-				// Accessibility
-				EditorView.contentAttributes.of({
-					'aria-label': 'Editeur LaTeX'
-				}),
-
-				// Editable state
+				EditorView.contentAttributes.of({ 'aria-label': ariaLabel }),
 				EditorState.readOnly.of(disabled),
-
-				// Base theme - oneDark
 				oneDark,
-
-				// Layout theme
 				EditorView.theme({
 					'&': {
 						height: '100%',
@@ -135,32 +139,24 @@
 				})
 			];
 
-			// Create editor
 			editor = new EditorView({
-				state: EditorState.create({
-					doc: value,
-					extensions
-				}),
+				state: EditorState.create({ doc: value, extensions }),
 				parent: editorContainer
 			});
 
 			isLoading = false;
 		} catch (error) {
-			console.error('[LaTeXEditor] Failed to load CodeMirror:', error);
-			loadError = error instanceof Error ? error.message : "Echec du chargement de l'editeur";
+			console.error('[CodeEditor] Failed to load CodeMirror:', error);
+			loadError = error instanceof Error ? error.message : "Échec du chargement de l'éditeur";
 			isLoading = false;
 		}
 	}
 
-	// Update editor content when value changes externally
+	// Contenu changé de l'extérieur → recopié dans l'éditeur
 	$effect(() => {
 		if (editor && value !== editor.state.doc.toString()) {
 			editor.dispatch({
-				changes: {
-					from: 0,
-					to: editor.state.doc.length,
-					insert: value
-				}
+				changes: { from: 0, to: editor.state.doc.length, insert: value }
 			});
 		}
 	});
@@ -178,8 +174,12 @@
 </script>
 
 <div
-	class="flex w-full flex-col rounded-lg border border-border"
-	style="--editor-font-size: {fontSize}px; height: {height}"
+	class={[
+		'code-editor flex w-full flex-col',
+		height ? 'rounded-lg border border-border' : 'h-full'
+	]}
+	style:--editor-font-size="{fontSize}px"
+	style:height
 >
 	<div class="relative flex-1 overflow-hidden" bind:this={editorContainer}>
 		{#if isLoading}
@@ -188,20 +188,19 @@
 					<div
 						class="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
 					></div>
-					<span class="text-sm text-muted-foreground">Chargement de l'editeur...</span>
+					<span class="text-sm text-muted-foreground">Chargement de l'éditeur…</span>
 				</div>
 			</div>
 		{:else if loadError}
 			<div class="flex h-full flex-col items-center justify-center gap-2 p-4">
 				<p class="text-sm text-destructive">{loadError}</p>
-
 				<textarea
 					class="h-full w-full resize-none rounded border border-border bg-background p-4 font-mono text-sm text-foreground focus:outline-none"
 					bind:value
 					{placeholder}
 					spellcheck="false"
 					autocomplete="off"
-					aria-label="Editeur LaTeX (mode degrade)"
+					aria-label="{ariaLabel} (mode dégradé)"
 					{disabled}></textarea>
 			</div>
 		{/if}
@@ -209,28 +208,25 @@
 </div>
 
 <style>
-	/* CodeMirror container styling */
-	:global(.cm-editor) {
+	:global(.code-editor .cm-editor) {
 		height: 100%;
 		font-size: var(--editor-font-size, 14px) !important;
 	}
 
-	:global(.cm-editor.cm-focused) {
+	:global(.code-editor .cm-editor.cm-focused) {
 		outline: none;
 	}
 
-	/* Gutter padding */
-	:global(.cm-editor .cm-gutterElement) {
+	:global(.code-editor .cm-editor .cm-gutterElement) {
 		padding-left: 8px;
 		padding-right: 8px;
 	}
 
-	/* Active line highlighting */
-	:global(.cm-activeLine) {
+	:global(.code-editor .cm-activeLine) {
 		background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.05) !important;
 	}
 
-	:global(.dark .cm-activeLine) {
+	:global(.dark .code-editor .cm-activeLine) {
 		background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.1) !important;
 	}
 </style>
