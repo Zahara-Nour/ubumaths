@@ -217,6 +217,42 @@ describe('```solide — points par coordonnées (lecture)', () => {
 		expect(errors(...CUBE, REPERE, 'points: M (1,1 ; 0 ; -0,1)')).toEqual([]);
 	});
 
+	it('erreur : hors d’une pyramide ou d’un prisme, même dans la boîte de ses sommets', () => {
+		// À la hauteur de M, la pyramide est toute mince autour de son axe
+		expect(errors(...PYRAMIDE, 'repere: A ; AB, AD, AS', 'points: M (0,5 ; 0 ; 0,9)')[0]).toContain(
+			'hors de la figure'
+		);
+		const prisme = ['forme: prisme triangle-rectangle 3 4 5', 'sommets: A B C D E F'];
+		// Le coin vide du rectangle, de l'autre côté de l'hypoténuse
+		expect(errors(...prisme, 'repere: A ; AB, AC, AD', 'points: M (1 ; 1 ; 0)')[0]).toContain(
+			'hors de la figure'
+		);
+		// Dedans, sur une face, ou tout près dehors : accepté
+		expect(errors(...prisme, 'repere: A ; AB, AC, AD', 'points: M (0,5 ; 0,5 ; 0,5)')).toEqual([]);
+		expect(errors(...prisme, 'repere: A ; AB, AC, AD', 'points: M (0,55 ; 0,55 ; 1)')).toEqual([]);
+		expect(errors(...PYRAMIDE, 'repere: A ; AB, AD, AS', 'points: M (0,5 ; 0,5 ; 0,5)')).toEqual(
+			[]
+		);
+	});
+
+	it('la vraie erreur de points: n’est pas cachée par celle du repère', () => {
+		expect(errors(...CUBE, 'points: M (1;1;1), A (0;0;0)', REPERE)).toEqual([
+			expect.stringContaining('déjà le nom d’un sommet')
+		]);
+		expect(errors(...CUBE, 'points: M (1;1;1), B milieu AE', REPERE)).toEqual([
+			expect.stringContaining('déjà le nom d’un sommet')
+		]);
+		expect(
+			errors(...CUBE, 'points: I milieu AE, M (1;1;1), I milieu AB', 'repere: A ; AB, AD, AI')
+		).toEqual([expect.stringContaining('deux fois')]);
+	});
+
+	it('erreur : le repère s’appuie sur un point déclaré après un point à coordonnées', () => {
+		const found = errors(...CUBE, 'points: M (1;1;1), I milieu AE', 'repere: I ; IA, IB, ID');
+		expect(found).toHaveLength(1);
+		expect(found[0]).toContain('déclare I avant');
+	});
+
 	it('erreurs : coordonnées mal écrites', () => {
 		expect(errors(...CUBE, REPERE, 'points: M (1 ; 2)')[0]).toContain('trois coordonnées');
 		expect(errors(...CUBE, REPERE, 'points: M (1 ; 0 ; 0 ; 1)')[0]).toContain('trois coordonnées');

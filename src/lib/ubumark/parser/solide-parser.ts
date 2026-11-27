@@ -551,11 +551,14 @@ function readRepere(
 	/** Les points nommés, ou pourquoi le repère ne peut pas s'appuyer sur l'un d'eux */
 	const pointsOf = (text: string): number[] | string => {
 		const written = text.replace(/[[\]()\s]/g, '').match(NAMES_IN_TEXT_REGEX) ?? [];
-		const byCoords = written.find((n) => after.coords.includes(n));
+		// Un nom déjà connu (sommet, point déclaré avant) n'est pas en cause : s'il est
+		// repris plus loin dans points:, c'est l'erreur de points: qui le dira
+		const unknown = written.filter((n) => !known.includes(n));
+		const byCoords = unknown.find((n) => after.coords.includes(n));
 		if (byCoords !== undefined) {
 			return `${byCoords} est donné par ses coordonnées : le repère ne peut pas s’appuyer sur lui`;
 		}
-		const late = written.find((n) => after.later.includes(n));
+		const late = unknown.find((n) => after.later.includes(n));
 		if (late !== undefined) {
 			return `déclare ${late} avant les points donnés par leurs coordonnées, pour que le repère s’appuie sur lui`;
 		}
@@ -614,8 +617,28 @@ function readPoints(
 	const points: SolidePoint[] = [];
 	const usage = 'ex. I milieu AE, O centre ABCD';
 	const coordsUsage = 'ex. M (1 ; 0,5 ; 1)';
-	const box = polyhedronVertices(shape.form, shape.dims);
+	// Le solide est convexe : un point en est à plus de la marge dès qu'il dépasse
+	// d'autant le plan d'une de ses faces (la boîte des sommets ne suffit pas : une
+	// pyramide est mince en haut, un prisme n'occupe que la moitié de la sienne)
+	const corners = polyhedronVertices(shape.form, shape.dims);
 	const margin = DROITE_OVERHANG * Math.max(...shape.dims);
+	const inside = {
+		x: corners.reduce((sum, c) => sum + c.x, 0) / corners.length,
+		y: corners.reduce((sum, c) => sum + c.y, 0) / corners.length,
+		z: corners.reduce((sum, c) => sum + c.z, 0) / corners.length
+	};
+	/** Ce dont le point p dépasse le plan de la face, vers l'extérieur du solide */
+	const beyondFace = (p: Point3, face: number[]): number => {
+		const [a, b, c] = face.map((i) => corners[i]);
+		const u = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z };
+		const v = { x: c.x - a.x, y: c.y - a.y, z: c.z - a.z };
+		const n = { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x };
+		const length = Math.hypot(n.x, n.y, n.z);
+		const side = (q: Point3) =>
+			((q.x - a.x) * n.x + (q.y - a.y) * n.y + (q.z - a.z) * n.z) / length;
+		// Le centre du solide est du côté intérieur
+		return side(inside) > 0 ? -side(p) : side(p);
+	};
 	for (const item of items) {
 		const byCoords = coordsItem(item);
 		const match = byCoords === null ? /^(\S+)\s+(\S+)\s*(.*)$/.exec(item.trim()) : null;
@@ -665,11 +688,7 @@ function readPoints(
 			};
 			const at = solidePoints3(shape.form, shape.dims, [...points, point]);
 			const p = at[at.length - 1];
-			const outside = (['x', 'y', 'z'] as const).some((axis) => {
-				const all = box.map((vertex) => vertex[axis]);
-				return p[axis] < Math.min(...all) - margin || p[axis] > Math.max(...all) + margin;
-			});
-			if (outside) {
+			if (topology.faces.some((face) => beyondFace(p, face) > margin)) {
 				return `${name} ${shown} tombe hors de la figure : un point reste dans le solide, ou tout près`;
 			}
 			points.push(point);

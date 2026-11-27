@@ -2,17 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot 7c commité sur sa branche (pas encore de PR)._
+_Mis à jour le 2026-11-27, lot 7c relu et corrigé, poussé sur sa branche (pas encore de PR)._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b et bord en
-  butée mergés (#3195 à #3252). **Lot 7c** (repère du solide, points par coordonnées, § 21) : écrit, testé
-  (31 tests, typecheck, cliquet, lint rapide, garde de doc verts), vu à l'écran, commité sur
-  `feat/solides-3d-repere`, **PR pas ouverte**. Les lots 3 à 7b ne sont pas en prod sans `deploy:prod`
-  demandé par David (le vérifier avant de l'affirmer).
-- **Prochaine action** : la revue `code-reviewer` (opus) lancée sur le commit du lot 7c n'a pas rendu son
-  rapport avant le `/clear` : **la relancer** (brief : parseur `readRepere` / `readPoints` / `frame`,
-  régressions de `points:`, `solidePoints3`, seuils), corriger, compléter le § 21 (ligne « Revue »), puis
-  ouvrir la PR en un seul push. Merge seulement après l'essai de David.
+  butée mergés (#3195 à #3252). **Lot 7c** (repère du solide, points par coordonnées, § 21) : écrit, vu à
+  l'écran, **relu** (`code-reviewer`, opus : deux défauts corrigés, tests rouges avant), 34 tests, typecheck
+  et cliquet verts, poussé sur `feat/solides-3d-repere`, **PR pas ouverte**. Les lots 3 à 7b ne sont pas en
+  prod sans `deploy:prod` demandé par David (le vérifier avant de l'affirmer).
+- **Prochaine action** : ouvrir la PR du lot 7c (rien d'autre à pousser), suivre la CI ; **merge seulement
+  après l'essai de David** (`pnpm pr:merger <n>`).
 - **En attente de David** : essai du lot 7c (lien `pnpm lien`, serveur du worktree sur 5176, à relancer s'il
   est tombé ; page `/aide-ecriture/blocs/solide`, compte prof). Trois choix à confirmer (§ 21) : vecteurs du
   repère qui partent tous de l'origine ; coordonnées décimales seulement (pas de fractions) ; point à
@@ -735,3 +733,12 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   points et noms suivent). **Pas vu** : la fiche PDF imprimée (le Typst est testé, pas compilé), le thème
   sombre, le doigt sur un vrai téléphone. Remarque : un point placé tout contre un sommet (N à 0,3 de B) a
   son nom contre celui du sommet une fois la figure tournée — les noms sont tenus, comme pour les autres points.
+- **Revue** (`code-reviewer`, opus, une soixantaine d'entrées tordues essayées) : `points:` sans coordonnées
+  se lit comme avant, aucun consommateur de `solidePoints3` ne perd `coords`, une seule erreur à chaque fois.
+  **Deux défauts corrigés, tests rouges avant** : (1) le refus « hors de la figure » regardait la boîte des
+  sommets — un point loin d'une pyramide (près du haut) ou du côté vide d'un prisme passait ; il mesure
+  maintenant ce dont le point dépasse le plan de chaque face (`beyondFace`, solide convexe) ; (2) un nom de
+  sommet ou un nom donné deux fois dans `points:` faisait dire au repère « donné par ses coordonnées » ou
+  « déclare-le avant » à la place de la vraie erreur de `points:`. **Laissés** : `repere: (A ; AB, AD, AE`
+  (parenthèse non fermée) et `[AB]` acceptés sans message ; `I(milieu AE)` dit « trois coordonnées ».
+  Tests : `solide-repere.test.ts` (34).
