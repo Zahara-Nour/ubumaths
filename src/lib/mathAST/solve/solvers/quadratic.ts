@@ -168,7 +168,7 @@ function letterMonomial(node: MathNode): LetterMonomial | null {
  */
 function unsplitDiscriminantRoot(
 	discriminant: MathNode
-): { outside: MathNode; radicand: MathNode; vanishing: MathNode | null } | null {
+): { outside: MathNode; radicand: MathNode; vanishing: readonly string[] } | null {
 	const monomial = letterMonomial(discriminant);
 	if (monomial === null) return null;
 	const constantsValue = monomial.constants.reduce(
@@ -198,16 +198,10 @@ function unsplitDiscriminantRoot(
 		.reduce((product, letter) => implicitMultiply(product, letter));
 	// Les lettres sorties en entier (puissance paire) : nulles, elles annulent Δ
 	// sans que le radicand soit positif (V124)
-	const evenLetters = [...monomial.letters]
+	const vanishing = [...monomial.letters]
 		.filter(([, exponent]) => exponent % 2 === 0)
 		.map(([name]) => name)
 		.sort();
-	const vanishing =
-		evenLetters.length === 0
-			? null
-			: evenLetters
-					.map((name): MathNode => varNode(name))
-					.reduce((product, letter) => implicitMultiply(product, letter));
 	return { outside: canonicalForm(sqrtNode(outsideSquare)), radicand, vanishing };
 }
 
@@ -449,7 +443,7 @@ export const quadraticSolver: EquationSolver = {
 		const rootForm =
 			unsplit ??
 			(parameters.size > 0 && splitsLetterRoots(canonicalForm(x1))
-				? { outside: number('1'), radicand: discriminantSimplified, vanishing: null }
+				? { outside: number('1'), radicand: discriminantSimplified, vanishing: [] }
 				: null);
 		const x1Simplified =
 			rootForm === null
@@ -517,13 +511,26 @@ export const quadraticSolver: EquationSolver = {
 		// V124 : une lettre sortie de la racine (√(a²bc) = |a|√(bc)) annule Δ quand
 		// elle est nulle, même si la racine écrite n'existe pas (bc < 0). La racine
 		// double −b/(2a) de ce cas est annoncée à part, avec sa condition.
-		if (unsplit !== null && unsplit.vanishing !== null && condition?.kind === 'when') {
-			const doubleRoot = canonicalForm(fraction(negB, twoA));
+		// Une lettre qui est aussi dans le coefficient de x² ne compte pas : nulle,
+		// elle ne laisse plus une équation du second degré (`a²x² − bc = 0`).
+		const leadingLetters = getVariables(a);
+		const vanishingLetters = (unsplit?.vanishing ?? []).filter((name) => !leadingLetters.has(name));
+		if (vanishingLetters.length > 0 && condition?.kind === 'when') {
+			const rawDoubleRoot = fraction(negB, twoA);
+			// Une seule lettre : la racine s'écrit pour sa valeur 0 (`−a` → 0)
+			const doubleRoot = canonicalForm(
+				vanishingLetters.length === 1
+					? substitute(rawDoubleRoot, { [vanishingLetters[0]]: number('0') })
+					: rawDoubleRoot
+			);
+			const vanishing = vanishingLetters
+				.map((name): MathNode => varNode(name))
+				.reduce((product, letter) => implicitMultiply(product, letter));
 			solutions.push({
 				value: doubleRoot,
 				exact: true,
 				approximate: computeNumericValue(doubleRoot) ?? undefined,
-				condition: equals(unsplit.vanishing, number('0'))
+				condition: equals(vanishing, number('0'))
 			});
 		}
 

@@ -1,17 +1,17 @@
 ---
 title: Écart V124 (x² − a²bc = 0, solution 0 du cas a = 0) — journal
 date: 2026-11-27
-status: en cours — correctif écrit, pas encore sondé ni testé
+status: en cours — PR ouverte
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, avant toute PR (branche poussée, aucune PR ouverte)._
+_Mis à jour le 2026-11-27, à l'ouverture de la PR (correctif sondé, testé, relu)._
 
-- **État** : phase 0 tranchée (forme 1, ci-dessous). Correctif **écrit mais jamais exécuté** dans `src/lib/mathAST/solve/solvers/quadratic.ts` (`unsplitDiscriminantRoot` rend aussi `vanishing`, le produit des lettres de puissance paire ; une troisième solution −b/(2a) est ajoutée avec la condition `vanishing = 0`). Aucun test lancé, aucune sonde lue.
-- **Prochaine action** : (1) sonder par le chemin de l'Atelier (`runInput`, comme `src/lib/mathAST/solve/__tests__/racine-produit-lettres.test.ts`) la liste « Sonde à jouer » ci-dessous et lire le rendu ; (2) `pnpm test:server tests/ecarts/mathast.test.ts` : le test V124 doit passer au vert, puis le déplacer en test ordinaire dans `racine-produit-lettres.test.ts` (rendu exact) et retirer la preuve de `tests/ecarts/mathast.test.ts` ; ce fichier-là a 3 tests en `endsWith('si b c ⩾ 0')` qui changent de forme (condition par solution) : les réécrire ; (3) `git merge origin/main` (branche en retard de 56 commits), `check:incremental`, revue `code-reviewer` en Opus (mathAST), doc (`pnpm docs:check-a-jour --depuis origin/main`), PR, merge ; (4) après merge : barrer V124 au registre (commit direct sur `main`), mettre à jour le bloc de `docs/wip/ecarts-a-trier-progress.md` (prochaine action : V125), archiver ce journal.
-- **En attente de David** : rien.
-- **Pièges en cours** : `docs/systeme/mathast/README.md` (l. ~1910) dit déjà le comportement visé : le corriger si la sonde le dément ; ne jamais écrire `cat > fichier` sans entrée dans une commande (elle attend le clavier : la sonde de la session du 2026-11-27 n'a jamais tourné) ; `x³ − a²bx = 0` risque d'écrire 0 deux fois (0 déjà solution, plus « 0 si a = 0 ») : à regarder dans la sonde ; avec plusieurs lettres au carré (`a²d²bc`) la condition s'écrit `ad = 0` : vérifier le rendu ; une lettre de puissance impaire ⩾ 3 (`a³b` → |a|√(ab)) reste sous la racine, pas de cas manquant ; sondes par l'Atelier, jamais `pnpm math`.
+- **État** : correctif fini sur la branche, PR ouverte. Sonde lue, tests verts (mathAST + Atelier + écarts), `check:incremental` à 0, revue `code-reviewer` Opus faite et ses trois points corrigés (détail ci-dessous).
+- **Prochaine action** : CI verte → merge (`pnpm pr:merger`) ; puis, sur `main` en commit direct : barrer V124 au registre, mettre à jour le bloc de `docs/wip/ecarts-a-trier-progress.md` (prochaine action : V125), archiver ce journal.
+- **En attente de David** : deux écarts vus en passant, à porter ou non au registre (section « Vu en passant »).
+- **Pièges en cours** : sondes par l'Atelier (`runInput`), jamais `pnpm math` ; ne jamais écrire `cat > fichier` sans entrée.
 - **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-v124` · `fix/ecarts-v124`.
 
 ---
@@ -32,3 +32,21 @@ L'affichage sait déjà écrire une condition par solution (`solutionsLatex` et 
 ## Sonde à jouer
 
 `.résoudre` de : `x^2-a^2bc=0`, `x^2-a^2b=0`, `x^2-ab=0`, `x^2-a^2b^2c=0`, `x^2-a^3b=0`, `x^3-a^2bx=0`, `x^2+2x+1-a^2b=0`, `x^2-a^2=0`, `x^2-4a^2bc=0`, `x^4-a^2b=0`, `(x-1)^2=a^2b`, `x^2+2ax+a^2-a^2b=0` ; et, après `a=0` dans la même session, `x^2-a^2bc=0`.
+
+## Sonde lue et revue (2026-11-27)
+
+La sonde rend la forme de la phase 0 (`0 si a = 0`, `0 si ad = 0` pour `a²d²bc`, `1 si a = 0` pour `(x − 1)² = a²b`). Elle a montré deux défauts du premier jet, corrigés :
+
+- `x³ − a²bx = 0` écrivait 0 deux fois → le chemin « x en facteur » de `polynomial.ts` n'ajoute pas le 0 conditionnel.
+- `x⁴ − a²bx² = 0` perdait le 0 sans condition au profit de « 0 si a = 0 » → `deduplicateSolutions` (`solve.ts`) garde la solution sans condition.
+
+Revue `code-reviewer` (Opus), trois points corrigés et testés dans `racine-produit-lettres.test.ts` :
+
+- lettre aussi présente dans le coefficient de x² (`a²x² − bc = 0`, par l'API seulement, l'Atelier refuse la saisie) : « 0 si a = 0 » était faux → ces lettres ne comptent plus ;
+- `(x² − a²b)(x² − c²d) = 0` perdait « 0 si c = 0 » → deux conditions différentes restent deux solutions écrites ;
+- `x² + 2ax + a² − a²b = 0` écrivait « −a si a = 0 » → la racine double est évaluée pour la lettre nulle (une seule lettre).
+
+## Vu en passant (hors V124, rien de fait)
+
+- L'Atelier refuse `.résoudre x^2+2x+1-b=0` (« Je n’ai pas su lire cette expression »), comme `x^2+2x+1-a^2=0` et `x^2+2ax+a^2-b=0`, alors que `x^2+2x-a^2b=0` est lue. Pas vérifié sur `main`, mais le correctif ne touche pas la lecture.
+- `e^{2x} − a²b = 0` et `(ln x)² − a²b = 0` répondent « pas de solution » par l'API, à l'identique sur `main` (constat du relecteur).

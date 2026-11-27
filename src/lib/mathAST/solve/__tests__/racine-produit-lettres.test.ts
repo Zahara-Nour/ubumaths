@@ -13,6 +13,10 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '#lib/atelier/atelier.svelte.ts';
 import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcResult } from '#lib/atelier/calcul.ts';
+import { solve } from '#lib/mathAST/solve/solve.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import type { RelationNode } from '#lib/mathAST/types.ts';
 
 /** Des saisies de l'Atelier dans une même session ; la réponse de la dernière. */
 function run(...inputs: string[]): CalcResult {
@@ -21,6 +25,11 @@ function run(...inputs: string[]): CalcResult {
 	for (const input of inputs) result = runInput(session, input);
 	if (result === null) throw new Error('aucune saisie');
 	return result;
+}
+
+/** Le solveur appelé directement, pour les saisies que l'Atelier refuse. */
+function solveByApi(equation: string) {
+	return solve(parseLatex(equation) as RelationNode, { variable: 'x' });
 }
 
 /** Le LaTeX d'une réponse de l'Atelier (vide pour un refus). */
@@ -150,6 +159,38 @@ describe('V124 — la solution du cas où une lettre sortie de la racine est nul
 
 	it('(x − 1)(x² − a²b) = 0 : le 0 du cas a = 0 reste annoncé à côté de 1', () => {
 		expect(latexOf(run('.résoudre (x-1)(x^2-a^2b)=0'))).toContain('0 \\text{ si } a = 0');
+	});
+
+	it('(x² − a²b)(x² − c²d) = 0 : un 0 par facteur, chacun avec sa condition', () => {
+		const latex = latexOf(run('.résoudre (x^2-a^2b)(x^2-c^2d)=0'));
+
+		expect(latex).toContain('0 \\text{ si } a = 0');
+		expect(latex).toContain('0 \\text{ si } c = 0');
+	});
+
+	// L'Atelier ne lit pas cette saisie : sonde par l'API
+	it('x² + 2ax + a² − a²b = 0 : la racine double du cas a = 0 s’écrit 0, pas −a', () => {
+		const added = solveByApi('x^2+2ax+a^2-a^2b=0').solutions[2];
+
+		expect(toLatex(added.value)).toBe('0');
+		expect(added.condition && toLatex(added.condition)).toBe('a = 0');
+	});
+
+	// La lettre est aussi dans le coefficient de x² : nulle, elle ne laisse plus
+	// une équation du second degré, 0 n'en est pas solution (−bc = 0). L'Atelier
+	// refuse ces saisies : sonde par l'API
+	it.each(['a^2x^2-bc=0', 'a^2bx^2-c=0'])('%s : pas de « 0 si a = 0 »', (equation) => {
+		const result = solveByApi(equation);
+
+		expect(result.solutions).toHaveLength(2);
+	});
+
+	it('b²x² + 2b²x + b² − a²c = 0 : −1 si a = 0, sans b dans la condition', () => {
+		const result = solveByApi('b^2x^2+2b^2x+b^2-a^2c=0');
+		const added = result.solutions[2];
+
+		expect(toLatex(added.value)).toBe('-1');
+		expect(added.condition && toLatex(added.condition)).toBe('a = 0');
 	});
 
 	// Pas de lettre sortie en entier : rien à ajouter, la condition reste commune
