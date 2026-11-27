@@ -140,7 +140,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
 | Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
 | Proportionnalité                         | 3P1       | 3         | publiée (2026-11-26)                                       | `idees-3e-proportionnalite`  |
-| Statistiques                             | 3S1       | 3         | prise (2026-11-26)                                         | `idees-3e-statistiques`      |
+| Statistiques                             | 3S1       | 3         | publiée (2026-11-27)                                       | `idees-3e-statistiques`      |
 | Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
 | Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
@@ -178,9 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 96992ea8 Médiane d'une série à effectifs                     | `idees-3e-statistiques`                                     | 2026-11-26 |                                      |
-| c2497d96 Moyenne pondérée                                    | `idees-3e-statistiques`                                     | 2026-11-26 |                                      |
-| 21ebfb57 Calculer une fréquence                              | `idees-3e-statistiques`                                     | 2026-11-26 |                                      |
 
 ## Idées en attente
 
