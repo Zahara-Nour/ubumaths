@@ -252,6 +252,9 @@ const DROITE_OVERHANG = 0.18;
 /** Nom d'un point déclaré sur une figure à droites : second tour de places, à cette part de l'écart habituel */
 const POINT_NAME_FAR = 1.7;
 
+/** Le nom d'une droite : vide laissé entre sa boîte et le trait, en cm */
+const DROITE_NAME_CLEAR = 0.08;
+
 /** Le nom d'une droite : à cette distance de son bout, le long du trait, en cm */
 const DROITE_NAME_BACK = [0.35, 0.8, 1.25];
 
@@ -1562,6 +1565,7 @@ function layoutSolide(
 	}
 
 	// Droites nommées : « (d) » près d'un bout, à côté du trait, du côté libre
+	const droiteNames: SolideLabel[] = [];
 	spec.droites?.forEach((droite, k) => {
 		if (droite.name === null) return;
 		const [start, end] = droiteSegments[k];
@@ -1572,7 +1576,11 @@ function layoutSolide(
 				? { x: 1, y: 0 }
 				: { x: (end.x - start.x) / length, y: (end.y - start.y) / length };
 		const text = `(${droite.name})`;
-		const gap = LABEL_GAP * 1.2;
+		// L'écart au trait dépend de sa pente : la boîte du nom, large et basse, ne doit
+		// pas toucher sa propre droite (en biais, son coin est plus près que son milieu)
+		const [lo, hi] = labelBox({ at: { x: 0, y: 0 }, text });
+		const gap =
+			(Math.abs(u.y) * (hi.x - lo.x)) / 2 + (Math.abs(u.x) * (hi.y - lo.y)) / 2 + DROITE_NAME_CLEAR;
 		const candidates = DROITE_NAME_BACK.map((back) => Math.min(back, length / 2)).flatMap((back) =>
 			[
 				{ from: end, toward: -1 },
@@ -1587,7 +1595,9 @@ function layoutSolide(
 				}))
 			)
 		);
-		labels.push(nameAt(end, candidates, () => firstFree(candidates, labels, segments, named)));
+		const label = nameAt(end, candidates, () => firstFree(candidates, labels, segments, named));
+		droiteNames.push(label);
+		labels.push(label);
 	});
 
 	// Cadrage : tout dans la boîte, étiquettes comprises ; figure tournée : un carré
@@ -1613,6 +1623,14 @@ function layoutSolide(
 			...restDrawn.map((p) => Math.max(Math.abs(p.x - rest.pivot.x), Math.abs(p.y - rest.pivot.y)))
 		);
 		const half = Math.max(turned.reach, restReach) * scale + TURN_PAD;
+		// Nom de droite tenu pendant la rotation : sa place, prise le long d'un trait qui
+		// a tourné depuis, peut pointer hors du cadre — il y est ramené
+		for (const label of droiteNames) {
+			const [lo, hi] = labelBox(label);
+			const within = (v: number, size: number) =>
+				Math.min(Math.max(v, -half + size / 2), half - size / 2);
+			label.at = { x: within(label.at.x, hi.x - lo.x), y: within(label.at.y, hi.y - lo.y) };
+		}
 		// La place des cotes de la vue de départ (placées sans nom tenu), réservée à
 		// chaque angle : le cadre ne change pas quand elles s'effacent
 		const reserved = atRest?.coteMarks ?? coteMarks;

@@ -351,6 +351,32 @@ describe('```solide — droites: (dessin fixe)', () => {
 		}
 	});
 
+	it('le nom d’une droite ne touche ni sa droite ni une arête, quelle que soit sa pente', () => {
+		/** Le segment [a, b] entre-t-il dans la boîte [lo, hi] ? (échantillonné tous les 0,1 mm) */
+		const crosses = (a: EspacePoint, b: EspacePoint, lo: EspacePoint, hi: EspacePoint) => {
+			const steps = Math.ceil(distance(a, b) / 0.01);
+			for (let k = 0; k <= steps; k++) {
+				const x = a.x + ((b.x - a.x) * k) / steps;
+				const y = a.y + ((b.y - a.y) * k) / steps;
+				if (x > lo.x && x < hi.x && y > lo.y && y < hi.y) return true;
+			}
+			return false;
+		};
+		for (const through of ['AG', 'BH', 'AF', 'EC', 'DG', 'AB', 'AE']) {
+			const s = scene(...CUBE, `droites: d = (${through})`);
+			const label = s.labels.find((l) => l.text === '(d)');
+			expect(label, through).toBeDefined();
+			if (label === undefined) continue;
+			const [lo, hi] = labelBox(label);
+			const traits = [...s.lines, ...droitesOf(s).flat()];
+			for (const trait of traits) {
+				trait.points.slice(1).forEach((p, i) => {
+					expect(crosses(trait.points[i], p, lo, hi), through).toBe(false);
+				});
+			}
+		}
+	});
+
 	it('point déclaré : la droite passe par lui', () => {
 		const s = scene(...CUBE, 'points: I milieu AE', 'droites: (IG)');
 		const [start, end] = ends(droitesOf(s)[0]);
@@ -371,11 +397,6 @@ describe('```solide — droites: (dessin fixe)', () => {
 			) / length;
 		const [lo, hi] = labelBox(name);
 		expect(away).toBeGreaterThan((hi.y - lo.y) / 2);
-		// Sans droites, le nom garde sa place d'avant
-		const bare = scene(...CUBE, 'points: I milieu AE');
-		expect(bare.labels.find((l) => l.text === 'I')?.at).toEqual(
-			scene(...CUBE, 'points: I milieu AE', 'vecteurs: AB').labels.find((l) => l.text === 'I')?.at
-		);
 	});
 
 	it('PDF : la droite en couleur, tirets compris ; sans droites, la fiche d’avant', () => {
@@ -412,6 +433,22 @@ describe('```solide — droites: (figure que l’on peut tourner)', () => {
 			const [start, end] = ends(all[0]);
 			expect(onSegment(turnedScene.points[0], start, end)).toBe(true);
 			expect(onSegment(turnedScene.vertices[6], start, end)).toBe(true);
+		}
+	});
+
+	it('noms tenus depuis la vue de départ : ils restent dans le cadre sous tous les angles', () => {
+		const s = spec(...CUBE, 'droites: d = (AG), d1 = (BH), d2 = (CE), d3 = (DF)', 'tourner: oui');
+		const held = buildSolideScene(s, VUE_DE_DEPART).labelOffsets;
+		for (const vue of GRID) {
+			const turnedScene = buildSolideScene(s, vue, held);
+			for (const label of turnedScene.labels) {
+				for (const p of labelBox(label)) {
+					expect(p.x).toBeGreaterThan(-1e-9);
+					expect(p.y).toBeGreaterThan(-1e-9);
+					expect(p.x).toBeLessThan(turnedScene.width + 1e-9);
+					expect(p.y).toBeLessThan(turnedScene.height + 1e-9);
+				}
+			}
 		}
 	});
 

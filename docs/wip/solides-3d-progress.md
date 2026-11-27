@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-27, après #3241, lot 7a écrit et en attente de l'essai
   par coordonnées, une PR chacun ; 7d laissé ; tirets là où une face passe devant ; 7e point d'intersection
   ensuite). **Lot 7a (droites) écrit, testé, vu à l'écran par la session** (§ 18), sur la
   branche ; pas encore mergé.
-- **Prochaine action** : lot 7a — revue `code-reviewer` en opus (géométrie) si elle n'est pas faite, ses
-  corrections, `git merge origin/main`, PR ; **David veut essayer avant le merge** : lui donner le lien
+- **Prochaine action** : lot 7a — revue faite et corrigée (§ 18), PR ouverte ; **David veut essayer avant le
+  merge** : lui donner le lien
   (`pnpm lien`, serveur 5176), attendre son « c'est bon », puis `pnpm pr:merger`. Ensuite lot 7b (plans),
   même branche de travail neuve depuis `main`.
 - **En attente de David** : **son essai au doigt des lots 3 à 6 est fait, « c'est bon » (2026-11-27)**. Il n'a
@@ -621,3 +621,10 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   4 angles (tirets recalculés, cadre tenu, nom suivi). **Pas vu** : la fiche PDF imprimée (le Typst est
   testé, pas compilé) ; le thème sombre ; le doigt sur un vrai téléphone. Remarque : en cavalière, (AF) et
   (DG) d'un cube se dessinent l'une sur l'autre (la fuyante est à 45°) — c'est la perspective, pas un défaut.
+- **Revue** (`code-reviewer`, opus) : géométrie de `hiddenStretches` confirmée par un second témoin (0 désaccord
+  sur 46 686 morceaux), bloc sans droites inchangé. Deux défauts corrigés, tests rouges avant : le nom « (d) »
+  touchait sa propre droite dès qu'elle était en biais (écart au trait calculé selon la pente,
+  `DROITE_NAME_CLEAR`) ; un nom de droite tenu pendant la rotation sortait du cadre (ramené dans le cadre).
+  **Laissés** : une droite posée dans une face vue exactement par la tranche est en tirets alors que l'arête
+  est en plein (angle que le clavier n'atteint pas) ; `droites:` vide ou `(AG` sans parenthèse fermante
+  acceptés sans message.
