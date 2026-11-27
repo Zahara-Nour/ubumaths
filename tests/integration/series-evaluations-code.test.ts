@@ -211,6 +211,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		const evaluation = (await getAssignmentWithEvaluation(student.client, assignmentId))!
 			.evaluation;
 		// Le refus au départ (403) est testé par evaluation-notee-serveur (B7)
+		expect(evaluation.max_attempts, 'décor').toBe(2);
 		expect(await countAttempts(student.client, evaluationId, student.id)).toBe(1);
 		expect(getAttemptsRemaining(1, evaluation.max_attempts)).toBe(1);
 

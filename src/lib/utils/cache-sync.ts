@@ -172,7 +172,7 @@ export function rollbackGidouilles(context: CacheContext, delta: number): void {
  *
  * USAGE:
  * ```typescript
- * const result = await addWarning(studentId, periodId, 'C');
+ * const result = await (await fetch('/api/warnings/bulk', { method: 'POST', body })).json();
  * syncWarnings(context, periodId, result.counts); // { C: 3, M: 1, R: 0, T: 2 }
  * ```
  *

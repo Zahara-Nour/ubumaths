@@ -214,23 +214,6 @@ export const createDocumentSchema = z.discriminatedUnion('sourceType', [
 
 export type CreateDocumentInput = z.infer<typeof createDocumentSchema>;
 
-/**
- * Schema for reordering documents
- */
-export const reorderDocumentsSchema = z.object({
-	documents: z
-		.array(
-			z.object({
-				id: uuidSchema,
-				displayOrder: displayOrderSchema
-			})
-		)
-		.min(1, 'Au moins un document requis')
-		.max(100, 'Trop de documents (max 100)')
-});
-
-export type ReorderDocumentsInput = z.infer<typeof reorderDocumentsSchema>;
-
 // ============================================================================
 // CHECKLIST SCHEMAS
 // ============================================================================
@@ -340,23 +323,6 @@ export const linkBulkExercisesSchema = z.object({
 });
 
 export type LinkBulkExercisesInput = z.infer<typeof linkBulkExercisesSchema>;
-
-/**
- * Schema for reordering exercises
- */
-export const reorderExercisesSchema = z.object({
-	exercises: z
-		.array(
-			z.object({
-				id: uuidSchema,
-				displayOrder: displayOrderSchema
-			})
-		)
-		.min(1, 'Au moins un exercice requis')
-		.max(100, "Trop d'exercices (max 100)")
-});
-
-export type ReorderExercisesInput = z.infer<typeof reorderExercisesSchema>;
 
 // ============================================================================
 // QUERY SCHEMAS
