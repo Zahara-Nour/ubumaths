@@ -7,20 +7,21 @@ _Mis à jour le 2026-11-27, après #3211._
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
   du § 3) ; **lots 1 et 2 mergés** (#3195 moteur de vue ; #3200 clé `tourner: oui` sur les polyèdres, § 6) ;
   **noms tenus pendant la rotation mergés** (#3211, § 7). Rien n'est en prod.
-- **Prochaine action** : lot 3 — cylindre, cône, boule qui tournent (§ 4), une PR à part (accord de David
-  par son choix du 2026-11-26, § 7), revue `code-reviewer` en opus. Leur vue tournée et leur contour sont à
-  concevoir : comportements à écrire et à faire valider avant de coder.
-- **En attente de David** : son essai au doigt des noms tenus (page `/aide-ecriture/blocs/solide`, compte
-  prof). S'il n'aime pas : le glissement de 150 ms à l'arrêt et « arrêt au clavier = touche relâchée » sont
-  des choix de la session (§ 7).
+- **Prochaine action** : lot 3 — cylindre, cône, boule qui tournent, une PR à part, revue `code-reviewer`
+  en opus. Comportements écrits au § 8 : **attendre la validation de David** (et ses réponses à Q5 et Q6)
+  avant de coder ; tests d'abord.
+- **En attente de David** : (1) validation du § 8 et réponses à Q5 (tour à gauche ou à droite d'un solide
+  rond : on ne voit rien bouger) et Q6 (cône vu de dessus : marquer le sommet ?) ; (2) son essai au doigt des
+  noms tenus (page `/aide-ecriture/blocs/solide`, compte prof). S'il n'aime pas : le glissement de 150 ms à
+  l'arrêt et « arrêt au clavier = touche relâchée » sont des choix de la session (§ 7).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`) : `labelOffsets` n'existe que dans une scène tournée ; jamais d'instantané de
   flottants bruts ; cylindre, cône et boule sont dessinés « à plat » (ellipses, pas une vraie projection) ;
   une ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; un `onclick` de Svelte est
   délégué à la racine ; « moins d'animations », le geste tactile réel et les enchaînements clavier des noms
   tenus n'ont pas de test.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-ronds` (neuve, aucun
-  commit). Serveur d'essai laissé en marche sur 5176 pour l'essai de David, lien du tailnet publié
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-ronds` (journal
+  seul commité). Serveur d'essai laissé en marche sur 5176 pour l'essai de David, lien du tailnet publié
   (`pnpm lien --stop` depuis le worktree pour le retirer).
 
 ## 1. D'où l'on part
@@ -179,3 +180,57 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   — les noms restent tenus tant qu'il reste une flèche enfoncée. Restent sans test : ces enchaînements
   (touche relâchée, figure quittée au clavier, retour interrompu) ; un bloc qui change sous le doigt
   (éditeur du prof) laisse les noms sauter jusqu'à la fin de ce glissement.
+
+## 8. Lot 3 — cylindre, cône, boule : comportements (2026-11-27, à valider)
+
+Exemple suivi : un cylindre de rayon 2 et de hauteur 4, bloc ` ```solide ` avec `tourner: oui`. Les
+comportements 1 à 15 du § 2 valent tels quels (glisser, clavier, bouton, PDF, noms tenus du § 7) ; ne sont
+écrits ici que ceux propres aux solides ronds. Périmètre : les trois formes avec `sommets:` (noms des centres
+et du sommet du cône), `marquer: sommet` et `cachees:`. `section:` et `cotes:` restent au lot 4.
+
+### Nominal
+
+16. Au repos, le cylindre, le cône et la boule sont dessinés exactement comme aujourd'hui (ovales « à
+    plat »), à l'écran et sur la fiche.
+17. Dès que l'élève fait glisser le doigt, la figure passe en douceur à une vraie vue du solide. Ce passage
+    se voit à peine : le dessin d'aujourd'hui est déjà presque une vraie vue, regardée d'un peu au-dessus
+    (seule la hauteur raccourcit d'environ 5 %).
+18. Glisser vers le bas montre le dessus : les ovales du cylindre s'ouvrent jusqu'à devenir des cercles
+    (vue de dessus : un seul cercle). Glisser vers le haut montre le dessous.
+19. Cylindre : le bord caché est en tirets, recalculé à chaque angle. Vu de dessus, c'est la moitié arrière
+    du cercle du bas ; vu de dessous, la moitié arrière du cercle du haut ; de profil (œil à hauteur du
+    milieu), un rectangle.
+20. Cône : les deux traits qui montent au sommet restent collés à l'ovale de la base à chaque angle. Quand
+    on regarde assez de dessus (ou de dessous) pour que le sommet tombe à l'intérieur de l'ovale, ces deux
+    traits disparaissent : il ne reste que l'ovale, comme dans la réalité. Vu de dessus, l'ovale est en
+    trait plein ; vu de dessous aussi (c'est le disque de base).
+21. Boule : le contour reste un cercle sous tous les angles ; l'équateur s'ouvre ou se referme quand on
+    bascule (moitié arrière en tirets), jusqu'à se confondre avec le contour vu de dessus.
+22. Les noms des centres (et du sommet du cône) et les points marqués suivent, tenus pendant le mouvement
+    et replacés à l'arrêt, comme pour les polyèdres.
+23. `cachees: non` : tout en trait plein, à chaque angle.
+
+### Limites
+
+24. La figure tient dans son cadre sous tous les angles ; la place est réservée dès le repos, la page ne
+    bouge pas (comme au lot 2).
+25. Un cône très plat (hauteur à peine plus grande que la moitié du rayon) : ses deux traits disparaissent
+    presque tout de suite quand on bascule vers le dessus. Accepté.
+
+### Erreurs
+
+26. `tourner: oui` sur un solide rond coupé (`section:`) ou coté (`cotes:`) : message pour l'auteur, figure
+    fixe pour l'élève, comme aujourd'hui (lot 4).
+
+### Questions pour David
+
+- **Q5 — Tourner à gauche ou à droite.** Un cylindre, un cône ou une boule que l'on fait tourner autour de
+  son axe ne change pas d'aspect : l'élève glisse le doigt de côté et ne voit rien bouger (seul le
+  glissement vers le haut ou le bas se voit). Pour la boule, même la bascule ne montre que l'équateur qui
+  s'ouvre. Deux possibilités : (a) l'accepter, c'est la vérité de l'objet ; (b) dessiner un repère qui
+  tourne avec le solide quand la figure peut tourner — par exemple un rayon en tirets sur la base du
+  cylindre et du cône, un méridien sur la boule. Recommandation : (a) pour ce lot ; au lot 4, le rayon coté
+  (`cotes:`) tournera de lui-même.
+- **Q6 — Cône vu de dessus.** Quand les deux traits ont disparu, on ne voit plus qu'un ovale : rien ne dit
+  où est le sommet (sauf si l'auteur l'a nommé ou marqué). Faut-il alors dessiner un petit point au sommet ?
+  Recommandation : non, on dessine ce qu'on verrait ; l'auteur qui veut le sommet le nomme.
