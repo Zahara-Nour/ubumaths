@@ -652,3 +652,12 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   suivent). **Pas vu** : la fiche PDF imprimée, le thème sombre, le doigt sur un vrai téléphone.
 - **À montrer à David** : `(BDE)` d'un cube est vu presque par la tranche à la vue de départ ; son nom « (P) »
   y touche l'arête cachée [DH] et le bord du plan, faute de place.
+- **Revue** (`code-reviewer`, opus) : `planeInSolid` rejoué sur environ 10 600 plans (sommets, milieux, centres,
+  dimensions décimales), bord comparé à l'arête qu'il recouvre sur plus de 40 000 morceaux, figure sans plan
+  inchangée, nom jamais hors du cadre : rien trouvé. **Un défaut corrigé, test rouge avant** : le nom « (P) »
+  pouvait toucher le nom d'un sommet ou une cote (`pave 5 3 2` avec `(ABF)` : touchait D) — la place est
+  maintenant la plus dégagée où il ne touche aucune étiquette déjà posée (`spots`, `planSpots`). **Laissés** :
+  plan trop petit pour son nom (face du dessus d'un `pave 1 1 6`), le nom touche un nom de sommet ; pendant
+  la rotation, « (P) » peut passer sur un autre nom (il suit son point, il n'est pas tenu) ; à la butée de la
+  vue de dessus ou de dessous, le bord d'un plan posé sur une face vue par la tranche est en tirets alors que
+  l'arête est en plein (prisme, `(ABC)` : l'écart du 7a, atteint en tirant jusqu'au bout).

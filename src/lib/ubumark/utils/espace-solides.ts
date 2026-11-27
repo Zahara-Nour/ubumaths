@@ -556,8 +556,11 @@ interface Draft {
 	points: EspacePoint[];
 	/** Droites données (`droites:`), chacune en morceaux qui se suivent ; polyèdres seulement */
 	droites?: SolideLine[][];
-	/** Plans donnés (`plans:`) ; `name` : où écrire le nom d'un plan nommé ; polyèdres seulement */
-	plans?: (SolidePlanShape & { name: EspacePoint | null })[];
+	/**
+	 * Plans donnés (`plans:`) ; `spots` : les points du plan où écrire le nom d'un plan
+	 * nommé, du plus dégagé au moins dégagé sur le dessin de départ ; polyèdres seulement
+	 */
+	plans?: (SolidePlanShape & { spots: EspacePoint[] })[];
 }
 
 /** Un solide vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
@@ -737,18 +740,15 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 				)
 			);
 		});
-		let name: EspacePoint | null = null;
+		let spots: EspacePoint[] = [];
 		if (plan.name !== null) {
 			const middle3 = centroid(polygon);
 			const toward = polygon.flatMap((p, i) => [
 				p,
 				lerp(p, polygon[(i + 1) % polygon.length], 0.5)
 			]);
-			const spots = [
-				middle3,
-				...PLAN_NAME_TOWARD.flatMap((t) => toward.map((p) => lerp(middle3, p, t)))
-			];
-			// La place la plus dégagée : la plus loin de tout trait et de tout point nommé
+			// Du plus dégagé au moins dégagé : le plus loin de tout trait et de tout point
+			// nommé du dessin de départ (à égalité, l'ordre écrit : le milieu d'abord)
 			const room = (spot: Point3) => {
 				const p = restProject(spot);
 				return Math.min(
@@ -756,18 +756,12 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 					...restNamed.map((q) => Math.hypot(p.x - q.x, p.y - q.y))
 				);
 			};
-			let best = spots[0];
-			let bestRoom = room(best);
-			for (const spot of spots.slice(1)) {
-				const r = room(spot);
-				if (r > bestRoom + 1e-9) {
-					best = spot;
-					bestRoom = r;
-				}
-			}
-			name = project(best);
+			spots = [middle3, ...PLAN_NAME_TOWARD.flatMap((t) => toward.map((p) => lerp(middle3, p, t)))]
+				.map((spot, i) => ({ spot, i, room: room(spot) }))
+				.sort((p, q) => (Math.abs(q.room - p.room) > 1e-9 ? q.room - p.room : p.i - q.i))
+				.map(({ spot }) => project(spot));
 		}
-		return { fill: polygon.map(project), border, name };
+		return { fill: polygon.map(project), border, spots };
 	});
 	return {
 		pivot: project(center3),
@@ -1402,6 +1396,8 @@ function layoutSolide(
 	coteMarks: EspacePoint[];
 	coteLabels: SolideLabel[];
 	coteLines: SolideLine[];
+	/** Pour chaque plan, le rang de la place de son nom parmi celles du plan (0 sans nom) */
+	planSpots: number[];
 } {
 	const curved = solideTopology(spec.form).curved;
 	// Le dessin fixe donne l'échelle, que la figure tournée garde
@@ -1447,7 +1443,7 @@ function layoutSolide(
 	const plans = draft.plans?.map((plan) => ({
 		fill: plan.fill.map(toScreen),
 		border: plan.border.map((l) => ({ ...l, points: l.points.map(toScreen) })),
-		name: plan.name === null ? null : toScreen(plan.name)
+		spots: plan.spots.map(toScreen)
 	}));
 	// Le bord de chaque plan, côté par côté : les noms des points l'évitent
 	const planSegments = (plans ?? []).flatMap((plan) =>
@@ -1619,10 +1615,22 @@ function layoutSolide(
 	];
 
 	// Plans nommés : « (P) » écrit dans le plan, en un point du plan qu'il suit quand
-	// la figure tourne (il ne se tient pas comme les autres noms : il est déjà à sa place)
+	// la figure tourne (il ne se tient pas comme les autres noms : il est déjà à sa place).
+	// Le point se choisit sur le dessin fixe : le plus dégagé où le nom ne touche aucune
+	// étiquette déjà posée (noms des sommets, cotes)
+	const planSpots =
+		turned !== null && spec.plans?.some((plan) => plan.name !== null)
+			? layoutSolide(spec).planSpots
+			: (spec.plans ?? []).map(() => 0);
 	spec.plans?.forEach((plan, k) => {
-		const at = plans?.[k]?.name;
-		if (plan.name !== null && at != null) labels.push({ at, text: `(${plan.name})` });
+		const spots = plans?.[k]?.spots ?? [];
+		if (plan.name === null || spots.length === 0) return;
+		const text = `(${plan.name})`;
+		if (turned === null) {
+			const free = spots.findIndex((at) => !labels.some((l) => overlaps({ at, text }, l)));
+			planSpots[k] = Math.max(free, 0);
+		}
+		labels.push({ at: spots[planSpots[k]] ?? spots[0], text });
 	});
 
 	// Points déclarés : un disque ; le nom en s'éloignant du milieu du dessin, sinon
@@ -1800,7 +1808,7 @@ function layoutSolide(
 			}))
 		})
 	};
-	return { scene, coteMarks, coteLabels, coteLines };
+	return { scene, coteMarks, coteLabels, coteLines, planSpots };
 }
 
 /**

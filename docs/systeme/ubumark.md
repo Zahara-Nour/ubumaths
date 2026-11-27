@@ -1629,11 +1629,15 @@ arête traversée, rangés dans l'ordre du tour) — le triangle BDE pour `(BDE)
 en contient une ; `border`, son bord en morceaux `SolideLine`, en tirets là où une face passe devant
 (`hiddenStretches` côté par côté : un côté posé sur une face du fond est caché, comme une arête) ;
 `cachees: non` → tout en plein. Le plan ne change ni le cadre, ni les arêtes, ni les noms des sommets. Nom :
-« (P) » écrit **dans** le plan, en un point du plan choisi une fois sur le dessin de départ (le plus loin de
-tout trait et de tout point nommé, parmi le milieu du polygone et des points vers ses coins et ses côtés,
-`PLAN_NAME_TOWARD`) ; il suit ce point quand la figure tourne et **n'entre pas dans `labelOffsets`** (il ne
-se tient pas, il est déjà à sa place). Dans un plan vu presque par la tranche (`(BDE)` d'un cube en
-cavalière), le nom touche les traits : il n'y a pas la place. Les noms des points déclarés évitent le bord
+« (P) » écrit **dans** le plan, en un point du plan choisi une fois sur le dessin fixe : `Draft.plans[].spots`
+range les places (milieu du polygone, points vers ses coins et ses côtés, `PLAN_NAME_TOWARD`) de la plus
+dégagée à la moins dégagée (loin de tout trait et de tout point nommé du dessin de départ), et `layoutSolide`
+prend la première où le nom ne touche aucune étiquette déjà posée (noms des sommets, cotes), à défaut la
+plus dégagée ; son rang (`planSpots`) est relu sur le dessin fixe par une figure tournée. Le nom suit ce point
+quand la figure tourne et **n'entre pas dans `labelOffsets`** (il ne se tient pas, il est déjà à sa place).
+Dans un plan vu presque par la tranche (`(BDE)` d'un cube en cavalière) ou trop petit (face du dessus d'un
+`pave 1 1 6`), le nom touche des traits ou des noms : il n'y a pas la place.
+Les noms des points déclarés évitent le bord
 des plans (second tour de places `POINT_NAME_FAR`, comme avec des droites). Écran (`Solide.svelte`) :
 `polygon.solide-plan` sous les arêtes (translucide), `polyline.solide-plan-bord` après elles ; premier plan
 `--color-fig-vert`, second `--color-fig-violet` (`.solide-plan-second`). PDF : `PLAN_FILLS`, `PLAN_STROKES`.

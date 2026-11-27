@@ -301,7 +301,13 @@ describe('```solide — plans: (scène)', () => {
 			[...CUBE, 'plans: P = (ABG)'],
 			[...CUBE, 'points: I milieu AE', 'droites: (IG)', 'plans: P = (BDE)'],
 			['forme: pave 4 2 3', 'sommets: A B C D E F G H', 'plans: P = (ACG), Q = (BDE)'],
-			['forme: pyramide carree 3 4', 'sommets: S A B C D', 'plans: P = (SAC)']
+			['forme: pyramide carree 3 4', 'sommets: S A B C D', 'plans: P = (SAC)'],
+			// Plan vu presque par la tranche, tout près des noms des sommets et des cotes (revue)
+			['forme: pave 5 3 2', 'sommets: A B C D E F G H', 'plans: P = (ABF)'],
+			['forme: pave 5 3 2', 'sommets: A B C D E F G H', 'plans: P = (BCG)'],
+			['forme: prisme triangle 4 3 5', 'sommets: A B C D E F', 'plans: P = (ABC)'],
+			['forme: prisme triangle 4 3 5', 'sommets: A B C D E F', 'cotes: cm', 'plans: P = (ABC)'],
+			['forme: pave 5 3 2', 'sommets: A B C D E F G H', 'plans: P = (ABF)', 'tourner: oui']
 		]) {
 			const s = scene(...lines);
 			plansOf(s).forEach((plan, k) => {
@@ -318,6 +324,14 @@ describe('```solide — plans: (scène)', () => {
 				}
 			});
 		}
+	});
+
+	it('plan trop petit pour son nom (face du dessus d’un pavé étroit) : le nom reste dans le plan', () => {
+		// Aucune place ne tient entre les noms des sommets : la plus dégagée est gardée
+		const s = scene('forme: pave 1 1 6', 'sommets: A B C D E F G H', 'plans: P = (EFG)');
+		const label = s.labels.find((l) => l.text === '(P)');
+		expect(label).toBeDefined();
+		if (label !== undefined) expect(inPolygon(label.at, plansOf(s)[0].fill)).toBe(true);
 	});
 
 	it('plan sans nom : aucune étiquette de plus', () => {
