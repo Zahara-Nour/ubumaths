@@ -6,14 +6,16 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot écrit, PR à ouvrir._
+_Mis à jour le 2026-11-27, après #3218._
 
-- **État** : gros lot écrit et vérifié (5 neufs, 17 variations ; 8 variations sur 4 publiés),
-  migration de contenu générée · **Prochaine action** : PR, CI, merge ; puis David lance
-  `create-questions --publier` (neufs) en prod, migration de rangement, `db:migrate` du contenu ·
-  **En attente de David** : rien avant le merge · **Pièges en cours** : `ec` lu e × c (Euler),
-  précédence dans `prix()` (parenthèses) · **Worktree / branche** :
-  `../ubumaths-wt-idees-6e-problemes`, `feat/idees-6e-problemes`.
+- **État** : #3218 mergée ; migration de contenu appliquée en prod par David (8 variations des
+  4 publiés en ligne) ; 5 neufs créés en brouillon en prod par David, ids écrits dans
+  `scripts/questions/idees-6e-problemes-neufs/` (non commités, dans ce worktree) ·
+  **Prochaine action** : commiter les ids, `migration-rangement.ts --dir …neufs` (6-142, 6-120,
+  5-001 grades 6/5), `garde-niveaux-tags.ts`, PR, `db:migrate` ; puis relecture dans `/dev/modeles`
+  (`?point=` pour les neufs, série de relecture pour les 4 publiés) · **En attente de David** :
+  rien · **Pièges en cours** : `ec` lu e × c (Euler), précédence dans `prix()` (parenthèses) ·
+  **Worktree / branche** : `../ubumaths-wt-idees-6e-problemes`, `feat/idees-6e-problemes-rangement`.
 
 ## Journal
 
@@ -66,3 +68,4 @@ publiés. Question d'accès : personne ne gagne d'accès, on range des modèles.
 - **Q1** point de N4 / N5 : 5-001 (niveau suivant permis) ou sans point.
 - **Q2** échiquier (tableau à construire) : le noter dans `outils-manquants.md`, plus tard.
 - **Q3** le Oui / Non du régime et de la surcharge remplacé par le nombre qui le tranche.
+- 2026-11-27 : #3218 mergée. David a lancé `db:migrate` (contenu) et `create-questions --publier` (5 brouillons, ids vérifiés en prod). Nouveau worktree pour la PR de rangement.
