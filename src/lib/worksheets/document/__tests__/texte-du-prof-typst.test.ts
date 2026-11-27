@@ -132,6 +132,12 @@ describe('L85 : `//` dans un texte échappé', () => {
 		expect(await printed(escapeTypst('a // b'))).toBe('a // b');
 	});
 
+	it('une adresse web reste un lien, imprimée en entier', async () => {
+		const body = escapeTypst('Source : https://exemple.fr/page');
+		expect(await printed(body)).toBe('Source : https://exemple.fr/page');
+		expect(body).toContain('https://');
+	});
+
 	it('« a /* b */ c » s’imprime en entier', async () => {
 		expect(await printed(escapeTypst('a /* b */ c'))).toBe('a /* b */ c');
 	});

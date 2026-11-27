@@ -3706,8 +3706,9 @@ export function escapeTypst(text: string): string {
 	return (
 		text
 			.replace(/[\\#$@*_`<>]/g, (match) => replacements[match] || match)
-			// `//` et `/*` ouvrent un commentaire Typst : la fin de la ligne disparaissait (L85)
-			.replace(/\/(?=[/*\\])/g, '\\/')
+			// `//` et `/*` ouvrent un commentaire Typst : la fin de la ligne disparaissait (L85).
+			// Sauf après `:` : `https://…` est un lien pour Typst, pas un commentaire
+			.replace(/(?<!:)\/(?=[/*\\])/g, '\\/')
 	);
 }
 
