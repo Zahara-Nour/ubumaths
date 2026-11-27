@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-6e-problemes dans scripts/questions/idees-6e-problemes-neufs/.
 
 Phase 0 validée par David le 2026-11-27 (« je suis tes recos », journal
-docs/wip/idees-6e-problemes-progress.md) : N1 à N5. On reprend l'idée de l'autre plateforme, pas
+docs/archive/wip/idees-6e-problemes/idees-6e-problemes-progress.md) : N1 à N5. On reprend l'idée de l'autre plateforme, pas
 sa forme ni son texte : balances à deux pesées, deux nombres inconnus (billets, devinettes avec le
 produit), problèmes à plusieurs étapes avec des décimaux, trier les informations d'un énoncé,
 résoudre un problème qui a des données inutiles.

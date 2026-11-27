@@ -107,7 +107,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
 | Algèbre                            | 6N4   | 9         | libre                |                             |
-| Résolution de problèmes            | 6N5   | 24        | prise (2026-11-27)   | `idees-6e-problemes`        |
+| Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
 | Longueurs                          | 6M1   | 16        | libre                |                             |
 | Aires                              | 6M2   | 17        | libre                |                             |
 | Volumes                            | 6M3   | 3         | libre                |                             |
@@ -164,10 +164,6 @@ de contenu appliquée en prod.
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
 | 37c13d51 Réciproque et contraposée de Thalès                 | `idees-3e-thales`                                           | 2026-11-27 |                                      |
 | f55d07b0 Calculer une longueur avec Thalès                   | `idees-3e-thales`                                           | 2026-11-27 |                                      |
-| 2af325bb Schéma en barres : parts égales et un reste         | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
-| 32b7a9bc Problèmes de produits décimaux                      | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
-| 399342ff Schéma en barres : somme et différence              | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
-| 7deff4e0 Contrôler par un ordre de grandeur                  | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

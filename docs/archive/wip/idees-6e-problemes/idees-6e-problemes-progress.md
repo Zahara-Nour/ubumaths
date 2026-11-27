@@ -1,21 +1,18 @@
 # Chantier `idees-6e-problemes` : idées reprises d'ailleurs, rubrique « Résolution de problèmes » de 6e
 
-Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
-[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) (section Sixième, ligne 6N5 prise le
+Skill [`idees-rubrique`](../../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
+[idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md) (section Sixième, ligne 6N5 prise le
 2026-11-27). Relevé : [idees-6e-problemes-releve.md](idees-6e-problemes-releve.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3220._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : #3220 mergée, rangement appliqué en prod (`db:migrate`), `garde-niveaux-tags` vert ;
-  `security-auditor` sans finding bloquant ; série de relecture des 4 publiés écrite
-  (`scripts/series/6-relecture-problemes-publies.json`), publiée par David · **Prochaine action** :
-  relecture dans `/dev/modeles` (`?point=6-142`,
-  `6-120`, `5-001` pour les neufs, `?serie=1b05dafc-26df-437b-beec-187aa7dac7d0` pour les publiés), lecture des verdicts, publication ·
-  **En attente de David** : sa relecture · **Pièges en
-  cours** : `ec` lu e × c (Euler), précédence dans `prix()` (parenthèses) · **Worktree / branche** :
-  `../ubumaths-wt-idees-6e-problemes-serie`, `chore/idees-6e-problemes-serie-relecture`.
+- **État** : rubrique **publiée** : les 5 modèles neufs (a06458ad, 4048d9c5 sur 6-142 ; 7dcb0da1
+  sur 6-120 ; 60ad8893, 2aae946c sur 5-001, niveaux 6e et 5e) sont rangés (#3220) et publiés,
+  validés par David ; les 8 variations des 4 publiés (32b7a9bc, 399342ff, 2af325bb, 7deff4e0) sont
+  en prod (#3218) ; réservations levées, journal archivé · **Prochaine action** : aucune ·
+  **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## Journal
 
@@ -74,3 +71,5 @@ publiés. Question d'accès : personne ne gagne d'accès, on range des modèles.
 - 2026-11-27 : #3220 mergée, `db:migrate` (seule migration en attente), garde des niveaux verte. Série
   de relecture des 4 publiés écrite, simulation verte.
 - 2026-11-27 : série de relecture publiée par David (1b05dafc).
+- 2026-11-27 : relecture validée par David (« je valide », dans la conversation), 5 neufs publiés par
+  David (`publier-lot.ts --publier`), statuts relus en prod : 9 publiés. Chantier clos.
