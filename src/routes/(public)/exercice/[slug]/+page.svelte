@@ -580,8 +580,11 @@
 				<Card.Header>
 					<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 						<div class="flex-1">
+							<!-- E92 : un seul h1 par affichage (ordinateur, téléphone, visiteur) -->
 							<Card.Title class="text-2xl"
-								>{data.exercise.title || lore.learning.exercise}</Card.Title
+								><h1 class="text-2xl! leading-none!">
+									{data.exercise.title || lore.learning.exercise}
+								</h1></Card.Title
 							>
 
 							<!-- Exercise metadata -->
@@ -753,7 +756,10 @@
 			<Card.Header>
 				<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 					<div class="flex-1">
-						<Card.Title class="text-2xl">{data.exercise.title || lore.learning.exercise}</Card.Title
+						<Card.Title class="text-2xl"
+							><h1 class="text-2xl! leading-none!">
+								{data.exercise.title || lore.learning.exercise}
+							</h1></Card.Title
 						>
 
 						<!-- Exercise metadata -->
