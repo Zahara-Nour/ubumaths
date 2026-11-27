@@ -10,8 +10,8 @@ _Mis à jour le 2026-11-27, après #3229._
   § 12 et 13) ; **#3229** : nom d'un centre écarté des cotes (boule coupée près du centre, § 14). Les lots 3
   à 5 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le
   vérifier avant de l'affirmer).
-- **Prochaine action** : lot 6 (` ```cubes `, assemblages) : comportements à écrire en français et à faire
-  valider par David avant tout code.
+- **Prochaine action** : lot 6 (` ```cubes `, assemblages) : comportements 53 à 68 écrits (§ 15), **à faire
+  valider par David avant tout code**, avec ses réponses aux questions (a) teintes et (b) `dessiner:`.
 - **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : noms tenus
   (§ 7), solides ronds (§ 9), lot 4 (longueurs qui s'effacent, section qui tourne), lot 5 (exemple « Un
   vecteur à tracer sur un pavé que l'élève peut tourner » : toucher contre glisser, toucher « tremblé » de 4
@@ -453,3 +453,55 @@ Exemple suivi : un pavé ABCDEFGH, « trace le vecteur AB + AD + AE » (`tracer:
 - **Laissé, signalé à David** : boule coupée très près du centre, le contour de la section passe dans le texte
   de la cote du rayon ; cylindre très plat (rayon ≥ 3 × hauteur) coupé perpendiculairement à l'axe, la cote du
   rayon et celle de la distance se touchent.
+
+## 15. Lot 6 — assemblages de cubes : comportements (écrits le 2026-11-27, À VALIDER par David)
+
+Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devant au milieu), bloc
+` ```cubes ` avec la clé `tourner: oui`.
+
+### Nominal
+
+53. Sans `tourner:`, rien ne change : même dessin qu'aujourd'hui, à l'écran et sur la fiche.
+54. Avec `tourner: oui`, l'assemblage s'ouvre en perspective cavalière, exactement comme sans la clé, avec
+    la mention « Figure à tourner » dessous.
+55. L'élève fait glisser le doigt (ou la souris) : l'assemblage tourne et passe en douceur à une vue sans
+    déformation. Flèches du clavier, Échap et bouton « Vue de départ » : comme pour un solide.
+56. Les cubes restent pleins : pas de tirets. Un cube de devant cache ceux de derrière, sous tous les angles.
+    En tournant, on découvre l'arrière, la gauche et le dessous, donc aussi les cubes cachés dans la vue de
+    départ.
+57. Chaque face garde son quadrillage (un carré par cube), comme aujourd'hui.
+58. Teintes des faces : voir la question (a).
+59. Tourner ne compte pas dans la réponse ; fiche PDF : vue de départ ; nouvelle question : vue de départ.
+
+### Limites
+
+60. On peut regarder par-dessus et par-dessous, pas renverser l'assemblage (comme un solide).
+61. La place de la figure est réservée dès le repos : la page ne bouge pas quand on tourne. Dans un choix
+    de QCM (petite figure), tourner ne coche pas le choix.
+62. Le plus gros assemblage permis (6 × 6 piles de 6 cubes) tourne sans saccade.
+63. Lecteur d'écran : « Assemblage de cubes en perspective, figure que l'on peut tourner ». Jamais le
+    nombre de cubes.
+64. Glisser sur la figure ne fait pas défiler la page ; « moins d'animations » : passages immédiats ; chat
+    des élèves : inchangé (figure fixe).
+
+### Erreurs
+
+65. `tourner:` avec autre chose que `oui` ou `non` : message pour l'auteur, figure fixe pour l'élève.
+66. `tourner: oui` avec `vue: dessus`, `face`, `droite` ou `gauche` (dessin à plat) : message pour
+    l'auteur, vue fixe pour l'élève.
+67. `tourner: oui` avec `retrouver:` (la perspective est cachée, rien à tourner) : message pour l'auteur,
+    geste inchangé.
+68. `tourner: oui` avec `dessiner:` : voir la question (b).
+
+### Questions pour David
+
+- **(a) Teintes des faces qu'on découvre.** Aujourd'hui : dessus clair, devant gris léger, côté droit gris
+  plus foncé. En tournant, on voit aussi l'arrière, la gauche et le dessous. (1) Chaque face garde sa
+  teinte, comme un objet peint : l'arrière comme le devant, la gauche comme la droite, le dessous comme le
+  dessus ; (2) la lumière reste fixe par rapport à l'œil : la teinte d'une face change selon qu'elle regarde
+  vers le haut, vers nous ou sur le côté. Recommandation : (1), plus simple à lire (on reconnaît le
+  « devant » après un demi-tour) et la vue de départ reste exactement le dessin d'aujourd'hui.
+- **(b) `tourner: oui` avec `dessiner: face`** (l'élève colorie la vue de face dans un quadrillage, la
+  perspective est à côté). Si la perspective tourne, l'élève peut se mettre bien en face et recopier la vue.
+  (1) Refusé dans ce lot : message pour l'auteur, perspective fixe ; (2) permis : c'est le prof qui choisit
+  d'offrir cette aide. Recommandation : (1) ; (2) reste possible plus tard sans rien défaire.
