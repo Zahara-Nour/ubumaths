@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 envoyée._
+_Mis à jour le 2026-11-27, après #3245._
 
-- **État** : relevé fait ([idees-6e-aires-releve.md](idees-6e-aires-releve.md)), phase 0 écrite ci-dessous (8 fiches,
-  3 questions), page à cocher envoyée à David :
-  https://claude.ai/artifact/MJrYFZmJzEVpyPmJUFwjnq (verdicts dans sa base, collection `verdicts`).
-- **Prochaine action** : lire ses réponses (page à cocher + session), puis écrire le gros lot (7 modèles neufs,
-  variations de 82748db8, fdd849f5, 01e205ed).
-- **En attente de David** : fiches N1 à N8, questions Q1 à Q3.
-- **Pièges en cours** : 82748db8, fdd849f5 et 01e205ed sont à réserver dans le tableau avant d'y toucher.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-aires`, `docs/idees-6e-aires` (sur `origin/main`, rien commité :
-  la phase 0 est de la doc, commitée sur `main`).
+- **État** : lot mergé (#3245) : 7 modèles neufs (`scripts/questions/idees-6e-aires-neufs/`, 22 variations) et
+  8 variations ajoutées à 82748db8, fdd849f5, 01e205ed (`scripts/questions/idees-6e-aires-publies/`) ; rien en
+  base de prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/idees-6e-aires-neufs --publier` (dépôt principal) ; puis, dans un nouveau worktree, commiter
+  les ids, champ `rangement` → `migration-rangement.ts` et `migration-contenu.ts` (niveaux relevés en prod juste
+  avant), `security-auditor`, `db:migrate` selon les 4 conditions.
+- **En attente de David** : `create-questions --publier` (écriture en prod).
+- **Pièges en cours** : 82748db8 partage `a` (1..9), fdd849f5 la condition `a>b` ; `e` est Euler ; le bloc figure
+  n'a pas de `secteur` ; `{{eval:-b/2}}` s'écrit en fraction dans une figure (`0.5*b`).
+- **Worktree / branche** : aucun (retiré après #3245) ; le prochain sur `origin/main`, sujet `idees-6e-aires`.
 
 ## Phase 0 (2026-11-27)
 
@@ -85,6 +87,13 @@ _Mis à jour le 2026-11-27, phase 0 envoyée._
   que cm², dm², m². Les bornes de ces points sont « général ». Recommandation : ne rien toucher.
 
 ## Historique
+
+- 2026-11-27 : #3245 mergée (fichiers du lot seuls, CI verte).
+
+- 2026-11-27 : David répond « je te suis » au message des fiches N1 à N8 et des questions Q1 à Q3 (page à
+  cocher sans verdict) : fiches et propositions retenues telles quelles. Modèles 82748db8, fdd849f5, 01e205ed
+  réservés ; idées de 5e (6M2A-1, 6M2B-2) dans « Idées en attente ». Lot écrit par
+  `docs/wip/questions/idees-6e-aires-neufs.py` et `…-publies.py`.
 
 - 2026-11-27 : rubrique prise (84e8c5568f), relevé par deux agents Sonnet, plages recoupées dans le code, nos
   modèles relevés en prod ; phase 0 écrite ; outil n° 70 ajouté à `outils-manquants.md`.

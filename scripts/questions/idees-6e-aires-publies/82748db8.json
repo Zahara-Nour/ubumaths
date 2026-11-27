@@ -1,0 +1,572 @@
+{
+	"id": "82748db8-01fe-4c2e-86b6-4ef8c1dde805",
+	"title": "Convertir dans une autre unité",
+	"description": "Unités d'aire",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "1..9"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*0.01;d}}"
+				}
+			],
+			"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+			"variables": [
+				{
+					"name": "expression4",
+					"expression": "a[dm^2] = ?[m^2]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+					"De $\\text{dm}^2$ à $\\text{m}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+					"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+					"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*100;d}}"
+				}
+			],
+			"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+			"variables": [
+				{
+					"name": "expression9",
+					"expression": "a[m^2] = ?[dm^2]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+					"De $\\text{m}^2$ à $\\text{dm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+					"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+					"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*100;d}}"
+				}
+			],
+			"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+			"variables": [
+				{
+					"name": "expression10",
+					"expression": "a[dm^2] = ?[cm^2]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+					"De $\\text{dm}^2$ à $\\text{cm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+					"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+					"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*0.01;d}}"
+				}
+			],
+			"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+			"variables": [
+				{
+					"name": "expression13",
+					"expression": "a[cm^2] = ?[dm^2]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+					"De $\\text{cm}^2$ à $\\text{dm}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+					"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+					"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Convertis dans l'unité demandée.\n\n$${{n}}~\\unit{{{if:g==0|dm^2|cm^2}}} = ?~\\unit{{{if:g==0|m^2|dm^2}}}$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "11..99"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n/10;d}}",
+							"message": "Entre $\\unit{{{if:g==0|dm^2|cm^2}}}$ et $\\unit{{{if:g==0|m^2|dm^2}}}$, on passe par $100$, pas par $10$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{eval:n*100}}",
+							"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus grande, le nombre doit diminuer.",
+							"label": "Sens inversé"
+						},
+						{
+							"answer": "{{eval:n/1000;d}}",
+							"message": "Tu as divisé par $1\\,000$ : entre deux unités d'aire voisines, on divise par $100$.",
+							"label": "Division par 1 000"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:g==0|m^2|dm^2}}} = 100~\\unit{{{if:g==0|dm^2|cm^2}}}$ : pour passer en $\\unit{{{if:g==0|m^2|dm^2}}}$, on divise par $100$.",
+					"${{n}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+				]
+			},
+			"hint": "L'unité demandée est plus grande : le nombre devient plus petit. Par combien divise-t-on ?"
+		},
+		{
+			"statement": "Convertis dans l'unité demandée.\n\n$${{eval:d/10;d}}~\\unit{{{if:g==0|dm^2|m^2}}} = ?~\\unit{{{if:g==0|cm^2|dm^2}}}$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "11..99"
+				}
+			],
+			"conditions": ["mod(d,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d*10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{d}}",
+							"message": "Entre $\\unit{{{if:g==0|dm^2|m^2}}}$ et $\\unit{{{if:g==0|cm^2|dm^2}}}$, on passe par $100$, pas par $10$.",
+							"label": "Multiplication par 10"
+						},
+						{
+							"answer": "{{eval:d/1000;d}}",
+							"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus petite, le nombre doit augmenter.",
+							"label": "Sens inversé"
+						},
+						{
+							"answer": "{{eval:d/10;d}}00",
+							"message": "On ne colle pas deux zéros derrière un nombre à virgule : décale la virgule de deux rangs.",
+							"label": "Deux zéros collés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:g==0|dm^2|m^2}}} = 100~\\unit{{{if:g==0|cm^2|dm^2}}}$ : pour passer en $\\unit{{{if:g==0|cm^2|dm^2}}}$, on multiplie par $100$.",
+					"${{eval:d/10;d}} \\times 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+				]
+			},
+			"hint": "L'unité demandée est plus petite : le nombre devient plus grand. Décale la virgule."
+		},
+		{
+			"statement": "Convertis dans l'unité demandée.\n\n$${{n}}~\\unit{{{if:g==0|cm^2|dm^2}}} = ?~\\unit{{{if:g==0|dm^2|m^2}}}$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "101..999"
+				}
+			],
+			"conditions": ["mod(n,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n/10;d}}",
+							"message": "Entre $\\unit{{{if:g==0|cm^2|dm^2}}}$ et $\\unit{{{if:g==0|dm^2|m^2}}}$, on passe par $100$, pas par $10$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{eval:n*100}}",
+							"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus grande, le nombre doit diminuer.",
+							"label": "Sens inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:g==0|dm^2|m^2}}} = 100~\\unit{{{if:g==0|cm^2|dm^2}}}$ : on divise par $100$.",
+					"${{n}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+				]
+			},
+			"hint": "L'unité demandée est plus grande : par combien divise-t-on ?"
+		},
+		{
+			"statement": "Convertis dans l'unité demandée.\n\n$${{eval:k/10^(2-p);d}}~\\unit{{{if:g==0|dm^2|m^2}}} = ?~\\unit{{{if:g==0|cm^2|dm^2}}}$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*10^p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k*10^(p-1);d}}",
+							"message": "Entre $\\unit{{{if:g==0|dm^2|m^2}}}$ et $\\unit{{{if:g==0|cm^2|dm^2}}}$, on passe par $100$, pas par $10$.",
+							"label": "Multiplication par 10"
+						},
+						{
+							"answer": "{{eval:k/10^(4-p);d}}",
+							"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus petite, le nombre doit augmenter.",
+							"label": "Sens inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:g==0|dm^2|m^2}}} = 100~\\unit{{{if:g==0|cm^2|dm^2}}}$ : pour passer en $\\unit{{{if:g==0|cm^2|dm^2}}}$, on multiplie par $100$.",
+					"${{eval:k/10^(2-p);d}} \\times 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+				]
+			},
+			"hint": "Multiplier par $100$, c'est décaler la virgule de deux rangs vers la droite."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0{,}07"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "7 dm^2 = 0{,}07 m^2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["700"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "7 m^2 = 700 dm^2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["700"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "7 dm^2 = 700 cm^2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0{,}07"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "7 cm^2 = 0{,}07 dm^2",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0{,}7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "erreur d'un rang (cm^2→dm^2)",
+			"variationIndex": 3
+		},
+		{
+			"description": "73 dm² = 0,73 m²",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"n": "73"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}73"]
+		},
+		{
+			"description": "70 dm² = 0,7 m²",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"n": "70"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}7"]
+		},
+		{
+			"description": "73 dm² : 7,3",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"n": "73"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $\\unit{dm^2}$ et $\\unit{m^2}$, on passe par $100$, pas par $10$."
+			},
+			"answers": ["7{,}3"]
+		},
+		{
+			"description": "73 dm² : 7 300",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"n": "73"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as converti dans le mauvais sens : l'unité demandée est plus grande, le nombre doit diminuer."
+			},
+			"answers": ["7300"]
+		},
+		{
+			"description": "73 dm² : 0,073",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"n": "73"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par $1\\,000$ : entre deux unités d'aire voisines, on divise par $100$."
+			},
+			"answers": ["0{,}073"]
+		},
+		{
+			"description": "45 cm² = 0,45 dm²",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"n": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}45"]
+		},
+		{
+			"description": "3,7 dm² = 370 cm²",
+			"variationIndex": 5,
+			"variables": {
+				"g": "0",
+				"d": "37"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["370"]
+		},
+		{
+			"description": "3,7 dm² : 37",
+			"variationIndex": 5,
+			"variables": {
+				"g": "0",
+				"d": "37"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $\\unit{dm^2}$ et $\\unit{cm^2}$, on passe par $100$, pas par $10$."
+			},
+			"answers": ["37"]
+		},
+		{
+			"description": "3,7 dm² : 0,037",
+			"variationIndex": 5,
+			"variables": {
+				"g": "0",
+				"d": "37"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as converti dans le mauvais sens : l'unité demandée est plus petite, le nombre doit augmenter."
+			},
+			"answers": ["0{,}037"]
+		},
+		{
+			"description": "3,7 dm² : 3,700",
+			"variationIndex": 5,
+			"variables": {
+				"g": "0",
+				"d": "37"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne colle pas deux zéros derrière un nombre à virgule : décale la virgule de deux rangs."
+			},
+			"answers": ["3{,}700"]
+		},
+		{
+			"description": "4,5 m² = 450 dm²",
+			"variationIndex": 5,
+			"variables": {
+				"g": "1",
+				"d": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["450"]
+		},
+		{
+			"description": "457 cm² = 4,57 dm²",
+			"variationIndex": 6,
+			"variables": {
+				"g": "0",
+				"n": "457"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4{,}57"]
+		},
+		{
+			"description": "457 cm² : 45,7",
+			"variationIndex": 6,
+			"variables": {
+				"g": "0",
+				"n": "457"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $\\unit{cm^2}$ et $\\unit{dm^2}$, on passe par $100$, pas par $10$."
+			},
+			"answers": ["45{,}7"]
+		},
+		{
+			"description": "375 dm² = 3,75 m²",
+			"variationIndex": 6,
+			"variables": {
+				"g": "1",
+				"n": "375"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}75"]
+		},
+		{
+			"description": "0,07 m² = 7 dm²",
+			"variationIndex": 7,
+			"variables": {
+				"g": "1",
+				"p": "0",
+				"k": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "0,7 m² = 70 dm²",
+			"variationIndex": 7,
+			"variables": {
+				"g": "1",
+				"p": "1",
+				"k": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["70"]
+		},
+		{
+			"description": "0,7 m² : 7",
+			"variationIndex": 7,
+			"variables": {
+				"g": "1",
+				"p": "1",
+				"k": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $\\unit{m^2}$ et $\\unit{dm^2}$, on passe par $100$, pas par $10$."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "0,07 m² : 0,7",
+			"variationIndex": 7,
+			"variables": {
+				"g": "1",
+				"p": "0",
+				"k": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $\\unit{m^2}$ et $\\unit{dm^2}$, on passe par $100$, pas par $10$."
+			},
+			"answers": ["0{,}7"]
+		},
+		{
+			"description": "0,3 dm² = 30 cm²",
+			"variationIndex": 7,
+			"variables": {
+				"g": "0",
+				"p": "1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30"]
+		}
+	]
+}

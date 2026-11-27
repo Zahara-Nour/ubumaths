@@ -1,0 +1,369 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Aires > unités et conversions",
+		"point": "6-150"
+	},
+	"title": "Les relations entre m², dm² et cm²",
+	"description": "Le cm², le dm² et le m² comme aires de carrés ; 1 m² = 10 dm × 10 dm = 100 dm² ; 1 cm² = 1/100 dm² = 0,01 dm² ; une centaine, un centième ; pièges : 10 au lieu de 100, un côté écrit en unité d'aire",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n$1~\\unit{{{if:g==0|cm^2|{{if:g==1|dm^2|m^2}}}}}$ est l'aire d'un carré de côté $?$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1\\unit{{{if:g==0|cm|{{if:g==1|dm|m}}}}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "1\\unit{{{if:g==0|cm^2|{{if:g==1|dm^2|m^2}}}}}",
+							"message": "Le côté est une longueur : son unité n'a pas de « carré ».",
+							"label": "Unité d'aire"
+						},
+						{
+							"answer": "100\\unit{{{if:g==0|mm|{{if:g==1|cm|dm}}}}}",
+							"message": "Le carré a $1$ {{if:g==0|cm|{{if:g==1|dm|m}}}} de côté, soit $10$ {{if:g==0|mm|{{if:g==1|cm|dm}}}} : c'est son aire qui fait $100$ {{if:g==0|mm|{{if:g==1|cm|dm}}}}$^2$.",
+							"label": "100 sous-unités"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:g==0|cm^2|{{if:g==1|dm^2|m^2}}}}}$, c'est l'aire d'un carré de $\\textcolor{{{color:primary.0}}}{1~\\unit{{{if:g==0|cm|{{if:g==1|dm|m}}}}}}$ de côté.",
+					"C'est ainsi qu'on définit les unités d'aire : un carré dont le côté vaut une unité de longueur."
+				]
+			},
+			"hint": "Une unité d'aire porte le nom d'une unité de longueur : laquelle, et pour quelle figure ?"
+		},
+		{
+			"statement": "Un carré de $1~\\unit{{{if:h==0|m|dm}}}$ de côté mesure $10~\\unit{{{if:h==0|dm|cm}}}$ de côté.\n\n$1~\\unit{{{if:h==0|m^2|dm^2}}} = 10~\\unit{{{if:h==0|dm|cm}}} \\times 10~\\unit{{{if:h==0|dm|cm}}} = ?~\\unit{{{if:h==0|dm^2|cm^2}}}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "100",
+					"expectedErrors": [
+						{
+							"answer": "10",
+							"message": "Le carré mesure $10$ {{if:h==0|dm|cm}} de long **et** $10$ {{if:h==0|dm|cm}} de large : il y a $10$ rangées de $10$ carrés.",
+							"label": "Une seule dimension"
+						},
+						{
+							"answer": "20",
+							"message": "On multiplie la longueur par la largeur : $10 \\times 10$, pas $10 + 10$.",
+							"label": "Somme au lieu du produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le carré contient $10$ rangées de $10$ petits carrés de $1~\\unit{{{if:h==0|dm|cm}}}$ de côté.",
+					"$10 \\times 10 = 100$, donc $1~\\unit{{{if:h==0|m^2|dm^2}}} = \\textcolor{{{color:primary.0}}}{100~\\unit{{{if:h==0|dm^2|cm^2}}}}$."
+				]
+			},
+			"hint": "Dessine le grand carré découpé en petits carrés : combien de rangées, et combien dans chaque rangée ?"
+		},
+		{
+			"statement": "Complète, en écriture fractionnaire ou décimale.\n\n$1~\\unit{{{if:h==0|cm^2|dm^2}}} = ?~\\unit{{{if:h==0|dm^2|m^2}}}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{100}",
+					"expectedErrors": [
+						{
+							"answer": "0{,}1",
+							"message": "Il faut $100~\\unit{{{if:h==0|cm^2|dm^2}}}$ pour faire $1~\\unit{{{if:h==0|dm^2|m^2}}}$, pas $10$.",
+							"label": "Un dixième"
+						},
+						{
+							"answer": "\\frac{1}{10}",
+							"message": "Il faut $100~\\unit{{{if:h==0|cm^2|dm^2}}}$ pour faire $1~\\unit{{{if:h==0|dm^2|m^2}}}$, pas $10$.",
+							"label": "Un dixième (fraction)"
+						},
+						{
+							"answer": "100",
+							"message": "Le {{if:h==0|cm²|dm²}} est plus petit que le {{if:h==0|dm²|m²}} : $1~\\unit{{{if:h==0|cm^2|dm^2}}}$ n'est qu'une petite partie de $1~\\unit{{{if:h==0|dm^2|m^2}}}$.",
+							"label": "Sens inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:h==0|dm^2|m^2}}} = 100~\\unit{{{if:h==0|cm^2|dm^2}}}$ : il faut $100$ {{if:h==0|cm²|dm²}} pour faire $1$ {{if:h==0|dm²|m²}}.",
+					"Donc $1~\\unit{{{if:h==0|cm^2|dm^2}}}$ est un centième de $1~\\unit{{{if:h==0|dm^2|m^2}}}$ : $1~\\unit{{{if:h==0|cm^2|dm^2}}} = \\textcolor{{{color:primary.0}}}{\\frac{1}{100}~\\unit{{{if:h==0|dm^2|m^2}}}} = 0{,}01~\\unit{{{if:h==0|dm^2|m^2}}}$."
+				]
+			},
+			"hint": "Combien de {{if:h==0|cm²|dm²}} faut-il pour faire $1$ {{if:h==0|dm²|m²}} ? Un seul en est quelle part ?"
+		},
+		{
+			"statement": "Complète la phrase.\n\n$1~\\unit{{{if:t==0|cm^2|{{if:t==1|dm^2|{{if:t==2|dm^2|m^2}}}}}}}$ est … de $1~\\unit{{{if:t==0|dm^2|{{if:t==1|m^2|{{if:t==2|cm^2|dm^2}}}}}}}$.\n\n```choix\nmelanger: non\n- une dizaine\n- une centaine\n- un dixième\n- un centième\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|3|{{if:t==1|3|{{if:t==2|1|1}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{if:t==0|1~\\unit{dm^2} = 100~\\unit{cm^2}|{{if:t==1|1~\\unit{m^2} = 100~\\unit{dm^2}|{{if:t==2|1~\\unit{dm^2} = 100~\\unit{cm^2}|1~\\unit{m^2} = 100~\\unit{dm^2}}}}}}}$.",
+					"$1~\\unit{{{if:t==0|cm^2|{{if:t==1|dm^2|{{if:t==2|dm^2|m^2}}}}}}}$ est $\\textcolor{{{color:primary.0}}}{{{if:t==0|\\text{un centième}|{{if:t==1|\\text{un centième}|{{if:t==2|\\text{une centaine}|\\text{une centaine}}}}}}}}$ de $1~\\unit{{{if:t==0|dm^2|{{if:t==1|m^2|{{if:t==2|cm^2|dm^2}}}}}}}$."
+				]
+			},
+			"hint": "Entre deux unités d'aire voisines, on passe par $100$, pas par $10$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 cm² : carré de 1 cm",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\unit{cm}"]
+		},
+		{
+			"description": "1 cm² : carré de 10 mm",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10\\unit{mm}"]
+		},
+		{
+			"description": "1 dm² : carré de 1 dm",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\unit{dm}"]
+		},
+		{
+			"description": "1 dm² : carré de 10 cm",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10\\unit{cm}"]
+		},
+		{
+			"description": "1 dm² : unité d'aire",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le côté est une longueur : son unité n'a pas de « carré »."
+			},
+			"answers": ["1\\unit{dm^2}"]
+		},
+		{
+			"description": "1 m² : 100 dm",
+			"variationIndex": 0,
+			"variables": {
+				"g": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré a $1$ m de côté, soit $10$ dm : c'est son aire qui fait $100$ dm$^2$."
+			},
+			"answers": ["100\\unit{dm}"]
+		},
+		{
+			"description": "1 m² = 100 dm²",
+			"variationIndex": 1,
+			"variables": {
+				"h": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "1 m² : 10",
+			"variationIndex": 1,
+			"variables": {
+				"h": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré mesure $10$ dm de long **et** $10$ dm de large : il y a $10$ rangées de $10$ carrés."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "1 dm² : 20",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On multiplie la longueur par la largeur : $10 \\times 10$, pas $10 + 10$."
+			},
+			"answers": ["20"]
+		},
+		{
+			"description": "1 cm² = 1/100 dm²",
+			"variationIndex": 2,
+			"variables": {
+				"h": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{100}"]
+		},
+		{
+			"description": "1 cm² = 0,01 dm²",
+			"variationIndex": 2,
+			"variables": {
+				"h": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "1 dm² = 0,01 m²",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "1 cm² : 0,1",
+			"variationIndex": 2,
+			"variables": {
+				"h": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut $100~\\unit{cm^2}$ pour faire $1~\\unit{dm^2}$, pas $10$."
+			},
+			"answers": ["0{,}1"]
+		},
+		{
+			"description": "1 cm² : 1/10",
+			"variationIndex": 2,
+			"variables": {
+				"h": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut $100~\\unit{cm^2}$ pour faire $1~\\unit{dm^2}$, pas $10$."
+			},
+			"answers": ["\\frac{1}{10}"]
+		},
+		{
+			"description": "1 dm² : 100",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dm² est plus petit que le m² : $1~\\unit{dm^2}$ n'est qu'une petite partie de $1~\\unit{m^2}$."
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "cm² de dm² : un centième",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "cm² de dm² : un dixième refusé",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "dm² de cm² : une centaine",
+			"variationIndex": 3,
+			"variables": {
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "m² de dm² : une dizaine refusée",
+			"variationIndex": 3,
+			"variables": {
+				"t": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}
