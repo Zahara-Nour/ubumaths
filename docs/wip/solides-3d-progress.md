@@ -673,3 +673,21 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   angles. Le « À montrer à David » ci-dessus n'a plus lieu d'être. Tests : `solide-plans.test.ts` (31).
 - **Essayé par David le 2026-11-27 : « c'est bon ».** Le nom à côté du plan a été écrit après la revue : il
   n'a pas été relu par un agent (tests et captures seulement).
+
+## 20. Bord en butée : un trait posé sur une arête a l'état de l'arête (2026-11-27)
+
+- **Défaut** : `hiddenStretches` lance un rayon du point vers l'œil ; quand la face qui porte le segment est vue
+  exactement par la tranche, le rayon glisse dans la face et le morceau sortait « caché », alors que
+  `hiddenEdges` dessine les arêtes de cette face en plein. Plus large que la butée : toute face vue par la
+  tranche (face de côté d'un cube après un demi-tour, par exemple).
+- **Correctif** (`espace-vue.ts`) : un segment dont les deux bouts sont dans le plan d'une face que l'œil voit
+  au sens de `faceTowardEye` (la règle des arêtes) est en plein d'un bout à l'autre. Une diagonale d'une face
+  du fond reste en tirets, même quand ses quatre arêtes sont en plein (vue de dessus d'un cube).
+- **Tests** (rouges avant le correctif) : `solide-bord-en-butee.test.ts` (6) — chaque arête de 7 polyèdres
+  redonnée à `hiddenStretches` sous 144 butées et 128 autres vues a l'état de `hiddenEdges` ; diagonale d'une
+  face vue par la tranche ; cas témoin du prisme (`plans: (ABC)`, `droites: (AB), (BC)`) ;
+  `Solide.svelte.test.ts` (+1 : figure tirée à la butée, bord sans tirets à l'écran).
+- **Vu à l'écran par la session** (captures Chromium du composant) : prisme témoin en butée de dessus, de
+  dessous et de biais ; cube avec `(AB)`, `(AC)` et `(ABF)` en butée de dessus ((AB) pleine, (AC) en tirets).
+  En butée de dessus du prisme, « (P) » passe sur le nom de C (déjà laissé : il suit son point).
+- Doc : `docs/systeme/ubumark.md` (paragraphe « Droites données »).

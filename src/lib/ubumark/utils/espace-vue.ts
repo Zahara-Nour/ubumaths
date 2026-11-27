@@ -342,6 +342,10 @@ export function planeInSolid(
  * allant de lui vers l'œil, on traverse le solide — dedans, ou dehors mais
  * derrière. Posé sur une face tournée vers l'œil, il se voit ; sur une face du
  * fond, non. Les morceaux se suivent de 0 à 1 et alternent.
+ *
+ * Un segment posé dans le plan d'une face que l'œil voit (de face ou par la
+ * tranche, au sens de `faceTowardEye`) est visible d'un bout à l'autre : posé
+ * sur une arête, il a ainsi l'état que `hiddenEdges` donne à cette arête.
  */
 export function hiddenStretches(
 	vertices: Point3[],
@@ -362,6 +366,26 @@ export function hiddenStretches(
 		y: start.y + direction.y * t,
 		z: start.z + direction.z * t
 	});
+	// Dans le plan d'une face vue : même règle que les arêtes (une face vue par la
+	// tranche se dessine en un trait plein, le segment s'y dessine dessus)
+	const end = at(1);
+	const center = {
+		x: turned.reduce((s, p) => s + p.x, 0) / turned.length,
+		y: turned.reduce((s, p) => s + p.y, 0) / turned.length,
+		z: turned.reduce((s, p) => s + p.z, 0) / turned.length
+	};
+	const onSeenFace = faces.some(
+		(face, k) =>
+			Math.abs(planes[k].offset - scalar(planes[k].normal, start)) < epsilon &&
+			Math.abs(planes[k].offset - scalar(planes[k].normal, end)) < epsilon &&
+			faceTowardEye(
+				face.map((i) => turned[i]),
+				center,
+				view.toEye
+			)
+	);
+	if (onSeenFace) return [{ from: 0, to: 1, hidden: false }];
+
 	const eyeLength = Math.hypot(view.toEye.x, view.toEye.y, view.toEye.z);
 	const toEye = {
 		x: view.toEye.x / eyeLength,
