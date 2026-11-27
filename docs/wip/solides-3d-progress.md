@@ -2,28 +2,30 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3211._
+_Mis à jour le 2026-11-27, après #3216._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1 et 2 mergés** (#3195, #3200) ; **noms tenus mergés** (#3211, § 7) ; **lot 3 (cylindre,
-  cône, boule) codé sur la branche**, comportements du § 8 validés par David (« je te suis », 2026-11-27),
-  détail au § 9. Rien n'est en prod.
-- **Prochaine action** : PR du lot 3 ouverte, revue `code-reviewer` opus faite (aucun bloquant, § 9) : suivre
-  la CI et merger (`pnpm pr:merger`). Ensuite lot 4 — sections et cotes sur figure tournée (Q1 du § 3),
-  nouvelle session, comportements à écrire d'abord.
+  du § 3) ; **lots 1, 2 et 3 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216
+  cylindre, cône, boule, § 8 et 9). Le lot 3 n'est pas en prod (un `deploy:prod` d'une autre session tournait
+  pendant son merge : vérifier s'il l'a emporté avant de l'affirmer).
+- **Prochaine action** : lot 4 — sections et cotes sur figure tournée (§ 4 ; Q1 du § 3 : cotes à la vue de
+  départ seulement), revue `code-reviewer` en opus. Comportements à écrire et à faire valider avant de coder.
 - **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
   noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
   session) ; (2) les solides ronds (§ 9 : le point posé sur le sommet NOMMÉ du cône quand ses deux traits ont
-  disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque).
+  disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque — question
+  posée le 2026-11-27, sans réponse).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; solides ronds : le dessin à plat
   est la vraie vue d'un œil à asin 0,3 ≈ 17,5° au-dessus de l'horizontale, hauteurs non raccourcies —
-  `turnVue` doit recevoir `solideTilt(form)`, sinon la bascule s'arrête 5° avant la vue de dessus ; tourner
-  autour de l'axe ne change rien au dessin (Q5, accepté) : au lot 4, le rayon coté devra, lui, tourner ; une
-  ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; « moins d'animations » et le
-  geste tactile réel n'ont pas de test.
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-ronds`. Serveur d'essai en
-  marche sur 5176, lien du tailnet publié (`pnpm lien --stop` depuis le worktree pour le retirer).
+  `turnVue` doit recevoir `solideTilt(form)` ; tourner autour de l'axe ne change rien au dessin (Q5, accepté) :
+  au lot 4, le rayon coté et la section parallèle à l'axe devront, eux, tourner (`vue.yaw`) ; une ligne
+  `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; « moins d'animations » et le geste
+  tactile réel n'ont pas de test ; `pnpm pr:merger` ne retire pas le worktree si son serveur de dev tourne
+  (« Directory not empty », carcasse à retirer après avoir arrêté le serveur).
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-sections` (neuve, journal
+  seul commité). Serveur d'essai en marche sur 5176, lien du tailnet publié (`pnpm lien --stop` depuis le
+  worktree pour le retirer).
 
 ## 1. D'où l'on part
 
