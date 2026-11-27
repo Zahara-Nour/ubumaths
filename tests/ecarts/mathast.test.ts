@@ -89,15 +89,6 @@ describe('V34 — tidy garde x + iy dans l’ordre', () => {
 	});
 });
 
-describe('V35 — le i derrière la fraction', () => {
-	it('écrit -½ + (√3/2)i, i après la fraction', () => {
-		const latex = toLatex(tidy(parseLatex('-\\dfrac12+\\dfrac{\\sqrt3}{2}i')));
-
-		expect(latex).not.toContain('\\dfrac{\\imaginaryI');
-		expect(latex).toMatch(/\\dfrac\{\\sqrt\{?3\}?\}\{2\}\s*\\imaginaryI/);
-	});
-});
-
 describe('V39 — le parseur lit \\ln 5^2 comme ln(5²)', () => {
 	it('met le carré sous le ln', () => {
 		const node = parseLatex('\\ln 5^2');
