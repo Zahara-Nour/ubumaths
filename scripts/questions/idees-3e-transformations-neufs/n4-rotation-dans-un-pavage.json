@@ -121,7 +121,7 @@
 			"hint": "Un demi-tour : O est le milieu du segment qui relie un coin de la pièce à son image."
 		},
 		{
-			"statement": "Quelle pièce est l'image de la pièce n° ${{if:k==1|2|{{if:k==2|9|{{if:k==3|14|{{if:k==4|20|{{if:k==5|5|17}}}}}}}}}}$ par la rotation de centre $O$ et d'angle ${{if:k==1|60|{{if:k==2|120|{{if:k==3|60|{{if:k==4|120|{{if:k==5|120|60}}}}}}}}}}^{\\circ}$ {{if:k==1|dans le sens inverse des aiguilles d'une montre|{{if:k==2|dans le sens inverse des aiguilles d'une montre|{{if:k==3|dans le sens des aiguilles d'une montre|{{if:k==4|dans le sens des aiguilles d'une montre|{{if:k==5|dans le sens inverse des aiguilles d'une montre|dans le sens inverse des aiguilles d'une montre}}}}}}}}}} ?\n\n```figure\nfenetre: -4.6 ; 4.6 ; -3.9 ; 3.9\ndescription: Hexagone régulier de centre O découpé en 24 triangles équilatéraux numérotés de 1 à 24, de haut en bas puis de gauche à droite.\n---\ne0a = point(-4, 0.0, visible=faux)\ne0b = point(-3, -1.7321, visible=faux)\nsegment(e0a, e0b)\ne1a = point(-4, 0.0, visible=faux)\ne1b = point(-3, 1.7321, visible=faux)\nsegment(e1a, e1b)\ne2a = point(-4, 0.0, visible=faux)\ne2b = point(-2, 0.0, visible=faux)\nsegment(e2a, e2b)\ne3a = point(-3, -1.7321, visible=faux)\ne3b = point(-2, -3.4641, visible=faux)\nsegment(e3a, e3b)\ne4a = point(-3, -1.7321, visible=faux)\ne4b = point(-2, 0.0, visible=faux)\nsegment(e4a, e4b)\ne5a = point(-3, -1.7321, visible=faux)\ne5b = point(-1, -1.7321, visible=faux)\nsegment(e5a, e5b)\ne6a = point(-3, 1.7321, visible=faux)\ne6b = point(-2, 0.0, visible=faux)\nsegment(e6a, e6b)\ne7a = point(-3, 1.7321, visible=faux)\ne7b = point(-2, 3.4641, visible=faux)\nsegment(e7a, e7b)\ne8a = point(-3, 1.7321, visible=faux)\ne8b = point(-1, 1.7321, visible=faux)\nsegment(e8a, e8b)\ne9a = point(-2, -3.4641, visible=faux)\ne9b = point(-1, -1.7321, visible=faux)\nsegment(e9a, e9b)\ne10a = point(-2, -3.4641, visible=faux)\ne10b = point(0, -3.4641, visible=faux)\nsegment(e10a, e10b)\ne11a = point(-2, 0.0, visible=faux)\ne11b = point(-1, -1.7321, visible=faux)\nsegment(e11a, e11b)\ne12a = point(-2, 0.0, visible=faux)\ne12b = point(-1, 1.7321, visible=faux)\nsegment(e12a, e12b)\ne13a = point(-2, 0.0, visible=faux)\ne13b = point(0, 0.0, visible=faux)\nsegment(e13a, e13b)\ne14a = point(-2, 3.4641, visible=faux)\ne14b = point(-1, 1.7321, visible=faux)\nsegment(e14a, e14b)\ne15a = point(-2, 3.4641, visible=faux)\ne15b = point(0, 3.4641, visible=faux)\nsegment(e15a, e15b)\ne16a = point(-1, -1.7321, visible=faux)\ne16b = point(0, -3.4641, visible=faux)\nsegment(e16a, e16b)\ne17a = point(-1, -1.7321, visible=faux)\ne17b = point(0, 0.0, visible=faux)\nsegment(e17a, e17b)\ne18a = point(-1, -1.7321, visible=faux)\ne18b = point(1, -1.7321, visible=faux)\nsegment(e18a, e18b)\ne19a = point(-1, 1.7321, visible=faux)\ne19b = point(0, 0.0, visible=faux)\nsegment(e19a, e19b)\ne20a = point(-1, 1.7321, visible=faux)\ne20b = point(0, 3.4641, visible=faux)\nsegment(e20a, e20b)\ne21a = point(-1, 1.7321, visible=faux)\ne21b = point(1, 1.7321, visible=faux)\nsegment(e21a, e21b)\ne22a = point(0, -3.4641, visible=faux)\ne22b = point(1, -1.7321, visible=faux)\nsegment(e22a, e22b)\ne23a = point(0, -3.4641, visible=faux)\ne23b = point(2, -3.4641, visible=faux)\nsegment(e23a, e23b)\ne24a = point(0, 0.0, visible=faux)\ne24b = point(1, -1.7321, visible=faux)\nsegment(e24a, e24b)\ne25a = point(0, 0.0, visible=faux)\ne25b = point(1, 1.7321, visible=faux)\nsegment(e25a, e25b)\ne26a = point(0, 0.0, visible=faux)\ne26b = point(2, 0.0, visible=faux)\nsegment(e26a, e26b)\ne27a = point(0, 3.4641, visible=faux)\ne27b = point(1, 1.7321, visible=faux)\nsegment(e27a, e27b)\ne28a = point(0, 3.4641, visible=faux)\ne28b = point(2, 3.4641, visible=faux)\nsegment(e28a, e28b)\ne29a = point(1, -1.7321, visible=faux)\ne29b = point(2, -3.4641, visible=faux)\nsegment(e29a, e29b)\ne30a = point(1, -1.7321, visible=faux)\ne30b = point(2, 0.0, visible=faux)\nsegment(e30a, e30b)\ne31a = point(1, -1.7321, visible=faux)\ne31b = point(3, -1.7321, visible=faux)\nsegment(e31a, e31b)\ne32a = point(1, 1.7321, visible=faux)\ne32b = point(2, 0.0, visible=faux)\nsegment(e32a, e32b)\ne33a = point(1, 1.7321, visible=faux)\ne33b = point(2, 3.4641, visible=faux)\nsegment(e33a, e33b)\ne34a = point(1, 1.7321, visible=faux)\ne34b = point(3, 1.7321, visible=faux)\nsegment(e34a, e34b)\ne35a = point(2, -3.4641, visible=faux)\ne35b = point(3, -1.7321, visible=faux)\nsegment(e35a, e35b)\ne36a = point(2, 0.0, visible=faux)\ne36b = point(3, -1.7321, visible=faux)\nsegment(e36a, e36b)\ne37a = point(2, 0.0, visible=faux)\ne37b = point(3, 1.7321, visible=faux)\nsegment(e37a, e37b)\ne38a = point(2, 0.0, visible=faux)\ne38b = point(4, 0.0, visible=faux)\nsegment(e38a, e38b)\ne39a = point(2, 3.4641, visible=faux)\ne39b = point(3, 1.7321, visible=faux)\nsegment(e39a, e39b)\ne40a = point(3, -1.7321, visible=faux)\ne40b = point(4, 0.0, visible=faux)\nsegment(e40a, e40b)\ne41a = point(3, 1.7321, visible=faux)\ne41b = point(4, 0.0, visible=faux)\nsegment(e41a, e41b)\ntexte(-1.2, 3.087, \"1\")\ntexte(0.8, 3.087, \"2\")\ntexte(-2.2, 2.509, \"3\")\ntexte(-0.2, 2.509, \"4\")\ntexte(1.8, 2.509, \"5\")\ntexte(-2.2, 1.355, \"6\")\ntexte(-0.2, 1.355, \"7\")\ntexte(1.8, 1.355, \"8\")\ntexte(-3.2, 0.777, \"9\")\ntexte(-1.2, 0.777, \"10\")\ntexte(0.8, 0.777, \"11\")\ntexte(2.8, 0.777, \"12\")\ntexte(-3.2, -0.377, \"13\")\ntexte(-1.2, -0.377, \"14\")\ntexte(0.8, -0.377, \"15\")\ntexte(2.8, -0.377, \"16\")\ntexte(-2.2, -0.955, \"17\")\ntexte(-0.2, -0.955, \"18\")\ntexte(1.8, -0.955, \"19\")\ntexte(-2.2, -2.109, \"20\")\ntexte(-0.2, -2.109, \"21\")\ntexte(1.8, -2.109, \"22\")\ntexte(-1.2, -2.687, \"23\")\ntexte(0.8, -2.687, \"24\")\nO = point(0, 0, etiquette=\"bas\")\n```\n\nPièce n° $?$",
+			"statement": "Quelle pièce est l'image de la pièce n° ${{if:k==1|2|{{if:k==2|9|{{if:k==3|14|{{if:k==4|20|{{if:k==5|5|17}}}}}}}}}}$ par la rotation de centre $O$ et d'angle ${{if:k==1|60|{{if:k==2|120|{{if:k==3|60|{{if:k==4|120|{{if:k==5|120|60}}}}}}}}}}^{\\circ}$ {{if:k==1|dans le sens inverse des aiguilles d'une montre|{{if:k==2|dans le sens inverse des aiguilles d'une montre|{{if:k==3|dans le sens des aiguilles d'une montre|{{if:k==4|dans le sens des aiguilles d'une montre|{{if:k==5|dans le sens inverse des aiguilles d'une montre|dans le sens inverse des aiguilles d'une montre}}}}}}}}}} ?\n\n```figure\nfenetre: -4.6 ; 4.6 ; -3.9 ; 3.9\ndescription: Hexagone régulier de centre O découpé en 24 triangles équilatéraux numérotés de 1 à 24, rangée par rangée depuis le haut, de gauche à droite.\n---\ne0a = point(-4, 0.0, visible=faux)\ne0b = point(-3, -1.7321, visible=faux)\nsegment(e0a, e0b)\ne1a = point(-4, 0.0, visible=faux)\ne1b = point(-3, 1.7321, visible=faux)\nsegment(e1a, e1b)\ne2a = point(-4, 0.0, visible=faux)\ne2b = point(-2, 0.0, visible=faux)\nsegment(e2a, e2b)\ne3a = point(-3, -1.7321, visible=faux)\ne3b = point(-2, -3.4641, visible=faux)\nsegment(e3a, e3b)\ne4a = point(-3, -1.7321, visible=faux)\ne4b = point(-2, 0.0, visible=faux)\nsegment(e4a, e4b)\ne5a = point(-3, -1.7321, visible=faux)\ne5b = point(-1, -1.7321, visible=faux)\nsegment(e5a, e5b)\ne6a = point(-3, 1.7321, visible=faux)\ne6b = point(-2, 0.0, visible=faux)\nsegment(e6a, e6b)\ne7a = point(-3, 1.7321, visible=faux)\ne7b = point(-2, 3.4641, visible=faux)\nsegment(e7a, e7b)\ne8a = point(-3, 1.7321, visible=faux)\ne8b = point(-1, 1.7321, visible=faux)\nsegment(e8a, e8b)\ne9a = point(-2, -3.4641, visible=faux)\ne9b = point(-1, -1.7321, visible=faux)\nsegment(e9a, e9b)\ne10a = point(-2, -3.4641, visible=faux)\ne10b = point(0, -3.4641, visible=faux)\nsegment(e10a, e10b)\ne11a = point(-2, 0.0, visible=faux)\ne11b = point(-1, -1.7321, visible=faux)\nsegment(e11a, e11b)\ne12a = point(-2, 0.0, visible=faux)\ne12b = point(-1, 1.7321, visible=faux)\nsegment(e12a, e12b)\ne13a = point(-2, 0.0, visible=faux)\ne13b = point(0, 0.0, visible=faux)\nsegment(e13a, e13b)\ne14a = point(-2, 3.4641, visible=faux)\ne14b = point(-1, 1.7321, visible=faux)\nsegment(e14a, e14b)\ne15a = point(-2, 3.4641, visible=faux)\ne15b = point(0, 3.4641, visible=faux)\nsegment(e15a, e15b)\ne16a = point(-1, -1.7321, visible=faux)\ne16b = point(0, -3.4641, visible=faux)\nsegment(e16a, e16b)\ne17a = point(-1, -1.7321, visible=faux)\ne17b = point(0, 0.0, visible=faux)\nsegment(e17a, e17b)\ne18a = point(-1, -1.7321, visible=faux)\ne18b = point(1, -1.7321, visible=faux)\nsegment(e18a, e18b)\ne19a = point(-1, 1.7321, visible=faux)\ne19b = point(0, 0.0, visible=faux)\nsegment(e19a, e19b)\ne20a = point(-1, 1.7321, visible=faux)\ne20b = point(0, 3.4641, visible=faux)\nsegment(e20a, e20b)\ne21a = point(-1, 1.7321, visible=faux)\ne21b = point(1, 1.7321, visible=faux)\nsegment(e21a, e21b)\ne22a = point(0, -3.4641, visible=faux)\ne22b = point(1, -1.7321, visible=faux)\nsegment(e22a, e22b)\ne23a = point(0, -3.4641, visible=faux)\ne23b = point(2, -3.4641, visible=faux)\nsegment(e23a, e23b)\ne24a = point(0, 0.0, visible=faux)\ne24b = point(1, -1.7321, visible=faux)\nsegment(e24a, e24b)\ne25a = point(0, 0.0, visible=faux)\ne25b = point(1, 1.7321, visible=faux)\nsegment(e25a, e25b)\ne26a = point(0, 0.0, visible=faux)\ne26b = point(2, 0.0, visible=faux)\nsegment(e26a, e26b)\ne27a = point(0, 3.4641, visible=faux)\ne27b = point(1, 1.7321, visible=faux)\nsegment(e27a, e27b)\ne28a = point(0, 3.4641, visible=faux)\ne28b = point(2, 3.4641, visible=faux)\nsegment(e28a, e28b)\ne29a = point(1, -1.7321, visible=faux)\ne29b = point(2, -3.4641, visible=faux)\nsegment(e29a, e29b)\ne30a = point(1, -1.7321, visible=faux)\ne30b = point(2, 0.0, visible=faux)\nsegment(e30a, e30b)\ne31a = point(1, -1.7321, visible=faux)\ne31b = point(3, -1.7321, visible=faux)\nsegment(e31a, e31b)\ne32a = point(1, 1.7321, visible=faux)\ne32b = point(2, 0.0, visible=faux)\nsegment(e32a, e32b)\ne33a = point(1, 1.7321, visible=faux)\ne33b = point(2, 3.4641, visible=faux)\nsegment(e33a, e33b)\ne34a = point(1, 1.7321, visible=faux)\ne34b = point(3, 1.7321, visible=faux)\nsegment(e34a, e34b)\ne35a = point(2, -3.4641, visible=faux)\ne35b = point(3, -1.7321, visible=faux)\nsegment(e35a, e35b)\ne36a = point(2, 0.0, visible=faux)\ne36b = point(3, -1.7321, visible=faux)\nsegment(e36a, e36b)\ne37a = point(2, 0.0, visible=faux)\ne37b = point(3, 1.7321, visible=faux)\nsegment(e37a, e37b)\ne38a = point(2, 0.0, visible=faux)\ne38b = point(4, 0.0, visible=faux)\nsegment(e38a, e38b)\ne39a = point(2, 3.4641, visible=faux)\ne39b = point(3, 1.7321, visible=faux)\nsegment(e39a, e39b)\ne40a = point(3, -1.7321, visible=faux)\ne40b = point(4, 0.0, visible=faux)\nsegment(e40a, e40b)\ne41a = point(3, 1.7321, visible=faux)\ne41b = point(4, 0.0, visible=faux)\nsegment(e41a, e41b)\ntexte(-2.2, 2.509, \"1\")\ntexte(-1.2, 3.087, \"2\")\ntexte(-0.2, 2.509, \"3\")\ntexte(0.8, 3.087, \"4\")\ntexte(1.8, 2.509, \"5\")\ntexte(-3.2, 0.777, \"6\")\ntexte(-2.2, 1.355, \"7\")\ntexte(-1.2, 0.777, \"8\")\ntexte(-0.2, 1.355, \"9\")\ntexte(0.8, 0.777, \"10\")\ntexte(1.8, 1.355, \"11\")\ntexte(2.8, 0.777, \"12\")\ntexte(-3.2, -0.377, \"13\")\ntexte(-2.2, -0.955, \"14\")\ntexte(-1.2, -0.377, \"15\")\ntexte(-0.2, -0.955, \"16\")\ntexte(0.8, -0.377, \"17\")\ntexte(1.8, -0.955, \"18\")\ntexte(2.8, -0.377, \"19\")\ntexte(-2.2, -2.109, \"20\")\ntexte(-1.2, -2.687, \"21\")\ntexte(-0.2, -2.109, \"22\")\ntexte(0.8, -2.687, \"23\")\ntexte(1.8, -2.109, \"24\")\nO = point(0, 0, etiquette=\"bas\")\n```\n\nPièce n° $?$",
 			"variables": [
 				{
 					"name": "k",
@@ -130,10 +130,10 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:k==1|3|{{if:k==2|24|{{if:k==3|10|{{if:k==4|1|{{if:k==5|9|21}}}}}}}}}}",
+					"expectedAnswer": "{{if:k==1|6|{{if:k==2|15|{{if:k==3|7|{{if:k==4|2|{{if:k==5|6|10}}}}}}}}}}",
 					"expectedErrors": [
 						{
-							"answer": "{{if:k==1|12|{{if:k==2|5|{{if:k==3|18|{{if:k==4|16|{{if:k==5|24|6}}}}}}}}}}",
+							"answer": "{{if:k==1|5|{{if:k==2|17|{{if:k==3|22|{{if:k==4|19|{{if:k==5|23|16}}}}}}}}}}",
 							"message": "Tu as tourné dans l'autre sens : relis le sens de la rotation.",
 							"label": "Sens inversé"
 						}
@@ -143,7 +143,7 @@
 			"correction": {
 				"steps": [
 					"Les six angles autour de $O$ mesurent chacun $60^{\\circ}$ : une rotation de ${{if:k==1|60|{{if:k==2|120|{{if:k==3|60|{{if:k==4|120|{{if:k==5|120|60}}}}}}}}}}^{\\circ}$ fait tourner chaque pièce d'{{if:k==1|un cran|{{if:k==2|deux crans|{{if:k==3|un cran|{{if:k==4|deux crans|{{if:k==5|deux crans|un cran}}}}}}}}}} autour de $O$, {{if:k==1|dans le sens inverse des aiguilles d'une montre|{{if:k==2|dans le sens inverse des aiguilles d'une montre|{{if:k==3|dans le sens des aiguilles d'une montre|{{if:k==4|dans le sens des aiguilles d'une montre|{{if:k==5|dans le sens inverse des aiguilles d'une montre|dans le sens inverse des aiguilles d'une montre}}}}}}}}}}.",
-					"La pièce n° ${{if:k==1|2|{{if:k==2|9|{{if:k==3|14|{{if:k==4|20|{{if:k==5|5|17}}}}}}}}}}$ arrive sur la pièce n° $\\textcolor{{{color:primary.0}}}{{{if:k==1|3|{{if:k==2|24|{{if:k==3|10|{{if:k==4|1|{{if:k==5|9|21}}}}}}}}}}}$."
+					"La pièce n° ${{if:k==1|2|{{if:k==2|9|{{if:k==3|14|{{if:k==4|20|{{if:k==5|5|17}}}}}}}}}}$ arrive sur la pièce n° $\\textcolor{{{color:primary.0}}}{{{if:k==1|6|{{if:k==2|15|{{if:k==3|7|{{if:k==4|2|{{if:k==5|6|10}}}}}}}}}}}$."
 				]
 			},
 			"hint": "Autour de O, six triangles se partagent le tour complet : chacun fait 60°."
@@ -222,7 +222,7 @@
 			"answers": ["6"]
 		},
 		{
-			"description": "v2 k=1 : pièce 2 → 3",
+			"description": "v2 k=1 : pièce 2 → 6",
 			"variationIndex": 2,
 			"variables": {
 				"k": "1"
@@ -230,10 +230,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["3"]
+			"answers": ["6"]
 		},
 		{
-			"description": "v2 k=2 : pièce 9 → 24",
+			"description": "v2 k=2 : pièce 9 → 15",
 			"variationIndex": 2,
 			"variables": {
 				"k": "2"
@@ -241,10 +241,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["24"]
+			"answers": ["15"]
 		},
 		{
-			"description": "v2 k=3 : pièce 14 → 10",
+			"description": "v2 k=3 : pièce 14 → 7",
 			"variationIndex": 2,
 			"variables": {
 				"k": "3"
@@ -252,10 +252,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["10"]
+			"answers": ["7"]
 		},
 		{
-			"description": "v2 k=4 : pièce 20 → 1",
+			"description": "v2 k=4 : pièce 20 → 2",
 			"variationIndex": 2,
 			"variables": {
 				"k": "4"
@@ -263,10 +263,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["1"]
+			"answers": ["2"]
 		},
 		{
-			"description": "v2 k=5 : pièce 5 → 9",
+			"description": "v2 k=5 : pièce 5 → 6",
 			"variationIndex": 2,
 			"variables": {
 				"k": "5"
@@ -274,10 +274,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["9"]
+			"answers": ["6"]
 		},
 		{
-			"description": "v2 k=6 : pièce 17 → 21",
+			"description": "v2 k=6 : pièce 17 → 10",
 			"variationIndex": 2,
 			"variables": {
 				"k": "6"
@@ -285,10 +285,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["21"]
+			"answers": ["10"]
 		},
 		{
-			"description": "v2 k=1 : sens inversé (12)",
+			"description": "v2 k=1 : sens inversé (5)",
 			"variationIndex": 2,
 			"variables": {
 				"k": "1"
@@ -296,7 +296,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"answers": ["12"]
+			"answers": ["5"]
 		}
 	]
 }
