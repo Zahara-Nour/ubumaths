@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-27, après la validation des modèles par David._
 
 - **État** : relevé fait ([idees-6e-durees-releve.md](idees-6e-durees-releve.md), 11 exercices) ; phase 0 validée par David dans la session (« je valide les modèles ») : F1 et N1 à N6 tels que décrits ci-dessous. La page à cocher (https://claude.ai/artifact/TsiYTczFam8NQCUt7PPcKa) est restée vide.
 - **Prochaine action** : écrire le gros lot (script `docs/wip/questions/idees-6e-durees-lot.py` → `scripts/questions/idees-6e-durees-lot/`), réserver 311bf024 dans le tableau de répartition pour F1.
-- **En attente de David** : Q1 (point de N6, reco 6-159), Q3 (0 h 35 seul, reco), fin de Q2 (outil n° 69 noté « plus tard », reco). Les reposer ; elles ne bloquent que le rangement (Q1) et les specs de N2 c et d (Q3).
+- **En attente de David** : rien ; phase 0 entièrement tranchée (Q1 : 6-159 ; Q3 : 0 h 35 seul ; Q2 : outil n° 69 plus tard).
 - **Pièges en cours** : la case « durée composée » ne lit que h, min et s (`units/composite-duration.ts`) ; jours, semaines, mois en cases séparées.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-durees`, `docs/idees-6e-durees` (à renommer en `feat/…` au premier code, ou nouveau worktree).
 
@@ -26,8 +26,9 @@ coup de pouce.
 - « Je valide les modèles » (dans la session, page à cocher laissée vide) : F1, N1 à N6 validés tels que décrits.
   N3 et N4 en deux modèles, une case par unité pour N3 : Q4 et la première moitié de Q2 sont donc tranchées par
   les fiches.
-- **Pas encore tranché** (reposé le 2026-11-27) : Q1 (point de N6), Q3 (0 h 35 seul ou 24 h 35 accepté), et la
-  seconde moitié de Q2 (noter l'outil n° 69 « plus tard »).
+- « Je suis tes recos » (2026-11-27) : **Q1** N6 tagué 6-159 ; **Q3** attendu « 0 h 35 » seul, « 24 h 35 »
+  refusé avec le message « après minuit, on repart de 0 h » ; **Q2** outil n° 69 noté « plus tard » dans
+  `outils-manquants.md`. Phase 0 entièrement tranchée.
 
 ### Fiches
 
