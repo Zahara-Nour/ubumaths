@@ -8,6 +8,10 @@
  * retour à la vue de départ, les noms tenus pendant que la figure tourne
  * (chantier `solides-3d`, ADR 0045 ; journal, § 2, 7 et 12).
  *
+ * Un assemblage de cubes (`Cubes.svelte`, lot 6) tourne de la même façon, sans
+ * nom à tenir : `createEspaceRotation` prend la scène à dessiner en réglage,
+ * `createSolideRotation` est le même pour un solide.
+ *
  * Une figure = une rotation : `SolideGeste` en crée deux (la figure de l'élève
  * et celle de la correction tournent chacune de son côté).
  *
@@ -27,7 +31,12 @@ import {
 	solideTilt,
 	type SolideScene
 } from '#lib/ubumark/utils/espace-solides.ts';
-import { VUE_DE_DEPART, turnVue, type EspaceVue } from '#lib/ubumark/utils/espace-vue.ts';
+import {
+	VUE_DE_DEPART,
+	turnVue,
+	type EspaceVue,
+	type VueTilt
+} from '#lib/ubumark/utils/espace-vue.ts';
 
 // Types
 
@@ -40,7 +49,25 @@ export interface SolideRotationOptions {
 	rotatable: () => boolean;
 }
 
-export interface SolideRotation {
+export interface EspaceRotationOptions<S> {
+	/** Le texte du bloc : un autre bloc (nouvelle question) repart de la vue de départ */
+	source: () => string;
+	/** La figure tourne-t-elle ? (`tourner: oui`, bloc sans erreur) */
+	rotatable: () => boolean;
+	/** Bascule que le dessin ajoute à la vue (`turnVue`) ; absente : celle des polyèdres */
+	tilt?: () => VueTilt | undefined;
+	/**
+	 * La scène : vue de `vue`, noms tenus aux places `held` ; sans `vue` : le
+	 * dessin fixe ; null : bloc en erreur
+	 */
+	build: (vue?: EspaceVue, held?: EspacePoint[]) => S | null;
+	/** Les places des noms d'une scène, s'ils se tiennent pendant qu'elle tourne ; absent : aucun nom */
+	offsets?: (scene: S) => EspacePoint[] | undefined;
+}
+
+export type SolideRotation = EspaceRotation<SolideScene>;
+
+export interface EspaceRotation<S> {
 	/** La vue du moment (`VUE_DE_DEPART`, le même objet, au repos) */
 	readonly vue: EspaceVue;
 	/** La figure a quitté la vue de départ */
@@ -48,7 +75,7 @@ export interface SolideRotation {
 	/** Un glissement est en cours */
 	readonly dragging: boolean;
 	/** La scène à dessiner : celle de la vue, noms tenus ; le dessin fixe si rien ne tourne */
-	readonly scene: SolideScene | null;
+	readonly scene: S | null;
 	/** Retour à la vue de départ */
 	reset(): void;
 	/** Le même, depuis le bouton : le clavier reste sur la figure */
@@ -90,7 +117,22 @@ const KEY_TURNS: Record<string, [number, number]> = {
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function createSolideRotation(options: SolideRotationOptions): SolideRotation {
-	const spec = $derived(options.spec());
+	return createEspaceRotation({
+		source: options.source,
+		rotatable: options.rotatable,
+		tilt: () => {
+			const spec = options.spec();
+			return spec === null ? undefined : solideTilt(spec.form);
+		},
+		build: (vue, held) => {
+			const spec = options.spec();
+			return spec === null ? null : buildSolideScene(spec, vue, held);
+		},
+		offsets: (scene) => scene.labelOffsets
+	});
+}
+
+export function createEspaceRotation<S>(options: EspaceRotationOptions<S>): EspaceRotation<S> {
 	const source = $derived(options.source());
 	const rotatable = $derived(options.rotatable());
 	/**
@@ -101,7 +143,7 @@ export function createSolideRotation(options: SolideRotationOptions): SolideRota
 	const vue = $derived(turned !== null && turned.source === source ? turned.vue : VUE_DE_DEPART);
 	const moved = $derived(vue !== VUE_DE_DEPART);
 	/** Bascule que le dessin ajoute à la vue : là où s'arrêtent le dessus et le dessous */
-	const tilt = $derived(spec === null ? undefined : solideTilt(spec.form));
+	const tilt = $derived(options.tilt?.());
 	/**
 	 * Places des noms tenues pendant que la figure tourne (et le bloc auquel elles
 	 * appartiennent) ; null : chaque nom est placé pour la vue
@@ -110,9 +152,7 @@ export function createSolideRotation(options: SolideRotationOptions): SolideRota
 	const heldOffsets = $derived(
 		rotatable && held !== null && held.source === source ? held.offsets : undefined
 	);
-	const scene = $derived(
-		spec === null ? null : buildSolideScene(spec, rotatable ? vue : undefined, heldOffsets)
-	);
+	const scene = $derived(options.build(rotatable ? vue : undefined, heldOffsets));
 	let dragging = $state(false);
 
 	let figure: SVGSVGElement | null = null;
@@ -146,8 +186,10 @@ export function createSolideRotation(options: SolideRotationOptions): SolideRota
 	/** La figure se met à tourner : les noms gardent la place qu'ils ont */
 	function holdNames() {
 		stopSettling();
-		if (heldOffsets !== undefined || scene?.labelOffsets === undefined) return;
-		held = { source, offsets: scene.labelOffsets };
+		if (heldOffsets !== undefined || scene === null) return;
+		const offsets = options.offsets?.(scene);
+		if (offsets === undefined) return;
+		held = { source, offsets };
 	}
 
 	/** La figure s'arrête : les noms glissent à la place qui convient à la vue */
@@ -156,7 +198,8 @@ export function createSolideRotation(options: SolideRotationOptions): SolideRota
 		stopSettling();
 		const from = heldOffsets;
 		if (from === undefined) return;
-		const to = spec === null ? undefined : buildSolideScene(spec, vue).labelOffsets;
+		const settledScene = options.build(vue);
+		const to = settledScene === null ? undefined : options.offsets?.(settledScene);
 		if (to === undefined || to.length !== from.length || reducedMotion()) {
 			held = null;
 			return;

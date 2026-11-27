@@ -2,17 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, gros lot écrit (PR 1)._
+_Mis à jour le 2026-11-27, après #3234 et son `db:migrate`._
 
-- **État** : lot écrit sur `feat/idees-3e-thales` (§ Lot) : 4 variations de modèles publiés,
-  2 corrigées (Q1), 3 modèles neufs, migration de la notion « Agrandissement et réduction » et
-  migration de contenu. Specs vertes, essai en base locale, rendu vu dans Chrome.
-  · **Prochaine action** : PR 1, merge, `db:migrate` (notion + contenu), puis David crée les
-  brouillons en prod ; PR 2 = ids + migration de rangement ; relecture dans `/dev/modeles`
-  · **En attente de David** : `create-questions --publier` en prod après le merge de la PR 1
-  · **Pièges en cours** : la migration de rangement exige la notion EN PROD (lue par le script)
-  · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales` (l'ancienne
-  branche distante `docs/idees-3e-thales` reste à supprimer).
+- **État** : #3228 et #3234 mergées et migrées (20261127114444 jouée par David avec
+  20261127115608 de idees-6e-durees ; `migration list --linked` : plus rien en attente).
+  Aucun worktree.
+  · **Prochaine action** : lire les verdicts « À revoir » en base (`question_template_reviews`,
+  `reviewed_at` du 2026-11-27 ou après), les compter, corriger, puis `publier-lot.ts` en simulation
+  · **En attente de David** : relecture dans `/dev/modeles` (`?titre=Thalès`,
+  `?titre=Agrandissement`, `?titre=semblables`) · **Pièges en cours** : aucun
+  · **Worktree / branche** : aucun ; nouveau worktree pour la PR de corrections.
 
 ## Phase 0 (2026-11-27)
 

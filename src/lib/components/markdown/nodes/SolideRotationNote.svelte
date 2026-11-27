@@ -2,9 +2,10 @@
 	SolideRotationNote — `tourner:` mal écrit ou pas encore pris en charge
 	======================================================================
 
-	Message pour l'AUTEUR (jamais pour l'élève) au-dessus d'un ```solide dont la
-	ligne `tourner:` ne peut pas être suivie : la figure se dessine quand même,
-	fixe (chantier `solides-3d`, lot 2 ; `EspaceNode.rotationErrors`).
+	Message pour l'AUTEUR (jamais pour l'élève) au-dessus d'un ```solide ou d'un
+	```cubes dont la ligne `tourner:` ne peut pas être suivie : la figure se
+	dessine quand même, fixe (chantier `solides-3d`, lots 2 et 6 ;
+	`EspaceNode.rotationErrors`).
 
 	@module components/markdown/nodes/SolideRotationNote
 -->
@@ -29,7 +30,7 @@
 	<div
 		class="solide-rotation-note my-2 rounded-md border border-destructive p-3 text-sm text-foreground"
 	>
-		<p class="font-medium text-destructive">Bloc solide : la figure ne tournera pas</p>
+		<p class="font-medium text-destructive">Bloc {node.genre} : la figure ne tournera pas</p>
 		<ul class="mt-1 list-disc pl-5">
 			{#each messages as message, i (i)}
 				<li>{message}</li>

@@ -1,0 +1,333 @@
+{
+	"id": "ee8d7130-adf7-4fc1-abe4-1e80fac4ee3a",
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Durées > conversions",
+		"point": "6-159"
+	},
+	"title": "Écrire une durée en heures décimales",
+	"description": "Heures et minutes en heures décimales (quarts, demies, dixièmes d'heure), minutes en heures décimales, minutes décimales en minutes et secondes ; piège : 2 h 45 min écrit 2,45 h",
+	"grades": ["6"],
+	"level": 16,
+	"delay": 40,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris cette durée en heures, avec un nombre décimal.\n\n${{h}}~\\unit{h}~{{m}}~\\unit{min} = ?~\\unit{h}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "15|30|45"
+				}
+			],
+			"conditions": ["h+m/100!=h+m/60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h+m/60;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:h+m/100;d}}",
+							"message": "Une heure fait $60$ min, pas $100$ : ${{m}}$ min, c'est ${{m}}$ soixantièmes d'heure.",
+							"label": "Minutes écrites après la virgule"
+						},
+						{
+							"answer": "{{eval:h+m/10;d}}",
+							"message": "Une heure fait $60$ min : ${{m}}$ min ne font pas ${{m}}$ dixièmes d'heure.",
+							"label": "Minutes prises pour des dixièmes"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{m}}~\\unit{min}$, c'est {{if:m==15|un quart d'heure|{{if:m==30|une demi-heure|trois quarts d'heure}}}} : ${{m}}~\\unit{min} = {{eval:m/60;d}}~\\unit{h}$.",
+					"${{h}}~\\unit{h}~{{m}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{eval:h+m/60;d}}~\\unit{h}}$."
+				]
+			},
+			"hint": "Quelle fraction d'heure font ${{m}}$ min ? Écris-la ensuite en nombre décimal."
+		},
+		{
+			"statement": "Écris cette durée en heures, avec un nombre décimal.\n\n${{n}}~\\unit{min} = ?~\\unit{h}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "45..225"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor(n/60)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(n,60)"
+				}
+			],
+			"conditions": ["mod(n,15)==0", "mod(n,60)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/60;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q+r/100;d}}",
+							"message": "Une heure fait $60$ min, pas $100$ : ${{r}}$ min ne s'écrivent pas ${{eval:r/100;d}}$ h.",
+							"label": "Minutes écrites après la virgule"
+						},
+						{
+							"answer": "{{eval:n/100;d}}",
+							"message": "Une heure fait $60$ min, pas $100$ : divise par $60$.",
+							"label": "Division par 100"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}~\\unit{min} = {{if:q==0|{{r}}~\\unit{min}|{{q}}~\\unit{h}{{if:r==0||~{{r}}~\\unit{min}}}}}$.",
+					"{{if:r==0|Il n'y a pas de minutes en plus.|${{r}}~\\unit{min} = {{eval:r/60;d}}~\\unit{h}$.}}",
+					"${{n}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{eval:n/60;d}}~\\unit{h}}$."
+				]
+			},
+			"hint": "Combien d'heures entières dans ${{n}}$ min ? Quelle fraction d'heure reste-t-il ?"
+		},
+		{
+			"statement": "Écris cette durée en heures, avec un nombre décimal.\n\n${{h}}~\\unit{h}~{{m}}~\\unit{min} = ?~\\unit{h}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "eval:6*k"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h+k/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:h+m/100;d}}",
+							"message": "Une heure fait $60$ min, pas $100$ : ${{m}}$ min, c'est ${{m}}$ soixantièmes d'heure.",
+							"label": "Minutes écrites après la virgule"
+						},
+						{
+							"answer": "{{eval:h+m/10;d}}",
+							"message": "Une heure fait $60$ min : ${{m}}$ min ne font pas ${{m}}$ dixièmes d'heure.",
+							"label": "Minutes prises pour des dixièmes"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un dixième d'heure, c'est $60 \\div 10 = 6$ min.",
+					"${{m}}~\\unit{min} = {{k}} \\times 6~\\unit{min}$, soit ${{k}}$ dixièmes d'heure : ${{eval:k/10;d}}~\\unit{h}$.",
+					"${{h}}~\\unit{h}~{{m}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{eval:h+k/10;d}}~\\unit{h}}$."
+				]
+			},
+			"hint": "Combien de minutes dans un dixième d'heure ? Combien de dixièmes dans ${{m}}$ min ?"
+		},
+		{
+			"statement": "Convertis en minutes et secondes.\n\n${{eval:a+p/100;d}}~\\unit{min} = ?~\\unit{min}~?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "10|25|50|75"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:60*p/100}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:mod(p,10)==0|{{eval:p/10}}|{{p}}}}",
+							"message": "Une minute fait $60$ s, pas $100$ : ${{eval:p/100;d}}$ min, c'est ${{eval:p/100;d}} \\times 60$ s.",
+							"label": "Chiffres après la virgule pris pour des secondes"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:a+p/100;d}}~\\unit{min} = {{a}}~\\unit{min} + {{eval:p/100;d}}~\\unit{min}$.",
+					"${{eval:p/100;d}} \\times 60 = {{eval:60*p/100}}$, donc ${{eval:p/100;d}}~\\unit{min} = {{eval:60*p/100}}~\\unit{s}$.",
+					"${{eval:a+p/100;d}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{a}}~\\unit{min}~{{eval:60*p/100}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Garde les minutes entières, puis convertis la partie décimale en secondes ($\\times 60$)."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 h 45 min = 2,75 h",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"m": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}75"]
+		},
+		{
+			"description": "2 h 45 min : 2,45 h (l'erreur du chapitre)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"m": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, pas $100$ : $45$ min, c'est $45$ soixantièmes d'heure."
+			},
+			"answers": ["2{,}45"]
+		},
+		{
+			"description": "2 h 45 min : 6,5 h",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"m": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min : $45$ min ne font pas $45$ dixièmes d'heure."
+			},
+			"answers": ["6{,}5"]
+		},
+		{
+			"description": "2 h 30 min = 2,5 h",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"m": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}5"]
+		},
+		{
+			"description": "90 min = 1,5 h",
+			"variationIndex": 1,
+			"variables": {
+				"n": "90",
+				"q": "1",
+				"r": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}5"]
+		},
+		{
+			"description": "90 min : 1,30 h",
+			"variationIndex": 1,
+			"variables": {
+				"n": "90",
+				"q": "1",
+				"r": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, pas $100$ : $30$ min ne s'écrivent pas $0.3$ h."
+			},
+			"answers": ["1{,}30"]
+		},
+		{
+			"description": "90 min : 0,9 h",
+			"variationIndex": 1,
+			"variables": {
+				"n": "90",
+				"q": "1",
+				"r": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, pas $100$ : divise par $60$."
+			},
+			"answers": ["0{,}9"]
+		},
+		{
+			"description": "1 h 12 min = 1,2 h",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"k": "2",
+				"m": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}2"]
+		},
+		{
+			"description": "1 h 12 min : 1,12 h",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"k": "2",
+				"m": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, pas $100$ : $12$ min, c'est $12$ soixantièmes d'heure."
+			},
+			"answers": ["1{,}12"]
+		},
+		{
+			"description": "3,5 min = 3 min 30 s",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"p": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "30"]
+		},
+		{
+			"description": "3,5 min : 3 min 5 s",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"p": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une minute fait $60$ s, pas $100$ : $0.5$ min, c'est $0.5 \\times 60$ s."
+			},
+			"answers": ["3", "5"]
+		},
+		{
+			"description": "4,25 min = 4 min 15 s",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"p": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "15"]
+		}
+	]
+}

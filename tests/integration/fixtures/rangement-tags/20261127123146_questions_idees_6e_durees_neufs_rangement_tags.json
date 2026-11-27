@@ -1,0 +1,60 @@
+{
+	"migration": "supabase/migrations/20261127123146_questions_idees_6e_durees_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "4e63215d-f5a9-4f11-a22b-678b00050042",
+			"title": "Ajouter des durées avec les secondes",
+			"fichier": "n1-ajouter-durees-secondes.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Durées",
+			"sousNotion": "calcul de durées",
+			"point": "6-206"
+		},
+		{
+			"id": "c98a5fc6-7336-481e-9b56-c60016fd17d0",
+			"title": "Calculer un horaire de début ou de fin",
+			"fichier": "n2-horaire-debut-ou-fin.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Durées",
+			"sousNotion": "calcul de durées",
+			"point": "6-157"
+		},
+		{
+			"id": "fc244fa1-6ad2-4169-b50c-b872670be4f7",
+			"title": "Convertir des durées : jours, semaines, mois",
+			"fichier": "n3-convertir-jours-semaines-mois.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Durées",
+			"sousNotion": "conversions",
+			"point": "6-159"
+		},
+		{
+			"id": "d48bdef9-2854-42be-ac5e-68e864c352b3",
+			"title": "Convertir des durées avec les secondes",
+			"fichier": "n4-convertir-durees-secondes.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Durées",
+			"sousNotion": "conversions",
+			"point": "6-159"
+		},
+		{
+			"id": "ee8d7130-adf7-4fc1-abe4-1e80fac4ee3a",
+			"title": "Écrire une durée en heures décimales",
+			"fichier": "n5-heures-decimales.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Durées",
+			"sousNotion": "conversions",
+			"point": "6-159"
+		},
+		{
+			"id": "fa2e1ec0-73ad-4fda-bc99-a761ce0db0f3",
+			"title": "Unités de durée et fractions d'heure",
+			"fichier": "n6-unites-de-duree-fractions-heure.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Durées",
+			"sousNotion": "conversions",
+			"point": "6-159"
+		}
+	],
+	"niveaux": []
+}

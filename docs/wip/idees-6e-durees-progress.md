@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après la validation des modèles par David._
+_Mis à jour le 2026-11-27, après #3237._
 
-- **État** : relevé fait ([idees-6e-durees-releve.md](idees-6e-durees-releve.md), 11 exercices) ; phase 0 validée par David dans la session (« je valide les modèles ») : F1 et N1 à N6 tels que décrits ci-dessous. La page à cocher (https://claude.ai/artifact/TsiYTczFam8NQCUt7PPcKa) est restée vide.
-- **Prochaine action** : écrire le gros lot (script `docs/wip/questions/idees-6e-durees-lot.py` → `scripts/questions/idees-6e-durees-lot/`), réserver 311bf024 dans le tableau de répartition pour F1.
-- **En attente de David** : rien ; phase 0 entièrement tranchée (Q1 : 6-159 ; Q3 : 0 h 35 seul ; Q2 : outil n° 69 plus tard).
-- **Pièges en cours** : la case « durée composée » ne lit que h, min et s (`units/composite-duration.ts`) ; jours, semaines, mois en cases séparées.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-durees`, `docs/idees-6e-durees` (à renommer en `feat/…` au premier code, ou nouveau worktree).
+- **État** : #3233 et #3237 mergées et migrées. Les 6 modèles neufs (N1 à N6) sont en brouillon en prod, rangés (6-206 et 6-157 sur « calcul de durées », 6-159 sur « conversions », vérifié par MCP) ; la variation ajoutée à 311bf024 est en prod.
+- **Prochaine action** : relecture par David dans `/dev/modeles` (série de relecture des 6 brouillons), puis publication des modèles validés.
+- **En attente de David** : la relecture.
+- **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; N1 et N5 un peu plus larges que l'écran d'iPhone ; les messages à décimaux s'écrivent `0.3` dans les specs.
+- **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Phase 0 (2026-11-27)
 

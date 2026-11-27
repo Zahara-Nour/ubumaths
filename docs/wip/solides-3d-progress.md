@@ -2,27 +2,27 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3229._
+_Mis à jour le 2026-11-27, après #3235._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1 à 5 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216 cylindre,
-  cône, boule, § 8 et 9 ; #3222 sections et cotes, § 10 et 11 ; #3227 vecteur à tracer sur figure tournée,
-  § 12 et 13) ; **#3229** : nom d'un centre écarté des cotes (boule coupée près du centre, § 14). Les lots 3
-  à 5 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le
-  vérifier avant de l'affirmer).
-- **Prochaine action** : lot 6 (` ```cubes `, assemblages) : comportements à écrire en français et à faire
-  valider par David avant tout code.
-- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : noms tenus
-  (§ 7), solides ronds (§ 9), lot 4 (longueurs qui s'effacent, section qui tourne), lot 5 (exemple « Un
-  vecteur à tracer sur un pavé que l'élève peut tourner » : toucher contre glisser, toucher « tremblé » de 4
-  à 10 px qui tourne sans poser). Puis sa demande de `deploy:prod` (mise en prod seulement après son essai).
-  Deux défauts voisins signalés le 2026-11-27, sans réponse (§ 14) : contour de la section dans le texte de
-  la cote du rayon (boule coupée très près du centre) ; cotes du rayon et de la distance qui se touchent
-  (cylindre très plat coupé perpendiculairement à l'axe). Les corriger ou les laisser ?
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195 moteur ;
+  #3200 polyèdres ; #3211 noms tenus ; #3216 cylindre, cône, boule ; #3222 sections et cotes ; #3227 vecteur à
+  tracer sur figure tournée ; #3229 nom d'un centre écarté des cotes ; **#3235 assemblages de cubes**, § 15 et
+  16). Les lots 3 à 6 et #3229 ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas
+  emportés (le vérifier avant de l'affirmer).
+- **Prochaine action** : lot 7 (Terminale : repère, points par coordonnées, droites, plans) — **nouvelle
+  phase 0** : comportements à écrire en français et à faire valider par David avant tout code. Ne pas
+  l'ouvrir sans son go : c'est le dernier lot du découpage, d'une autre taille que les précédents.
+- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` et
+  `/aide-ecriture/blocs/cubes` (compte prof) : noms tenus (§ 7), solides ronds (§ 9), lot 4 (longueurs qui
+  s'effacent, section qui tourne), lot 5 (exemple « Un vecteur à tracer sur un pavé que l'élève peut
+  tourner »), lot 6 (exemple « Un assemblage que l'élève peut tourner »). Puis sa demande de `deploy:prod`
+  (mise en prod seulement après son essai).
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
-  le comportement 44 accepté).
+  le comportement 44 accepté) ; lot 6 : chaque face de cube garde sa teinte (arrière = devant, gauche =
+  droite, dessous = dessus), `tourner:` refusé avec `dessiner:` ; les deux défauts du § 14 (boule coupée
+  très près du centre, cylindre très plat) sont laissés, à corriger s'il les croise dans un modèle.
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`, scènes neuves à prendre sur le code de `main`) ; jamais d'instantané de
   flottants bruts ; l'angle libre d'un nom se calcule dans le repère du dessin fixe (`fixedVertices`), jamais
@@ -33,8 +33,8 @@ _Mis à jour le 2026-11-27, après #3229._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-6` (neuve, depuis
-  `main` après #3229, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7` (neuve, depuis
+  `main` après #3235, rien dedans). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
 
 ## 1. D'où l'on part
 
@@ -453,3 +453,76 @@ Exemple suivi : un pavé ABCDEFGH, « trace le vecteur AB + AD + AE » (`tracer:
 - **Laissé, signalé à David** : boule coupée très près du centre, le contour de la section passe dans le texte
   de la cote du rayon ; cylindre très plat (rayon ≥ 3 × hauteur) coupé perpendiculairement à l'axe, la cote du
   rayon et celle de la distance se touchent.
+
+## 15. Lot 6 — assemblages de cubes : comportements (validés par David le 2026-11-27)
+
+Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devant au milieu), bloc
+` ```cubes ` avec la clé `tourner: oui`.
+
+### Nominal
+
+53. Sans `tourner:`, rien ne change : même dessin qu'aujourd'hui, à l'écran et sur la fiche.
+54. Avec `tourner: oui`, l'assemblage s'ouvre en perspective cavalière, exactement comme sans la clé, avec
+    la mention « Figure à tourner » dessous.
+55. L'élève fait glisser le doigt (ou la souris) : l'assemblage tourne et passe en douceur à une vue sans
+    déformation. Flèches du clavier, Échap et bouton « Vue de départ » : comme pour un solide.
+56. Les cubes restent pleins : pas de tirets. Un cube de devant cache ceux de derrière, sous tous les angles.
+    En tournant, on découvre l'arrière, la gauche et le dessous, donc aussi les cubes cachés dans la vue de
+    départ.
+57. Chaque face garde son quadrillage (un carré par cube), comme aujourd'hui.
+58. Teintes des faces : voir la question (a).
+59. Tourner ne compte pas dans la réponse ; fiche PDF : vue de départ ; nouvelle question : vue de départ.
+
+### Limites
+
+60. On peut regarder par-dessus et par-dessous, pas renverser l'assemblage (comme un solide).
+61. La place de la figure est réservée dès le repos : la page ne bouge pas quand on tourne. Dans un choix
+    de QCM (petite figure), tourner ne coche pas le choix.
+62. Le plus gros assemblage permis (6 × 6 piles de 6 cubes) tourne sans saccade.
+63. Lecteur d'écran : « Assemblage de cubes en perspective, figure que l'on peut tourner ». Jamais le
+    nombre de cubes.
+64. Glisser sur la figure ne fait pas défiler la page ; « moins d'animations » : passages immédiats ; chat
+    des élèves : inchangé (figure fixe).
+
+### Erreurs
+
+65. `tourner:` avec autre chose que `oui` ou `non` : message pour l'auteur, figure fixe pour l'élève.
+66. `tourner: oui` avec `vue: dessus`, `face`, `droite` ou `gauche` (dessin à plat) : message pour
+    l'auteur, vue fixe pour l'élève.
+67. `tourner: oui` avec `retrouver:` (la perspective est cachée, rien à tourner) : message pour l'auteur,
+    geste inchangé.
+68. `tourner: oui` avec `dessiner:` : voir la question (b).
+
+### Questions pour David (réponse du 2026-11-27 : « je te suis » — (1) aux deux ; et les deux défauts du § 14 sont laissés tels quels, à corriger s'il les croise dans un modèle)
+
+- **(a) Teintes des faces qu'on découvre.** Aujourd'hui : dessus clair, devant gris léger, côté droit gris
+  plus foncé. En tournant, on voit aussi l'arrière, la gauche et le dessous. (1) Chaque face garde sa
+  teinte, comme un objet peint : l'arrière comme le devant, la gauche comme la droite, le dessous comme le
+  dessus ; (2) la lumière reste fixe par rapport à l'œil : la teinte d'une face change selon qu'elle regarde
+  vers le haut, vers nous ou sur le côté. Recommandation : (1), plus simple à lire (on reconnaît le
+  « devant » après un demi-tour) et la vue de départ reste exactement le dessin d'aujourd'hui.
+- **(b) `tourner: oui` avec `dessiner: face`** (l'élève colorie la vue de face dans un quadrillage, la
+  perspective est à côté). Si la perspective tourne, l'élève peut se mettre bien en face et recopier la vue.
+  (1) Refusé dans ce lot : message pour l'auteur, perspective fixe ; (2) permis : c'est le prof qui choisit
+  d'offrir cette aide. Recommandation : (1) ; (2) reste possible plus tard sans rien défaire.
+
+## 16. Lot 6 — ce qui est fait (2026-11-27)
+
+- **Clé** `tourner: oui | non` du bloc ` ```cubes ` (`CubesSpec.rotate`), perspective sans geste seulement.
+  Valeur mal écrite, `vue:` à plat, `dessiner:`, `retrouver:` : phrase dans `EspaceNode.rotationErrors`, bloc
+  dessiné comme sans la clé (comportements 65 à 68) ; la phrase se lit au-dessus de `Cubes.svelte` et de
+  `CubesGeste.svelte` (« Bloc cubes : la figure ne tournera pas »).
+- **Scène** : `buildEspaceScene(spec, vue)` → `cubesFaces(heights, vue)` (`espace-scene.ts`). Faces libres
+  tournées vers l'œil, ordre du peintre par axe (de la case la plus loin de l'œil à la plus proche) ; teintes
+  de la question (a) : arrière = devant, gauche = droite, dessous = dessus. Cadre carré fixe : distance du
+  centre à un coin de la boîte × √(1 + déport²), tenu à tout angle et pendant le passage (l'assemblage
+  `2 1 1 / 1 0 1` passe de 3,7 × 2,7 cm à un carré de 4,4 cm). À la vue de départ : le dessin fixe, mêmes
+  faces, même ordre, déplacé en bloc.
+- **Écran** : la rotation d'un solide, rendue commune — `createEspaceRotation` (scène en réglage) dans
+  `solide-rotation.svelte.ts`, `createSolideRotation` en est le cas du solide (rien ne change pour lui).
+- Catalogue (`block-catalog/cubes.ts` : réglage et exemple), doc `docs/systeme/ubumark.md`.
+- Tests : `cubes-tourner.test.ts` (28, dont l'ordre du peintre vérifié par la profondeur réelle des faces qui
+  se recouvrent), `CubesTourner.svelte.test.ts` (13).
+- Vu à l'écran par la session (captures Chromium du composant, deux assemblages sous six angles, dont
+  l'arrière et le dessous) : cubes pleins, trou visible de derrière, teintes tenues, cadre et bouton en place.
+  **Pas vu** : le geste du doigt sur un vrai téléphone ; le thème sombre sous une vue tournée.

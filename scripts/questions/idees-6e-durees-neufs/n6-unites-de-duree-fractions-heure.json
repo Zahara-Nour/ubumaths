@@ -1,0 +1,338 @@
+{
+	"id": "fa2e1ec0-73ad-4fda-bc99-a761ce0db0f3",
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Durées > conversions",
+		"point": "6-159"
+	},
+	"title": "Unités de durée et fractions d'heure",
+	"description": "Relations entre jour, heure, minute, seconde et semaine ; retrouver l'unité ; quart, demie et trois quarts d'heure en minutes, et retour ; pièges : 100 min dans une heure, 0,45 h pour 45 min",
+	"grades": ["6"],
+	"level": 17,
+	"delay": 15,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{if:t==0|1~\\text{jour}|{{if:t==1|1~\\text{heure}|{{if:t==2|1~\\text{minute}|1~\\text{semaine}}}}}}} = ?~{{if:t==0|\\text{heures}|{{if:t==1|\\text{minutes}|{{if:t==2|\\text{secondes}|\\text{jours}}}}}}}$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(24)*(1-min(abs(t-0),1))+(60)*(1-min(abs(t-1),1))+(60)*(1-min(abs(t-2),1))+(7)*(1-min(abs(t-3),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}",
+					"expectedErrors": [
+						{
+							"answer": "100",
+							"message": "Les durées ne se comptent pas par $100$ : retiens les nombres $24$, $60$ et $7$.",
+							"label": "Comptage par 100"
+						},
+						{
+							"answer": "{{if:t==0|12|{{if:t==3|5|10}}}}",
+							"message": "{{if:t==0|$12$ heures, c'est une demi-journée.|{{if:t==3|Une semaine compte tous les jours, pas seulement les jours d'école.|Les durées ne se comptent pas par $10$.}}}}",
+							"label": "Nombre courant mais faux"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{if:t==0|1~\\text{jour}|{{if:t==1|1~\\text{heure}|{{if:t==2|1~\\text{minute}|1~\\text{semaine}}}}}}} = \\textcolor{{{color:primary.0}}}{{{v}}~{{if:t==0|\\text{heures}|{{if:t==1|\\text{minutes}|{{if:t==2|\\text{secondes}|\\text{jours}}}}}}}}$."
+				]
+			},
+			"hint": "Pense à une horloge, ou à un calendrier."
+		},
+		{
+			"statement": "Quelle unité de durée complète l'égalité ?\n\n$1~\\ldots = {{if:t==0|60~\\text{minutes}|{{if:t==1|60~\\text{secondes}|{{if:t==2|24~\\text{heures}|7~\\text{jours}}}}}}}$\n\n```choix\nmelanger: non\n- semaine\n- jour\n- heure\n- minute\n- seconde\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|2|{{if:t==1|3|{{if:t==2|1|0}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\text{{{if:t==0|heure|{{if:t==1|minute|{{if:t==2|jour|semaine}}}}}}} = {{if:t==0|60~\\text{minutes}|{{if:t==1|60~\\text{secondes}|{{if:t==2|24~\\text{heures}|7~\\text{jours}}}}}}}$ : c'est $\\textcolor{{{color:primary.0}}}{\\text{{{if:t==0|l'heure|{{if:t==1|la minute|{{if:t==2|le jour|la semaine}}}}}}}}$."
+				]
+			},
+			"hint": "Range les unités de la plus petite à la plus grande : seconde, minute, heure, jour, semaine."
+		},
+		{
+			"statement": "Complète.\n\n${{if:f==0|\\frac{1}{4}|{{if:f==1|\\frac{1}{2}|\\frac{3}{4}}}}}~\\text{d'heure} = ?~\\unit{min}$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(15)*(1-min(abs(f-0),1))+(30)*(1-min(abs(f-1),1))+(45)*(1-min(abs(f-2),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:f==0|25|{{if:f==1|50|75}}}}",
+							"message": "Une heure fait $60$ min, pas $100$.",
+							"label": "Heure de 100 min"
+						},
+						{
+							"answer": "{{if:f==2|34|{{if:f==1|12|14}}}}",
+							"message": "Ce n'est pas l'écriture de la fraction : calcule {{if:f==0|$\\frac{1}{4}|{{if:f==1|$\\frac{1}{2}|$\\frac{3}{4}}}}}$ de $60$ min.",
+							"label": "Fraction recopiée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une heure, c'est $60$ min. {{if:f==0|$\\frac{1}{4}$ d'heure : $60 \\div 4 = \\textcolor{{{color:primary.0}}}{15}$ min.|{{if:f==1|$\\frac{1}{2}$ heure : $60 \\div 2 = \\textcolor{{{color:primary.0}}}{30}$ min.|$\\frac{3}{4}$ d'heure : $3 \\times 15 = \\textcolor{{{color:primary.0}}}{45}$ min.}}}}"
+				]
+			},
+			"hint": "Une heure fait $60$ min : partage-la en parts égales."
+		},
+		{
+			"statement": "Écris cette durée en heure, avec une fraction ou un nombre décimal.\n\n${{v}}~\\unit{min} = ?~\\unit{h}$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(15)*(1-min(abs(f-0),1))+(30)*(1-min(abs(f-1),1))+(45)*(1-min(abs(f-2),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:f==0|\\frac{1}{4}|{{if:f==1|\\frac{1}{2}|\\frac{3}{4}}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:v/100;d}}",
+							"message": "Une heure fait $60$ min, pas $100$ : ${{v}}$ min ne s'écrivent pas ${{eval:v/100;d}}$ h.",
+							"label": "Minutes écrites après la virgule"
+						},
+						{
+							"answer": "{{eval:v/10;d}}",
+							"message": "Ce n'est même pas une heure : la réponse est plus petite que $1$.",
+							"label": "Minutes prises pour des dixièmes"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{v}}~\\unit{min}$, c'est {{if:f==0|un quart|{{if:f==1|la moitié|les trois quarts}}}} de $60$ min.",
+					"${{v}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{if:f==0|\\frac{1}{4}|{{if:f==1|\\frac{1}{2}|\\frac{3}{4}}}}}~\\unit{h}} = {{if:f==0|0{,}25|{{if:f==1|0{,}5|0{,}75}}}}~\\unit{h}$."
+				]
+			},
+			"hint": "Une heure fait $60$ min : quelle part de l'heure font ${{v}}$ min ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 jour = 24 heures",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"v": "24"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "1 jour : 12",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"v": "24"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$12$ heures, c'est une demi-journée."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "1 heure = 60 minutes",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"v": "60"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "1 heure : 100",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"v": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les durées ne se comptent pas par $100$ : retiens les nombres $24$, $60$ et $7$."
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "1 semaine : 5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"v": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une semaine compte tous les jours, pas seulement les jours d'école."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "1 … = 60 minutes : heure",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "1 … = 60 minutes : minute refusée",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "1 … = 7 jours : semaine",
+			"variationIndex": 1,
+			"variables": {
+				"t": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "3/4 h = 45 min",
+			"variationIndex": 2,
+			"variables": {
+				"f": "2",
+				"v": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["45"]
+		},
+		{
+			"description": "3/4 h : 75 min",
+			"variationIndex": 2,
+			"variables": {
+				"f": "2",
+				"v": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, pas $100$."
+			},
+			"answers": ["75"]
+		},
+		{
+			"description": "3/4 h : 34 min",
+			"variationIndex": 2,
+			"variables": {
+				"f": "2",
+				"v": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce n'est pas l'écriture de la fraction : calcule $\\frac{3}{4}$ de $60$ min."
+			},
+			"answers": ["34"]
+		},
+		{
+			"description": "45 min = 3/4 h",
+			"variationIndex": 3,
+			"variables": {
+				"f": "2",
+				"v": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{4}"]
+		},
+		{
+			"description": "45 min = 0,75 h",
+			"variationIndex": 3,
+			"variables": {
+				"f": "2",
+				"v": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}75"]
+		},
+		{
+			"description": "45 min : 0,45 h",
+			"variationIndex": 3,
+			"variables": {
+				"f": "2",
+				"v": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, pas $100$ : $45$ min ne s'écrivent pas $0.45$ h."
+			},
+			"answers": ["0{,}45"]
+		},
+		{
+			"description": "30 min = 1/2 h",
+			"variationIndex": 3,
+			"variables": {
+				"f": "1",
+				"v": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{2}"]
+		}
+	]
+}

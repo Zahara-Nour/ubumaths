@@ -41,6 +41,7 @@
 		viewGrid
 	} from '#lib/ubumark/utils/cubes-gestes.ts';
 	import Cubes from './Cubes.svelte';
+	import SolideRotationNote from './SolideRotationNote.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -52,6 +53,8 @@
 		solution?: boolean;
 		/** false : sans bouton « Tout effacer » (copie corrigée) */
 		showControls?: boolean;
+		/** Forcer l'affichage de la phrase sur `tourner:` ; sinon, contexte du renderer */
+		showErrors?: boolean;
 		class?: string;
 	}
 
@@ -60,6 +63,7 @@
 		answer,
 		solution = false,
 		showControls = true,
+		showErrors,
 		class: className = ''
 	}: Props = $props();
 
@@ -241,6 +245,8 @@
 	</figure>
 {/snippet}
 
+<!-- `tourner: oui` ne va pas avec un geste : phrase pour le prof, rien pour l'élève -->
+<SolideRotationNote {node} {showErrors} />
 <div class="cubes-geste my-2 flex flex-col items-center gap-2 {className}">
 	<div
 		class="placer-zone flex flex-wrap items-end justify-center gap-6 rounded-md border p-2"
