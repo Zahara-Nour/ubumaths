@@ -46,6 +46,7 @@ import {
 	chordInSolid,
 	hiddenEdges,
 	hiddenStretches,
+	planeInSolid,
 	vueProjection,
 	type EspaceVue,
 	type Point3,
@@ -124,11 +125,23 @@ export interface SolideScene {
 	 */
 	droites?: SolideLine[][];
 	/**
+	 * Plans donnés (`plans:`), dans l'ordre écrit : la partie du plan dans le
+	 * solide, teintée après les faces marquées, et son bord en couleur, en tirets
+	 * là où une face du solide passe devant. Absent : le bloc n'a pas de plans.
+	 */
+	plans?: SolidePlanShape[];
+	/**
 	 * Figure que l'on peut tourner seulement : la place de chaque nom de `labels`
 	 * par rapport à son point (sommet, point déclaré, milieu du vecteur), à
 	 * redonner à `buildSolideScene` pour tenir les noms pendant la rotation
 	 */
 	labelOffsets?: EspacePoint[];
+}
+
+/** Un plan donné, dessiné : son polygone dans le solide et les morceaux de son bord */
+export interface SolidePlanShape {
+	fill: EspacePoint[];
+	border: SolideLine[];
 }
 
 /** Ce qu'il faut savoir d'une forme pour lire `sommets:` et `marquer:` */
@@ -257,6 +270,12 @@ const DROITE_NAME_CLEAR = 0.08;
 
 /** Le nom d'une droite : à cette distance de son bout, le long du trait, en cm */
 const DROITE_NAME_BACK = [0.35, 0.8, 1.25];
+
+/**
+ * Le nom d'un plan : écrit en un point du plan, pris parmi son milieu et les
+ * points à ces parts du chemin du milieu vers chaque coin et chaque milieu de côté
+ */
+const PLAN_NAME_TOWARD = [0.3, 0.55];
 
 /** Distance d'une cote à son trait, en cm */
 const COTE_GAP = 0.14;
@@ -468,6 +487,16 @@ const bounds3 = (points: Point3[]) => ({
 	maxZ: Math.max(...points.map((p) => p.z))
 });
 
+/** Distance du point p au segment [a, b] */
+function distanceToSegment(p: EspacePoint, a: EspacePoint, b: EspacePoint): number {
+	const dx = b.x - a.x;
+	const dy = b.y - a.y;
+	const squared = dx * dx + dy * dy;
+	const t =
+		squared === 0 ? 0 : Math.min(1, Math.max(0, ((p.x - a.x) * dx + (p.y - a.y) * dy) / squared));
+	return Math.hypot(p.x - (a.x + dx * t), p.y - (a.y + dy * t));
+}
+
 const centroid = (points: Point3[]): Point3 => ({
 	x: points.reduce((s, p) => s + p.x, 0) / points.length,
 	y: points.reduce((s, p) => s + p.y, 0) / points.length,
@@ -527,6 +556,8 @@ interface Draft {
 	points: EspacePoint[];
 	/** Droites données (`droites:`), chacune en morceaux qui se suivent ; polyèdres seulement */
 	droites?: SolideLine[][];
+	/** Plans donnés (`plans:`) ; `name` : où écrire le nom d'un plan nommé ; polyèdres seulement */
+	plans?: (SolidePlanShape & { name: EspacePoint | null })[];
 }
 
 /** Un solide vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
@@ -661,6 +692,83 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 			});
 		return stretches.map((stretch) => segment(at(stretch.from), at(stretch.to), stretch.hidden));
 	});
+
+	// Plans donnés : la partie du plan dans le solide ; son bord en tirets là où une
+	// face passe devant (lot 7b, question (c))
+	const lerp = (p: Point3, q: Point3, t: number): Point3 => ({
+		x: p.x + (q.x - p.x) * t,
+		y: p.y + (q.y - p.y) * t,
+		z: p.z + (q.z - p.z) * t
+	});
+	const polygons3 = (spec.plans ?? []).map((plan) => {
+		const [a, b, c] = plan.through.map((i) => named3[i]);
+		return planeInSolid(points3, topology.edges, a, b, c);
+	});
+	// Le nom d'un plan se choisit sur le dessin de départ, puis suit son point du plan
+	const restProject = vueProjection(VUE_DE_DEPART, center3).project;
+	const restObstacles: [EspacePoint, EspacePoint][] = [
+		...topology.edges.map(([i, j]): [EspacePoint, EspacePoint] => [
+			restProject(points3[i]),
+			restProject(points3[j])
+		]),
+		...ends3.flatMap((p, i): [EspacePoint, EspacePoint][] =>
+			i % 2 === 0 ? [[restProject(p), restProject(ends3[i + 1])]] : []
+		),
+		...polygons3.flatMap((polygon) =>
+			polygon.map((p, i): [EspacePoint, EspacePoint] => [
+				restProject(p),
+				restProject(polygon[(i + 1) % polygon.length])
+			])
+		)
+	];
+	const restNamed = named3.map(restProject);
+	const plans = spec.plans?.map((plan, k) => {
+		const polygon = polygons3[k];
+		const border = polygon.flatMap((from, i) => {
+			const to = polygon[(i + 1) % polygon.length];
+			const stretches = spec.hidden
+				? hiddenStretches(points3, topology.faces, topology.edges, from, to, view)
+				: [{ from: 0, to: 1, hidden: false }];
+			return stretches.map((stretch) =>
+				segment(
+					project(lerp(from, to, stretch.from)),
+					project(lerp(from, to, stretch.to)),
+					stretch.hidden
+				)
+			);
+		});
+		let name: EspacePoint | null = null;
+		if (plan.name !== null) {
+			const middle3 = centroid(polygon);
+			const toward = polygon.flatMap((p, i) => [
+				p,
+				lerp(p, polygon[(i + 1) % polygon.length], 0.5)
+			]);
+			const spots = [
+				middle3,
+				...PLAN_NAME_TOWARD.flatMap((t) => toward.map((p) => lerp(middle3, p, t)))
+			];
+			// La place la plus dégagée : la plus loin de tout trait et de tout point nommé
+			const room = (spot: Point3) => {
+				const p = restProject(spot);
+				return Math.min(
+					...restObstacles.map(([a, b]) => distanceToSegment(p, a, b)),
+					...restNamed.map((q) => Math.hypot(p.x - q.x, p.y - q.y))
+				);
+			};
+			let best = spots[0];
+			let bestRoom = room(best);
+			for (const spot of spots.slice(1)) {
+				const r = room(spot);
+				if (r > bestRoom + 1e-9) {
+					best = spot;
+					bestRoom = r;
+				}
+			}
+			name = project(best);
+		}
+		return { fill: polygon.map(project), border, name };
+	});
 	return {
 		pivot: project(center3),
 		reach: Math.max(
@@ -669,6 +777,7 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 			)
 		),
 		...(droites !== undefined && { droites }),
+		...(plans !== undefined && { plans }),
 		lines,
 		fills,
 		vertices,
@@ -1335,6 +1444,15 @@ function layoutSolide(
 		pieces[0].points[0],
 		pieces[pieces.length - 1].points[1]
 	]);
+	const plans = draft.plans?.map((plan) => ({
+		fill: plan.fill.map(toScreen),
+		border: plan.border.map((l) => ({ ...l, points: l.points.map(toScreen) })),
+		name: plan.name === null ? null : toScreen(plan.name)
+	}));
+	// Le bord de chaque plan, côté par côté : les noms des points l'évitent
+	const planSegments = (plans ?? []).flatMap((plan) =>
+		plan.fill.map((p, i, all): [EspacePoint, EspacePoint] => [p, all[(i + 1) % all.length]])
+	);
 	// Les sommets dans le repère du dessin fixe, pour l'angle libre où poser un nom : deux
 	// angles libres égaux (sommets D et F d'un pavé) sont départagés par le dernier chiffre,
 	// qui doit être le même au repos que dans le dessin fixe — sinon le nom change de côté
@@ -1496,8 +1614,16 @@ function layoutSolide(
 			l.points.slice(1).map((p, i): [EspacePoint, EspacePoint] => [l.points[i], p])
 		),
 		...arrows.map((a): [EspacePoint, EspacePoint] => [a.shaft[0], a.head[0]]),
-		...droiteSegments
+		...droiteSegments,
+		...planSegments
 	];
+
+	// Plans nommés : « (P) » écrit dans le plan, en un point du plan qu'il suit quand
+	// la figure tourne (il ne se tient pas comme les autres noms : il est déjà à sa place)
+	spec.plans?.forEach((plan, k) => {
+		const at = plans?.[k]?.name;
+		if (plan.name !== null && at != null) labels.push({ at, text: `(${plan.name})` });
+	});
 
 	// Points déclarés : un disque ; le nom en s'éloignant du milieu du dessin, sinon
 	// en tournant, sans toucher une étiquette déjà posée
@@ -1511,7 +1637,7 @@ function layoutSolide(
 		const turns = [0, 1, -1, 2, -2, 3, -3, 4].map((t) => base + (t * Math.PI) / 4);
 		// Avec des droites, un point où passe une droite n'a souvent plus de place libre
 		// tout près : un second tour, plus loin (sans droites, les places d'avant)
-		const gaps = spec.droites === undefined ? [1] : [1, POINT_NAME_FAR];
+		const gaps = spec.droites === undefined && spec.plans === undefined ? [1] : [1, POINT_NAME_FAR];
 		const candidates = gaps.flatMap((gap) =>
 			turns.map((t) => ({
 				at: {
@@ -1660,6 +1786,12 @@ function layoutSolide(
 		...(droites !== undefined && {
 			droites: droites.map((pieces) => pieces.map((l) => ({ ...l, points: l.points.map(shift) })))
 		}),
+		...(plans !== undefined && {
+			plans: plans.map((plan) => ({
+				fill: plan.fill.map(shift),
+				border: plan.border.map((l) => ({ ...l, points: l.points.map(shift) }))
+			}))
+		}),
 		// Une place par nom que l'on peut tenir, dans l'ordre où ils sont posés
 		...(turned !== null && {
 			labelOffsets: anchored.map((l, i) => ({
@@ -1699,6 +1831,11 @@ export function solideLabel(spec: SolideSpec): string {
 		parts.push(
 			droite.name === null ? `droite ${through}` : `droite ${droite.name} égale à ${through}`
 		);
+	}
+	// Plans donnés : leurs points seulement, jamais une position relative (la réponse)
+	for (const plan of spec.plans ?? []) {
+		const through = `(${plan.through.map((i) => known[i]).join('')})`;
+		parts.push(plan.name === null ? `plan ${through}` : `plan ${plan.name} égal à ${through}`);
 	}
 	// Jamais la nature de la section (rectangle, disque) : la réponse de 3e-020
 	const cut = spec.section;
