@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot 1 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-27, après #3253._
 
-- **État** : phase 0 validée (« je valide », toutes les recommandations) ; lot 1 = 5 variations de 5
-  modèles publiés (F2, F3, F5), specs vertes, migration de contenu générée et testée · **Prochaine
-  action** : PR, merge, `db:migrate` (4 conditions), série de relecture dans `/dev/modeles` · **En
-  attente de David** : relecture · **Pièges en cours** : F1 (modèle de 4e) attend l'outil n° 72 de
-  `solides-3d` (segment entre deux sommets, angle droit) ; le pre-commit reformate les JSON
-  exportés, l'index peut garder l'ancienne forme (`git restore --staged`) · **Worktree / branche** :
-  `../ubumaths-wt-idees-3e-espace`, `feat/idees-3e-espace`
+- **État** : lot 1 (5 variations de 5 modèles publiés) mergé ; migration
+  `20261127223236_questions_idees_3e_espace_publies_contenu.sql` seule en attente en prod ·
+  **Prochaine action** : David lance `pnpm db:migrate`, puis série de relecture des 5 modèles dans
+  `/dev/modeles` · **En attente de David** : `db:migrate`, relecture · **Pièges en cours** : F1
+  (modèle de 4e) attend l'outil n° 72 de `solides-3d` ; réservations des 5 modèles à lever après la
+  relecture · **Worktree / branche** : aucun (retiré par `pr:merger`) ; nouveau worktree pour F1
 
 ## Rubrique
 
