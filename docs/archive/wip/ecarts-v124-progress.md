@@ -1,18 +1,18 @@
 ---
 title: Écart V124 (x² − a²bc = 0, solution 0 du cas a = 0) — journal
 date: 2026-11-27
-status: en cours — PR ouverte
+status: #3255 mergée ; journal archivé
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, à l'ouverture de la PR (correctif sondé, testé, relu)._
+_Mis à jour le 2026-11-27, après #3255._
 
-- **État** : correctif fini sur la branche, PR ouverte. Sonde lue, tests verts (mathAST + Atelier + écarts), `check:incremental` à 0, revue `code-reviewer` Opus faite et ses trois points corrigés (détail ci-dessous).
-- **Prochaine action** : CI verte → merge (`pnpm pr:merger`) ; puis, sur `main` en commit direct : barrer V124 au registre, mettre à jour le bloc de `docs/wip/ecarts-a-trier-progress.md` (prochaine action : V125), archiver ce journal.
-- **En attente de David** : deux écarts vus en passant, à porter ou non au registre (section « Vu en passant »).
-- **Pièges en cours** : sondes par l'Atelier (`runInput`), jamais `pnpm math` ; ne jamais écrire `cat > fichier` sans entrée.
-- **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-v124` · `fix/ecarts-v124`.
+- **État** : #3255 mergée : V124 corrigé et clos au registre. Journal archivé.
+- **Prochaine action** : aucune ici ; la suite (V125) est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
+- **En attente de David** : rien. Les deux constats de « Vu en passant » ne sont pas inscrits au registre (décision de David, 2026-11-27 : aucun cas réel d'élève).
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : aucun (retirés au merge de #3255).
 
 ---
 
