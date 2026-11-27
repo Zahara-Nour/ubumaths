@@ -108,6 +108,38 @@ describe('Solide — figure', () => {
 		);
 	});
 
+	it('plans donnés : teintés, bord en couleur, tirets pour le bord caché, nom entre parenthèses', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node('forme: cube 2', 'sommets: A B C D E F G H', 'plans: P = (BDE), (ACG)')
+			}
+		});
+		const fills = [...screen.container.querySelectorAll('polygon.solide-plan')];
+		expect(fills).toHaveLength(2);
+		// Teintés, chacun de sa couleur, sans contour
+		const tints = fills.map((f) => getComputedStyle(f).fill);
+		expect(tints[0]).not.toBe('none');
+		expect(tints[1]).not.toBe('none');
+		expect(tints[0]).not.toBe(tints[1]);
+		// Bord : (BDE) a un côté visible ([BE], face de devant) et deux cachés
+		const borders = [...screen.container.querySelectorAll('polyline.solide-plan-bord')];
+		const first = borders.filter((b) => !b.classList.contains('solide-plan-second'));
+		expect(first.map((p) => p.getAttribute('stroke-dasharray') !== null).sort()).toEqual([
+			false,
+			true,
+			true
+		]);
+		const edge = screen.container.querySelector('polyline.solide-trait')!;
+		const stroke = getComputedStyle(first[0]).stroke;
+		expect(stroke).not.toBe('none');
+		expect(stroke).not.toBe(getComputedStyle(edge).stroke);
+		expect(getComputedStyle(first[0]).fill).toBe('none');
+		expect(parseFloat(getComputedStyle(first[0]).strokeWidth)).toBeGreaterThan(0);
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('(P)');
+	});
+
 	it('droites données : en couleur, tirets dans le solide, nom entre parenthèses', async () => {
 		const screen = await render(Espace, {
 			target: mainElement(),
