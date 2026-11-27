@@ -49,7 +49,7 @@ for (const oblique of [0, 0.5, 1]) {
 	}
 }
 
-/** Des vues quelconques, entre les butées */
+/** Des vues quelconques (à ±75°, la bascule de la vue droite s'ajoute : `turnVue` ramène à la butée) */
 const GRID: EspaceVue[] = [VUE_DE_DEPART, { ...VUE_DE_DEPART, oblique: 0.5 }];
 for (let yaw = -180; yaw < 180; yaw += 20) {
 	for (let pitch = -75; pitch <= 75; pitch += 25) {

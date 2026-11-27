@@ -2,17 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3251 (lot 7b mergé)._
+_Mis à jour le 2026-11-27, PR du bord en butée ouverte (après #3251)._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6, 7a (droites) et 7b
-  (plans) mergés** (#3195 à #3251, § 18 et 19), le 7b essayé par David (« c'est bon »). Les lots 3 à 7b ne
-  sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de
-  l'affirmer).
-- **Prochaine action** : **petite PR du bord en butée** (tranchée, ci-dessous) : un trait posé sur une arête
-  (bord d'un plan, droite) prend l'état de cette arête, y compris quand la face est vue exactement par la
-  tranche (butée de la vue de dessus ou de dessous ; cas témoin : `prisme triangle 3,3 2,1 4,7` avec
-  `plans: (ABC)`). Puis **lot 7c** (repère du solide et points par coordonnées, § 17). Worktree et branche
-  neufs depuis `main`, tests d'abord.
+  (plans) mergés** (#3195 à #3251, § 18 et 19). **Bord en butée** (§ 20) : codé, relu, PR ouverte depuis
+  `fix/solides-3d-bord-en-butee`, **pas mergée : David l'essaie d'abord**. Les lots 3 à 7b ne sont pas en prod
+  tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de l'affirmer).
+- **Prochaine action** : au « c'est bon » de David, `pnpm pr:merger <n>` de la PR du bord en butée (serveur de
+  dev du worktree à tuer par son PID). Puis **lot 7c** (repère du solide et points par coordonnées, § 17) :
+  worktree et branche neufs depuis `main`, tests d'abord.
 - **En attente de David** : il vérifie chaque morceau du lot 7 **avant le merge** (lien `pnpm lien`). Pas de
   `deploy:prod` sans sa demande. Proposé, sans réponse : description des réglages sous le réglage dans la
   page d'aide ; teinter les cases de saisie de `retrouver:`. Signalé, sans réponse : avec deux plans dans un
@@ -38,8 +36,8 @@ _Mis à jour le 2026-11-27, après #3251 (lot 7b mergé)._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : aucun (retirés après #3251, serveur arrêté). À créer : `../ubumaths-wt-solides-3d`,
-  depuis `origin/main` ; le port 5176 peut être pris par une autre session (5177 utilisé pour le 7b).
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, `fix/solides-3d-bord-en-butee`, serveur de dev sur
+  5176 (lien `pnpm lien`). Après le merge : à recréer depuis `origin/main` pour le 7c.
 
 ## 1. D'où l'on part
 
@@ -691,3 +689,9 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   dessous et de biais ; cube avec `(AB)`, `(AC)` et `(ABF)` en butée de dessus ((AB) pleine, (AC) en tirets).
   En butée de dessus du prisme, « (P) » passe sur le nom de C (déjà laissé : il suit son point).
 - Doc : `docs/systeme/ubumark.md` (paragraphe « Droites données »).
+- **Revue** (`code-reviewer`, opus) : ancien et nouveau code comparés sur 1 128 972 segments posés dans le plan
+  d'une face (7 formes, dimensions de 0,1 à 1000, 445 vues, prolongements et points hors de la face compris),
+  contre un témoin indépendant : 31 820 changent, tous sur une face vue par la tranche, tous faux avant et
+  justes après ; aucun « visible » là où le témoin dit « caché ». Seuils : 0 désaccord avec `hiddenEdges` sur
+  141 120 arêtes, angles à 1e-15 près de la tranche compris. Tests neufs rejoués sur l'ancien code : rouges
+  (sauf la diagonale du fond, qui garde le cas inverse). Rien de bloquant ; un commentaire de test corrigé.
