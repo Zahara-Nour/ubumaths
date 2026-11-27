@@ -16,3 +16,4 @@ _Mis à jour le 2026-11-27, phase 0 envoyée._
   rangés sous « Géométrie repérée ». Les deux synthèses sont les seuls manques.
 - [Relevé](idees-1re-geometrie-reperee-releve.md) · [fiches](idees-1re-geometrie-reperee-fiches.md).
 - Question d'accès de la migration : personne (on range deux modèles).
+- Page à cocher de la phase 0 : https://claude.ai/artifact/KcQ3rQhyGqn2jhJFDjgcBJ (verdicts en base, collection `verdicts`).
