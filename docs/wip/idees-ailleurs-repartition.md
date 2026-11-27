@@ -178,6 +178,12 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 060086c8 Périmètre d'un carré                                | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| 4343af4c Périmètre et diamètre (π)                           | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| 60f165a8 Périmètre de figures composées                      | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| 66f9abbf Périmètre d'un rectangle                            | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| ccb4f5e5 Formule du périmètre d'un disque                    | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
+| cfb4c692 Périmètre d'un disque                               | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
 
 ## Idées en attente
 
