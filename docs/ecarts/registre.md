@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V137 · L136 · M60 · C44 · D45 · T37 · E88
+Derniers numéros : V137 · L136 · M60 · C44 · D45 · T37 · E89
 
 ## Écarts
 
@@ -354,3 +354,4 @@ Derniers numéros : V137 · L136 · M60 · C44 · D45 · T37 · E88
 - V137 · bug visible · questions · une puissance rationnelle écrite sur une autre base est comptée fausse, sans « bonne valeur, autre forme » : 2^(1/2) ou √2 pour 4^(1/4) attendu (x⁴ = 4), 3^(1/2) pour 9^(1/4), 2^(1/2) pour 8^(1/6) ; 2 pour 8^(1/3) est reconnu. Trouvé par la revue de #3196 (F6 de 52b884ee limitée à r ∈ {2, 3, 5, 6, 7} pour l'éviter) · preuve : test tests/ecarts/questions.test.ts › V137 · à faire, aucun modèle publié touché (décision de David du 2026-11-26 : inscrire sans corriger)
 - L136 · bug latent · messagerie · le nom de l'expéditeur écrit dans l'index de recherche (message_search_index.sender_name) est figé à l'envoi : un compte renommé garde son ancien nom dans la recherche de ses anciens messages ; sans effet visible tant que la recherche n'a aucun appelant (M41) · preuve : à la main · à trier (security-auditor de #3174)
 - E88 · vérification à l'écran · formules (MathLive) · le MathML accessible que MathLive 0.111.4 produit pour \overrightarrow{AB} est <mover>→</mover> : les lettres AB disparaissent (un lecteur d'écran n'entend que la flèche) et Firefox écrit « Invalid markup: Incorrect number of children for <mover/> tag » dans la console ; \vec{u} est juste ; reproduit hors de l'appli par convertLatexToMathMl de mathlive-ssr ; vu sur /glossaire/representant-vecteur (4 fois), vaut pour tous les vecteurs écrits \overrightarrow ; antérieur à verifs-auto, trouvé par #2978 sous Firefox (nuits du 26 et du 27) · preuve : à la main · en attente
+- E89 · vérification à l'écran · signalements de bug (admin) · sur /dashboard/admin/bug-reports, chaque carte de signalement (BugReportCard.svelte) est un <button> qui contient la case à cocher de sélection (MyCheckbox → bits-ui, un autre <button>) : HTML invalide, Svelte écrit node_invalid_placement_ssr dans la console et le navigateur répare le DOM (décalage possible, hydration_mismatch) ; la page passe toujours selectable={true}, donc à chaque chargement ; antérieur à verifs-auto, trouvé par base-locale-paquet9 « #3011 : Signalements de bug » sous Chrome (nuit du 27, rouge rejoué seul) · preuve : à la main · en attente
