@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, PR de rangement ouverte (branche `feat/idees-6e-durees-rangement`)._
+_Mis à jour le 2026-11-27, après #3237._
 
-- **État** : #3233 mergée, migrée (311bf024), 6 brouillons publiés par David. Ids de prod commités en tête de N1 à N6. Migration de rangement `20261127123146` générée (niveaux et titres concordent avec la prod) : test d'intégration vert, rouge sans la migration (4 échecs). `security-auditor` passé.
-- **Prochaine action** : merge de la PR, puis `db:migrate` depuis le dépôt principal (`migration list --linked` avant : seule `20261127123146` doit attendre) ; puis la relecture dans `/dev/modeles`.
-- **En attente de David** : rien avant la relecture.
-- **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; les messages à décimaux s'écrivent `0.3` dans les specs.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-durees-rangement`, `feat/idees-6e-durees-rangement`.
+- **État** : #3233 et #3237 mergées et migrées. Les 6 modèles neufs (N1 à N6) sont en brouillon en prod, rangés (6-206 et 6-157 sur « calcul de durées », 6-159 sur « conversions », vérifié par MCP) ; la variation ajoutée à 311bf024 est en prod.
+- **Prochaine action** : relecture par David dans `/dev/modeles` (série de relecture des 6 brouillons), puis publication des modèles validés.
+- **En attente de David** : la relecture.
+- **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; N1 et N5 un peu plus larges que l'écran d'iPhone ; les messages à décimaux s'écrivent `0.3` dans les specs.
+- **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Phase 0 (2026-11-27)
 
