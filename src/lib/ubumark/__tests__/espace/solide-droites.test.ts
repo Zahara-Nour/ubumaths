@@ -165,7 +165,9 @@ describe('moteur de vue — droite à travers un polyèdre', () => {
 		const vertices = polyhedronVertices('cube', [2]);
 		const { faces } = solideTopology('cube');
 		// (AG) : de A à G ; (A milieu de [CG]) : sort au milieu de [CG]
-		expect(chordInSolid(vertices, faces, vertices[0], vertices[6])).toEqual([0, 1]);
+		const [enter, leave] = chordInSolid(vertices, faces, vertices[0], vertices[6]);
+		expect(enter).toBeCloseTo(0, 9);
+		expect(leave).toBeCloseTo(1, 9);
 		const middle = lerp(vertices[2], vertices[6], 0.5);
 		const half = lerp(vertices[0], middle, 0.5);
 		const [from, to] = chordInSolid(vertices, faces, vertices[0], half);
@@ -292,10 +294,11 @@ describe('```solide — droites: (dessin fixe)', () => {
 	it('diagonale de la face du fond : cachée tant que le solide passe devant, même hors du solide', () => {
 		const s = scene(...CUBE, 'droites: (DG)');
 		const [pieces] = droitesOf(s);
-		expect(pieces.map((p) => p.dashed)).toEqual([false, true, false]);
-		// Le morceau caché commence avant D (la droite est déjà derrière la face de devant)
+		// Au-delà de D, la droite est encore derrière la face de devant (sur le dessin,
+		// elle n'en sortirait qu'en A) : son bout reste en tirets
+		expect(pieces.map((p) => p.dashed)).toEqual([true, false]);
 		const d = s.vertices[3];
-		const hidden = pieces[1];
+		const hidden = pieces[0];
 		expect(onSegment(d, hidden.points[0], hidden.points[1])).toBe(true);
 		expect(distance(hidden.points[0], d)).toBeGreaterThan(0.3);
 		// … et finit en G, sur le bord du dessin
@@ -411,6 +414,17 @@ describe('```solide — droites: (figure que l’on peut tourner)', () => {
 		const first = buildSolideScene(s, vue);
 		// 8 sommets, I, (d)
 		expect(first.labelOffsets).toHaveLength(10);
-		expect(buildSolideScene(s, vue, first.labelOffsets)).toEqual(first);
+		// Une place redonnée repasse par une soustraction puis une addition : au dernier
+		// chiffre près pour les noms, le reste à l'identique
+		const again = buildSolideScene(s, vue, first.labelOffsets);
+		expect(again.labels.map((l) => l.text)).toEqual(first.labels.map((l) => l.text));
+		again.labels.forEach((label, i) => {
+			expect(label.at.x).toBeCloseTo(first.labels[i].at.x, 9);
+			expect(label.at.y).toBeCloseTo(first.labels[i].at.y, 9);
+		});
+		expect(again.droites).toEqual(first.droites);
+		expect(again.lines).toEqual(first.lines);
+		expect(again.width).toBe(first.width);
+		expect(again.height).toBe(first.height);
 	});
 });

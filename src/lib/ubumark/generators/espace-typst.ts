@@ -176,6 +176,9 @@ const MARKED_FACE_LUMA = 215;
 /** Section (`section:`) : l'orange des figures, clair (lisible en noir et blanc) */
 const SECTION_FILL = 'rgb(248, 200, 150)';
 
+/** Droite donnée (`droites:`) : le bleu des figures (`--color-fig-bleu` à l'écran) */
+const DROITE_STROKE = 'rgb(37, 99, 235)';
+
 /** Un solide en perspective cavalière */
 function solideTypst(spec: SolideSpec): string {
 	const scene = buildSolideScene(spec);
@@ -198,6 +201,14 @@ function solideTypst(spec: SolideSpec): string {
 		const [first, ...rest] = line.points;
 		content.push(
 			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round", join: "round"${dash}), curve.move(${at(first)}), ${rest.map((p) => `curve.line(${at(p)})`).join(', ')}))`
+		);
+	}
+	// Droites données : en couleur après les arêtes, un trait par morceau (caché ou non)
+	for (const piece of (scene.droites ?? []).flat()) {
+		const dash = piece.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
+		const [from, to] = piece.points;
+		content.push(
+			`  #place(top + left, curve(stroke: (paint: ${DROITE_STROKE}, thickness: ${cm(solideLineStroke(piece))}, cap: "round"${dash}), curve.move(${at(from)}), curve.line(${at(to)})))`
 		);
 	}
 	// Flèches (vecteurs donnés, petites flèches des noms) : le trait, puis la pointe noire

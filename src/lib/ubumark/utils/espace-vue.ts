@@ -355,7 +355,7 @@ export function hiddenStretches(
 		if (Math.abs(det) < epsilon * size) continue;
 		const wx = q0.x - p0.x;
 		const wy = q0.y - p0.y;
-		const u = (d.x * wy - d.y * wx) / det;
+		const u = (wx * d.y - wy * d.x) / det;
 		if (u < -1e-9 || u > 1 + 1e-9) continue;
 		cuts.push((wx * e.y - wy * e.x) / det);
 	}
