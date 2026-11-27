@@ -1,0 +1,32 @@
+{
+	"id": "1b05dafc-26df-437b-beec-187aa7dac7d0",
+	"title": "Relecture — problèmes de 6e, 4 modèles publiés complétés",
+	"grade": "6",
+	"description": "Relecture dans /dev/modeles des 4 modèles publiés de 6e auxquels le chantier idees-6e-problemes a ajouté des variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Problèmes de produits décimaux",
+			"templateId": "32b7a9bc-300c-44a1-af0d-a811ca688eb2",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Schéma en barres : somme et différence",
+			"templateId": "399342ff-6732-450e-82a8-7a934cc04ace",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Schéma en barres : parts égales et un reste",
+			"templateId": "2af325bb-4e7f-42c2-bb93-c9902bc133d7",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Contrôler par un ordre de grandeur",
+			"templateId": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
