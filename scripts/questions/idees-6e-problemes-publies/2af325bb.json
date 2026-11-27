@@ -1,0 +1,282 @@
+{
+	"id": "2af325bb-4e7f-42c2-bb93-c9902bc133d7",
+	"title": "Schéma en barres : parts égales et un reste",
+	"description": "Un total fait de a parts égales (a de 2 à 6) et d'une quantité connue, schéma en barres donné : trouver une part (a × ? + b = c)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"statement": "${{a}}$ cahiers identiques et une règle à ${{b}}$ € coûtent ${{eval:a*x+b}}$ € en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\nQuel est le prix d'un cahier ?\n\n$?$ €",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "x",
+					"expression": "2..150"
+				},
+				{
+					"name": "b",
+					"expression": "2..50"
+				}
+			],
+			"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+			"correction": {
+				"steps": [
+					"**Les parts égales.** On enlève le prix de la règle : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+					"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\n"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"statement": "Zoé a ${{a}}$ paquets de billes identiques et ${{b}}$ billes en vrac, soit ${{eval:a*x+b}}$ billes en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\nCombien de billes y a-t-il dans un paquet ?\n\n$?$ billes",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "x",
+					"expression": "2..150"
+				},
+				{
+					"name": "b",
+					"expression": "2..50"
+				}
+			],
+			"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+			"correction": {
+				"steps": [
+					"**Les parts égales.** On enlève les billes en vrac : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+					"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "${{n1}}$ pains à ${{eval:((p1)/100)[€]}}$ l'un et ${{n2}}$ tartelettes identiques coûtent ${{eval:(((n1*p1+n2*p2))/100)[€]}}$ en tout.\n\n```schema-barres\n: {{n1}} pains (2) ; ? ; ?{{if:n2>2| ; ?|}}{{if:n2>3| ; ?|}}{{if:n2>4| ; ?|}}{{if:n2>5| ; ?|}} = {{if:mod((n1*p1+n2*p2),100)==0|{{eval:((n1*p1+n2*p2))/100}} €|{{eval:floor(((n1*p1+n2*p2))/100)}},{{if:mod((n1*p1+n2*p2),100)<10|0|}}{{eval:mod((n1*p1+n2*p2),100)}} €}}\n```\n\nQuel est le prix d'une tartelette ? Écris l'unité dans ta réponse.\n\nUne tartelette coûte $?$.",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "2..5"
+				},
+				{
+					"name": "n2",
+					"expression": "2..6"
+				},
+				{
+					"name": "q",
+					"expression": "2..19"
+				},
+				{
+					"name": "p1",
+					"expression": "eval:5*n2*q"
+				},
+				{
+					"name": "r",
+					"expression": "21..59"
+				},
+				{
+					"name": "p2",
+					"expression": "eval:5*r"
+				}
+			],
+			"conditions": ["p1>=50", "p1<=195", "n1*p1!=p2", "n1*p1!=n2*p2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((p2)/100)[€]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(((n1*p1+n2*p2)/n2)/100)[€]}}",
+							"message": "Tu as partagé tout le prix entre les tartelettes : retire d'abord le prix des pains.",
+							"label": "Pains non retirés"
+						},
+						{
+							"answer": "{{eval:((n2*p2)/100)[€]}}",
+							"message": "C'est le prix des ${{n2}}$ tartelettes : partage-le entre elles.",
+							"label": "Prix des tartelettes non partagé"
+						},
+						{
+							"answer": "{{eval:((n1*p1)/100)[€]}}",
+							"message": "C'est le prix des ${{n1}}$ pains, que l'on retire du total.",
+							"label": "Prix des pains"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le prix des pains.** ${{n1}} \\times {{if:mod(p1,100)==0|{{eval:(p1)/100;d}}|{{eval:(p1)/100;d2}}}} = {{if:mod(n1*p1,100)==0|{{eval:(n1*p1)/100;d}}|{{eval:(n1*p1)/100;d2}}}}$.",
+					"**Les parts égales.** On enlève le prix des pains : ${{if:mod((n1*p1+n2*p2),100)==0|{{eval:((n1*p1+n2*p2))/100;d}}|{{eval:((n1*p1+n2*p2))/100;d2}}}} - {{if:mod(n1*p1,100)==0|{{eval:(n1*p1)/100;d}}|{{eval:(n1*p1)/100;d2}}}} = {{if:mod(n2*p2,100)==0|{{eval:(n2*p2)/100;d}}|{{eval:(n2*p2)/100;d2}}}}$.",
+					"**Une part.** ${{if:mod(n2*p2,100)==0|{{eval:(n2*p2)/100;d}}|{{eval:(n2*p2)/100;d2}}}} \\div {{n2}} = \\textcolor{{{color:primary.0}}}{{{if:mod(p2,100)==0|{{eval:(p2)/100;d}}|{{eval:(p2)/100;d2}}}}}$ : une tartelette coûte $\\textcolor{{{color:primary.0}}}{{{eval:((p2)/100)[€]}}}$.\n\n```schema-barres\n: {{n1}} pains (2) ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}} ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}{{if:n2>2| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}}{{if:n2>3| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}}{{if:n2>4| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}}{{if:n2>5| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}} = {{if:mod((n1*p1+n2*p2),100)==0|{{eval:((n1*p1+n2*p2))/100}} €|{{eval:floor(((n1*p1+n2*p2))/100)}},{{if:mod((n1*p1+n2*p2),100)<10|0|}}{{eval:mod((n1*p1+n2*p2),100)}} €}}\n```"
+				]
+			},
+			"hint": "Que représente la première partie du schéma ? Combien coûte-t-elle ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"x": "31"
+			},
+			"description": "Source CM1 : 3 × ? + 7 = 100 → 31",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"x": "31"
+			},
+			"description": "Erreur : (c + b) ÷ a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["93"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"x": "31"
+			},
+			"description": "Erreur : c − b sans partager",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["150"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "49",
+				"x": "150"
+			},
+			"description": "6 paquets de 150, 49 en vrac",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"x": "2"
+			},
+			"description": "2 paquets de 2, 2 en vrac",
+			"variationIndex": 1
+		},
+		{
+			"description": "F3 : 3 × 0,80 + 4 × ? = 11,80 → 2,35 €",
+			"variationIndex": 2,
+			"variables": {
+				"n1": "3",
+				"n2": "4",
+				"q": "4",
+				"p1": "80",
+				"r": "47",
+				"p2": "235"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}35\\,€"]
+		},
+		{
+			"description": "F3 : sans unité refusé",
+			"variationIndex": 2,
+			"variables": {
+				"n1": "3",
+				"n2": "4",
+				"q": "4",
+				"p1": "80",
+				"r": "47",
+				"p2": "235"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2{,}35"]
+		},
+		{
+			"description": "F3 : 11,80 ÷ 4 (2,95 €)",
+			"variationIndex": 2,
+			"variables": {
+				"n1": "3",
+				"n2": "4",
+				"q": "4",
+				"p1": "80",
+				"r": "47",
+				"p2": "235"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as partagé tout le prix entre les tartelettes : retire d'abord le prix des pains."
+			},
+			"answers": ["2{,}95\\,€"]
+		},
+		{
+			"description": "F3 : non partagé (9,40 €)",
+			"variationIndex": 2,
+			"variables": {
+				"n1": "3",
+				"n2": "4",
+				"q": "4",
+				"p1": "80",
+				"r": "47",
+				"p2": "235"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix des $4$ tartelettes : partage-le entre elles."
+			},
+			"answers": ["9{,}4\\,€"]
+		},
+		{
+			"description": "F3 : prix des pains (2,40 €)",
+			"variationIndex": 2,
+			"variables": {
+				"n1": "3",
+				"n2": "4",
+				"q": "4",
+				"p1": "80",
+				"r": "47",
+				"p2": "235"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix des $3$ pains, que l'on retire du total."
+			},
+			"answers": ["2{,}4\\,€"]
+		}
+	]
+}

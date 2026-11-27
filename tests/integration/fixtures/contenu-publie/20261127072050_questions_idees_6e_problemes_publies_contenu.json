@@ -1,0 +1,3170 @@
+{
+	"migration": "supabase/migrations/20261127072050_questions_idees_6e_problemes_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "2af325bb-4e7f-42c2-bb93-c9902bc133d7",
+			"title": "Schéma en barres : parts égales et un reste",
+			"fichier": "2af325bb.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{x}}"
+							}
+						],
+						"statement": "${{a}}$ cahiers identiques et une règle à ${{b}}$ € coûtent ${{eval:a*x+b}}$ € en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\nQuel est le prix d'un cahier ?\n\n$?$ €",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "x",
+								"expression": "2..150"
+							},
+							{
+								"name": "b",
+								"expression": "2..50"
+							}
+						],
+						"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+						"correction": {
+							"steps": [
+								"**Les parts égales.** On enlève le prix de la règle : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+								"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\n"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{x}}"
+							}
+						],
+						"statement": "Zoé a ${{a}}$ paquets de billes identiques et ${{b}}$ billes en vrac, soit ${{eval:a*x+b}}$ billes en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\nCombien de billes y a-t-il dans un paquet ?\n\n$?$ billes",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "x",
+								"expression": "2..150"
+							},
+							{
+								"name": "b",
+								"expression": "2..50"
+							}
+						],
+						"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+						"correction": {
+							"steps": [
+								"**Les parts égales.** On enlève les billes en vrac : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+								"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\n"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["31"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "7",
+							"x": "31"
+						},
+						"description": "Source CM1 : 3 × ? + 7 = 100 → 31",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["35"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "7",
+							"x": "31"
+						},
+						"description": "Erreur : (c + b) ÷ a",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["93"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "7",
+							"x": "31"
+						},
+						"description": "Erreur : c − b sans partager",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["150"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "6",
+							"b": "49",
+							"x": "150"
+						},
+						"description": "6 paquets de 150, 49 en vrac",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2",
+							"x": "2"
+						},
+						"description": "2 paquets de 2, 2 en vrac",
+						"variationIndex": 1
+					}
+				],
+				"description": "Un total fait de a parts égales (a de 2 à 6) et d'une quantité connue, schéma en barres donné : trouver une part (a × ? + b = c)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{x}}"
+							}
+						],
+						"statement": "${{a}}$ cahiers identiques et une règle à ${{b}}$ € coûtent ${{eval:a*x+b}}$ € en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\nQuel est le prix d'un cahier ?\n\n$?$ €",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "x",
+								"expression": "2..150"
+							},
+							{
+								"name": "b",
+								"expression": "2..50"
+							}
+						],
+						"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+						"correction": {
+							"steps": [
+								"**Les parts égales.** On enlève le prix de la règle : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+								"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\n"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{x}}"
+							}
+						],
+						"statement": "Zoé a ${{a}}$ paquets de billes identiques et ${{b}}$ billes en vrac, soit ${{eval:a*x+b}}$ billes en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\nCombien de billes y a-t-il dans un paquet ?\n\n$?$ billes",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "x",
+								"expression": "2..150"
+							},
+							{
+								"name": "b",
+								"expression": "2..50"
+							}
+						],
+						"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+						"correction": {
+							"steps": [
+								"**Les parts égales.** On enlève les billes en vrac : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+								"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\n"
+							]
+						}
+					},
+					{
+						"statement": "${{n1}}$ pains à ${{eval:((p1)/100)[€]}}$ l'un et ${{n2}}$ tartelettes identiques coûtent ${{eval:(((n1*p1+n2*p2))/100)[€]}}$ en tout.\n\n```schema-barres\n: {{n1}} pains (2) ; ? ; ?{{if:n2>2| ; ?|}}{{if:n2>3| ; ?|}}{{if:n2>4| ; ?|}}{{if:n2>5| ; ?|}} = {{if:mod((n1*p1+n2*p2),100)==0|{{eval:((n1*p1+n2*p2))/100}} €|{{eval:floor(((n1*p1+n2*p2))/100)}},{{if:mod((n1*p1+n2*p2),100)<10|0|}}{{eval:mod((n1*p1+n2*p2),100)}} €}}\n```\n\nQuel est le prix d'une tartelette ? Écris l'unité dans ta réponse.\n\nUne tartelette coûte $?$.",
+						"variables": [
+							{
+								"name": "n1",
+								"expression": "2..5"
+							},
+							{
+								"name": "n2",
+								"expression": "2..6"
+							},
+							{
+								"name": "q",
+								"expression": "2..19"
+							},
+							{
+								"name": "p1",
+								"expression": "eval:5*n2*q"
+							},
+							{
+								"name": "r",
+								"expression": "21..59"
+							},
+							{
+								"name": "p2",
+								"expression": "eval:5*r"
+							}
+						],
+						"conditions": ["p1>=50", "p1<=195", "n1*p1!=p2", "n1*p1!=n2*p2"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:((p2)/100)[€]}}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(((n1*p1+n2*p2)/n2)/100)[€]}}",
+										"message": "Tu as partagé tout le prix entre les tartelettes : retire d'abord le prix des pains.",
+										"label": "Pains non retirés"
+									},
+									{
+										"answer": "{{eval:((n2*p2)/100)[€]}}",
+										"message": "C'est le prix des ${{n2}}$ tartelettes : partage-le entre elles.",
+										"label": "Prix des tartelettes non partagé"
+									},
+									{
+										"answer": "{{eval:((n1*p1)/100)[€]}}",
+										"message": "C'est le prix des ${{n1}}$ pains, que l'on retire du total.",
+										"label": "Prix des pains"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Le prix des pains.** ${{n1}} \\times {{if:mod(p1,100)==0|{{eval:(p1)/100;d}}|{{eval:(p1)/100;d2}}}} = {{if:mod(n1*p1,100)==0|{{eval:(n1*p1)/100;d}}|{{eval:(n1*p1)/100;d2}}}}$.",
+								"**Les parts égales.** On enlève le prix des pains : ${{if:mod((n1*p1+n2*p2),100)==0|{{eval:((n1*p1+n2*p2))/100;d}}|{{eval:((n1*p1+n2*p2))/100;d2}}}} - {{if:mod(n1*p1,100)==0|{{eval:(n1*p1)/100;d}}|{{eval:(n1*p1)/100;d2}}}} = {{if:mod(n2*p2,100)==0|{{eval:(n2*p2)/100;d}}|{{eval:(n2*p2)/100;d2}}}}$.",
+								"**Une part.** ${{if:mod(n2*p2,100)==0|{{eval:(n2*p2)/100;d}}|{{eval:(n2*p2)/100;d2}}}} \\div {{n2}} = \\textcolor{{{color:primary.0}}}{{{if:mod(p2,100)==0|{{eval:(p2)/100;d}}|{{eval:(p2)/100;d2}}}}}$ : une tartelette coûte $\\textcolor{{{color:primary.0}}}{{{eval:((p2)/100)[€]}}}$.\n\n```schema-barres\n: {{n1}} pains (2) ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}} ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}{{if:n2>2| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}}{{if:n2>3| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}}{{if:n2>4| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}}{{if:n2>5| ; {{if:mod(p2,100)==0|{{eval:(p2)/100}} €|{{eval:floor((p2)/100)}},{{if:mod(p2,100)<10|0|}}{{eval:mod(p2,100)}} €}}|}} = {{if:mod((n1*p1+n2*p2),100)==0|{{eval:((n1*p1+n2*p2))/100}} €|{{eval:floor(((n1*p1+n2*p2))/100)}},{{if:mod((n1*p1+n2*p2),100)<10|0|}}{{eval:mod((n1*p1+n2*p2),100)}} €}}\n```"
+							]
+						},
+						"hint": "Que représente la première partie du schéma ? Combien coûte-t-elle ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["31"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "7",
+							"x": "31"
+						},
+						"description": "Source CM1 : 3 × ? + 7 = 100 → 31",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["35"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "7",
+							"x": "31"
+						},
+						"description": "Erreur : (c + b) ÷ a",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["93"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "7",
+							"x": "31"
+						},
+						"description": "Erreur : c − b sans partager",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["150"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "6",
+							"b": "49",
+							"x": "150"
+						},
+						"description": "6 paquets de 150, 49 en vrac",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2",
+							"x": "2"
+						},
+						"description": "2 paquets de 2, 2 en vrac",
+						"variationIndex": 1
+					},
+					{
+						"description": "F3 : 3 × 0,80 + 4 × ? = 11,80 → 2,35 €",
+						"variationIndex": 2,
+						"variables": {
+							"n1": "3",
+							"n2": "4",
+							"q": "4",
+							"p1": "80",
+							"r": "47",
+							"p2": "235"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2{,}35\\,€"]
+					},
+					{
+						"description": "F3 : sans unité refusé",
+						"variationIndex": 2,
+						"variables": {
+							"n1": "3",
+							"n2": "4",
+							"q": "4",
+							"p1": "80",
+							"r": "47",
+							"p2": "235"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2{,}35"]
+					},
+					{
+						"description": "F3 : 11,80 ÷ 4 (2,95 €)",
+						"variationIndex": 2,
+						"variables": {
+							"n1": "3",
+							"n2": "4",
+							"q": "4",
+							"p1": "80",
+							"r": "47",
+							"p2": "235"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as partagé tout le prix entre les tartelettes : retire d'abord le prix des pains."
+						},
+						"answers": ["2{,}95\\,€"]
+					},
+					{
+						"description": "F3 : non partagé (9,40 €)",
+						"variationIndex": 2,
+						"variables": {
+							"n1": "3",
+							"n2": "4",
+							"q": "4",
+							"p1": "80",
+							"r": "47",
+							"p2": "235"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est le prix des $4$ tartelettes : partage-le entre elles."
+						},
+						"answers": ["9{,}4\\,€"]
+					},
+					{
+						"description": "F3 : prix des pains (2,40 €)",
+						"variationIndex": 2,
+						"variables": {
+							"n1": "3",
+							"n2": "4",
+							"q": "4",
+							"p1": "80",
+							"r": "47",
+							"p2": "235"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est le prix des $3$ pains, que l'on retire du total."
+						},
+						"answers": ["2{,}4\\,€"]
+					}
+				],
+				"description": "Un total fait de a parts égales (a de 2 à 6) et d'une quantité connue, schéma en barres donné : trouver une part (a × ? + b = c)"
+			},
+			"changements": {
+				"ajoutees": [3],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "32b7a9bc-300c-44a1-af0d-a811ca688eb2",
+			"title": "Problèmes de produits décimaux",
+			"fichier": "32b7a9bc.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(2*j+1)*k/20;d}}"
+							}
+						],
+						"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Léa en achète ${{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "h",
+								"expression": "6..29"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "j",
+								"expression": "0..3"
+							},
+							{
+								"name": "m",
+								"expression": "eval:j+0.5;d"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+								"De tête : {{if:j==0|la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$|${{j}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$, plus la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$}}.",
+								"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}$$",
+								"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}~\\unit{€}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:L*P/100;d}}"
+							}
+						],
+						"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "P",
+								"expression": "160..199"
+							},
+							{
+								"name": "t",
+								"expression": "1..4"
+							},
+							{
+								"name": "L",
+								"expression": "eval:10*t"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ nombre de litres $\\times$ prix d'un litre.",
+								"De tête : $10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:P/10;d}}${{if:t>1|, puis $\\times {{t}}$|}}.",
+								"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:m*k/100;d}}"
+							}
+						],
+						"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Inès en achète $0.{{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "h",
+								"expression": "6..49"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "sm",
+								"expression": "0..1"
+							},
+							{
+								"name": "m",
+								"expression": "{{if:sm==0|2|5}}"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
+								"{{if:sm==0|$0.2$ kg, c'est le cinquième d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 5$.|$0.5$ kg, c'est la moitié d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 2$.}}",
+								"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
+								"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$."
+							]
+						}
+					},
+					{
+						"hint": "Multiplier par $10$ ou par $100$ fait glisser les chiffres vers la gauche dans le tableau de numération.",
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:P/10;d}}",
+								"expectedErrors": [
+									{
+										"label": "Zéro ajouté à la fin",
+										"answer": "{{eval:P/100;d}}",
+										"message": "Écrire un $0$ à la fin de ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}$ ne change pas sa valeur : multiplier par $10$ fait glisser chaque chiffre d'un rang vers la gauche."
+									},
+									{
+										"label": "Division au lieu de multiplication",
+										"answer": "{{eval:P/1000;d}}",
+										"message": "Tu as divisé par $10$ : $10~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$."
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{P}}",
+								"expectedErrors": [
+									{
+										"label": "Zéros ajoutés à la fin",
+										"answer": "{{eval:P/100;d}}",
+										"message": "Écrire des $0$ à la fin de ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}$ ne change pas sa valeur : multiplier par $100$ fait glisser chaque chiffre de deux rangs vers la gauche."
+									},
+									{
+										"label": "Division au lieu de multiplication",
+										"answer": "{{eval:P/10000;d}}",
+										"message": "Tu as divisé par $100$ : $100~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$."
+									}
+								]
+							}
+						],
+						"statement": "Au marché, les {{if:f==0|pommes|{{if:f==1|tomates|oranges}}}} coûtent ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$ le kilogramme.\n\nCombien coûtent $10~\\unit{kg}$ ? $?~\\text{€}$\n\nCombien coûtent $100~\\unit{kg}$ ? $?~\\text{€}$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "P",
+								"expression": "101..599"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+								"$$10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:P/10;d}}}$$",
+								"$$100 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{P}}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3,6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "1,5 kg à 2,40 € : 3,6 €",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,60"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "3,60 € accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : addition (3,9)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : 1 kg seulement (2,4)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["37"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "20 L à 1,85 € : 37 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["370"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "Erreur : virgule (370)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "0,5 kg à 4,80 € : 2,4 €",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2,40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "2,40 € accepté",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : 24",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5,3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : addition (5,3)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["23{,}5", "235"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : 2,35 € le kg",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["23{,}50", "235"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : 23,50 accepté",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2{,}350", "235"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Écrire un $0$ à la fin de $2.35$ ne change pas sa valeur : multiplier par $10$ fait glisser chaque chiffre d'un rang vers la gauche."
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : zéro ajouté à la fin",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["23{,}5", "0{,}0235"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as divisé par $100$ : $100~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$."
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : division par 100",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["23{,}5", "2\\,350"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : 100 kg à 23,5",
+						"variationIndex": 3
+					}
+				],
+				"description": "Prix à payer, calculs de tête : masse × prix au kilo (1,5 kg à 2,40 €), 10, 20, 30 ou 40 litres × prix du litre, 0,2 ou 0,5 kg (le produit est plus petit)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(2*j+1)*k/20;d}}"
+							}
+						],
+						"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Léa en achète ${{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "h",
+								"expression": "6..29"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "j",
+								"expression": "0..3"
+							},
+							{
+								"name": "m",
+								"expression": "eval:j+0.5;d"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+								"De tête : {{if:j==0|la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$|${{j}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$, plus la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$}}.",
+								"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}$$",
+								"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}~\\unit{€}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:L*P/100;d}}"
+							}
+						],
+						"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "P",
+								"expression": "160..199"
+							},
+							{
+								"name": "t",
+								"expression": "1..4"
+							},
+							{
+								"name": "L",
+								"expression": "eval:10*t"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ nombre de litres $\\times$ prix d'un litre.",
+								"De tête : $10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:P/10;d}}${{if:t>1|, puis $\\times {{t}}$|}}.",
+								"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:m*k/100;d}}"
+							}
+						],
+						"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Inès en achète $0.{{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "h",
+								"expression": "6..49"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "sm",
+								"expression": "0..1"
+							},
+							{
+								"name": "m",
+								"expression": "{{if:sm==0|2|5}}"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
+								"{{if:sm==0|$0.2$ kg, c'est le cinquième d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 5$.|$0.5$ kg, c'est la moitié d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 2$.}}",
+								"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
+								"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$."
+							]
+						}
+					},
+					{
+						"hint": "Multiplier par $10$ ou par $100$ fait glisser les chiffres vers la gauche dans le tableau de numération.",
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:P/10;d}}",
+								"expectedErrors": [
+									{
+										"label": "Zéro ajouté à la fin",
+										"answer": "{{eval:P/100;d}}",
+										"message": "Écrire un $0$ à la fin de ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}$ ne change pas sa valeur : multiplier par $10$ fait glisser chaque chiffre d'un rang vers la gauche."
+									},
+									{
+										"label": "Division au lieu de multiplication",
+										"answer": "{{eval:P/1000;d}}",
+										"message": "Tu as divisé par $10$ : $10~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$."
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{P}}",
+								"expectedErrors": [
+									{
+										"label": "Zéros ajoutés à la fin",
+										"answer": "{{eval:P/100;d}}",
+										"message": "Écrire des $0$ à la fin de ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}$ ne change pas sa valeur : multiplier par $100$ fait glisser chaque chiffre de deux rangs vers la gauche."
+									},
+									{
+										"label": "Division au lieu de multiplication",
+										"answer": "{{eval:P/10000;d}}",
+										"message": "Tu as divisé par $100$ : $100~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$."
+									}
+								]
+							}
+						],
+						"statement": "Au marché, les {{if:f==0|pommes|{{if:f==1|tomates|oranges}}}} coûtent ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$ le kilogramme.\n\nCombien coûtent $10~\\unit{kg}$ ? $?~\\text{€}$\n\nCombien coûtent $100~\\unit{kg}$ ? $?~\\text{€}$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "P",
+								"expression": "101..599"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+								"$$10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:P/10;d}}}$$",
+								"$$100 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{P}}}$$"
+							]
+						}
+					},
+					{
+						"statement": "Une place de cinéma coûte ${{eval:((P)/100)[€]}}$. Léa achète ${{a}}$ places pour sa famille et son oncle en achète ${{b}}$ pour la sienne.\n\nCombien paient-ils à eux deux ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "10|20"
+							},
+							{
+								"name": "a",
+								"expression": "3..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:s-a"
+							},
+							{
+								"name": "P",
+								"expression": "1001..2999"
+							}
+						],
+						"conditions": ["b>=3", "a!=b", "mod(P,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:s*P/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*P/100;d}}",
+										"message": "C'est le prix des places de Léa : il faut aussi compter celles de son oncle.",
+										"label": "Un seul achat compté"
+									},
+									{
+										"answer": "{{eval:b*P/100;d}}",
+										"message": "C'est le prix des places de l'oncle : il faut aussi compter celles de Léa.",
+										"label": "Un seul achat compté"
+									},
+									{
+										"answer": "{{eval:(100*s+P)/100;d}}",
+										"message": "Tu as ajouté le nombre de places au prix : multiplie le prix d'une place par le nombre de places.",
+										"label": "Nombre de places ajouté au prix"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Regrouper les quantités.** Toutes les places ont le même prix : on compte d'abord les places, ${{a}} + {{b}} = {{s}}$.",
+								"$${{s}} \\times {{if:mod(P,100)==0|{{eval:(P)/100;d}}|{{eval:(P)/100;d2}}}} = \\textcolor{{{color:primary.0}}}{{{if:mod(s*P,100)==0|{{eval:(s*P)/100;d}}|{{eval:(s*P)/100;d2}}}}}$$",
+								"Ils paient $\\textcolor{{{color:primary.0}}}{{{eval:((s*P)/100)[€]}}}$ à eux deux."
+							]
+						},
+						"hint": "Combien de places achètent-ils en tout ?"
+					},
+					{
+						"statement": "Inès achète ${{n}}$ boîtes de peinture à ${{eval:((P)/100)[€]}}$ l'une pour l'atelier de son club. Sa voisine lui en reprend ${{m}}$ et lui rembourse leur prix.\n\nCombien Inès a-t-elle dépensé, une fois remboursée ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "10|20"
+							},
+							{
+								"name": "m",
+								"expression": "3..9"
+							},
+							{
+								"name": "n",
+								"expression": "eval:m+s"
+							},
+							{
+								"name": "P",
+								"expression": "1001..2999"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:s*P/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:n*P/100;d}}",
+										"message": "C'est le prix des ${{n}}$ boîtes : la voisine en a remboursé ${{m}}$.",
+										"label": "Remboursement oublié"
+									},
+									{
+										"answer": "{{eval:m*P/100;d}}",
+										"message": "C'est ce que la voisine a remboursé, pas ce qu'Inès a dépensé.",
+										"label": "Remboursement seul"
+									},
+									{
+										"answer": "{{eval:(n+m)*P/100;d}}",
+										"message": "Tu as ajouté les boîtes reprises : la voisine les a remboursées, il faut les retirer.",
+										"label": "Quantités additionnées"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Regrouper les quantités.** Inès garde ${{n}} - {{m}} = {{s}}$ boîtes : ce sont celles qu'elle a vraiment payées.",
+								"$${{s}} \\times {{if:mod(P,100)==0|{{eval:(P)/100;d}}|{{eval:(P)/100;d2}}}} = \\textcolor{{{color:primary.0}}}{{{if:mod(s*P,100)==0|{{eval:(s*P)/100;d}}|{{eval:(s*P)/100;d2}}}}}$$",
+								"Inès a dépensé $\\textcolor{{{color:primary.0}}}{{{eval:((s*P)/100)[€]}}}$."
+							]
+						},
+						"hint": "Combien de boîtes Inès garde-t-elle ?"
+					},
+					{
+						"statement": "Au marché, Malik achète ${{eval:x2/2;d}}~\\unit{kg}$ de {{if:f==0|pommes|{{if:f==1|poires|carottes}}}} à ${{eval:((20*u)/100)[€]}}$ le kilogramme et ${{g}}~\\unit{g}$ de {{if:f==0|fromage|{{if:f==1|jambon|noix}}}} à ${{eval:((20*w)/100)[€]}}$ le kilogramme.\n\nCombien paie-t-il en tout ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "x2",
+								"expression": "3..6"
+							},
+							{
+								"name": "u",
+								"expression": "6..20"
+							},
+							{
+								"name": "g",
+								"expression": "100|200|500"
+							},
+							{
+								"name": "w",
+								"expression": "40..124"
+							}
+						],
+						"conditions": ["mod(u,5)!=0", "mod(w,5)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(10*x2*u+g*w/50)/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(10*x2*u+20*g*w)/100;d}}",
+										"message": "Tu as multiplié par ${{g}}$ comme si c'était des kilogrammes : ${{g}}~\\unit{g} = {{eval:g/1000;d}}~\\unit{kg}$.",
+										"label": "Grammes non convertis"
+									},
+									{
+										"answer": "{{eval:(10*x2*u+g*w/5)/100;d}}",
+										"message": "Vérifie la conversion : $1~\\unit{kg} = 1\\,000~\\unit{g}$, donc ${{g}}~\\unit{g} = {{eval:g/1000;d}}~\\unit{kg}$.",
+										"label": "Conversion décalée d'un rang"
+									},
+									{
+										"answer": "{{eval:x2*u/10;d}}",
+										"message": "C'est le prix du premier achat seulement : ajoute celui du second.",
+										"label": "Un seul achat compté"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Convertir.** Le prix est donné au kilogramme : ${{g}}~\\unit{g} = {{eval:g/1000;d}}~\\unit{kg}$.",
+								"**Chaque achat.** ${{eval:x2/2;d}} \\times {{if:mod(20*u,100)==0|{{eval:(20*u)/100;d}}|{{eval:(20*u)/100;d2}}}} = {{if:mod(10*x2*u,100)==0|{{eval:(10*x2*u)/100;d}}|{{eval:(10*x2*u)/100;d2}}}}$ et ${{eval:g/1000;d}} \\times {{if:mod(20*w,100)==0|{{eval:(20*w)/100;d}}|{{eval:(20*w)/100;d2}}}} = {{if:mod(g*w/50,100)==0|{{eval:(g*w/50)/100;d}}|{{eval:(g*w/50)/100;d2}}}}$.",
+								"**En tout.** ${{if:mod(10*x2*u,100)==0|{{eval:(10*x2*u)/100;d}}|{{eval:(10*x2*u)/100;d2}}}} + {{if:mod(g*w/50,100)==0|{{eval:(g*w/50)/100;d}}|{{eval:(g*w/50)/100;d2}}}} = \\textcolor{{{color:primary.0}}}{{{if:mod(10*x2*u+g*w/50,100)==0|{{eval:(10*x2*u+g*w/50)/100;d}}|{{eval:(10*x2*u+g*w/50)/100;d2}}}}}$ : Malik paie $\\textcolor{{{color:primary.0}}}{{{eval:((10*x2*u+g*w/50)/100)[€]}}}$."
+							]
+						},
+						"hint": "Le second prix est donné pour un kilogramme : combien de kilogrammes font ${{g}}~\\unit{g}$ ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3,6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "1,5 kg à 2,40 € : 3,6 €",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,60"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "3,60 € accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : addition (3,9)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : 1 kg seulement (2,4)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["37"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "20 L à 1,85 € : 37 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["370"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "Erreur : virgule (370)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "0,5 kg à 4,80 € : 2,4 €",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2,40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "2,40 € accepté",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : 24",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5,3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : addition (5,3)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["23{,}5", "235"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : 2,35 € le kg",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["23{,}50", "235"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : 23,50 accepté",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2{,}350", "235"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Écrire un $0$ à la fin de $2.35$ ne change pas sa valeur : multiplier par $10$ fait glisser chaque chiffre d'un rang vers la gauche."
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : zéro ajouté à la fin",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["23{,}5", "0{,}0235"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as divisé par $100$ : $100~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$."
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : division par 100",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["23{,}5", "2\\,350"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"P": "235",
+							"f": "0"
+						},
+						"description": "F11a : 100 kg à 23,5",
+						"variationIndex": 3
+					},
+					{
+						"description": "F1 grouper : (4 + 6) × 14,37 = 143,70",
+						"variationIndex": 4,
+						"variables": {
+							"s": "10",
+							"a": "4",
+							"b": "6",
+							"P": "1437"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["143{,}7"]
+					},
+					{
+						"description": "F1 grouper : 143,70 accepté",
+						"variationIndex": 4,
+						"variables": {
+							"s": "10",
+							"a": "4",
+							"b": "6",
+							"P": "1437"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["143{,}70"]
+					},
+					{
+						"description": "F1 grouper : places de Léa seules (57,48)",
+						"variationIndex": 4,
+						"variables": {
+							"s": "10",
+							"a": "4",
+							"b": "6",
+							"P": "1437"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est le prix des places de Léa : il faut aussi compter celles de son oncle."
+						},
+						"answers": ["57{,}48"]
+					},
+					{
+						"description": "F1 grouper : places de l'oncle seules (86,22)",
+						"variationIndex": 4,
+						"variables": {
+							"s": "10",
+							"a": "4",
+							"b": "6",
+							"P": "1437"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est le prix des places de l'oncle : il faut aussi compter celles de Léa."
+						},
+						"answers": ["86{,}22"]
+					},
+					{
+						"description": "F1 grouper : 10 + 14,37 (24,37)",
+						"variationIndex": 4,
+						"variables": {
+							"s": "10",
+							"a": "4",
+							"b": "6",
+							"P": "1437"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as ajouté le nombre de places au prix : multiplie le prix d'une place par le nombre de places."
+						},
+						"answers": ["24{,}37"]
+					},
+					{
+						"description": "F1 grouper : (7 + 13) × 21,05 = 421",
+						"variationIndex": 4,
+						"variables": {
+							"s": "20",
+							"a": "7",
+							"b": "13",
+							"P": "2105"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["421"]
+					},
+					{
+						"description": "F1 retrancher : (14 − 4) × 12,59 = 125,90",
+						"variationIndex": 5,
+						"variables": {
+							"s": "10",
+							"m": "4",
+							"n": "14",
+							"P": "1259"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["125{,}9"]
+					},
+					{
+						"description": "F1 retrancher : remboursement oublié (176,26)",
+						"variationIndex": 5,
+						"variables": {
+							"s": "10",
+							"m": "4",
+							"n": "14",
+							"P": "1259"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est le prix des $14$ boîtes : la voisine en a remboursé $4$."
+						},
+						"answers": ["176{,}26"]
+					},
+					{
+						"description": "F1 retrancher : remboursement seul (50,36)",
+						"variationIndex": 5,
+						"variables": {
+							"s": "10",
+							"m": "4",
+							"n": "14",
+							"P": "1259"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est ce que la voisine a remboursé, pas ce qu'Inès a dépensé."
+						},
+						"answers": ["50{,}36"]
+					},
+					{
+						"description": "F1 retrancher : boîtes ajoutées (226,62)",
+						"variationIndex": 5,
+						"variables": {
+							"s": "10",
+							"m": "4",
+							"n": "14",
+							"P": "1259"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as ajouté les boîtes reprises : la voisine les a remboursées, il faut les retirer."
+						},
+						"answers": ["226{,}62"]
+					},
+					{
+						"description": "F1 grammes : 1,5 × 2,40 + 0,5 × 18,40 = 12,80",
+						"variationIndex": 6,
+						"variables": {
+							"f": "0",
+							"x2": "3",
+							"u": "12",
+							"g": "500",
+							"w": "92"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["12{,}8"]
+					},
+					{
+						"description": "F1 grammes : 12,80 accepté",
+						"variationIndex": 6,
+						"variables": {
+							"f": "0",
+							"x2": "3",
+							"u": "12",
+							"g": "500",
+							"w": "92"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["12{,}80"]
+					},
+					{
+						"description": "F1 grammes : 500 × 18,40 (9 203,6)",
+						"variationIndex": 6,
+						"variables": {
+							"f": "0",
+							"x2": "3",
+							"u": "12",
+							"g": "500",
+							"w": "92"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as multiplié par $500$ comme si c'était des kilogrammes : $500~\\unit{g} = 0.5~\\unit{kg}$."
+						},
+						"answers": ["9203{,}6"]
+					},
+					{
+						"description": "F1 grammes : 5 kg au lieu de 0,5 kg (95,6)",
+						"variationIndex": 6,
+						"variables": {
+							"f": "0",
+							"x2": "3",
+							"u": "12",
+							"g": "500",
+							"w": "92"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Vérifie la conversion : $1~\\unit{kg} = 1\\,000~\\unit{g}$, donc $500~\\unit{g} = 0.5~\\unit{kg}$."
+						},
+						"answers": ["95{,}6"]
+					},
+					{
+						"description": "F1 grammes : premier achat seul (3,6)",
+						"variationIndex": 6,
+						"variables": {
+							"f": "0",
+							"x2": "3",
+							"u": "12",
+							"g": "500",
+							"w": "92"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est le prix du premier achat seulement : ajoute celui du second."
+						},
+						"answers": ["3{,}6"]
+					}
+				],
+				"description": "Prix à payer, calculs de tête : masse × prix au kilo (1,5 kg à 2,40 €), 10, 20, 30 ou 40 litres × prix du litre, 0,2 ou 0,5 kg (le produit est plus petit)"
+			},
+			"changements": {
+				"ajoutees": [5, 6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "399342ff-6732-450e-82a8-7a934cc04ace",
+			"title": "Schéma en barres : somme et différence",
+			"fichier": "399342ff.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{p}}"
+							},
+							{
+								"expectedAnswer": "{{eval:p+d}}"
+							}
+						],
+						"statement": "Hugo et Nina ont {{eval:2*p+d}} cartes à eux deux. Nina en a ${{d}}$ de plus que Hugo.\n\n```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\nCombien de cartes chacun a-t-il ?\n\nHugo : $?$ cartes\n\nNina : $?$ cartes",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "10..400"
+							},
+							{
+								"name": "d",
+								"expression": "2..150"
+							}
+						],
+						"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+						"correction": {
+							"steps": [
+								"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+								"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+								"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nHugo : {{p}} (3)\nNina : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\n"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{p}}"
+							},
+							{
+								"expectedAnswer": "{{eval:p+d}}"
+							}
+						],
+						"statement": "Un ruban de ${{eval:2*p+d}}$ cm est coupé en deux morceaux. Le grand morceau mesure ${{d}}$ cm de plus que le petit.\n\n```schema-barres\nPetit : ? (3)\nGrand : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\nCombien mesure chaque morceau ?\n\nPetit morceau : $?$ cm\n\nGrand morceau : $?$ cm",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "10..400"
+							},
+							{
+								"name": "d",
+								"expression": "2..150"
+							}
+						],
+						"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+						"correction": {
+							"steps": [
+								"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+								"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+								"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nPetit : {{p}} (3)\nGrand : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\n"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["36", "48"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "12",
+							"p": "36"
+						},
+						"description": "84 cartes, écart 12 : 36 et 48",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["42", "42"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "12",
+							"p": "36"
+						},
+						"description": "Erreur : moitié du total",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["72", "84"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "12",
+							"p": "36"
+						},
+						"description": "Erreur : total moins l'écart non partagé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["60", "90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "30",
+							"p": "60"
+						},
+						"description": "Ruban de 150 cm, écart 30 : 60 et 90",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90", "60"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "30",
+							"p": "60"
+						},
+						"description": "Erreur : morceaux inversés",
+						"variationIndex": 1
+					}
+				],
+				"description": "Deux quantités dont on connaît la somme et la différence, schéma en barres donné : trouver chacune (deux personnes, ou un ruban coupé en deux morceaux)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{p}}"
+							},
+							{
+								"expectedAnswer": "{{eval:p+d}}"
+							}
+						],
+						"statement": "Hugo et Nina ont {{eval:2*p+d}} cartes à eux deux. Nina en a ${{d}}$ de plus que Hugo.\n\n```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\nCombien de cartes chacun a-t-il ?\n\nHugo : $?$ cartes\n\nNina : $?$ cartes",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "10..400"
+							},
+							{
+								"name": "d",
+								"expression": "2..150"
+							}
+						],
+						"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+						"correction": {
+							"steps": [
+								"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+								"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+								"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nHugo : {{p}} (3)\nNina : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\n"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{p}}"
+							},
+							{
+								"expectedAnswer": "{{eval:p+d}}"
+							}
+						],
+						"statement": "Un ruban de ${{eval:2*p+d}}$ cm est coupé en deux morceaux. Le grand morceau mesure ${{d}}$ cm de plus que le petit.\n\n```schema-barres\nPetit : ? (3)\nGrand : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\nCombien mesure chaque morceau ?\n\nPetit morceau : $?$ cm\n\nGrand morceau : $?$ cm",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "10..400"
+							},
+							{
+								"name": "d",
+								"expression": "2..150"
+							}
+						],
+						"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+						"correction": {
+							"steps": [
+								"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+								"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+								"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nPetit : {{p}} (3)\nGrand : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\n"
+							]
+						}
+					},
+					{
+						"statement": "Nina dit à Hugo : « J'ai ${{eval:((X)/10)[€]}}$, soit ${{eval:((D)/10)[€]}}$ de {{if:s==0|plus|moins}} que toi. »\n\n{{if:s==0|```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```|```schema-barres\nHugo : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5)\nNina : ? (3) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```}}\n\nCombien d'argent ont-ils à eux deux ? Écris l'unité dans ta réponse.\n\nÀ eux deux, ils ont $?$.",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0..1"
+							},
+							{
+								"name": "k",
+								"expression": "40..70"
+							},
+							{
+								"name": "j",
+								"expression": "10..30"
+							},
+							{
+								"name": "X",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "D",
+								"expression": "eval:10*j"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(((2*X+(2*s-1)*D))/10)[€]}}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(((X+(2*s-1)*D))/10)[€]}}",
+										"message": "C'est ce qu'a Hugo : il reste à ajouter ce qu'a Nina.",
+										"label": "Une seule part"
+									},
+									{
+										"answer": "{{eval:(((2*X-(2*s-1)*D))/10)[€]}}",
+										"message": "Relis la phrase : qui a le plus d'argent ? Le schéma montre quelle barre est la plus longue.",
+										"label": "Écart dans le mauvais sens"
+									},
+									{
+										"answer": "{{eval:((2*X)/10)[€]}}",
+										"message": "Tu as compté deux fois ce qu'a Nina : Hugo n'a pas autant.",
+										"label": "Deux parts égales"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"{{if:s==0|**Ce qu'a Hugo.** Nina a ${{eval:((D)/10)[€]}}$ de plus que Hugo, donc Hugo a ${{eval:((D)/10)[€]}}$ de moins qu'elle : ${{k}} - {{j}} = {{eval:k-j}}$.|**Ce qu'a Hugo.** Nina a ${{eval:((D)/10)[€]}}$ de moins que Hugo, donc Hugo a ${{eval:((D)/10)[€]}}$ de plus qu'elle : ${{k}} + {{j}} = {{eval:k+j}}$.}}",
+								"**À eux deux.** {{if:s==0|${{k}} + {{eval:k-j}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X-D)/10)[€]}}}$.|${{k}} + {{eval:k+j}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X+D)/10)[€]}}}$.}}\n\n{{if:s==0|```schema-barres\nHugo : {{if:mod(X-D,10)==0|{{eval:(X-D)/10}} €|{{eval:floor((X-D)/10)}},{{eval:mod(X-D,10)}}0 €}} (3)\nNina : {{if:mod(X-D,10)==0|{{eval:(X-D)/10}} €|{{eval:floor((X-D)/10)}},{{eval:mod(X-D,10)}}0 €}} (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : {{if:mod(2*X-D,10)==0|{{eval:(2*X-D)/10}} €|{{eval:floor((2*X-D)/10)}},{{eval:mod(2*X-D,10)}}0 €}}\n```|```schema-barres\nHugo : {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}} (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5)\nNina : {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}} (3) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : {{if:mod(2*X+D,10)==0|{{eval:(2*X+D)/10}} €|{{eval:floor((2*X+D)/10)}},{{eval:mod(2*X+D,10)}}0 €}}\n```}}"
+							]
+						},
+						"hint": "Commence par trouver ce qu'a Hugo : a-t-il plus ou moins que Nina ?"
+					},
+					{
+						"statement": "Léo dit à Inès : « Tu as ${{eval:((X)/10)[€]}}$, et moi j'ai ${{eval:((D)/10)[€]}}$ de {{if:s==0|moins|plus}} que toi. »\n\n{{if:s==0|```schema-barres\nLéo : ? (3)\nInès : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```|```schema-barres\nLéo : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5)\nInès : ? (3) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```}}\n\nCombien d'argent ont-ils à eux deux ? Écris l'unité dans ta réponse.\n\nÀ eux deux, ils ont $?$.",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0..1"
+							},
+							{
+								"name": "X",
+								"expression": "205..495"
+							},
+							{
+								"name": "D",
+								"expression": "15..95"
+							}
+						],
+						"conditions": ["mod(X,10)!=0", "mod(D,10)!=0", "D*4<X"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(((2*X+(2*s-1)*D))/10)[€]}}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(((X+(2*s-1)*D))/10)[€]}}",
+										"message": "C'est ce qu'a Léo : il reste à ajouter ce qu'a Inès.",
+										"label": "Une seule part"
+									},
+									{
+										"answer": "{{eval:(((2*X-(2*s-1)*D))/10)[€]}}",
+										"message": "« J'ai {{if:s==0|moins|plus}} que toi » : c'est Léo, celui qui parle, qui a {{if:s==0|moins|plus}}. Le schéma montre quelle barre est la plus longue.",
+										"label": "Écart dans le mauvais sens"
+									},
+									{
+										"answer": "{{eval:((2*X)/10)[€]}}",
+										"message": "Tu as compté deux fois ce qu'a Inès : Léo n'a pas autant.",
+										"label": "Deux parts égales"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Qui parle ?** C'est Léo : « moi », c'est Léo, et « toi », c'est Inès, qui a ${{eval:((X)/10)[€]}}$.",
+								"**Ce qu'a Léo.** {{if:s==0|${{eval:(X)/10;d2}} - {{eval:(D)/10;d2}} = {{eval:(X-D)/10;d2}}$.|${{eval:(X)/10;d2}} + {{eval:(D)/10;d2}} = {{eval:(X+D)/10;d2}}$.}}",
+								"**À eux deux.** {{if:s==0|${{eval:(X)/10;d2}} + {{eval:(X-D)/10;d2}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X-D)/10)[€]}}}$.|${{eval:(X)/10;d2}} + {{eval:(X+D)/10;d2}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X+D)/10)[€]}}}$.}}"
+							]
+						},
+						"hint": "Qui est « moi » dans la phrase de Léo, et qui est « toi » ? Trouve d'abord ce qu'a Léo."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["36", "48"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "12",
+							"p": "36"
+						},
+						"description": "84 cartes, écart 12 : 36 et 48",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["42", "42"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "12",
+							"p": "36"
+						},
+						"description": "Erreur : moitié du total",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["72", "84"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "12",
+							"p": "36"
+						},
+						"description": "Erreur : total moins l'écart non partagé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["60", "90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "30",
+							"p": "60"
+						},
+						"description": "Ruban de 150 cm, écart 30 : 60 et 90",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90", "60"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "30",
+							"p": "60"
+						},
+						"description": "Erreur : morceaux inversés",
+						"variationIndex": 1
+					},
+					{
+						"description": "F2 de plus : 52 € et 15 € de plus → 89 €",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"k": "52",
+							"j": "15",
+							"X": "520",
+							"D": "150"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["89\\,€"]
+					},
+					{
+						"description": "F2 de plus : sans unité refusé",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"k": "52",
+							"j": "15",
+							"X": "520",
+							"D": "150"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["89"]
+					},
+					{
+						"description": "F2 de plus : Hugo seul (37 €)",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"k": "52",
+							"j": "15",
+							"X": "520",
+							"D": "150"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est ce qu'a Hugo : il reste à ajouter ce qu'a Nina."
+						},
+						"answers": ["37\\,€"]
+					},
+					{
+						"description": "F2 de plus : sens retourné (119 €)",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"k": "52",
+							"j": "15",
+							"X": "520",
+							"D": "150"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Relis la phrase : qui a le plus d'argent ? Le schéma montre quelle barre est la plus longue."
+						},
+						"answers": ["119\\,€"]
+					},
+					{
+						"description": "F2 de plus : 2 × 52 (104 €)",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"k": "52",
+							"j": "15",
+							"X": "520",
+							"D": "150"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as compté deux fois ce qu'a Nina : Hugo n'a pas autant."
+						},
+						"answers": ["104\\,€"]
+					},
+					{
+						"description": "F2 de moins : 52 € et 15 € de moins → 119 €",
+						"variationIndex": 2,
+						"variables": {
+							"s": "1",
+							"k": "52",
+							"j": "15",
+							"X": "520",
+							"D": "150"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["119\\,€"]
+					},
+					{
+						"description": "F2 de moins : sens retourné (89 €)",
+						"variationIndex": 2,
+						"variables": {
+							"s": "1",
+							"k": "52",
+							"j": "15",
+							"X": "520",
+							"D": "150"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Relis la phrase : qui a le plus d'argent ? Le schéma montre quelle barre est la plus longue."
+						},
+						"answers": ["89\\,€"]
+					},
+					{
+						"description": "F2 retournée : 23,50 € et 4,50 € de moins → 42,50 €",
+						"variationIndex": 3,
+						"variables": {
+							"s": "0",
+							"X": "235",
+							"D": "45"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["42{,}5\\,€"]
+					},
+					{
+						"description": "F2 retournée : 42,50 € accepté",
+						"variationIndex": 3,
+						"variables": {
+							"s": "0",
+							"X": "235",
+							"D": "45"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["42{,}50\\,€"]
+					},
+					{
+						"description": "F2 retournée : sens retourné (51,50 €)",
+						"variationIndex": 3,
+						"variables": {
+							"s": "0",
+							"X": "235",
+							"D": "45"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "« J'ai moins que toi » : c'est Léo, celui qui parle, qui a moins. Le schéma montre quelle barre est la plus longue."
+						},
+						"answers": ["51{,}5\\,€"]
+					},
+					{
+						"description": "F2 retournée : Léo seul (19 €)",
+						"variationIndex": 3,
+						"variables": {
+							"s": "0",
+							"X": "235",
+							"D": "45"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est ce qu'a Léo : il reste à ajouter ce qu'a Inès."
+						},
+						"answers": ["19\\,€"]
+					},
+					{
+						"description": "F2 retournée : de plus, 23,50 € + 28 € = 51,50 €",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"X": "235",
+							"D": "45"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["51{,}5\\,€"]
+					}
+				],
+				"description": "Deux quantités dont on connaît la somme et la différence, schéma en barres donné : trouver chacune (deux personnes, ou un ruban coupé en deux morceaux)"
+			},
+			"changements": {
+				"ajoutees": [3, 4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
+			"title": "Contrôler par un ordre de grandeur",
+			"fichier": "7deff4e0.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} \\times {{b}}$ ?\n\n```choix\n- ${{eval:P/1000;d}}$\n- ${{eval:P/100;d}}$\n- ${{eval:P/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "101..999"
+							},
+							{
+								"name": "B",
+								"expression": "11..99"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/10;d"
+							},
+							{
+								"name": "P",
+								"expression": "eval:A*B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/10)}}$, donc ${{a}} \\times {{b}} \\approx {{eval:round(A/10)*round(B/10)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:P/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} + {{b}}$ ?\n\n```choix\n- ${{eval:S/1000;d}}$\n- ${{eval:S/100;d}}$\n- ${{eval:S/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "B",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/100;d"
+							},
+							{
+								"name": "S",
+								"expression": "eval:10*A+B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(S,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/100)}}$, donc ${{a}} + {{b}} \\approx {{eval:round(A/10)+round(B/100)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:S/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Quel est un ordre de grandeur de ${{a}} \\times {{n}}$ ?\n\n```choix\n- ${{eval:10*p*q}}$\n- ${{eval:100*p*q}}$\n- ${{eval:1000*p*q}}$\n```",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "2..9"
+							},
+							{
+								"name": "dl",
+								"expression": "-9..9"
+							},
+							{
+								"name": "A",
+								"expression": "eval:100*p+dl"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "q",
+								"expression": "1..9"
+							},
+							{
+								"name": "el",
+								"expression": "-2..2"
+							},
+							{
+								"name": "n",
+								"expression": "eval:10*q+el"
+							}
+						],
+						"conditions": ["dl!=0", "el!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:10*p}}$ et ${{n}} \\approx {{eval:10*q}}$, donc ${{a}} \\times {{n}} \\approx {{eval:10*p}} \\times {{eval:10*q}} = \\textcolor{{{color:primary.0}}}{{{eval:100*p*q}}}$."
+							]
+						}
+					},
+					{
+						"hint": "Pour arrondir à la dizaine, regarde le chiffre des unités ; à l'unité, le chiffre des dixièmes. Puis multiplie les deux arrondis.",
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10*p}}",
+								"expectedErrors": [
+									{
+										"label": "Troncature",
+										"answer": "{{eval:10*floor((100*p+dl)/100)}}",
+										"message": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : ${{x}}$ est plus près de la dizaine supérieure."
+									},
+									{
+										"label": "Arrondi à l'unité",
+										"answer": "{{eval:round((100*p+dl)/10)}}",
+										"message": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{q}}",
+								"expectedErrors": [
+									{
+										"label": "Troncature",
+										"answer": "{{eval:floor((10*q+t)/10)}}",
+										"message": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : ${{y}}$ est plus près de l'unité supérieure."
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:10*p*q}}",
+								"expectedErrors": [
+									{
+										"label": "Produit exact arrondi",
+										"answer": "{{eval:round((100*p+dl)*(10*q+t)/100)}}",
+										"message": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+									}
+								]
+							}
+						],
+						"statement": "On cherche un ordre de grandeur de ${{x}} \\times {{y}}$.\n\nArrondi de ${{x}}$ à la dizaine : $?$\n\nArrondi de ${{y}}$ à l'unité : $?$\n\nOrdre de grandeur du produit : $?$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "1..9"
+							},
+							{
+								"name": "dl",
+								"expression": "-29..29"
+							},
+							{
+								"name": "x",
+								"expression": "eval:(100*p+dl)/10;d"
+							},
+							{
+								"name": "q",
+								"expression": "2..9"
+							},
+							{
+								"name": "t",
+								"expression": "-4..4"
+							},
+							{
+								"name": "y",
+								"expression": "eval:(10*q+t)/10;d"
+							}
+						],
+						"conditions": ["mod(dl,10)!=0", "t!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque facteur par un nombre proche, simple à calculer de tête.",
+								"${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:10*p}}}$ (à la dizaine) et ${{y}} \\approx \\textcolor{{{color:primary.0}}}{{{q}}}$ (à l'unité).",
+								"${{x}} \\times {{y}} \\approx {{eval:10*p}} \\times {{q}} = \\textcolor{{{color:primary.0}}}{{{eval:10*p*q}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "48,7 × 3,1 = 150,97",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "Erreur : 15,097",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "398,6 + 51,25 = 449,85",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "Erreur : 4 498,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "49,8 × 21 ≈ 1 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "Erreur : 10 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["20", "5", "100"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "2",
+							"q": "5",
+							"t": "1",
+							"dl": "-2"
+						},
+						"description": "F10 : 19,8 × 5,1",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["20", "5", "101"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+						},
+						"variables": {
+							"p": "2",
+							"q": "5",
+							"t": "1",
+							"dl": "-2"
+						},
+						"description": "F10 : produit exact arrondi",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["10", "5", "100"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : $19.8$ est plus près de la dizaine supérieure."
+						},
+						"variables": {
+							"p": "2",
+							"q": "5",
+							"t": "1",
+							"dl": "-2"
+						},
+						"description": "F10 : troncature de 19,8",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30", "5", "150"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "3",
+							"q": "5",
+							"t": "-2",
+							"dl": "17"
+						},
+						"description": "F10 : 31,7 × 4,8",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["32", "5", "150"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+						},
+						"variables": {
+							"p": "3",
+							"q": "5",
+							"t": "-2",
+							"dl": "17"
+						},
+						"description": "F10 : arrondi à l'unité (32)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30", "4", "150"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : $4.8$ est plus près de l'unité supérieure."
+						},
+						"variables": {
+							"p": "3",
+							"q": "5",
+							"t": "-2",
+							"dl": "17"
+						},
+						"description": "F10 : troncature de 4,8",
+						"variationIndex": 3
+					}
+				],
+				"description": "Choisir le bon résultat d'un produit ou d'une somme de décimaux (mêmes chiffres, virgule déplacée) ; choisir un ordre de grandeur d'un produit"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} \\times {{b}}$ ?\n\n```choix\n- ${{eval:P/1000;d}}$\n- ${{eval:P/100;d}}$\n- ${{eval:P/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "101..999"
+							},
+							{
+								"name": "B",
+								"expression": "11..99"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/10;d"
+							},
+							{
+								"name": "P",
+								"expression": "eval:A*B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/10)}}$, donc ${{a}} \\times {{b}} \\approx {{eval:round(A/10)*round(B/10)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:P/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} + {{b}}$ ?\n\n```choix\n- ${{eval:S/1000;d}}$\n- ${{eval:S/100;d}}$\n- ${{eval:S/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "B",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/100;d"
+							},
+							{
+								"name": "S",
+								"expression": "eval:10*A+B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(S,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/100)}}$, donc ${{a}} + {{b}} \\approx {{eval:round(A/10)+round(B/100)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:S/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Quel est un ordre de grandeur de ${{a}} \\times {{n}}$ ?\n\n```choix\n- ${{eval:10*p*q}}$\n- ${{eval:100*p*q}}$\n- ${{eval:1000*p*q}}$\n```",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "2..9"
+							},
+							{
+								"name": "dl",
+								"expression": "-9..9"
+							},
+							{
+								"name": "A",
+								"expression": "eval:100*p+dl"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "q",
+								"expression": "1..9"
+							},
+							{
+								"name": "el",
+								"expression": "-2..2"
+							},
+							{
+								"name": "n",
+								"expression": "eval:10*q+el"
+							}
+						],
+						"conditions": ["dl!=0", "el!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:10*p}}$ et ${{n}} \\approx {{eval:10*q}}$, donc ${{a}} \\times {{n}} \\approx {{eval:10*p}} \\times {{eval:10*q}} = \\textcolor{{{color:primary.0}}}{{{eval:100*p*q}}}$."
+							]
+						}
+					},
+					{
+						"hint": "Pour arrondir à la dizaine, regarde le chiffre des unités ; à l'unité, le chiffre des dixièmes. Puis multiplie les deux arrondis.",
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10*p}}",
+								"expectedErrors": [
+									{
+										"label": "Troncature",
+										"answer": "{{eval:10*floor((100*p+dl)/100)}}",
+										"message": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : ${{x}}$ est plus près de la dizaine supérieure."
+									},
+									{
+										"label": "Arrondi à l'unité",
+										"answer": "{{eval:round((100*p+dl)/10)}}",
+										"message": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{q}}",
+								"expectedErrors": [
+									{
+										"label": "Troncature",
+										"answer": "{{eval:floor((10*q+t)/10)}}",
+										"message": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : ${{y}}$ est plus près de l'unité supérieure."
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:10*p*q}}",
+								"expectedErrors": [
+									{
+										"label": "Produit exact arrondi",
+										"answer": "{{eval:round((100*p+dl)*(10*q+t)/100)}}",
+										"message": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+									}
+								]
+							}
+						],
+						"statement": "On cherche un ordre de grandeur de ${{x}} \\times {{y}}$.\n\nArrondi de ${{x}}$ à la dizaine : $?$\n\nArrondi de ${{y}}$ à l'unité : $?$\n\nOrdre de grandeur du produit : $?$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "1..9"
+							},
+							{
+								"name": "dl",
+								"expression": "-29..29"
+							},
+							{
+								"name": "x",
+								"expression": "eval:(100*p+dl)/10;d"
+							},
+							{
+								"name": "q",
+								"expression": "2..9"
+							},
+							{
+								"name": "t",
+								"expression": "-4..4"
+							},
+							{
+								"name": "y",
+								"expression": "eval:(10*q+t)/10;d"
+							}
+						],
+						"conditions": ["mod(dl,10)!=0", "t!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque facteur par un nombre proche, simple à calculer de tête.",
+								"${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:10*p}}}$ (à la dizaine) et ${{y}} \\approx \\textcolor{{{color:primary.0}}}{{{q}}}$ (à l'unité).",
+								"${{x}} \\times {{y}} \\approx {{eval:10*p}} \\times {{q}} = \\textcolor{{{color:primary.0}}}{{{eval:10*p*q}}}$."
+							]
+						}
+					},
+					{
+						"statement": "{{if:t==0|Un verger compte ${{R}}$ rangées de ${{A}}$ arbres. Sans poser le calcul, environ combien d'arbres y a-t-il dans ce verger ?|Une salle rectangulaire mesure ${{eval:L/10;d}}~\\unit{m}$ sur ${{eval:l/10;d}}~\\unit{m}$. On la couvre de carreaux de $1~\\unit{m^2}$. Sans poser le calcul, environ combien de carreaux faut-il ?}}\n\n```choix\n- environ ${{eval:r1*r2}}$\n- environ ${{eval:r1+r2}}$\n- environ ${{eval:10*r1*r2}}$\n- environ ${{z}}$\n```",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "0..1"
+							},
+							{
+								"name": "R",
+								"expression": "16..30"
+							},
+							{
+								"name": "A",
+								"expression": "18..39"
+							},
+							{
+								"name": "L",
+								"expression": "81..149"
+							},
+							{
+								"name": "l",
+								"expression": "61..139"
+							},
+							{
+								"name": "r1",
+								"expression": "eval:(1-t)*10*round(R/10)+t*round(L/10)"
+							},
+							{
+								"name": "r2",
+								"expression": "eval:(1-t)*10*round(A/10)+t*round(l/10)"
+							},
+							{
+								"name": "z",
+								"expression": "eval:(1-t)*r1*r2/10+t*2*(r1+r2)"
+							}
+						],
+						"conditions": [
+							"mod(R,10)!=5",
+							"mod(A,10)!=5",
+							"mod(R,10)!=0",
+							"mod(A,10)!=0",
+							"mod(L,10)!=5",
+							"mod(l,10)!=5",
+							"L>l",
+							"r1*r2!=r1+r2",
+							"z!=r1+r2",
+							"z!=r1*r2"
+						],
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Quelle opération ?** {{if:t==0|Il y a ${{R}}$ rangées de ${{A}}$ arbres : on multiplie, ${{R}} \\times {{A}}$.|Le nombre de carreaux de $1~\\unit{m^2}$, c'est l'aire de la salle : longueur $\\times$ largeur (le périmètre ne compte que le tour).}}",
+								"**Ordre de grandeur.** {{if:t==0|${{R}} \\approx {{r1}}$ et ${{A}} \\approx {{r2}}$, donc ${{R}} \\times {{A}} \\approx {{r1}} \\times {{r2}} = \\textcolor{{{color:primary.0}}}{{{eval:r1*r2}}}$.|${{eval:L/10;d}} \\approx {{r1}}$ et ${{eval:l/10;d}} \\approx {{r2}}$, donc il faut environ ${{r1}} \\times {{r2}} = \\textcolor{{{color:primary.0}}}{{{eval:r1*r2}}}$ carreaux.}}"
+							]
+						},
+						"hint": "Quelle opération faut-il faire ? Remplace ensuite chaque nombre par un nombre rond proche."
+					},
+					{
+						"statement": "Pour une fête, on achète ${{n}}$ packs de ${{b}}$ bouteilles. Chaque bouteille contient ${{eval:v;d}}~\\unit{L}$. Sans poser le calcul, quel volume de boisson a-t-on acheté, environ ?\n\n```choix\n- environ ${{o}}~\\unit{L}$\n- environ ${{eval:10*o}}~\\unit{L}$\n- environ ${{eval:o/10;d}}~\\unit{L}$\n- environ ${{eval:round(n+b+v)}}~\\unit{L}$\n```",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "5..10"
+							},
+							{
+								"name": "b",
+								"expression": "4..8"
+							},
+							{
+								"name": "cv",
+								"expression": "0..2"
+							},
+							{
+								"name": "v",
+								"expression": "eval:0.5*(1-min(abs(cv-0),1))+0.75*(1-min(abs(cv-1),1))+1.5*(1-min(abs(cv-2),1));d"
+							},
+							{
+								"name": "o",
+								"expression": "eval:round(n*b*v)"
+							}
+						],
+						"conditions": ["round(n+b+v)!=o", "round(n+b+v)!=round(o/10)"],
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Quelle opération ?** Il y a ${{n}} \\times {{b}} = {{eval:n*b}}$ bouteilles, de ${{eval:v;d}}~\\unit{L}$ chacune : on multiplie encore par ${{eval:v;d}}$.",
+								"**Ordre de grandeur.** {{if:cv==0|$0.5~\\unit{L}$, c'est la moitié d'un litre : la moitié de ${{eval:n*b}}$, environ $\\textcolor{{{color:primary.0}}}{{{o}}~\\unit{L}}$.|{{if:cv==1|$0.75~\\unit{L}$, c'est un peu moins d'un litre : ${{eval:n*b}} \\times 0.75 \\approx \\textcolor{{{color:primary.0}}}{{{o}}~\\unit{L}}$, un peu moins que ${{eval:n*b}}~\\unit{L}$.|$1.5~\\unit{L}$, c'est un litre et demi : ${{eval:n*b}} + {{eval:n*b/2;d}} \\approx \\textcolor{{{color:primary.0}}}{{{o}}~\\unit{L}}$.}}}}"
+							]
+						},
+						"hint": "Combien y a-t-il de bouteilles ? Une bouteille contient-elle plus ou moins d'un litre ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "48,7 × 3,1 = 150,97",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "Erreur : 15,097",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "398,6 + 51,25 = 449,85",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "Erreur : 4 498,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "49,8 × 21 ≈ 1 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "Erreur : 10 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["20", "5", "100"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "2",
+							"q": "5",
+							"t": "1",
+							"dl": "-2"
+						},
+						"description": "F10 : 19,8 × 5,1",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["20", "5", "101"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+						},
+						"variables": {
+							"p": "2",
+							"q": "5",
+							"t": "1",
+							"dl": "-2"
+						},
+						"description": "F10 : produit exact arrondi",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["10", "5", "100"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : $19.8$ est plus près de la dizaine supérieure."
+						},
+						"variables": {
+							"p": "2",
+							"q": "5",
+							"t": "1",
+							"dl": "-2"
+						},
+						"description": "F10 : troncature de 19,8",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30", "5", "150"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "3",
+							"q": "5",
+							"t": "-2",
+							"dl": "17"
+						},
+						"description": "F10 : 31,7 × 4,8",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["32", "5", "150"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+						},
+						"variables": {
+							"p": "3",
+							"q": "5",
+							"t": "-2",
+							"dl": "17"
+						},
+						"description": "F10 : arrondi à l'unité (32)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30", "4", "150"],
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : $4.8$ est plus près de l'unité supérieure."
+						},
+						"variables": {
+							"p": "3",
+							"q": "5",
+							"t": "-2",
+							"dl": "17"
+						},
+						"description": "F10 : troncature de 4,8",
+						"variationIndex": 3
+					},
+					{
+						"description": "F4 verger : 23 × 38 ≈ 800",
+						"variationIndex": 4,
+						"variables": {
+							"t": "0",
+							"R": "23",
+							"A": "38",
+							"L": "100",
+							"l": "80",
+							"r1": "20",
+							"r2": "40",
+							"z": "80"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F4 verger : somme (60) refusée",
+						"variationIndex": 4,
+						"variables": {
+							"t": "0",
+							"R": "23",
+							"A": "38",
+							"L": "100",
+							"l": "80",
+							"r1": "20",
+							"r2": "40",
+							"z": "80"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F4 verger : × 10 (8 000) refusé",
+						"variationIndex": 4,
+						"variables": {
+							"t": "0",
+							"R": "23",
+							"A": "38",
+							"L": "100",
+							"l": "80",
+							"r1": "20",
+							"r2": "40",
+							"z": "80"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F4 verger : ÷ 10 (80) refusé",
+						"variationIndex": 4,
+						"variables": {
+							"t": "0",
+							"R": "23",
+							"A": "38",
+							"L": "100",
+							"l": "80",
+							"r1": "20",
+							"r2": "40",
+							"z": "80"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F4 carrelage : 12,4 × 9,8 ≈ 120",
+						"variationIndex": 4,
+						"variables": {
+							"t": "1",
+							"R": "20",
+							"A": "20",
+							"L": "124",
+							"l": "98",
+							"r1": "12",
+							"r2": "10",
+							"z": "44"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F4 carrelage : périmètre (44) refusé",
+						"variationIndex": 4,
+						"variables": {
+							"t": "1",
+							"R": "20",
+							"A": "20",
+							"L": "124",
+							"l": "98",
+							"r1": "12",
+							"r2": "10",
+							"z": "44"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F4 packs : 6 × 6 × 0,75 ≈ 27 L",
+						"variationIndex": 5,
+						"variables": {
+							"n": "6",
+							"b": "6",
+							"cv": "1",
+							"v": "0.75",
+							"o": "27"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F4 packs : × 10 refusé",
+						"variationIndex": 5,
+						"variables": {
+							"n": "6",
+							"b": "6",
+							"cv": "1",
+							"v": "0.75",
+							"o": "27"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F4 packs : somme refusée",
+						"variationIndex": 5,
+						"variables": {
+							"n": "6",
+							"b": "6",
+							"cv": "1",
+							"v": "0.75",
+							"o": "27"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3"]
+					}
+				],
+				"description": "Choisir le bon résultat d'un produit ou d'une somme de décimaux (mêmes chiffres, virgule déplacée) ; choisir un ordre de grandeur d'un produit"
+			},
+			"changements": {
+				"ajoutees": [5, 6],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

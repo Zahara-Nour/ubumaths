@@ -1,0 +1,416 @@
+{
+	"id": "399342ff-6732-450e-82a8-7a934cc04ace",
+	"title": "Schéma en barres : somme et différence",
+	"description": "Deux quantités dont on connaît la somme et la différence, schéma en barres donné : trouver chacune (deux personnes, ou un ruban coupé en deux morceaux)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p+d}}"
+				}
+			],
+			"statement": "Hugo et Nina ont {{eval:2*p+d}} cartes à eux deux. Nina en a ${{d}}$ de plus que Hugo.\n\n```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\nCombien de cartes chacun a-t-il ?\n\nHugo : $?$ cartes\n\nNina : $?$ cartes",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..400"
+				},
+				{
+					"name": "d",
+					"expression": "2..150"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+			"correction": {
+				"steps": [
+					"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+					"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+					"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nHugo : {{p}} (3)\nNina : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\n"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p+d}}"
+				}
+			],
+			"statement": "Un ruban de ${{eval:2*p+d}}$ cm est coupé en deux morceaux. Le grand morceau mesure ${{d}}$ cm de plus que le petit.\n\n```schema-barres\nPetit : ? (3)\nGrand : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\nCombien mesure chaque morceau ?\n\nPetit morceau : $?$ cm\n\nGrand morceau : $?$ cm",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..400"
+				},
+				{
+					"name": "d",
+					"expression": "2..150"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+			"correction": {
+				"steps": [
+					"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+					"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+					"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nPetit : {{p}} (3)\nGrand : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "Nina dit à Hugo : « J'ai ${{eval:((X)/10)[€]}}$, soit ${{eval:((D)/10)[€]}}$ de {{if:s==0|plus|moins}} que toi. »\n\n{{if:s==0|```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```|```schema-barres\nHugo : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5)\nNina : ? (3) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```}}\n\nCombien d'argent ont-ils à eux deux ? Écris l'unité dans ta réponse.\n\nÀ eux deux, ils ont $?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "40..70"
+				},
+				{
+					"name": "j",
+					"expression": "10..30"
+				},
+				{
+					"name": "X",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10*j"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(((2*X+(2*s-1)*D))/10)[€]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(((X+(2*s-1)*D))/10)[€]}}",
+							"message": "C'est ce qu'a Hugo : il reste à ajouter ce qu'a Nina.",
+							"label": "Une seule part"
+						},
+						{
+							"answer": "{{eval:(((2*X-(2*s-1)*D))/10)[€]}}",
+							"message": "Relis la phrase : qui a le plus d'argent ? Le schéma montre quelle barre est la plus longue.",
+							"label": "Écart dans le mauvais sens"
+						},
+						{
+							"answer": "{{eval:((2*X)/10)[€]}}",
+							"message": "Tu as compté deux fois ce qu'a Nina : Hugo n'a pas autant.",
+							"label": "Deux parts égales"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==0|**Ce qu'a Hugo.** Nina a ${{eval:((D)/10)[€]}}$ de plus que Hugo, donc Hugo a ${{eval:((D)/10)[€]}}$ de moins qu'elle : ${{k}} - {{j}} = {{eval:k-j}}$.|**Ce qu'a Hugo.** Nina a ${{eval:((D)/10)[€]}}$ de moins que Hugo, donc Hugo a ${{eval:((D)/10)[€]}}$ de plus qu'elle : ${{k}} + {{j}} = {{eval:k+j}}$.}}",
+					"**À eux deux.** {{if:s==0|${{k}} + {{eval:k-j}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X-D)/10)[€]}}}$.|${{k}} + {{eval:k+j}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X+D)/10)[€]}}}$.}}\n\n{{if:s==0|```schema-barres\nHugo : {{if:mod(X-D,10)==0|{{eval:(X-D)/10}} €|{{eval:floor((X-D)/10)}},{{eval:mod(X-D,10)}}0 €}} (3)\nNina : {{if:mod(X-D,10)==0|{{eval:(X-D)/10}} €|{{eval:floor((X-D)/10)}},{{eval:mod(X-D,10)}}0 €}} (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : {{if:mod(2*X-D,10)==0|{{eval:(2*X-D)/10}} €|{{eval:floor((2*X-D)/10)}},{{eval:mod(2*X-D,10)}}0 €}}\n```|```schema-barres\nHugo : {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}} (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5)\nNina : {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}} (3) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : {{if:mod(2*X+D,10)==0|{{eval:(2*X+D)/10}} €|{{eval:floor((2*X+D)/10)}},{{eval:mod(2*X+D,10)}}0 €}}\n```}}"
+				]
+			},
+			"hint": "Commence par trouver ce qu'a Hugo : a-t-il plus ou moins que Nina ?"
+		},
+		{
+			"statement": "Léo dit à Inès : « Tu as ${{eval:((X)/10)[€]}}$, et moi j'ai ${{eval:((D)/10)[€]}}$ de {{if:s==0|moins|plus}} que toi. »\n\n{{if:s==0|```schema-barres\nLéo : ? (3)\nInès : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```|```schema-barres\nLéo : ? (3) ; {{if:mod(D,10)==0|{{eval:(D)/10}} €|{{eval:floor((D)/10)}},{{eval:mod(D,10)}}0 €}} (1,5)\nInès : ? (3) = {{if:mod(X,10)==0|{{eval:(X)/10}} €|{{eval:floor((X)/10)}},{{eval:mod(X,10)}}0 €}}\ntotal : ?\n```}}\n\nCombien d'argent ont-ils à eux deux ? Écris l'unité dans ta réponse.\n\nÀ eux deux, ils ont $?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "X",
+					"expression": "205..495"
+				},
+				{
+					"name": "D",
+					"expression": "15..95"
+				}
+			],
+			"conditions": ["mod(X,10)!=0", "mod(D,10)!=0", "D*4<X"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(((2*X+(2*s-1)*D))/10)[€]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(((X+(2*s-1)*D))/10)[€]}}",
+							"message": "C'est ce qu'a Léo : il reste à ajouter ce qu'a Inès.",
+							"label": "Une seule part"
+						},
+						{
+							"answer": "{{eval:(((2*X-(2*s-1)*D))/10)[€]}}",
+							"message": "« J'ai {{if:s==0|moins|plus}} que toi » : c'est Léo, celui qui parle, qui a {{if:s==0|moins|plus}}. Le schéma montre quelle barre est la plus longue.",
+							"label": "Écart dans le mauvais sens"
+						},
+						{
+							"answer": "{{eval:((2*X)/10)[€]}}",
+							"message": "Tu as compté deux fois ce qu'a Inès : Léo n'a pas autant.",
+							"label": "Deux parts égales"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Qui parle ?** C'est Léo : « moi », c'est Léo, et « toi », c'est Inès, qui a ${{eval:((X)/10)[€]}}$.",
+					"**Ce qu'a Léo.** {{if:s==0|${{eval:(X)/10;d2}} - {{eval:(D)/10;d2}} = {{eval:(X-D)/10;d2}}$.|${{eval:(X)/10;d2}} + {{eval:(D)/10;d2}} = {{eval:(X+D)/10;d2}}$.}}",
+					"**À eux deux.** {{if:s==0|${{eval:(X)/10;d2}} + {{eval:(X-D)/10;d2}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X-D)/10)[€]}}}$.|${{eval:(X)/10;d2}} + {{eval:(X+D)/10;d2}} = \\textcolor{{{color:primary.0}}}{{{eval:((2*X+D)/10)[€]}}}$.}}"
+				]
+			},
+			"hint": "Qui est « moi » dans la phrase de Léo, et qui est « toi » ? Trouve d'abord ce qu'a Léo."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["36", "48"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "12",
+				"p": "36"
+			},
+			"description": "84 cartes, écart 12 : 36 et 48",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["42", "42"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "12",
+				"p": "36"
+			},
+			"description": "Erreur : moitié du total",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["72", "84"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "12",
+				"p": "36"
+			},
+			"description": "Erreur : total moins l'écart non partagé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["60", "90"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "30",
+				"p": "60"
+			},
+			"description": "Ruban de 150 cm, écart 30 : 60 et 90",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["90", "60"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "30",
+				"p": "60"
+			},
+			"description": "Erreur : morceaux inversés",
+			"variationIndex": 1
+		},
+		{
+			"description": "F2 de plus : 52 € et 15 € de plus → 89 €",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"k": "52",
+				"j": "15",
+				"X": "520",
+				"D": "150"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["89\\,€"]
+		},
+		{
+			"description": "F2 de plus : sans unité refusé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"k": "52",
+				"j": "15",
+				"X": "520",
+				"D": "150"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["89"]
+		},
+		{
+			"description": "F2 de plus : Hugo seul (37 €)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"k": "52",
+				"j": "15",
+				"X": "520",
+				"D": "150"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est ce qu'a Hugo : il reste à ajouter ce qu'a Nina."
+			},
+			"answers": ["37\\,€"]
+		},
+		{
+			"description": "F2 de plus : sens retourné (119 €)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"k": "52",
+				"j": "15",
+				"X": "520",
+				"D": "150"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Relis la phrase : qui a le plus d'argent ? Le schéma montre quelle barre est la plus longue."
+			},
+			"answers": ["119\\,€"]
+		},
+		{
+			"description": "F2 de plus : 2 × 52 (104 €)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"k": "52",
+				"j": "15",
+				"X": "520",
+				"D": "150"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté deux fois ce qu'a Nina : Hugo n'a pas autant."
+			},
+			"answers": ["104\\,€"]
+		},
+		{
+			"description": "F2 de moins : 52 € et 15 € de moins → 119 €",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"k": "52",
+				"j": "15",
+				"X": "520",
+				"D": "150"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["119\\,€"]
+		},
+		{
+			"description": "F2 de moins : sens retourné (89 €)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"k": "52",
+				"j": "15",
+				"X": "520",
+				"D": "150"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Relis la phrase : qui a le plus d'argent ? Le schéma montre quelle barre est la plus longue."
+			},
+			"answers": ["89\\,€"]
+		},
+		{
+			"description": "F2 retournée : 23,50 € et 4,50 € de moins → 42,50 €",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"X": "235",
+				"D": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["42{,}5\\,€"]
+		},
+		{
+			"description": "F2 retournée : 42,50 € accepté",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"X": "235",
+				"D": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["42{,}50\\,€"]
+		},
+		{
+			"description": "F2 retournée : sens retourné (51,50 €)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"X": "235",
+				"D": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« J'ai moins que toi » : c'est Léo, celui qui parle, qui a moins. Le schéma montre quelle barre est la plus longue."
+			},
+			"answers": ["51{,}5\\,€"]
+		},
+		{
+			"description": "F2 retournée : Léo seul (19 €)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"X": "235",
+				"D": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est ce qu'a Léo : il reste à ajouter ce qu'a Inès."
+			},
+			"answers": ["19\\,€"]
+		},
+		{
+			"description": "F2 retournée : de plus, 23,50 € + 28 € = 51,50 €",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"X": "235",
+				"D": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["51{,}5\\,€"]
+		}
+	]
+}
