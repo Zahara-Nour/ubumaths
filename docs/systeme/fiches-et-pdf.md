@@ -357,8 +357,8 @@ par élève visé, jamais stocké :
   à remplir (jamais les classes de toute l'affectation).
 - **Nom et classe = texte, jamais code** : l'élève écrit lui-même son nom (profil). Le générateur
   les insère en chaîne Typst littérale (`typstTextLiteral` : `#"…";`, `\` et `"` échappés,
-  caractères de contrôle remplacés), pour toutes les fiches ; `escapeTypst` laissait passer `]`,
-  `//`, `<…>` (un nom pouvait fermer un bloc du gabarit et faire évaluer la suite, ou casser tout
+  caractères de contrôle remplacés), pour toutes les fiches ; `escapeTypst` laissait passer `]`
+  (il le laisse toujours : `escapeTypstBrackets` l'échappe), `//` (échappé depuis L85), `<…>` (un nom pouvait fermer un bloc du gabarit et faire évaluer la suite, ou casser tout
   le paquet).
 - **Compilations une à une** : elles partagent le compilateur et ses images (`resetShadow`) ;
   le dernier choix du sélecteur gagne. Retour : la fiche, ou l'aperçu si l'on en vient

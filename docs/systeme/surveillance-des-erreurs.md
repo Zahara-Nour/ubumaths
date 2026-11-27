@@ -290,7 +290,8 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   (`latexcgi`) pour la page `/dev/pdf-latex`, son seul appelant. Compte exigé
   (`requireAuth`, l'ancien relais ouvert du finding H13) ; Zod `compileLatexSchema`
   (`src/lib/server/validation/latex.ts` : 50 000 caractères au plus, `svg` / `png` / `pdf`,
-  corps 8 à 72). La réponse de texlive.net est renvoyée telle quelle, avec son `Content-Type`.
+  corps 8 à 72) : un refus rend 400 avec son message, jamais 500 (L111). La réponse de
+  texlive.net est renvoyée telle quelle, avec son `Content-Type`.
 - `src/lib/utils/version.ts` : `getVersion()` / `getRawVersion()`, lisent
   `__APP_VERSION__` injecté par `vite.config.ts`. Affichés par `InfoPanel.svelte` et la
   page admin des réglages.
