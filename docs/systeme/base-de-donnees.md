@@ -582,7 +582,7 @@ Deux systèmes distincts, à ne pas confondre :
   amitié acceptée (une amitié ne se demande plus que dans son école). Canal temps réel **privé** `chat-<conversation_id>`, réservé
   aux participants (policies sur `realtime.messages`, [realtime.md](realtime.md)).
 - **Messagerie** (style courriel) : `private_messages` → `message_inbox` (un destinataire, un dossier
-  `user_folders`), `message_drafts`, `message_attachments_v2`, `message_templates`.
+  `user_folders`), `message_drafts`, `message_attachments_v2`.
 - `notifications` (+ `notification_reads`), `moderation_logs`, `user_restrictions`.
 
 Accès : on lit les messages des conversations dont on est participant, et ceux qu'on a envoyés ou

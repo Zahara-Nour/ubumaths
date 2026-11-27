@@ -113,8 +113,6 @@ export const DOMAINS: Domain[] = [
 			'question_',
 			'exercise_',
 			'exercises',
-			'template_',
-			'user_favorite_templates',
 			'student_exercise_mastery',
 			'series',
 			'migration_'

@@ -74,9 +74,8 @@ describe('profiles — les requêtes des fiches résolvent', () => {
 });
 
 /**
- * `marketplace_trades` et `message_templates` ont chacune PLUSIEURS clés
- * étrangères vers `profiles` (initiator/partner/last_offer_by, created_by/
- * reviewed_by). Un embed qui ne nomme pas sa contrainte est ambigu : PostgREST
+ * `marketplace_trades` a PLUSIEURS clés étrangères vers `profiles`
+ * (initiator/partner/last_offer_by). Un embed qui ne nomme pas sa contrainte est ambigu : PostgREST
  * refuse la requête plutôt que de deviner.
  */
 describe('profiles — embeds désambiguïsés par nom de contrainte', () => {
@@ -90,15 +89,6 @@ describe('profiles — embeds désambiguïsés par nom de contrainte', () => {
 				partner:profiles!marketplace_trades_partner_id_fkey(id, firstname, lastname)
 				`
 			)
-			.limit(1);
-
-		expect(error).toBeNull();
-	});
-
-	it('le créateur d’un modèle de message se résout', async () => {
-		const { error } = await db
-			.from('message_templates')
-			.select('id, creator:profiles!message_templates_created_by_fkey (full_name)')
 			.limit(1);
 
 		expect(error).toBeNull();

@@ -6954,207 +6954,6 @@ export type Database = {
 					}
 				];
 			};
-			message_template_versions: {
-				Row: {
-					body_template: string;
-					change_summary: string | null;
-					description: string | null;
-					id: string;
-					modified_at: string;
-					modified_by: string;
-					scope: string;
-					subject_template: string;
-					tags: string[] | null;
-					template_id: string;
-					title: string;
-					trigger_type: string;
-					variables: Json | null;
-					version_number: number;
-				};
-				ComputedFields: never;
-				Insert: {
-					body_template: string;
-					change_summary?: string | null;
-					description?: string | null;
-					id?: string;
-					modified_at?: string;
-					modified_by: string;
-					scope: string;
-					subject_template: string;
-					tags?: string[] | null;
-					template_id: string;
-					title: string;
-					trigger_type: string;
-					variables?: Json | null;
-					version_number: number;
-				};
-				Update: {
-					body_template?: string;
-					change_summary?: string | null;
-					description?: string | null;
-					id?: string;
-					modified_at?: string;
-					modified_by?: string;
-					scope?: string;
-					subject_template?: string;
-					tags?: string[] | null;
-					template_id?: string;
-					title?: string;
-					trigger_type?: string;
-					variables?: Json | null;
-					version_number?: number;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'message_template_versions_modified_by_fkey';
-						columns: ['modified_by'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'message_template_versions_modified_by_fkey';
-						columns: ['modified_by'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'message_template_versions_modified_by_fkey';
-						columns: ['modified_by'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'message_template_versions_template_id_fkey';
-						columns: ['template_id'];
-						isOneToOne: false;
-						referencedRelation: 'message_templates';
-						referencedColumns: ['id'];
-					}
-				];
-			};
-			message_templates: {
-				Row: {
-					approval_status: string | null;
-					body_template: string;
-					class_id: string | null;
-					created_at: string;
-					created_by: string;
-					description: string | null;
-					id: string;
-					is_active: boolean | null;
-					review_notes: string | null;
-					reviewed_at: string | null;
-					reviewed_by: string | null;
-					scope: string;
-					search_vector: unknown;
-					subject_template: string;
-					tags: string[] | null;
-					title: string;
-					trigger_config: Json | null;
-					trigger_type: string;
-					updated_at: string;
-					variables: Json | null;
-				};
-				ComputedFields: never;
-				Insert: {
-					approval_status?: string | null;
-					body_template: string;
-					class_id?: string | null;
-					created_at?: string;
-					created_by: string;
-					description?: string | null;
-					id?: string;
-					is_active?: boolean | null;
-					review_notes?: string | null;
-					reviewed_at?: string | null;
-					reviewed_by?: string | null;
-					scope: string;
-					search_vector?: never;
-					subject_template: string;
-					tags?: string[] | null;
-					title: string;
-					trigger_config?: Json | null;
-					trigger_type: string;
-					updated_at?: string;
-					variables?: Json | null;
-				};
-				Update: {
-					approval_status?: string | null;
-					body_template?: string;
-					class_id?: string | null;
-					created_at?: string;
-					created_by?: string;
-					description?: string | null;
-					id?: string;
-					is_active?: boolean | null;
-					review_notes?: string | null;
-					reviewed_at?: string | null;
-					reviewed_by?: string | null;
-					scope?: string;
-					search_vector?: never;
-					subject_template?: string;
-					tags?: string[] | null;
-					title?: string;
-					trigger_config?: Json | null;
-					trigger_type?: string;
-					updated_at?: string;
-					variables?: Json | null;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'message_templates_class_id_fkey';
-						columns: ['class_id'];
-						isOneToOne: false;
-						referencedRelation: 'classes';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'message_templates_created_by_fkey';
-						columns: ['created_by'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'message_templates_created_by_fkey';
-						columns: ['created_by'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'message_templates_created_by_fkey';
-						columns: ['created_by'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'message_templates_reviewed_by_fkey';
-						columns: ['reviewed_by'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'message_templates_reviewed_by_fkey';
-						columns: ['reviewed_by'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'message_templates_reviewed_by_fkey';
-						columns: ['reviewed_by'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					}
-				];
-			};
 			messages: {
 				Row: {
 					content: NonNullable<Json>;
@@ -12776,139 +12575,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-			template_audit_log: {
-				Row: {
-					action: string;
-					changes: Json | null;
-					id: string;
-					ip_address: unknown;
-					metadata: Json | null;
-					performed_at: string;
-					performed_by: string;
-					template_id: string | null;
-					user_agent: string | null;
-				};
-				ComputedFields: never;
-				Insert: {
-					action: string;
-					changes?: Json | null;
-					id?: string;
-					ip_address?: unknown;
-					metadata?: Json | null;
-					performed_at?: string;
-					performed_by: string;
-					template_id?: string | null;
-					user_agent?: string | null;
-				};
-				Update: {
-					action?: string;
-					changes?: Json | null;
-					id?: string;
-					ip_address?: unknown;
-					metadata?: Json | null;
-					performed_at?: string;
-					performed_by?: string;
-					template_id?: string | null;
-					user_agent?: string | null;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'template_audit_log_performed_by_fkey';
-						columns: ['performed_by'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'template_audit_log_performed_by_fkey';
-						columns: ['performed_by'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'template_audit_log_performed_by_fkey';
-						columns: ['performed_by'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'template_audit_log_template_id_fkey';
-						columns: ['template_id'];
-						isOneToOne: false;
-						referencedRelation: 'message_templates';
-						referencedColumns: ['id'];
-					}
-				];
-			};
-			template_usage_stats: {
-				Row: {
-					class_id: string | null;
-					completed: boolean | null;
-					id: string;
-					template_id: string;
-					time_to_complete: number | null;
-					used_at: string;
-					user_id: string;
-				};
-				ComputedFields: never;
-				Insert: {
-					class_id?: string | null;
-					completed?: boolean | null;
-					id?: string;
-					template_id: string;
-					time_to_complete?: number | null;
-					used_at?: string;
-					user_id: string;
-				};
-				Update: {
-					class_id?: string | null;
-					completed?: boolean | null;
-					id?: string;
-					template_id?: string;
-					time_to_complete?: number | null;
-					used_at?: string;
-					user_id?: string;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'template_usage_stats_class_id_fkey';
-						columns: ['class_id'];
-						isOneToOne: false;
-						referencedRelation: 'classes';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'template_usage_stats_template_id_fkey';
-						columns: ['template_id'];
-						isOneToOne: false;
-						referencedRelation: 'message_templates';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'template_usage_stats_user_id_fkey';
-						columns: ['user_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'template_usage_stats_user_id_fkey';
-						columns: ['user_id'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'template_usage_stats_user_id_fkey';
-						columns: ['user_id'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					}
-				];
-			};
 			terms_acceptances: {
 				Row: {
 					accepted_at: string;
@@ -13181,54 +12847,6 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'tutor_conversations';
 						referencedColumns: ['id'];
-					}
-				];
-			};
-			user_favorite_templates: {
-				Row: {
-					created_at: string;
-					template_id: string;
-					user_id: string;
-				};
-				ComputedFields: never;
-				Insert: {
-					created_at?: string;
-					template_id: string;
-					user_id: string;
-				};
-				Update: {
-					created_at?: string;
-					template_id?: string;
-					user_id?: string;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'user_favorite_templates_template_id_fkey';
-						columns: ['template_id'];
-						isOneToOne: false;
-						referencedRelation: 'message_templates';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'user_favorite_templates_user_id_fkey';
-						columns: ['user_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'user_favorite_templates_user_id_fkey';
-						columns: ['user_id'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'user_favorite_templates_user_id_fkey';
-						columns: ['user_id'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
 					}
 				];
 			};
@@ -16018,10 +15636,6 @@ export type Database = {
 				};
 				Returns: Json;
 			};
-			duplicate_template: {
-				Args: { p_new_title?: string; p_template_id: string; p_user_id: string };
-				Returns: string;
-			};
 			ensure_player_stats_exist: { Args: { p_student_id: string }; Returns: undefined };
 			execute_trade: { Args: { p_trade_id: string }; Returns: Json };
 			exercise_has_valid_share_token: { Args: { exercise_uuid: string }; Returns: boolean };
@@ -16554,29 +16168,6 @@ export type Database = {
 					updated_at: string;
 				}[];
 			};
-			get_template_statistics: {
-				Args: { p_template_id: string };
-				Returns: {
-					avg_time_to_complete: number;
-					completion_rate: number;
-					last_used_at: string;
-					total_usage: number;
-					unique_users: number;
-				}[];
-			};
-			get_templates_for_context: {
-				Args: { p_class_id?: string; p_trigger_type: string };
-				Returns: {
-					body_template: string;
-					description: string;
-					id: string;
-					scope: string;
-					subject_template: string;
-					title: string;
-					trigger_type: string;
-					variables: Json;
-				}[];
-			};
 			get_tournament_details: {
 				Args: { p_tournament_id: string };
 				Returns: {
@@ -16612,15 +16203,6 @@ export type Database = {
 					other_user_lastname: string;
 					participant_count: number;
 					unread_count: number;
-				}[];
-			};
-			get_user_frequent_templates: {
-				Args: { p_limit?: number; p_user_id: string };
-				Returns: {
-					last_used: string;
-					template_id: string;
-					title: string;
-					usage_count: number;
 				}[];
 			};
 			get_user_inbox: {
@@ -16828,16 +16410,6 @@ export type Database = {
 					p_reason?: string;
 					p_target_id: string;
 					p_target_type: string;
-				};
-				Returns: string;
-			};
-			log_template_action: {
-				Args: {
-					p_action: string;
-					p_changes?: Json;
-					p_metadata?: Json;
-					p_performed_by: string;
-					p_template_id: string;
 				};
 				Returns: string;
 			};

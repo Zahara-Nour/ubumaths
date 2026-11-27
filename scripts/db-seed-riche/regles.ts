@@ -198,11 +198,6 @@ export const INVENTE: readonly string[] = [
 	'tutor_messages',
 	'user_restrictions',
 	'moderation_logs',
-	// Modèles de messages et leurs favoris : aucun en prod le 2026-11-21, les copier viderait
-	// ceux de la base locale.
-	'message_templates',
-	'message_template_versions',
-	'user_favorite_templates',
 	// Marché
 	'marketplace_listings',
 	'marketplace_proposals',
@@ -243,14 +238,12 @@ export const JAMAIS: readonly string[] = [
 	'background_job_runs',
 	'rate_limits',
 	'server_cache',
-	'template_audit_log',
 	'account_deletion_audit',
 	'achievement_migrations',
 	'migration_images',
 	'orphaned_documents',
 	'web_vital_samples',
 	'whiteboard_export_counters',
-	'template_usage_stats',
 	'minesweeper_reference_times_history',
 	'welcome_emails_sent',
 	// Calculées ou éphémères

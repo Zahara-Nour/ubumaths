@@ -30,6 +30,28 @@ const traits = (container: Element) =>
 const resetButton = (container: Element) =>
 	[...container.querySelectorAll('button')].find((b) => b.textContent?.includes('Vue de départ'));
 
+const namePlaces = (container: Element) =>
+	[...container.querySelectorAll('text')]
+		.map((t) => `${t.textContent}:${t.getAttribute('x')},${t.getAttribute('y')}`)
+		.join(' | ');
+/** Place de chaque nom par rapport au sommet le plus proche (bout d'arête) */
+function nameOffsets(container: Element): { x: number; y: number }[] {
+	const ends = [...container.querySelectorAll('polyline')].flatMap((l) =>
+		(l.getAttribute('points') ?? '').split(' ').map((p) => {
+			const [x, y] = p.split(',').map(Number);
+			return { x, y };
+		})
+	);
+	return [...container.querySelectorAll('text')].map((t) => {
+		const x = Number(t.getAttribute('x'));
+		const y = Number(t.getAttribute('y'));
+		const nearest = ends.reduce((best, p) =>
+			Math.hypot(p.x - x, p.y - y) < Math.hypot(best.x - x, best.y - y) ? p : best
+		);
+		return { x: x - nearest.x, y: y - nearest.y };
+	});
+}
+
 function drag(svg: SVGSVGElement, dx: number, dy: number) {
 	const box = svg.getBoundingClientRect();
 	const x = box.left + box.width / 2;
@@ -119,6 +141,60 @@ describe('Solide — tourner: oui', () => {
 		expect(traits(screen.container)).toBe(before);
 		// Le clavier reste sur la figure
 		expect(document.activeElement).toBe(svg);
+	});
+
+	it('les noms gardent leur place pendant le glissement, et se replacent à l’arrêt', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node('forme: pave 4 2 3', 'sommets: A B C D E F G H', 'tourner: oui') }
+		});
+		const svg = svgOf(screen.container);
+		const atRest = nameOffsets(screen.container);
+		const namesAtRest = namePlaces(screen.container);
+		expect(atRest).toHaveLength(8);
+
+		// Doigt posé, figure tournée de plus d'un quart de tour, doigt pas encore levé
+		const box = svg.getBoundingClientRect();
+		const x = box.left + box.width / 2;
+		const y = box.top + box.height / 2;
+		const pointer = (type: string, clientX: number, clientY: number) =>
+			svg.dispatchEvent(
+				new PointerEvent(type, {
+					pointerId: 7,
+					isPrimary: true,
+					button: 0,
+					buttons: 1,
+					clientX,
+					clientY,
+					bubbles: true
+				})
+			);
+		pointer('pointerdown', x, y);
+		for (let step = 1; step <= 8; step++) pointer('pointermove', x + step * 25, y + step * 5);
+		await expect.poll(() => resetButton(screen.container)).toBeDefined();
+		// Le passage à la vue droite (250 ms) est fini, le doigt toujours posé
+		await new Promise((resolve) => setTimeout(resolve, 400));
+		expect(namePlaces(screen.container)).not.toBe(namesAtRest);
+		const whileTurning = nameOffsets(screen.container);
+		whileTurning.forEach((offset, i) => {
+			expect(offset.x).toBeCloseTo(atRest[i].x, 6);
+			expect(offset.y).toBeCloseTo(atRest[i].y, 6);
+		});
+
+		// Doigt levé : les noms glissent à la place qui convient à cette vue
+		pointer('pointerup', x + 200, y + 40);
+		await expect
+			.poll(() =>
+				nameOffsets(screen.container).some(
+					(offset, i) => Math.hypot(offset.x - atRest[i].x, offset.y - atRest[i].y) > 0.1
+				)
+			)
+			.toBe(true);
+
+		// Retour : à l'arrivée, les noms sont à leur place de départ
+		resetButton(screen.container)!.click();
+		await expect.poll(() => resetButton(screen.container)).toBeUndefined();
+		await expect.poll(() => namePlaces(screen.container)).toBe(namesAtRest);
 	});
 
 	it('dans un choix : tourner la figure ne coche pas le choix, la toucher si', async () => {

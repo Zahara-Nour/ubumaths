@@ -23,6 +23,9 @@
 	  « Vue de départ » (ou Échap) la ramène. Cadre fixe, réservé dès le repos :
 	  la page ne bouge pas. Glisser sur la figure ne fait pas défiler la page.
 	  Rien n'est enregistré ; un autre bloc repart de la vue de départ.
+	  Pendant que la figure tourne, chaque nom garde sa place par rapport à son
+	  point ; à l'arrêt (doigt levé, touche relâchée, fin du retour), les noms
+	  glissent à la place qui convient à la vue.
 
 	@module components/markdown/nodes/Solide
 -->
@@ -31,7 +34,11 @@
 	import { Rotate3d, RotateCcw } from '@lucide/svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ESPACE_UNAVAILABLE, type EspaceNode } from '#lib/ubumark/types/espace.ts';
-	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
+	import {
+		ESPACE_MARGIN,
+		ESPACE_STROKE,
+		type EspacePoint
+	} from '#lib/ubumark/utils/espace-scene.ts';
 	import {
 		SOLIDE_DASH,
 		SOLIDE_DOT_RADIUS,
@@ -66,6 +73,8 @@
 	/** Durées du passage à la vue droite et du retour à la vue de départ (ms) */
 	const PASSAGE_MS = 250;
 	const RETURN_MS = 350;
+	/** Durée du glissement des noms vers leur place, à l'arrêt (ms) */
+	const SETTLE_MS = 150;
 
 	const KEY_TURNS: Record<string, [number, number]> = {
 		ArrowLeft: [KEY_TURN, 0],
@@ -83,7 +92,17 @@
 	let turned = $state.raw<{ source: string; vue: EspaceVue } | null>(null);
 	let vue = $derived(turned !== null && turned.source === node.source ? turned.vue : VUE_DE_DEPART);
 	let moved = $derived(vue !== VUE_DE_DEPART);
-	let scene = $derived(spec === null ? null : buildSolideScene(spec, rotatable ? vue : undefined));
+	/**
+	 * Places des noms tenues pendant que la figure tourne (et le bloc auquel elles
+	 * appartiennent) ; null : chaque nom est placé pour la vue
+	 */
+	let held = $state.raw<{ source: string; offsets: EspacePoint[] } | null>(null);
+	let heldOffsets = $derived(
+		rotatable && held !== null && held.source === node.source ? held.offsets : undefined
+	);
+	let scene = $derived(
+		spec === null ? null : buildSolideScene(spec, rotatable ? vue : undefined, heldOffsets)
+	);
 	let dragging = $state(false);
 	let figure = $state<SVGSVGElement | null>(null);
 
@@ -92,6 +111,10 @@
 	/** Animation en cours (passage ou retour) ; 0 : aucune */
 	let animation = 0;
 	let returning = false;
+	/** Glissement des noms vers leur place en cours ; 0 : aucun */
+	let settling = 0;
+	/** Flèches du clavier enfoncées : tant qu'il en reste une, la figure tourne encore */
+	const keysDown = new Set<string>();
 	/** Le glissement vient de finir : le clic qui le suit ne doit rien cocher (figure dans un choix) */
 	let justDragged = false;
 
@@ -104,6 +127,51 @@
 		cancelAnimationFrame(animation);
 		animation = 0;
 		returning = false;
+	}
+
+	function stopSettling() {
+		cancelAnimationFrame(settling);
+		settling = 0;
+	}
+
+	/** La figure se met à tourner : les noms gardent la place qu'ils ont */
+	function holdNames() {
+		stopSettling();
+		if (heldOffsets !== undefined || scene?.labelOffsets === undefined) return;
+		held = { source: node.source, offsets: scene.labelOffsets };
+	}
+
+	/** La figure s'arrête : les noms glissent à la place qui convient à la vue */
+	function settleNames() {
+		if (dragging || keysDown.size > 0 || animation !== 0) return;
+		stopSettling();
+		const from = heldOffsets;
+		if (from === undefined) return;
+		const to = spec === null ? undefined : buildSolideScene(spec, vue).labelOffsets;
+		if (to === undefined || to.length !== from.length || reducedMotion()) {
+			held = null;
+			return;
+		}
+		const source = node.source;
+		const start = performance.now();
+		const step = (now: number) => {
+			const t = Math.min(1, (now - start) / SETTLE_MS);
+			if (t >= 1) {
+				held = null;
+				settling = 0;
+				return;
+			}
+			const k = t * t * (3 - 2 * t);
+			held = {
+				source,
+				offsets: from.map((p, i) => ({
+					x: p.x + (to[i].x - p.x) * k,
+					y: p.y + (to[i].y - p.y) * k
+				}))
+			};
+			settling = requestAnimationFrame(step);
+		};
+		settling = requestAnimationFrame(step);
 	}
 
 	/** De la cavalière à la vue droite, en douceur ; l'élève peut tourner pendant ce temps */
@@ -120,6 +188,7 @@
 			last = now;
 			setVue({ ...vue, oblique });
 			animation = oblique > 0 ? requestAnimationFrame(step) : 0;
+			if (animation === 0) settleNames();
 		};
 		animation = requestAnimationFrame(step);
 	}
@@ -129,9 +198,12 @@
 		stopAnimation();
 		if (!moved) return;
 		if (reducedMotion()) {
+			stopSettling();
 			turned = null;
+			held = null;
 			return;
 		}
+		holdNames();
 		const from = vue;
 		const start = performance.now();
 		returning = true;
@@ -140,6 +212,7 @@
 			if (t >= 1) {
 				turned = null;
 				stopAnimation();
+				settleNames();
 				return;
 			}
 			// Départ et arrivée en douceur
@@ -185,6 +258,7 @@
 			if (Math.hypot(dx, dy) < DRAG_START) return;
 			drag.started = true;
 			dragging = true;
+			holdNames();
 			leaveCavaliere();
 		}
 		drag.x = event.clientX;
@@ -198,6 +272,7 @@
 		justDragged = drag.started;
 		drag = null;
 		dragging = false;
+		settleNames();
 	}
 
 	/**
@@ -221,6 +296,8 @@
 		if (turn !== undefined) {
 			// Les flèches tournent la figure au lieu de faire défiler la page
 			event.preventDefault();
+			keysDown.add(event.key);
+			holdNames();
 			leaveCavaliere();
 			setVue(turnVue(vue, turn[0], turn[1]));
 		} else if (event.key === 'Escape' && moved) {
@@ -230,12 +307,26 @@
 		}
 	}
 
+	/** Touche relâchée (ou figure quittée au clavier) : la figure ne tourne plus */
+	function handleKeyUp(event: KeyboardEvent) {
+		if (keysDown.delete(event.key)) settleNames();
+	}
+
+	function handleBlur() {
+		if (keysDown.size === 0) return;
+		keysDown.clear();
+		settleNames();
+	}
+
 	// Le composant retiré en pleine animation : plus rien à dessiner
 	$effect(() => stopAnimation);
+	$effect(() => stopSettling);
 	// Un autre bloc en pleine animation : elle ne doit pas se poursuivre sur la nouvelle figure
 	$effect(() => {
 		void node.source;
 		stopAnimation();
+		stopSettling();
+		keysDown.clear();
 	});
 
 	/** Points au format de l'attribut `points`, marge comprise */
@@ -289,6 +380,8 @@
 			onpointerup={rotatable ? handlePointerEnd : undefined}
 			onpointercancel={rotatable ? handlePointerEnd : undefined}
 			onkeydown={rotatable ? handleKeyDown : undefined}
+			onkeyup={rotatable ? handleKeyUp : undefined}
+			onblur={rotatable ? handleBlur : undefined}
 			{@attach rotatable ? stopClickAfterDrag : undefined}
 			style:width="{width}cm"
 			style:aspect-ratio="{width} / {height}"

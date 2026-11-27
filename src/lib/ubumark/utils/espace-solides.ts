@@ -111,6 +111,12 @@ export interface SolideScene {
 	points: EspacePoint[];
 	/** Vecteurs donnés, puis petites flèches de leurs noms ; dessinées après les traits */
 	arrows: SolideArrow[];
+	/**
+	 * Figure que l'on peut tourner seulement : la place de chaque nom de `labels`
+	 * par rapport à son point (sommet, point déclaré, milieu du vecteur), à
+	 * redonner à `buildSolideScene` pour tenir les noms pendant la rotation
+	 */
+	labelOffsets?: EspacePoint[];
 }
 
 /** Ce qu'il faut savoir d'une forme pour lire `sommets:` et `marquer:` */
@@ -975,8 +981,15 @@ function leaderCote(
 /**
  * Le dessin d'un solide. `vue` : figure que l'on peut tourner (polyèdres), vue
  * de là, dans son cadre fixe ; absente (ou solide rond) : le dessin fixe.
+ * `held` (figure tournée) : places des noms à tenir (`labelOffsets` d'une scène
+ * du même bloc) — pendant que la figure tourne, un nom ne change pas de côté ;
+ * sans elles, chaque nom est placé pour cette vue.
  */
-export function buildSolideScene(spec: SolideSpec, vue?: EspaceVue): SolideScene {
+export function buildSolideScene(
+	spec: SolideSpec,
+	vue?: EspaceVue,
+	held?: EspacePoint[]
+): SolideScene {
 	const curved = solideTopology(spec.form).curved;
 	// Le dessin fixe donne l'échelle, que la figure tournée garde
 	const polyhedron = curved ? null : polyhedronDraft(spec);
@@ -1019,6 +1032,26 @@ export function buildSolideScene(spec: SolideSpec, vue?: EspaceVue): SolideScene
 
 	// Noms des sommets : à l'extérieur, en s'éloignant du centre du dessin
 	const labels: SolideLabel[] = [];
+	// Point auquel chaque nom est attaché, dans l'ordre de `labels`
+	const anchors: EspacePoint[] = [];
+	// Places tenues : toutes ou aucune (celles d'un autre bloc ne valent rien)
+	const nameCount =
+		(spec.names?.filter((n) => n !== null).length ?? 0) +
+		spec.points.length +
+		spec.vectors.filter((v) => v.name !== null).length;
+	const holding = turned !== null && held !== undefined && held.length === nameCount;
+	/** Le nom attaché à `anchor` : à sa place tenue, sinon parmi `candidates` */
+	const nameAt = (
+		anchor: EspacePoint,
+		candidates: SolideLabel[],
+		find: () => SolideLabel
+	): SolideLabel => {
+		const offset = holding ? held[anchors.length] : undefined;
+		anchors.push(anchor);
+		return offset === undefined
+			? find()
+			: { ...candidates[0], at: { x: anchor.x + offset.x, y: anchor.y + offset.y } };
+	};
 	const dots: EspacePoint[] = [];
 	const middleOfDrawing = {
 		x: vertices.reduce((s, p) => s + p.x, 0) / vertices.length,
@@ -1050,7 +1083,7 @@ export function buildSolideScene(spec: SolideSpec, vue?: EspaceVue): SolideScene
 			text: name
 		}));
 		const others = vertices.filter((_, k) => k !== i);
-		labels.push(firstFree(candidates, labels, edgeSegments, others));
+		labels.push(nameAt(p, candidates, () => firstFree(candidates, labels, edgeSegments, others)));
 		if (draft.centers.includes(i)) dots.push(p);
 	});
 	for (const mark of spec.marks) {
@@ -1126,7 +1159,7 @@ export function buildSolideScene(spec: SolideSpec, vue?: EspaceVue): SolideScene
 			text: point.name
 		}));
 		const others = named.filter((_, i) => i !== vertices.length + k);
-		labels.push(firstFree(candidates, labels, segments, others));
+		labels.push(nameAt(p, candidates, () => firstFree(candidates, labels, segments, others)));
 	});
 
 	// Vecteurs donnés : un nom près du milieu de la flèche, du côté extérieur d'abord
@@ -1156,7 +1189,9 @@ export function buildSolideScene(spec: SolideSpec, vue?: EspaceVue): SolideScene
 				}))
 			)
 		);
-		const label = firstFree(candidates, labels, segments, named, NAME_ARROW_TOP);
+		const label = nameAt(mid, candidates, () =>
+			firstFree(candidates, labels, segments, named, NAME_ARROW_TOP)
+		);
 		labels.push(label);
 		// La petite flèche au-dessus de la lettre, de gauche à droite (sens de la lecture)
 		const half = Math.max(labelChars(label) * CHAR_WIDTH, CHAR_WIDTH * 1.2) / 2;
@@ -1206,7 +1241,15 @@ export function buildSolideScene(spec: SolideSpec, vue?: EspaceVue): SolideScene
 			shaft: [shift(a.shaft[0]), shift(a.shaft[1])],
 			head: a.head.map(shift),
 			small: a.small
-		}))
+		})),
+		// Cotes et noms de section ne tournent pas encore : un nom par point d'attache
+		...(turned !== null &&
+			anchors.length === labels.length && {
+				labelOffsets: labels.map((l, i) => ({
+					x: l.at.x - anchors[i].x,
+					y: l.at.y - anchors[i].y
+				}))
+			})
 	};
 }
 
