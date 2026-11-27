@@ -11,8 +11,8 @@ status: en cours
 _Mis à jour le 2026-11-28, avant la PR._
 
 - **État** : L85, T23, L111 corrigés et barrés au registre (commits sur la branche, pas de PR encore). Phase 0 posée à David le 2026-11-28 pour V108 (+ M44), V109, V111, L86 (question d'accès), L9 (décision du 2026-11-03 à revoir).
-- **Prochaine action** : selon les réponses ; sans réponse, ne rien coder sur ces cinq points.
-- **En attente de David** : les cinq réponses ci-dessus (voir § Questions).
+- **Prochaine action** : coder les cinq points tranchés (§ Questions), dans cette même PR : L9, V111, V108 + M44, V109, L86.
+- **En attente de David** : rien.
 - **Pièges en cours** : la preuve de M44 utilise `--include=*.ts` : la rejouer sous bash, pas zsh (glob). Tests de preuve : `ECARTS_PREUVES=1 npx vitest run --project ecarts …`.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-fiches` · `fix/ecarts-fiches`.
 
@@ -27,6 +27,8 @@ V108, V109, V111 (visibles, phase 0) · L9, L85, L86, L111 (latents) · T23 (RGP
 3. **V111** : fiche anglaise, notion sans nom anglais : quel titre en tête ?
 4. **L86** : fonction SQL (droits de l'appelant) qui écrit notions et fiche d'un coup ; question d'accès.
 5. **L9** : la prod n'a pas STIX Two Math (polices du bundle typst.ts : New Computer Modern Math) ; le témoin devrait la retirer plutôt que la mettre dans le dépôt.
+
+**Tranché par David le 2026-11-28 (« d'accord » sur les recommandations)** : (1) V108 + M44 : flèche verte, pointillés de construction gardés, dessin `solved` appelé (pas supprimé) ; (2) V109 : aiguilles et barre en vert ; (3) V111 : nom anglais de la branche s'il existe, sinon « Worksheet » ; (4) L86 : fonction SQL aux droits de l'appelant, accès inchangé ; (5) L9 : STIX retirée du témoin (décision du 2026-11-03 remplacée).
 
 ## Historique
 
