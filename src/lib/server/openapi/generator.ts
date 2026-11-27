@@ -476,7 +476,7 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 					}
 				}
 			},
-			'/api/classes': {
+			'/api/teacher/classes': {
 				get: {
 					tags: ['Classes'],
 					summary: 'List classes',
@@ -484,43 +484,6 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 					responses: {
 						'200': {
 							description: 'List of classes'
-						}
-					}
-				},
-				post: {
-					tags: ['Classes'],
-					summary: 'Create class',
-					description: 'Create a new class',
-					requestBody: {
-						required: true,
-						content: {
-							'application/json': {
-								schema: {
-									type: 'object',
-									required: ['name', 'grade', 'school_year'],
-									properties: {
-										name: {
-											type: 'string',
-											minLength: 1,
-											maxLength: 100
-										},
-										grade: { $ref: '#/components/schemas/Grade' },
-										school_year: {
-											type: 'string',
-											pattern: '^\\d{4}-\\d{4}$'
-										},
-										description: {
-											type: 'string',
-											maxLength: 500
-										}
-									}
-								}
-							}
-						}
-					},
-					responses: {
-						'201': {
-							description: 'Class created successfully'
 						}
 					}
 				}
