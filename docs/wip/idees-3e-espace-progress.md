@@ -2,13 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 posée._
+_Mis à jour le 2026-11-27, lot 1 écrit (PR à ouvrir)._
 
-- **État** : relevé fait ([idees-3e-espace-releve.md](idees-3e-espace-releve.md)), fiches F1 à F5
-  et questions Q1 à Q4 posées à David · **Prochaine action** : réponses de David (page à cocher),
-  puis gros lot · **En attente de David** : Q1 à Q4 · **Pièges en cours** : F1 est un modèle de 4e
-  (point 4-034), pas de 3e · **Worktree / branche** : `../ubumaths-wt-idees-3e-espace`,
-  `feat/idees-3e-espace`
+- **État** : phase 0 validée (« je valide », toutes les recommandations) ; lot 1 = 5 variations de 5
+  modèles publiés (F2, F3, F5), specs vertes, migration de contenu générée et testée · **Prochaine
+  action** : PR, merge, `db:migrate` (4 conditions), série de relecture dans `/dev/modeles` · **En
+  attente de David** : relecture · **Pièges en cours** : F1 (modèle de 4e) attend l'outil n° 72 de
+  `solides-3d` (segment entre deux sommets, angle droit) ; le pre-commit reformate les JSON
+  exportés, l'index peut garder l'ancienne forme (`git restore --staged`) · **Worktree / branche** :
+  `../ubumaths-wt-idees-3e-espace`, `feat/idees-3e-espace`
 
 ## Rubrique
 
@@ -84,3 +86,34 @@ entrée par fiche F1 à F5, R, Q1, Q3 ; Q2 est la fiche F4).
 - **Q3** : F5 (unités mélangées, 5e et 4e) : dans ce chantier, ou en « Idées en attente » ?
   Recommandation : dans ce chantier (trois variations).
 - **Q4** (accès de la migration) : personne ne gagne d'accès, on range et on complète des modèles.
+
+## Décisions de David (2026-11-27)
+
+« Je valide » : toutes les recommandations de la page à cocher.
+
+- **F1** : nouveau modèle de 4e, **après** l'outil n° 72 de `outils-manquants.md` (Q1 : l'outil
+  d'abord, chantier `solides-3d`). Deuxième PR de ce chantier.
+- **F2, F3, F5** : variations des modèles publiés, F5 dans ce chantier (Q3). Les cinq modèles sont
+  réservés dans le tableau de répartition.
+- **F4** : rien (Q2). **R** : rien.
+- **Q4** : personne ne gagne d'accès.
+
+## Lot 1 : variations de modèles publiés (2026-11-27)
+
+Dossier `scripts/questions/idees-3e-espace-publies/` (export de la prod, variations ajoutées à la
+fin), migration `20261127223236_questions_idees_3e_espace_publies_contenu.sql` et sa fixture.
+
+| Modèle                                 | Variation ajoutée                                  | Plages                                |
+| -------------------------------------- | -------------------------------------------------- | ------------------------------------- |
+| 7bb95104 Sections de solides           | v5 : rayon de la boule depuis d et r, au dixième   | d de 2 à 9, r de 3 à 12, d < r        |
+| 87f79961 Volume d'une boule            | v6 : volume libre dans la boîte cylindrique, exact | r = 3, 6, 9, 12 (2r³/3 entier)        |
+| 0761124d Volume d'un cube ou d'un pavé | v4 : longueur en dm, largeur et hauteur en cm      | L de 2 à 5 dm, l de 3 à 9, h de 2 à 8 |
+| 6a770d04 Volume d'une pyramide         | v7 : côté en cm, hauteur en mm, volume en cm³      | a de 2 à 12, hauteur de 30 à 150 mm   |
+| 35002b15 Volume d'un cône              | v6 : rayon en cm, hauteur en dm, valeur exacte     | r de 2 à 9, h de 1 à 3 dm             |
+
+- Chaque variation : coup de pouce, trois erreurs prévues, specs (juste et erreurs). `question:specs`
+  vert sur les cinq fichiers (1 400 tirages), test d'intégration de la migration vert.
+- Écart avec la fiche F3 : r pris parmi 3, 6, 9, 12 (et non de 2 à 10) pour une valeur exacte
+  entière devant π, comme les autres variations du modèle. Troisième erreur de F3 : volumes
+  ajoutés (10r³/3 π) au lieu de « hauteur prise égale à r » (volume négatif, aucun élève ne le
+  donnerait).
