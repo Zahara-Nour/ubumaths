@@ -42,7 +42,8 @@
 	import Header from '#lib/components/Header.svelte';
 	import Sidebar from '#lib/components/Sidebar.svelte';
 	// Chargés pour leur effet : à leur création, ces réglages s'appliquent à la page
-	// (thème, taille du texte, lecture facilitée lus dans le navigateur), sur toutes les pages
+	// (thème, taille du texte, lecture facilitée lus dans le navigateur), sur toutes les pages.
+	// Si `package.json` déclare un jour `sideEffects`, y garder ces trois modules.
 	import '#lib/stores/theme.svelte.ts';
 	import '#lib/stores/fontSize.svelte.ts';
 	import '#lib/stores/easyReading.svelte.ts';
