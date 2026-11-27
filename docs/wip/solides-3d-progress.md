@@ -429,3 +429,24 @@ Exemple suivi : un pavé ABCDEFGH, « trace le vecteur AB + AD + AE » (`tracer:
   **Laissé, existait avant** : après un glissement au doigt sans clic, un clic sans pointeur (lecteur d'écran)
   arrivant avant tout autre toucher est avalé une fois (`justDragged`) ; un toucher « tremblé » de 4 à 10 px
   tourne un peu la figure et ne pose rien.
+
+## 14. Boule coupée et cotée : le nom du centre ne touche plus la cote (2026-11-27)
+
+- **Défaut** (dessin fixe, d'avant le chantier) : plan de coupe à moins de 0,3 × le rayon du centre environ, la
+  distance du plan s'écrit là où le nom du centre se pose (`boule 6`, `section: 1.5` : « 1,5 cm » sur O).
+  Même défaut sur un cylindre étroit coupé parallèlement à l'axe (`cylindre 1 8` : la distance à l'axe sur O).
+- **Correctif** : dans `layoutSolide`, les cotes écrites à côté de leur trait (`sideCote`) sont calculées avant
+  les noms ; le nom d'un **centre** les évite (`firstFree`). Les sommets d'un polyèdre ne changent pas.
+- **Mesuré** : 5 244 solides ronds (boule, cylindre, cône ; nommés ou non, cotés ou non, coupés ou non, avec
+  et sans `tourner: oui`) comparés avant / après : 108 scènes changent, toutes celles où le nom touchait la
+  cote, aucune autre.
+- **Vu par la session** : planche avant / après tracée depuis les scènes (Chrome). **Pas vu** : la page
+  `/aide-ecriture/blocs/solide` — `pnpm voir --compte prof` refuse la connexion du compte fictif (base locale
+  en marche, rien redémarré).
+- Tests : `solide-section.test.ts` (trois, rouges sans le correctif), deux solides de plus dans la liste
+  `RONDS` de `solide-sections-tourner.test.ts` (repos = dessin fixe, cadre). Doc : `docs/systeme/ubumark.md`.
+- Revue (`code-reviewer`) : aucun finding ; `atRest` remonté sans effet (appel pur, pas de récursion), noms
+  tenus non touchés, polyèdres inchangés.
+- **Laissé, signalé à David** : boule coupée très près du centre, le contour de la section passe dans le texte
+  de la cote du rayon ; cylindre très plat (rayon ≥ 3 × hauteur) coupé perpendiculairement à l'axe, la cote du
+  rayon et celle de la distance se touchent.
