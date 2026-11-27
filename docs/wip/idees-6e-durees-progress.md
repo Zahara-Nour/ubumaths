@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-27, après #3233._
 
 - **État** : #3233 mergée (6 modèles neufs N1 à N6, 25 variations ; 1 variation ajoutée à 311bf024, réservé dans `idees-ailleurs-repartition.md`). Les 6 brouillons ont été joués dans l'aperçu admin local (rendu iPhone correct ; N1 et N5 un peu plus larges que l'écran). `security-auditor` passé après le merge sur la migration de contenu : aucun finding bloquant. `migration list --linked` : seule `20261127115608` en attente.
 - **Prochaine action** : après les deux gestes de David, commiter les ids de prod en tête des fichiers N1 à N6 ; relever les niveaux en prod ; générer la migration de rangement (`migration-rangement.ts --dir scripts/questions/idees-6e-durees-neufs`), PR avec `security-auditor` ; puis la relecture dans `/dev/modeles`.
-- **En attente de David** : (1) `pnpm db:migrate` (contenu de 311bf024) ; (2) `create-questions --publier` sur `scripts/questions/idees-6e-durees-neufs` (brouillons en prod).
+- **En attente de David** : rien. `db:migrate` (contenu de 311bf024) et `create-questions --publier` (6 brouillons) faits par David le 2026-11-27 ; à vérifier en prod (MCP). ⚠️ Les ids de prod sont écrits, NON commités, dans les 6 JSON de `scripts/questions/idees-6e-durees-neufs/` du DÉPÔT PRINCIPAL : les reporter dans le nouveau worktree (copie des fichiers), puis `git checkout --` sur `main` après comparaison.
 - **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; niveaux posés 9, 10 (calcul de durées) et 14 à 17 (conversions), à relever en prod avant la migration de rangement ; les messages à décimaux s'écrivent `0.3` dans les specs.
 - **Worktree / branche** : aucun (retiré par `pr:merger`) ; nouveau worktree pour la PR de rangement.
 
