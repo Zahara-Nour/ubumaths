@@ -279,7 +279,8 @@ function turnedPerspective(heights: number[][], vue: EspaceVue): EspaceScene {
 	const pivot = cubesPivot(heights);
 	const centre = vueProjection(vue, pivot).project(pivot);
 	// Aucun point ne sort du cadre, à aucun angle ni pendant le passage de la cavalière à la
-	// vue droite : un point à la distance d du centre se dessine au plus à d × √(1 + déport²)
+	// vue droite : un point à la distance d du centre se dessine, en largeur comme en hauteur,
+	// au plus à d × √(1 + déport²) du centre
 	const half = Math.hypot(pivot.x, pivot.y, pivot.z) * Math.hypot(1, DEPTH_SHIFT);
 	return {
 		width: 2 * half,

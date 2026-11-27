@@ -459,8 +459,9 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 	let rotationErrors: string[] | undefined;
 	if (turn !== undefined) {
 		const wanted = plain(turn.value);
+		const { line } = turn;
 		const refuse = (message: string) => {
-			rotationErrors = [`Ligne ${turn!.line} : ${message}`];
+			rotationErrors = [`Ligne ${line} : ${message}`];
 		};
 		if (wanted !== 'oui' && wanted !== 'non') refuse(`tourner « ${turn.value} » : oui ou non`);
 		else if (wanted === 'oui') {
