@@ -241,53 +241,6 @@ export async function getClassWarnings(options: {
 }
 
 /**
- * Add a warning for a student via RPC
- *
- * Atomically inserts a warning and returns updated counts in a single DB call.
- * The RPC handles: auth check, type validation, max 20 limit, advisory lock.
- *
- * @param options - Configuration object
- * @returns Promise resolving to updated warning counts for the student
- */
-export async function addWarning(options: {
-	studentId: string;
-	classId: string;
-	periodId: string;
-	warningType: WarningType;
-	supabase: SupabaseClient<Database>;
-}): Promise<StudentWarningCounts> {
-	const { studentId, classId, periodId, warningType, supabase } = options;
-
-	const { data, error: rpcError } = await supabase.rpc('add_warning', {
-		p_student_id: studentId,
-		p_class_id: classId,
-		p_academic_period_id: periodId,
-		p_warning_type: warningType
-	});
-
-	if (rpcError) {
-		logger.error('[addWarning] RPC error:', rpcError);
-		throw error(500, `Failed to add warning: ${rpcError.message}`);
-	}
-
-	// RPC returns JSON; Supabase types it as `unknown` so we cast to our known shape
-	const result = data as unknown as {
-		success: boolean;
-		error?: string;
-		counts?: StudentWarningCounts;
-	};
-
-	if (!result.success) {
-		const msg = result.error || 'Unknown error';
-		if (msg.includes('Unauthorized')) throw error(403, msg);
-		if (msg.includes('20 warnings')) throw error(409, msg);
-		throw error(400, msg);
-	}
-
-	return result.counts ?? { C: 0, M: 0, R: 0, T: 0 };
-}
-
-/**
  * Add multiple warnings for a student in one atomic operation via RPC
  *
  * Inserts all warnings and returns updated counts. Enforces max 20 limit
