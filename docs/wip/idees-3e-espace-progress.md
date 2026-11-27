@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3253._
+_Mis à jour le 2026-11-27, après #3253 et les séries de relecture (#3256)._
 
-- **État** : lot 1 (5 variations de 5 modèles publiés) mergé ; migration
-  `20261127223236_questions_idees_3e_espace_publies_contenu.sql` seule en attente en prod ·
-  **Prochaine action** : David lance `pnpm db:migrate`, puis série de relecture des 5 modèles dans
-  `/dev/modeles` · **En attente de David** : `db:migrate`, relecture · **Pièges en cours** : F1
-  (modèle de 4e) attend l'outil n° 72 de `solides-3d` ; réservations des 5 modèles à lever après la
-  relecture · **Worktree / branche** : aucun (retiré par `pr:merger`) ; nouveau worktree pour F1
+- **État** : lot 1 en prod (5 variations de 5 modèles publiés, migration appliquée par David),
+  relecture validée par David (« je valide », dans la conversation, aucun verdict en base) ;
+  réservations levées · **Prochaine action** : F1, modèle neuf de 4e « Calculer une longueur dans
+  un solide avec Pythagore », dès que l'outil n° 72 de `outils-manquants.md` est livré par
+  `solides-3d` · **En attente de David** : rien · **Pièges en cours** : F1 est un modèle de 4e
+  (4-034) ; nouveau worktree sur `origin/main` · **Worktree / branche** : aucun
 
 ## Rubrique
 
@@ -119,3 +119,9 @@ fin), migration `20261127223236_questions_idees_3e_espace_publies_contenu.sql` e
 - `security-auditor` (2026-11-27) : aucun finding. Cinq UPDATE de `question_templates` (variations,
   specs, description) gardés par le contenu relevé en prod, rollback en commentaire ; personne ne
   gagne ni ne perd d'accès.
+
+## Relecture (2026-11-27)
+
+Séries de relecture enregistrées par David (`scripts/series/{3,4,5}-relecture-espace-publies.json`,
+#3256). Relecture validée par David dans la conversation (« je valide ») ; aucun verdict en base.
+Réservations des cinq modèles levées dans le tableau de répartition.

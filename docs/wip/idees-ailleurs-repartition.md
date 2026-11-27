@@ -145,7 +145,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Homothétie et rotation                   | 3G1       | 8         | publiée (2026-11-27)                                       | `idees-3e-transformations`   |
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
-| Espace                                   | 3G4       | 6         | prise (2026-11-27)                                         | `idees-3e-espace`            |
+| Espace                                   | 3G4       | 6         | en cours : 5 variations publiées, F1 attend l’outil n° 72  | `idees-3e-espace`            |
 | Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 | Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
@@ -184,11 +184,6 @@ de contenu appliquée en prod.
 | 66f9abbf Périmètre d'un rectangle                            | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
 | ccb4f5e5 Formule du périmètre d'un disque                    | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
 | cfb4c692 Périmètre d'un disque                               | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
-| 0761124d Volume d'un cube ou d'un pavé droit                 | `idees-3e-espace`                                           | 2026-11-27 |                                      |
-| 35002b15 Volume d'un cône                                    | `idees-3e-espace`                                           | 2026-11-27 |                                      |
-| 6a770d04 Volume d'une pyramide                               | `idees-3e-espace`                                           | 2026-11-27 |                                      |
-| 7bb95104 Sections de solides                                 | `idees-3e-espace`                                           | 2026-11-27 |                                      |
-| 87f79961 Volume d'une boule                                  | `idees-3e-espace`                                           | 2026-11-27 |                                      |
 
 ## Idées en attente
 
