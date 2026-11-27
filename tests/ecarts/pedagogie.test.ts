@@ -1,0 +1,186 @@
+/**
+ * Tests de preuve du registre des écarts (docs/ecarts/registre.md), domaine pédagogie
+ * (fiches, questions, blocs).
+ *
+ * Chaque test affirme le comportement ATTENDU d'un écart encore ouvert : il est
+ * rouge tant que l'écart est vrai. Le nom de chaque `describe` porte l'identifiant
+ * de l'écart, que le registre retient par `› V111`, `› L85`…
+ *
+ * Les tests nommés « témoin » sont verts aujourd'hui : ils montrent que le même
+ * geste marche sur un cas voisin, donc que le rouge vient bien de l'écart.
+ */
+
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+import { createTypstCompiler } from '@myriaddreamin/typst.ts/compiler';
+import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+
+import { assignBlankIndices } from '#lib/questions/generator/assign-blank-indices.ts';
+import { escapeTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { lineCoefficients } from '#lib/ubumark/utils/courbe-tracer.ts';
+import { printedTitle, type TitleNotion } from '#lib/worksheets/worksheet-title.ts';
+
+describe('V111 : fiche anglaise au titre composé, sans catégorie', () => {
+	// Le titre en base est le titre composé, écrit en français par l'éditeur.
+	const FRENCH_TITLE = 'Suites arithmétiques';
+	const notion: TitleNotion = { name: 'suites arithmétiques', branch: 'Suites' };
+
+	function mainTitle(locale: 'fr' | 'en', notions: TitleNotion[]): string {
+		return printedTitle({
+			type: 'worksheet',
+			category: null,
+			customTitle: false,
+			title: FRENCH_TITLE,
+			notions,
+			locale
+		}).main;
+	}
+
+	it('témoin : en français, le titre composé s’imprime', () => {
+		expect(mainTitle('fr', [notion])).toBe(FRENCH_TITLE);
+	});
+
+	it('témoin : notion traduite, la version anglaise imprime son nom anglais', () => {
+		expect(mainTitle('en', [{ ...notion, nameEn: 'arithmetic sequences' }])).toBe(
+			'Arithmetic sequences'
+		);
+	});
+
+	// Aujourd'hui : « Suites arithmétiques » en tête de la fiche anglaise.
+	it('notion sans nom anglais : la version anglaise n’imprime pas le titre français', () => {
+		const main = mainTitle('en', [notion]);
+		// Un titre vide ne serait pas une correction
+		expect(main).not.toBe('');
+		expect(main).not.toMatch(/arithmétiques/i);
+	});
+});
+
+describe('L85 : `//` dans un titre ou une consigne de fiche', () => {
+	type Compiler = ReturnType<typeof createTypstCompiler>;
+
+	// Le texte d'un contenu Typst, tel qu'il s'imprime (mots et espaces)
+	const PLAIN = [
+		'#let plain(c) = {',
+		'  if type(c) == str { c }',
+		'  else if c.has("text") { c.text }',
+		'  else if c.has("children") { c.children.map(plain).join("") }',
+		'  else if c == [ ] { " " }',
+		'  else { "" }',
+		'}'
+	].join('\n');
+
+	let compiler: Compiler;
+
+	beforeAll(async () => {
+		const wasm = readFileSync(
+			resolve('node_modules/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm')
+		);
+		const fonts = ['ShantellSans-Light.ttf', 'ShantellSans-Bold.ttf', 'ChiphreMath.ttf'].map(
+			(f) => new Uint8Array(readFileSync(resolve('static/fonts/chiphre-math-typst', f)))
+		);
+		// Hors réseau, comme les autres tests qui compilent du Typst
+		vi.stubGlobal('fetch', () => Promise.reject(new Error('réseau interdit dans ce test')));
+		compiler = createTypstCompiler();
+		await compiler.init({
+			getModule: () => wasm,
+			beforeBuild: [loadFonts(fonts, { assets: false })]
+		});
+	}, 120_000);
+
+	/** Ce que Typst imprime d'un texte échappé par `escapeTypst`, seul sur sa ligne */
+	async function printed(text: string): Promise<string> {
+		const source = [
+			PLAIN,
+			'#let c = [',
+			escapeTypst(text),
+			']',
+			'#metadata(plain(c)) <lu>',
+			'#c'
+		].join('\n');
+		compiler.addSource('/main.typ', source);
+		const values = await compiler.runWithWorld({ mainFilePath: '/main.typ' }, async (world) => {
+			const { diagnostics } = await world.compile({ diagnostics: 'full' });
+			const errors = (diagnostics ?? []).filter(
+				(d: { message: string }) => !d.message.startsWith('unknown font family')
+			);
+			expect(errors).toEqual([]);
+			return world.query({ selector: '<lu>', field: 'value' }) as Promise<string[]>;
+		});
+		expect(values).toHaveLength(1);
+		return values[0].trim();
+	}
+
+	it('témoin : une seule barre, le texte s’imprime en entier', async () => {
+		expect(await printed('a / b')).toBe('a / b');
+	});
+
+	it('témoin : un caractère échappé (#) s’imprime tel quel', async () => {
+		expect(await printed('a # b')).toBe('a # b');
+	});
+
+	// Aujourd'hui : « a » (Typst lit `// b` comme un commentaire).
+	it('« a // b » s’imprime en entier', async () => {
+		expect(await printed('a // b')).toBe('a // b');
+	});
+});
+
+describe('L87 : horloge à régler comme option d’un choix', () => {
+	function choiceErrorsOf(option: string[]): string {
+		const statement = ['````choix', ...option, '- non', '````'].join('\n');
+		return (assignBlankIndices(statement).choiceErrors ?? []).join(' ');
+	}
+
+	it('témoin : un cercle trigonométrique à points à placer en option est refusé', () => {
+		expect(choiceErrorsOf(['- ```trig', '  placer: M = pi/3', '  ```'])).toMatch(/premier niveau/);
+	});
+
+	it('témoin : une horloge qui affiche une heure reste permise en option', () => {
+		expect(choiceErrorsOf(['- ```horloge', '  heure: 3:00', '  ```'])).toBe('');
+	});
+
+	// Aujourd'hui : aucun message, l'élève voit une horloge sans geste.
+	// Décision de David (2026-11-24) : refuser à l'écriture, avec un message.
+	it('une horloge à régler en option est refusée, avec un message', () => {
+		expect(choiceErrorsOf(['- ```horloge', '  placer: 9 h 25', '  ```'])).toMatch(/horloge/i);
+	});
+});
+
+describe('L88 : `\\frac` dans une droite à tracer', () => {
+	it('témoin : `y = 1/2x` se lit −0,5x + y = 0', () => {
+		expect(lineCoefficients('y = 1/2x')).toEqual({ a: -0.5, b: 1, c: 0 });
+	});
+
+	// Aujourd'hui : « équation illisible … (Invalid backslash sequence at position 0) ».
+	it('`y = \\frac{1}{2}x` se lit comme `y = 1/2x`', () => {
+		const line = lineCoefficients('y = \\frac{1}{2}x');
+		// Un message de refus est une chaîne ; nombres comparés sans distinguer 0 de −0
+		expect(typeof line).toBe('object');
+		if (typeof line === 'string') return;
+		expect(line.a).toBeCloseTo(-0.5, 9);
+		expect(line.b).toBeCloseTo(1, 9);
+		expect(line.c).toBeCloseTo(0, 9);
+	});
+});
+
+describe('L90 : fraction dans les cinq valeurs d’une boîte à moustaches', () => {
+	const KIND = 'boite-a-moustaches';
+
+	function accepted(source: string): boolean {
+		const node = parseStatChartContent(KIND, source);
+		return node.errors.length === 0 && node.spec !== null;
+	}
+
+	it('témoin : sans fraction, les deux écritures sont acceptées', () => {
+		expect(accepted('A = 0,5 ; 1 ; 2 ; 3 ; 4')).toBe(true);
+		expect(accepted('données: 0,5 ; 1 ; 2 ; 3 ; 4')).toBe(true);
+	});
+
+	// Aujourd'hui : `données:` accepte 1/2, la ligne de boîte répond « « 1/2 » n'est
+	// pas un nombre ». Les deux doivent répondre pareil (accepter, ou refuser).
+	it('`1/2` reçoit la même réponse sur une ligne de boîte et dans `données:`', () => {
+		expect(accepted('A = 1/2 ; 1 ; 2 ; 3 ; 4')).toBe(accepted('données: 1/2 ; 1 ; 2 ; 3 ; 4'));
+	});
+});
