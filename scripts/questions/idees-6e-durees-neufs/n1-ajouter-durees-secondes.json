@@ -1,0 +1,455 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Durées > calcul de durées",
+		"point": "6-206"
+	},
+	"title": "Ajouter des durées avec les secondes",
+	"description": "Additionner des durées en minutes et secondes, ou en heures, minutes et secondes, avec une ou deux retenues ; pièges : retenue oubliée, secondes ou minutes non converties",
+	"grades": ["6"],
+	"level": 9,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n${{m1}}~\\unit{min}~{{s1}}~\\unit{s} + {{m2}}~\\unit{min}~{{s2}}~\\unit{s} = ?~\\unit{min}~?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "m1",
+					"expression": "10..40"
+				},
+				{
+					"name": "s1",
+					"expression": "15..59"
+				},
+				{
+					"name": "m2",
+					"expression": "10..40"
+				},
+				{
+					"name": "s2",
+					"expression": "15..59"
+				},
+				{
+					"name": "ss",
+					"expression": "eval:s1+s2"
+				},
+				{
+					"name": "mm",
+					"expression": "eval:m1+m2+1"
+				}
+			],
+			"conditions": ["s1+s2>60", "m1+m2+1<60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{mm}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m1+m2}}",
+							"message": "N'oublie pas la minute de retenue des secondes.",
+							"label": "Retenue des secondes oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:ss-60}}",
+					"expectedErrors": [
+						{
+							"answer": "{{ss}}",
+							"message": "Plus de $60$ s : $60$ s font $1$ min, garde le reste en secondes.",
+							"label": "Secondes non converties"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les secondes.** ${{s1}} + {{s2}} = {{ss}}$ s, soit $1~\\unit{min}~{{eval:ss-60}}~\\unit{s}$ : on garde ${{eval:ss-60}}~\\unit{s}$ et on retient $1~\\unit{min}$.",
+					"**Les minutes.** ${{m1}} + {{m2}} + 1 = {{mm}}$ min.",
+					"Total : $\\textcolor{{{color:primary.0}}}{{{mm}}~\\unit{min}~{{eval:ss-60}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Ajoute les secondes entre elles, puis les minutes. $60$ s font $1$ min."
+		},
+		{
+			"statement": "Calcule.\n\n${{m1}}~\\unit{min}~{{s1}}~\\unit{s} + {{m2}}~\\unit{min}~{{s2}}~\\unit{s} = ?~\\unit{h}~?~\\unit{min}~?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "m1",
+					"expression": "20..59"
+				},
+				{
+					"name": "s1",
+					"expression": "10..59"
+				},
+				{
+					"name": "m2",
+					"expression": "20..59"
+				},
+				{
+					"name": "s2",
+					"expression": "10..59"
+				},
+				{
+					"name": "ss",
+					"expression": "eval:s1+s2"
+				},
+				{
+					"name": "mm",
+					"expression": "eval:m1+m2+1"
+				}
+			],
+			"conditions": ["s1+s2>60", "m1+m2+1>60"],
+			"blanks": [
+				{
+					"expectedAnswer": "1",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes.",
+							"label": "Minutes non converties"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:mm-60}}",
+					"expectedErrors": [
+						{
+							"answer": "{{mm}}",
+							"message": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes.",
+							"label": "Minutes non converties"
+						},
+						{
+							"answer": "{{eval:mm-61}}",
+							"message": "N'oublie pas la minute de retenue des secondes.",
+							"label": "Retenue des secondes oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:ss-60}}",
+					"expectedErrors": [
+						{
+							"answer": "{{ss}}",
+							"message": "Plus de $60$ s : $60$ s font $1$ min, garde le reste en secondes.",
+							"label": "Secondes non converties"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les secondes.** ${{s1}} + {{s2}} = {{ss}}$ s, soit $1~\\unit{min}~{{eval:ss-60}}~\\unit{s}$ : on garde ${{eval:ss-60}}~\\unit{s}$ et on retient $1~\\unit{min}$.",
+					"**Les minutes.** ${{m1}} + {{m2}} + 1 = {{mm}}$ min, soit $1~\\unit{h}~{{eval:mm-60}}~\\unit{min}$.",
+					"Total : $\\textcolor{{{color:primary.0}}}{1~\\unit{h}~{{eval:mm-60}}~\\unit{min}~{{eval:ss-60}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Commence par les secondes, puis les minutes. $60$ s font $1$ min, et $60$ min font $1$ h."
+		},
+		{
+			"statement": "Calcule.\n\n${{h1}}~\\unit{h}~{{m1}}~\\unit{min}~{{s1}}~\\unit{s} + {{h2}}~\\unit{h}~{{m2}}~\\unit{min}~{{s2}}~\\unit{s} = ?~\\unit{h}~?~\\unit{min}~?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "h1",
+					"expression": "1..5"
+				},
+				{
+					"name": "m1",
+					"expression": "15..59"
+				},
+				{
+					"name": "s1",
+					"expression": "10..59"
+				},
+				{
+					"name": "h2",
+					"expression": "1..5"
+				},
+				{
+					"name": "m2",
+					"expression": "15..59"
+				},
+				{
+					"name": "s2",
+					"expression": "10..59"
+				},
+				{
+					"name": "ss",
+					"expression": "eval:s1+s2"
+				},
+				{
+					"name": "mm",
+					"expression": "eval:m1+m2+1"
+				},
+				{
+					"name": "hh",
+					"expression": "eval:h1+h2+1"
+				}
+			],
+			"conditions": ["s1+s2>60", "m1+m2+1>60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hh}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:h1+h2}}",
+							"message": "N'oublie pas l'heure de retenue des minutes.",
+							"label": "Retenue des minutes oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:mm-60}}",
+					"expectedErrors": [
+						{
+							"answer": "{{mm}}",
+							"message": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes.",
+							"label": "Minutes non converties"
+						},
+						{
+							"answer": "{{eval:mm-61}}",
+							"message": "N'oublie pas la minute de retenue des secondes.",
+							"label": "Retenue des secondes oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:ss-60}}",
+					"expectedErrors": [
+						{
+							"answer": "{{ss}}",
+							"message": "Plus de $60$ s : $60$ s font $1$ min, garde le reste en secondes.",
+							"label": "Secondes non converties"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les secondes.** ${{s1}} + {{s2}} = {{ss}}$ s, soit $1~\\unit{min}~{{eval:ss-60}}~\\unit{s}$.",
+					"**Les minutes.** ${{m1}} + {{m2}} + 1 = {{mm}}$ min, soit $1~\\unit{h}~{{eval:mm-60}}~\\unit{min}$.",
+					"**Les heures.** ${{h1}} + {{h2}} + 1 = {{hh}}$ h.",
+					"Total : $\\textcolor{{{color:primary.0}}}{{{hh}}~\\unit{h}~{{eval:mm-60}}~\\unit{min}~{{eval:ss-60}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Ajoute unité par unité, en commençant par les secondes ; $60$ d'une unité en font $1$ de l'unité suivante."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "23 min 45 s + 14 min 57 s = 38 min 42 s",
+			"variationIndex": 0,
+			"variables": {
+				"m1": "23",
+				"s1": "45",
+				"m2": "14",
+				"s2": "57",
+				"ss": "102",
+				"mm": "38"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["38", "42"]
+		},
+		{
+			"description": "Retenue des secondes oubliée (37 min)",
+			"variationIndex": 0,
+			"variables": {
+				"m1": "23",
+				"s1": "45",
+				"m2": "14",
+				"s2": "57",
+				"ss": "102",
+				"mm": "38"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas la minute de retenue des secondes."
+			},
+			"answers": ["37", "42"]
+		},
+		{
+			"description": "Secondes non converties (102 s)",
+			"variationIndex": 0,
+			"variables": {
+				"m1": "23",
+				"s1": "45",
+				"m2": "14",
+				"s2": "57",
+				"ss": "102",
+				"mm": "38"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ s : $60$ s font $1$ min, garde le reste en secondes."
+			},
+			"answers": ["38", "102"]
+		},
+		{
+			"description": "35 min 40 s + 36 min 50 s = 1 h 12 min 30 s",
+			"variationIndex": 1,
+			"variables": {
+				"m1": "35",
+				"s1": "40",
+				"m2": "36",
+				"s2": "50",
+				"ss": "90",
+				"mm": "72"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "12", "30"]
+		},
+		{
+			"description": "0 h 72 min 30 s",
+			"variationIndex": 1,
+			"variables": {
+				"m1": "35",
+				"s1": "40",
+				"m2": "36",
+				"s2": "50",
+				"ss": "90",
+				"mm": "72"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes."
+			},
+			"answers": ["0", "72", "30"]
+		},
+		{
+			"description": "Retenue des secondes oubliée (11 min)",
+			"variationIndex": 1,
+			"variables": {
+				"m1": "35",
+				"s1": "40",
+				"m2": "36",
+				"s2": "50",
+				"ss": "90",
+				"mm": "72"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas la minute de retenue des secondes."
+			},
+			"answers": ["1", "11", "30"]
+		},
+		{
+			"description": "Secondes non converties (90 s)",
+			"variationIndex": 1,
+			"variables": {
+				"m1": "35",
+				"s1": "40",
+				"m2": "36",
+				"s2": "50",
+				"ss": "90",
+				"mm": "72"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ s : $60$ s font $1$ min, garde le reste en secondes."
+			},
+			"answers": ["1", "12", "90"]
+		},
+		{
+			"description": "2 h 45 min 30 s + 1 h 38 min 50 s = 4 h 24 min 20 s",
+			"variationIndex": 2,
+			"variables": {
+				"h1": "2",
+				"m1": "45",
+				"s1": "30",
+				"h2": "1",
+				"m2": "38",
+				"s2": "50",
+				"ss": "80",
+				"mm": "84",
+				"hh": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "24", "20"]
+		},
+		{
+			"description": "Retenue des minutes oubliée (3 h)",
+			"variationIndex": 2,
+			"variables": {
+				"h1": "2",
+				"m1": "45",
+				"s1": "30",
+				"h2": "1",
+				"m2": "38",
+				"s2": "50",
+				"ss": "80",
+				"mm": "84",
+				"hh": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas l'heure de retenue des minutes."
+			},
+			"answers": ["3", "24", "20"]
+		},
+		{
+			"description": "Minutes non converties (84 min)",
+			"variationIndex": 2,
+			"variables": {
+				"h1": "2",
+				"m1": "45",
+				"s1": "30",
+				"h2": "1",
+				"m2": "38",
+				"s2": "50",
+				"ss": "80",
+				"mm": "84",
+				"hh": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes."
+			},
+			"answers": ["4", "84", "20"]
+		},
+		{
+			"description": "Retenue des secondes oubliée (23 min)",
+			"variationIndex": 2,
+			"variables": {
+				"h1": "2",
+				"m1": "45",
+				"s1": "30",
+				"h2": "1",
+				"m2": "38",
+				"s2": "50",
+				"ss": "80",
+				"mm": "84",
+				"hh": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas la minute de retenue des secondes."
+			},
+			"answers": ["4", "23", "20"]
+		},
+		{
+			"description": "Secondes non converties (80 s)",
+			"variationIndex": 2,
+			"variables": {
+				"h1": "2",
+				"m1": "45",
+				"s1": "30",
+				"h2": "1",
+				"m2": "38",
+				"s2": "50",
+				"ss": "80",
+				"mm": "84",
+				"hh": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ s : $60$ s font $1$ min, garde le reste en secondes."
+			},
+			"answers": ["4", "24", "80"]
+		}
+	]
+}
