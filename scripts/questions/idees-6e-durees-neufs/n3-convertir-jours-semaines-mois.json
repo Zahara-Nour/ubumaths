@@ -1,0 +1,569 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Durées > conversions",
+		"point": "6-159"
+	},
+	"title": "Convertir des durées : jours, semaines, mois",
+	"description": "Heures en jours et heures, jours en semaines et jours, mois en années et mois, et les sens inverses ; pièges : diviser par 10, quotient et reste inversés, reste oublié",
+	"grades": ["6"],
+	"level": 14,
+	"delay": 40,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Convertis.\n\n${{n}}~\\text{heures} = ?~\\text{j}~?~\\text{h}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "1..23"
+				},
+				{
+					"name": "n",
+					"expression": "eval:24*q+r"
+				}
+			],
+			"conditions": ["floor(n/10)!=q", "r!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(n/10)}}",
+							"message": "Un jour n'a pas $10$ heures : il en a $24$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé : le quotient donne les jours, le reste les heures.",
+							"label": "Quotient et reste inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(n,10)}}",
+							"message": "Un jour n'a pas $10$ heures : il en a $24$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as inversé : le quotient donne les jours, le reste les heures.",
+							"label": "Quotient et reste inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un jour = $24$ heures. Dans ${{n}}$, combien de fois $24$ ?",
+					"${{q}} \\times 24 = {{eval:24*q}}$ et ${{n}} - {{eval:24*q}} = {{r}}$.",
+					"${{n}}~\\text{heures} = \\textcolor{{{color:primary.0}}}{{{q}}~\\text{j}~{{r}}~\\text{h}}$."
+				]
+			},
+			"hint": "Combien de fois $24$ heures dans ${{n}}$ heures ? Ce qui reste, ce sont des heures."
+		},
+		{
+			"statement": "Convertis.\n\n${{q}}~\\text{j}~{{r}}~\\text{h} = ?~\\text{heures}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "1..23"
+				}
+			],
+			"conditions": ["10*q+r!=24*q+r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:24*q+r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*q+r}}",
+							"message": "Un jour n'a pas $10$ heures : il en a $24$.",
+							"label": "Un pour 10"
+						},
+						{
+							"answer": "{{eval:24*q}}",
+							"message": "N'oublie pas d'ajouter les ${{r}}$ heures du départ.",
+							"label": "Reste oublié"
+						},
+						{
+							"answer": "{{eval:q+r}}",
+							"message": "Tu as ajouté les nombres tels quels : convertis d'abord les jours en heures ($\\times 24$).",
+							"label": "Nombres ajoutés sans conversion"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un jour = $24$ heures, donc ${{q}}~\\text{j} = {{q}} \\times 24 = {{eval:24*q}}~\\text{heures}$.",
+					"${{eval:24*q}} + {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:24*q+r}}~\\text{heures}}$."
+				]
+			},
+			"hint": "Combien de heures dans un jour ? Convertis les jours, puis ajoute le reste."
+		},
+		{
+			"statement": "Convertis.\n\n${{n}}~\\text{jours} = ?~\\text{semaines}~?~\\text{j}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "eval:7*q+r"
+				}
+			],
+			"conditions": ["floor(n/10)!=q", "r!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(n/10)}}",
+							"message": "Une semaine n'a pas $10$ jours : il en a $7$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé : le quotient donne les semaines, le reste les jours.",
+							"label": "Quotient et reste inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(n,10)}}",
+							"message": "Une semaine n'a pas $10$ jours : il en a $7$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as inversé : le quotient donne les semaines, le reste les jours.",
+							"label": "Quotient et reste inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une semaine = $7$ jours. Dans ${{n}}$, combien de fois $7$ ?",
+					"${{q}} \\times 7 = {{eval:7*q}}$ et ${{n}} - {{eval:7*q}} = {{r}}$.",
+					"${{n}}~\\text{jours} = \\textcolor{{{color:primary.0}}}{{{q}}~\\text{semaines}~{{r}}~\\text{j}}$."
+				]
+			},
+			"hint": "Combien de fois $7$ jours dans ${{n}}$ jours ? Ce qui reste, ce sont des jours."
+		},
+		{
+			"statement": "Convertis.\n\n${{q}}~\\text{semaines}~{{r}}~\\text{j} = ?~\\text{jours}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["10*q+r!=7*q+r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:7*q+r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*q+r}}",
+							"message": "Une semaine n'a pas $10$ jours : il en a $7$.",
+							"label": "Un pour 10"
+						},
+						{
+							"answer": "{{eval:7*q}}",
+							"message": "N'oublie pas d'ajouter les ${{r}}$ jours du départ.",
+							"label": "Reste oublié"
+						},
+						{
+							"answer": "{{eval:q+r}}",
+							"message": "Tu as ajouté les nombres tels quels : convertis d'abord les semaines en jours ($\\times 7$).",
+							"label": "Nombres ajoutés sans conversion"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une semaine = $7$ jours, donc ${{q}}~\\text{semaines} = {{q}} \\times 7 = {{eval:7*q}}~\\text{jours}$.",
+					"${{eval:7*q}} + {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:7*q+r}}~\\text{jours}}$."
+				]
+			},
+			"hint": "Combien de jours dans une semaine ? Convertis les semaines, puis ajoute le reste."
+		},
+		{
+			"statement": "Convertis.\n\n${{n}}~\\text{mois} = ?~\\text{ans}~?~\\text{mois}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..11"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*q+r"
+				}
+			],
+			"conditions": ["floor(n/10)!=q", "r!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(n/10)}}",
+							"message": "Un an n'a pas $10$ mois : il en a $12$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé : le quotient donne les ans, le reste les mois.",
+							"label": "Quotient et reste inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(n,10)}}",
+							"message": "Un an n'a pas $10$ mois : il en a $12$.",
+							"label": "Division par 10"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as inversé : le quotient donne les ans, le reste les mois.",
+							"label": "Quotient et reste inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un an = $12$ mois. Dans ${{n}}$, combien de fois $12$ ?",
+					"${{q}} \\times 12 = {{eval:12*q}}$ et ${{n}} - {{eval:12*q}} = {{r}}$.",
+					"${{n}}~\\text{mois} = \\textcolor{{{color:primary.0}}}{{{q}}~\\text{ans}~{{r}}~\\text{mois}}$."
+				]
+			},
+			"hint": "Combien de fois $12$ mois dans ${{n}}$ mois ? Ce qui reste, ce sont des mois."
+		},
+		{
+			"statement": "Convertis.\n\n${{q}}~\\text{ans}~{{r}}~\\text{mois} = ?~\\text{mois}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..11"
+				}
+			],
+			"conditions": ["10*q+r!=12*q+r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:12*q+r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*q+r}}",
+							"message": "Un an n'a pas $10$ mois : il en a $12$.",
+							"label": "Un pour 10"
+						},
+						{
+							"answer": "{{eval:12*q}}",
+							"message": "N'oublie pas d'ajouter les ${{r}}$ mois du départ.",
+							"label": "Reste oublié"
+						},
+						{
+							"answer": "{{eval:q+r}}",
+							"message": "Tu as ajouté les nombres tels quels : convertis d'abord les ans en mois ($\\times 12$).",
+							"label": "Nombres ajoutés sans conversion"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un an = $12$ mois, donc ${{q}}~\\text{ans} = {{q}} \\times 12 = {{eval:12*q}}~\\text{mois}$.",
+					"${{eval:12*q}} + {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:12*q+r}}~\\text{mois}}$."
+				]
+			},
+			"hint": "Combien de mois dans un an ? Convertis les ans, puis ajoute le reste."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "53 h = 2 j 5 h",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "5",
+				"n": "53"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "5"]
+		},
+		{
+			"description": "53 h : division par 10 (5 j 3 h)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "5",
+				"n": "53"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un jour n'a pas $10$ heures : il en a $24$."
+			},
+			"answers": ["5", "3"]
+		},
+		{
+			"description": "53 h : inversé (5 j 2 h)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "5",
+				"n": "53"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé : le quotient donne les jours, le reste les heures."
+			},
+			"answers": ["5", "2"]
+		},
+		{
+			"description": "2 j 5 h = 53 h",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"r": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["53"]
+		},
+		{
+			"description": "2 j 5 h : 25 h",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"r": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un jour n'a pas $10$ heures : il en a $24$."
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "2 j 5 h : 48 h",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"r": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas d'ajouter les $5$ heures du départ."
+			},
+			"answers": ["48"]
+		},
+		{
+			"description": "2 j 5 h : 7 h",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"r": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté les nombres tels quels : convertis d'abord les jours en heures ($\\times 24$)."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "45 j = 6 semaines 3 j",
+			"variationIndex": 2,
+			"variables": {
+				"q": "6",
+				"r": "3",
+				"n": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "3"]
+		},
+		{
+			"description": "45 j : division par 10 (4 semaines 5 j)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "6",
+				"r": "3",
+				"n": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une semaine n'a pas $10$ jours : il en a $7$."
+			},
+			"answers": ["4", "5"]
+		},
+		{
+			"description": "45 j : inversé (3 semaines 6 j)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "6",
+				"r": "3",
+				"n": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé : le quotient donne les semaines, le reste les jours."
+			},
+			"answers": ["3", "6"]
+		},
+		{
+			"description": "6 semaines 3 j = 45 j",
+			"variationIndex": 3,
+			"variables": {
+				"q": "6",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["45"]
+		},
+		{
+			"description": "6 semaines 3 j : 63 j",
+			"variationIndex": 3,
+			"variables": {
+				"q": "6",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une semaine n'a pas $10$ jours : il en a $7$."
+			},
+			"answers": ["63"]
+		},
+		{
+			"description": "6 semaines 3 j : 42 j",
+			"variationIndex": 3,
+			"variables": {
+				"q": "6",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas d'ajouter les $3$ jours du départ."
+			},
+			"answers": ["42"]
+		},
+		{
+			"description": "41 mois = 3 ans 5 mois",
+			"variationIndex": 4,
+			"variables": {
+				"q": "3",
+				"r": "5",
+				"n": "41"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "5"]
+		},
+		{
+			"description": "41 mois : division par 10 (4 ans 1 mois)",
+			"variationIndex": 4,
+			"variables": {
+				"q": "3",
+				"r": "5",
+				"n": "41"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un an n'a pas $10$ mois : il en a $12$."
+			},
+			"answers": ["4", "1"]
+		},
+		{
+			"description": "41 mois : inversé",
+			"variationIndex": 4,
+			"variables": {
+				"q": "3",
+				"r": "5",
+				"n": "41"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé : le quotient donne les ans, le reste les mois."
+			},
+			"answers": ["5", "3"]
+		},
+		{
+			"description": "3 ans 5 mois = 41 mois",
+			"variationIndex": 5,
+			"variables": {
+				"q": "3",
+				"r": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["41"]
+		},
+		{
+			"description": "3 ans 5 mois : 35 mois",
+			"variationIndex": 5,
+			"variables": {
+				"q": "3",
+				"r": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un an n'a pas $10$ mois : il en a $12$."
+			},
+			"answers": ["35"]
+		},
+		{
+			"description": "3 ans 5 mois : 8 mois",
+			"variationIndex": 5,
+			"variables": {
+				"q": "3",
+				"r": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté les nombres tels quels : convertis d'abord les ans en mois ($\\times 12$)."
+			},
+			"answers": ["8"]
+		}
+	]
+}

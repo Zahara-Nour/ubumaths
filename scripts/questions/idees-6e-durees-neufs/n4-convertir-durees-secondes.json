@@ -1,0 +1,424 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Durées > conversions",
+		"point": "6-159"
+	},
+	"title": "Convertir des durées avec les secondes",
+	"description": "Secondes en minutes et secondes, heures et minutes en secondes, secondes en heures, minutes et secondes, et retour ; pièges : 1 min = 100 s, 1 h = 60 s, une unité non convertie",
+	"grades": ["6"],
+	"level": 15,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Convertis.\n\n${{n}}~\\unit{s} = ?~\\unit{min}~?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..59"
+				},
+				{
+					"name": "n",
+					"expression": "eval:60*q+r"
+				}
+			],
+			"conditions": ["floor(n/100)!=q", "mod(n,100)!=r", "n-60!=r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(n/100)}}",
+							"message": "Une minute fait $60$ s, pas $100$.",
+							"label": "Division par 100"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(n,100)}}",
+							"message": "Une minute fait $60$ s, pas $100$.",
+							"label": "Division par 100"
+						},
+						{
+							"answer": "{{eval:n-60}}",
+							"message": "Il reste plus de $60$ s : il y a encore des minutes dedans.",
+							"label": "Une seule minute sortie"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{min} = 60~\\unit{s}$. Dans ${{n}}$, combien de fois $60$ ?",
+					"${{q}} \\times 60 = {{eval:60*q}}$ et ${{n}} - {{eval:60*q}} = {{r}}$.",
+					"${{n}}~\\unit{s} = \\textcolor{{{color:primary.0}}}{{{q}}~\\unit{min}~{{r}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Combien de fois $60$ s dans ${{n}}$ s ? Ce qui reste, ce sont des secondes."
+		},
+		{
+			"statement": "Convertis.\n\n${{h}}~\\unit{h}~{{m}}~\\unit{min} = ?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "5..55"
+				}
+			],
+			"conditions": ["mod(m,5)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3600*h+60*m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:60*h+60*m}}",
+							"message": "Une heure fait $60$ min, donc $3\\,600$ s, pas $60$ s.",
+							"label": "Une heure = 60 s"
+						},
+						{
+							"answer": "{{eval:60*h+m}}",
+							"message": "C'est le nombre de minutes : multiplie-le encore par $60$ pour avoir des secondes.",
+							"label": "Converti en minutes seulement"
+						},
+						{
+							"answer": "{{eval:3600*h+m}}",
+							"message": "Les ${{m}}$ min sont aussi à convertir en secondes.",
+							"label": "Minutes non converties"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{h}}~\\unit{h}~{{m}}~\\unit{min} = {{eval:60*h}}~\\unit{min} + {{m}}~\\unit{min} = {{eval:60*h+m}}~\\unit{min}$.",
+					"${{eval:60*h+m}} \\times 60 = \\textcolor{{{color:primary.0}}}{{{eval:3600*h+60*m}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Convertis d'abord tout en minutes, puis en secondes : $1$ min $= 60$ s."
+		},
+		{
+			"statement": "Convertis.\n\n${{n}}~\\unit{s} = ?~\\unit{h}~?~\\unit{min}~?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "1..59"
+				},
+				{
+					"name": "s",
+					"expression": "1..59"
+				},
+				{
+					"name": "n",
+					"expression": "eval:3600*h+60*m+s"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Il y a plus de $60$ min : forme d'abord des heures.",
+							"label": "Heures non formées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:60*h+m}}",
+							"message": "Plus de $60$ min : $60$ min font $1$ h.",
+							"label": "Minutes non converties en heures"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n-3600*h}}",
+							"message": "C'est ce qui reste après les heures : il y a encore des minutes dedans.",
+							"label": "Reste pris pour des secondes"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{h} = 3\\,600~\\unit{s}$ : ${{n}} - {{eval:3600*h}} = {{eval:n-3600*h}}$, donc ${{h}}~\\unit{h}$ et ${{eval:n-3600*h}}~\\unit{s}$.",
+					"${{eval:n-3600*h}}~\\unit{s} = {{m}}~\\unit{min}~{{s}}~\\unit{s}$ (car ${{m}} \\times 60 = {{eval:60*m}}$).",
+					"${{n}}~\\unit{s} = \\textcolor{{{color:primary.0}}}{{{h}}~\\unit{h}~{{m}}~\\unit{min}~{{s}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Une heure fait $3\\,600$ s. Sors d'abord les heures, puis les minutes du reste."
+		},
+		{
+			"statement": "Convertis.\n\n${{h}}~\\unit{h}~{{m}}~\\unit{min}~{{s}}~\\unit{s} = ?~\\unit{s}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "1..59"
+				},
+				{
+					"name": "s",
+					"expression": "1..59"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3600*h+60*m+s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:60*h+60*m+s}}",
+							"message": "Une heure fait $3\\,600$ s, pas $60$ s.",
+							"label": "Une heure = 60 s"
+						},
+						{
+							"answer": "{{eval:3600*h+m+s}}",
+							"message": "Les ${{m}}$ min sont aussi à convertir en secondes.",
+							"label": "Minutes non converties"
+						},
+						{
+							"answer": "{{eval:3600*h+60*m}}",
+							"message": "N'oublie pas d'ajouter les ${{s}}$ s.",
+							"label": "Secondes oubliées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{h}}~\\unit{h} = {{eval:3600*h}}~\\unit{s}$ et ${{m}}~\\unit{min} = {{eval:60*m}}~\\unit{s}$.",
+					"${{eval:3600*h}} + {{eval:60*m}} + {{s}} = \\textcolor{{{color:primary.0}}}{{{eval:3600*h+60*m+s}}~\\unit{s}}$."
+				]
+			},
+			"hint": "Convertis chaque unité en secondes : $1$ min $= 60$ s et $1$ h $= 3\\,600$ s."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "187 s = 3 min 7 s",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"r": "7",
+				"n": "187"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "7"]
+		},
+		{
+			"description": "187 s : division par 100 (1 min 87 s)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"r": "7",
+				"n": "187"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une minute fait $60$ s, pas $100$."
+			},
+			"answers": ["1", "87"]
+		},
+		{
+			"description": "187 s : une seule minute (127 s)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"r": "7",
+				"n": "187"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il reste plus de $60$ s : il y a encore des minutes dedans."
+			},
+			"answers": ["3", "127"]
+		},
+		{
+			"description": "1 h 25 min = 5 100 s",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5100"]
+		},
+		{
+			"description": "1 h 25 min = 5 100 s, avec espace",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5\\,100"]
+		},
+		{
+			"description": "1 h 25 min : 1 h = 60 s (1 560)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, donc $3\\,600$ s, pas $60$ s."
+			},
+			"answers": ["1560"]
+		},
+		{
+			"description": "1 h 25 min : en minutes (85)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de minutes : multiplie-le encore par $60$ pour avoir des secondes."
+			},
+			"answers": ["85"]
+		},
+		{
+			"description": "1 h 25 min : minutes non converties (3 625)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les $25$ min sont aussi à convertir en secondes."
+			},
+			"answers": ["3625"]
+		},
+		{
+			"description": "4 523 s = 1 h 15 min 23 s",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"m": "15",
+				"s": "23",
+				"n": "4523"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "15", "23"]
+		},
+		{
+			"description": "4 523 s : 0 h 75 min 23 s",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"m": "15",
+				"s": "23",
+				"n": "4523"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a plus de $60$ min : forme d'abord des heures."
+			},
+			"answers": ["0", "75", "23"]
+		},
+		{
+			"description": "4 523 s : reste en secondes (923)",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"m": "15",
+				"s": "23",
+				"n": "4523"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est ce qui reste après les heures : il y a encore des minutes dedans."
+			},
+			"answers": ["1", "15", "923"]
+		},
+		{
+			"description": "1 h 12 min 40 s = 4 360 s",
+			"variationIndex": 3,
+			"variables": {
+				"h": "1",
+				"m": "12",
+				"s": "40"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4360"]
+		},
+		{
+			"description": "1 h 12 min 40 s : 1 h = 60 s (820)",
+			"variationIndex": 3,
+			"variables": {
+				"h": "1",
+				"m": "12",
+				"s": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $3\\,600$ s, pas $60$ s."
+			},
+			"answers": ["820"]
+		},
+		{
+			"description": "1 h 12 min 40 s : minutes non converties (3 652)",
+			"variationIndex": 3,
+			"variables": {
+				"h": "1",
+				"m": "12",
+				"s": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les $12$ min sont aussi à convertir en secondes."
+			},
+			"answers": ["3652"]
+		},
+		{
+			"description": "1 h 12 min 40 s : secondes oubliées (4 320)",
+			"variationIndex": 3,
+			"variables": {
+				"h": "1",
+				"m": "12",
+				"s": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas d'ajouter les $40$ s."
+			},
+			"answers": ["4320"]
+		}
+	]
+}
