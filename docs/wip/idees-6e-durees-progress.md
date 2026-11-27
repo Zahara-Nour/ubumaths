@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après la validation des modèles par David._
+_Mis à jour le 2026-11-27, lot écrit et commité (pas encore de PR)._
 
-- **État** : relevé fait ([idees-6e-durees-releve.md](idees-6e-durees-releve.md), 11 exercices) ; phase 0 validée par David dans la session (« je valide les modèles ») : F1 et N1 à N6 tels que décrits ci-dessous. La page à cocher (https://claude.ai/artifact/TsiYTczFam8NQCUt7PPcKa) est restée vide.
-- **Prochaine action** : écrire le gros lot (script `docs/wip/questions/idees-6e-durees-lot.py` → `scripts/questions/idees-6e-durees-lot/`), réserver 311bf024 dans le tableau de répartition pour F1.
-- **En attente de David** : rien ; phase 0 entièrement tranchée (Q1 : 6-159 ; Q3 : 0 h 35 seul ; Q2 : outil n° 69 plus tard).
-- **Pièges en cours** : la case « durée composée » ne lit que h, min et s (`units/composite-duration.ts`) ; jours, semaines, mois en cases séparées.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-durees`, `docs/idees-6e-durees` (à renommer en `feat/…` au premier code, ou nouveau worktree).
+- **État** : lot écrit sur `feat/idees-6e-durees` (commit « 6 modèles neufs et une variation de 311bf024 ») : `docs/wip/questions/idees-6e-durees-neufs.py` → `scripts/questions/idees-6e-durees-neufs/` (N1 à N6, 25 variations, rangement écrit) ; `idees-6e-durees-publies.py` → `311bf024.json` (+1 variation, F1) ; migration de contenu `20261127115608_…_publies_contenu.sql` + fixture générées. Specs et 200 tirages verts sur les 7 modèles ; test `migrations-contenu-publie` vert en local. Brouillons créés en base LOCALE (ids restaurés dans les fichiers : N1 2e7c7caa, N2 8d704fbf, N3 f4708028, N4 53710ca9, N5 4f6d4b72, N6 d250d62d).
+- **Prochaine action** : jouer les 6 brouillons dans l'aperçu admin local (`/dashboard/admin/questions/<id>/preview`, `pnpm voir … --compte admin`, serveur du worktree sur 5177+) ; réserver 311bf024 dans `idees-ailleurs-repartition.md` (commit doc sur main) ; ouvrir la PR (revue : aucune, contenu ; `security-auditor` si demandé pour la migration de contenu), CI, merge ; puis David : `create-questions --publier` en prod, migration de rangement.
+- **En attente de David** : rien.
+- **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; niveaux posés 9, 10 (calcul de durées) et 14 à 17 (conversions), à relever en prod avant la migration de rangement ; les messages à décimaux s'écrivent `0.3` dans les specs.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-durees`, `feat/idees-6e-durees`.
 
 ## Phase 0 (2026-11-27)
 
