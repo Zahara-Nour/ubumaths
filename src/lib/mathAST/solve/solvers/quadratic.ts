@@ -168,7 +168,7 @@ function letterMonomial(node: MathNode): LetterMonomial | null {
  */
 function unsplitDiscriminantRoot(
 	discriminant: MathNode
-): { outside: MathNode; radicand: MathNode } | null {
+): { outside: MathNode; radicand: MathNode; vanishing: MathNode | null } | null {
 	const monomial = letterMonomial(discriminant);
 	if (monomial === null) return null;
 	const constantsValue = monomial.constants.reduce(
@@ -196,7 +196,19 @@ function unsplitDiscriminantRoot(
 	const radicand = oddLetters
 		.map((name): MathNode => varNode(name))
 		.reduce((product, letter) => implicitMultiply(product, letter));
-	return { outside: canonicalForm(sqrtNode(outsideSquare)), radicand };
+	// Les lettres sorties en entier (puissance paire) : nulles, elles annulent Δ
+	// sans que le radicand soit positif (V124)
+	const evenLetters = [...monomial.letters]
+		.filter(([, exponent]) => exponent % 2 === 0)
+		.map(([name]) => name)
+		.sort();
+	const vanishing =
+		evenLetters.length === 0
+			? null
+			: evenLetters
+					.map((name): MathNode => varNode(name))
+					.reduce((product, letter) => implicitMultiply(product, letter));
+	return { outside: canonicalForm(sqrtNode(outsideSquare)), radicand, vanishing };
 }
 
 /**
@@ -437,7 +449,7 @@ export const quadraticSolver: EquationSolver = {
 		const rootForm =
 			unsplit ??
 			(parameters.size > 0 && splitsLetterRoots(canonicalForm(x1))
-				? { outside: number('1'), radicand: discriminantSimplified }
+				? { outside: number('1'), radicand: discriminantSimplified, vanishing: null }
 				: null);
 		const x1Simplified =
 			rootForm === null
@@ -501,6 +513,19 @@ export const quadraticSolver: EquationSolver = {
 				...conditionField
 			}
 		];
+
+		// V124 : une lettre sortie de la racine (√(a²bc) = |a|√(bc)) annule Δ quand
+		// elle est nulle, même si la racine écrite n'existe pas (bc < 0). La racine
+		// double −b/(2a) de ce cas est annoncée à part, avec sa condition.
+		if (unsplit !== null && unsplit.vanishing !== null && condition?.kind === 'when') {
+			const doubleRoot = canonicalForm(fraction(negB, twoA));
+			solutions.push({
+				value: doubleRoot,
+				exact: true,
+				approximate: computeNumericValue(doubleRoot) ?? undefined,
+				condition: equals(unsplit.vanishing, number('0'))
+			});
+		}
 
 		return {
 			variable,
