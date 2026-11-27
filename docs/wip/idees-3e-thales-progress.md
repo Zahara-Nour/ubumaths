@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, brouillons créés en prod par David._
+_Mis à jour le 2026-11-27, PR 2 ouverte._
 
 - **État** : PR 1 (#3228) mergée, migrée. Brouillons en prod : 210bffdd (N1, niveau 2), 1584c3b5
-  (H1), 1f133534 (H2) ; ids commités, migration de rangement générée
-  (20261127114444, fixture comprise), PAS encore testée ni en PR.
-  · **Prochaine action** : `pnpm test:integration tests/integration/migrations-rangement-tags.test.ts`,
-  `pnpm tsx scripts/questions/garde-niveaux-tags.ts`, ouvrir la PR 2, `pnpm pr:merger`, puis
-  `db:migrate` (4 conditions ; `migration list --linked` avant) ; ensuite relecture dans
+  (H1), 1f133534 (H2). PR 2 (rangement 20261127114444) : intégration verte, rouge sans la
+  migration (6 tests), garde des niveaux verte, `security-auditor` sans bloquant (H1/H2 rangés
+  sans tag : voulu, sans point).
+  · **Prochaine action** : merge de la PR 2 (`pnpm pr:merger`), puis
+  `db:migrate` (4 conditions réunies ; `migration list --linked` avant) ; ensuite relecture dans
   `/dev/modeles` (`?titre=Thalès`, `?titre=Agrandissement`, `?titre=semblables`)
   · **En attente de David** : rien avant la relecture · **Pièges en cours** : aucun
   · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales-rangement`.
