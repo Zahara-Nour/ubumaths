@@ -162,6 +162,8 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 37c13d51 Réciproque et contraposée de Thalès                 | `idees-3e-thales`                                           | 2026-11-27 |                                      |
+| f55d07b0 Calculer une longueur avec Thalès                   | `idees-3e-thales`                                           | 2026-11-27 |                                      |
 | 2af325bb Schéma en barres : parts égales et un reste         | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
 | 32b7a9bc Problèmes de produits décimaux                      | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
 | 399342ff Schéma en barres : somme et différence              | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
