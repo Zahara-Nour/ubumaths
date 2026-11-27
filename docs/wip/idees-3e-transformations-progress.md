@@ -2,19 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot écrit, PR ouverte._
+_Mis à jour le 2026-11-27, après #3247._
 
-- **État** : phase 0 tranchée (« je te suis »). Lot écrit : 4 modèles neufs, 20 variations, 80 specs
-  (`docs/wip/questions/idees-3e-transformations-neufs.py` → `scripts/questions/idees-3e-transformations-neufs/`),
-  simulation verte, sondes figures et courbes à 0, essai dans la base locale, rendu vu avec `pnpm voir` (N1, N3, N4).
-- **Prochaine action** : PR mergée → David lance `create-questions --publier` en prod (brouillons) → commiter les ids
-  → migrations de rangement (sans point, notions Rotations et Homothéties) → relecture dans `/dev/modeles`.
-- **En attente de David** : la publication des brouillons en prod (commande dans la session).
-- **Pièges en cours** : `point A' = rotation(…)` / `homothetie(…)` sont jugés sur quadrillage (specs vertes) ;
-  un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` (il s'appelle `B`) ; un nom de point
-  de ` ```figure ` refuse `'` et `′` (étiquette par `texte()`) ; la variable `i` est lue comme l'imaginaire.
-  Un modèle d'essai « ESSAI LOCAL pavage triangles » traîne dans la base locale seulement.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-transformations`, `docs/idees-3e-transformations`.
+- **État** : lot mergé (#3247) : 4 modèles neufs, 20 variations, 80 specs, dans
+  `scripts/questions/idees-3e-transformations-neufs/` (script `docs/wip/questions/idees-3e-transformations-neufs.py`).
+  Pas encore en prod.
+- **Prochaine action** : après la publication par David, commiter les ids écrits en tête des fichiers, puis
+  migrations de rangement **sans point** (`rangement` déjà dans les fichiers : notions Rotations et Homothéties,
+  `migration-rangement.ts --dir …`), `security-auditor`, PR ; puis relecture dans `/dev/modeles`.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/idees-3e-transformations-neufs --publier` depuis le dépôt principal (brouillons en prod).
+- **Pièges en cours** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
+  ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
+  annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
+  dans la base locale seulement.
+- **Worktree / branche** : aucun (retiré par `pr:merger`) ; la PR suivante part d'un worktree neuf
+  `../ubumaths-wt-idees-3e-transformations` sur `origin/main`.
 
 ## Phase 0 (2026-11-27)
 
