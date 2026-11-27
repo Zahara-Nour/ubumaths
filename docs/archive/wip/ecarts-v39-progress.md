@@ -1,22 +1,22 @@
 ---
 title: V39, la puissance sous la fonction sans parenthèses — journal
 date: 2026-11-27
-status: PR ouverte, CI en cours
+status: #3243 mergée ; journal archivé
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, à l'ouverture de la PR._
+_Mis à jour le 2026-11-27, après #3243._
 
-- **État** : correctif poussé (deux parseurs LaTeX, accolades comprises après la revue), tests verts (47 477 sur mathAST, questions, atelier, ubumark), 0 erreur de types, doc système à jour ; PR ouverte sur `fix/ecarts-v39` (numéro : `gh pr list --head fix/ecarts-v39`).
-- **Prochaine action** : `pnpm pr:merger <n>` (attend la CI et merge) ; puis, depuis le dépôt principal : clore V39 au registre, inscrire les deux lectures voisines (`\ln x!`, indice après une fonction sans parenthèses), archiver ce journal et mettre à jour [ecarts-a-trier](ecarts-a-trier-progress.md) (suite : V124, V125).
+- **État** : #3243 mergée : V39 corrigé et clos au registre ; L138 (`\ln x!`) et L139 (indice après une fonction sans parenthèses) ajoutés (restes de la revue). Journal archivé.
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 - **En attente de David** : rien.
 - **Pièges en cours** : `tests/ecarts/` n'est pas dans le projet `server` de vitest : une sonde s'écrit sous `src/`.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-v39` · `fix/ecarts-v39`.
+- **Worktree / branche** : aucun (retirés au merge de #3243).
 
 ---
 
-Chantier fils de [ecarts-a-trier](ecarts-a-trier-progress.md).
+Chantier fils de [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 
 ## Mesure avant le changement (2026-11-27, prod en lecture seule)
 
