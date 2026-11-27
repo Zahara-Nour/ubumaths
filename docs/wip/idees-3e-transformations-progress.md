@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3248._
+_Mis à jour le 2026-11-27, après #3248 et `db:migrate`._
 
-- **État** : 4 brouillons en prod (4c82bef9, a5e70b85, 277be356, bc6321ed). #3248 mergée : migration
-  `20261127155302_questions_idees_3e_transformations_rangement_tags.sql` (**sans point**, nœuds Rotations : N1, N4 ;
-  Homothéties : N2, N3), seule en attente, **pas encore jouée**.
-- **Prochaine action** : après `db:migrate`, relecture par David dans `/dev/modeles?noeud=` (Rotations,
-  Homothéties) ; lire `question_template_reviews`, corriger, `publier-lot.ts --dir …` en simulation.
-- **En attente de David** : `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies : accès « personne »,
-  test d'intégration vert, `security-auditor` sans bloquant, additive avec rollback) ; puis la relecture.
+- **État** : 4 brouillons en prod, **rangés** (migration `20261127155302_…` jouée par David, vérifiée : nœuds
+  Rotations pour N1, N4 et Homothéties pour N2, N3, aucun tag).
+- **Prochaine action** : après la relecture de David, lire `question_template_reviews` (`reviewed_at` du
+  2026-11-27 ou après, ces 4 ids), corriger, `publier-lot.ts --dir scripts/questions/idees-3e-transformations-neufs`
+  en simulation.
+- **En attente de David** : relecture dans `/dev/modeles?noeud=e71ca26c-f980-45e8-8174-293b18b44262` (Rotations) et
+  `/dev/modeles?noeud=30509bf4-7b4c-4b9d-8dcb-523cd2293c4d` (Homothéties).
 - **Pièges en cours** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
   ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
   annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
