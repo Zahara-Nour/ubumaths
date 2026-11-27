@@ -1,0 +1,391 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Rotations",
+		"point": null
+	},
+	"title": "L'image d'un point par une rotation",
+	"description": "Sur quadrillage, placer l'image d'un point par un quart de tour (dans les deux sens) ou un demi-tour, puis les images des sommets d'un triangle ; dans un repère, l'image d'un point donné par ses coordonnées, centre hors de l'origine.",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le point $A'$, image du point $A$ par la rotation de centre $O$ et d'angle $90^{\\circ}$ dans le sens inverse des aiguilles d'une montre.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 12\ngrille: 1\noutils: point\nverifier: point A' = rotation(A, centre=O, angle=90)\n---\nO = point(6, 6, etiquette=\"bas-gauche\")\nA = point(6+{{dx}}, 6+{{dy}}, etiquette=\"droite\")\n```",
+			"variables": [
+				{
+					"name": "dx",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dy",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": ["dx*dx + dy*dy > 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, on se déplace de ${{dx}}$ carreaux à l'horizontale et de ${{dy}}$ carreaux à la verticale (positif : vers la droite ou vers le haut).",
+					"Un quart de tour dans le sens inverse des aiguilles d'une montre fait tourner ce déplacement : de $O$ à $A'$, on se déplace de ${{eval:-dy}}$ carreaux à l'horizontale et de ${{dx}}$ à la verticale. On a bien $OA' = OA$ et $\\widehat{AOA'} = 90^{\\circ}$ : c'est le point $\\textcolor{{{color:primary.0}}}{A'}$."
+				]
+			},
+			"hint": "Trace [OA], puis fais tourner ce segment d'un quart de tour autour de O, dans le sens inverse des aiguilles d'une montre : OA' doit être égal à OA, et l'angle AOA' doit être droit."
+		},
+		{
+			"statement": "Place le point $A'$, image du point $A$ par la rotation de centre $O$ et d'angle $90^{\\circ}$ dans le sens des aiguilles d'une montre.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 12\ngrille: 1\noutils: point\nverifier: point A' = rotation(A, centre=O, angle=-90)\n---\nO = point(6, 6, etiquette=\"bas-gauche\")\nA = point(6+{{dx}}, 6+{{dy}}, etiquette=\"droite\")\n```",
+			"variables": [
+				{
+					"name": "dx",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dy",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": ["dx*dx + dy*dy > 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, on se déplace de ${{dx}}$ carreaux à l'horizontale et de ${{dy}}$ carreaux à la verticale (positif : vers la droite ou vers le haut).",
+					"Un quart de tour dans le sens des aiguilles d'une montre fait tourner ce déplacement : de $O$ à $A'$, on se déplace de ${{dy}}$ carreaux à l'horizontale et de ${{eval:-dx}}$ à la verticale. On a bien $OA' = OA$ et $\\widehat{AOA'} = 90^{\\circ}$ : c'est le point $\\textcolor{{{color:primary.0}}}{A'}$."
+				]
+			},
+			"hint": "Trace [OA], puis fais tourner ce segment d'un quart de tour autour de O, dans le sens des aiguilles d'une montre, comme une aiguille de montre."
+		},
+		{
+			"statement": "Place le point $A'$, image du point $A$ par la rotation de centre $O$ et d'angle $180^{\\circ}$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 12\ngrille: 1\noutils: point\nverifier: point A' = rotation(A, centre=O, angle=180)\n---\nO = point(6, 6, etiquette=\"bas-gauche\")\nA = point(6+{{dx}}, 6+{{dy}}, etiquette=\"droite\")\n```",
+			"variables": [
+				{
+					"name": "dx",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dy",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": ["dx*dx + dy*dy > 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, on se déplace de ${{dx}}$ carreaux à l'horizontale et de ${{dy}}$ carreaux à la verticale (positif : vers la droite ou vers le haut).",
+					"Un demi-tour change ce déplacement en son opposé : de $O$ à $A'$, ${{eval:-dx}}$ à l'horizontale et ${{eval:-dy}}$ à la verticale. $O$ est le milieu de $[AA']$ : la rotation d'angle $180^{\\circ}$ est la **symétrie de centre $O$**. C'est le point $\\textcolor{{{color:primary.0}}}{A'}$."
+				]
+			},
+			"hint": "Un demi-tour autour de O : A, O et A' sont alignés, et O est au milieu de [AA']."
+		},
+		{
+			"statement": "Place les points $A'$, $B'$ et $C'$, images des sommets du triangle $ABC$ par la rotation de centre $O$ et d'angle $90^{\\circ}$ dans le sens inverse des aiguilles d'une montre.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 12\ngrille: 1\noutils: point\nverifier: point A' = rotation(A, centre=O, angle=90)\nverifier: point B' = rotation(B, centre=O, angle=90)\nverifier: point C' = rotation(C, centre=O, angle=90)\n---\nO = point(6, 6, etiquette=\"bas-gauche\")\nA = point(6+{{dx}}, 6+{{dy}}, etiquette=\"bas\")\nB = point(6+{{dx}}+{{p}}, 6+{{dy}}, etiquette=\"bas\")\nC = point(6+{{dx}}+1, 6+{{dy}}+{{q}}, etiquette=\"haut\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, A)\n```",
+			"variables": [
+				{
+					"name": "dx",
+					"expression": "1..3"
+				},
+				{
+					"name": "dy",
+					"expression": "-4..1"
+				},
+				{
+					"name": "p",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "2..3"
+				}
+			],
+			"conditions": [
+				"dx + p <= 5",
+				"dy + q <= 5",
+				"dy + q >= -5",
+				"abs((-(dy))-(dx)) + abs((dx)-(dy)) > 0",
+				"abs((-(dy))-(dx+p)) + abs((dx)-(dy)) > 0",
+				"abs((-(dy))-(dx+1)) + abs((dx)-(dy+q)) > 0",
+				"abs((-(dy))-(dx)) + abs((dx+p)-(dy)) > 0",
+				"abs((-(dy))-(dx+p)) + abs((dx+p)-(dy)) > 0",
+				"abs((-(dy))-(dx+1)) + abs((dx+p)-(dy+q)) > 0",
+				"abs((-(dy+q))-(dx)) + abs((dx+1)-(dy)) > 0",
+				"abs((-(dy+q))-(dx+p)) + abs((dx+1)-(dy)) > 0",
+				"abs((-(dy+q))-(dx+1)) + abs((dx+1)-(dy+q)) > 0"
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On fait tourner chaque sommet séparément, d'un quart de tour autour de $O$ : si l'on va de $O$ à un point par $(a ; b)$ carreaux, on va de $O$ à son image par $(-b ; a)$.",
+					"Par exemple, de $O$ à $A$ : $({{dx}} ; {{dy}})$, donc de $O$ à $A'$ : $({{eval:-dy}} ; {{dx}})$. Une rotation conserve les longueurs et les angles : le triangle $\\textcolor{{{color:primary.0}}}{A'B'C'}$ a la même forme que $ABC$, tourné d'un quart de tour."
+				]
+			},
+			"hint": "Fais tourner les sommets un par un, comme une aiguille qui tournerait autour de O dans le sens inverse d'une montre."
+		},
+		{
+			"statement": "Dans le repère, on donne les points $O({{xo}} ; {{yo}})$ et $A({{xa}} ; {{ya}})$. Place le point $B$, image de $A$ par la rotation de centre $O$ et d'angle $90^{\\circ}$ dans le sens inverse des aiguilles d'une montre.\n\n```courbe\nx: -8 ; 8\ny: -8 ; 8\ngrille: 1 ; 1\nplacer: B=({{eval:xo-(ya-yo)}} ; {{eval:yo+(xa-xo)}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −8 à 8 sur chaque axe.\n```",
+			"variables": [
+				{
+					"name": "xo",
+					"expression": "-3..3"
+				},
+				{
+					"name": "yo",
+					"expression": "-3..3"
+				},
+				{
+					"name": "xa",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ya",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [
+				"(xa-xo)*(xa-xo) + (ya-yo)*(ya-yo) > 1",
+				"abs(xo-(ya-yo)) <= 8",
+				"abs(yo+(xa-xo)) <= 8",
+				"xo != 0",
+				"yo != 0"
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, l'abscisse change de ${{eval:xa-xo}}$ et l'ordonnée de ${{eval:ya-yo}}$.",
+					"Un quart de tour dans le sens inverse des aiguilles d'une montre change le déplacement $(a ; b)$ en $(-b ; a)$ : de $O$ à $B$, on se déplace de $({{eval:-(ya-yo)}} ; {{eval:xa-xo}})$. Donc $\\textcolor{{{color:primary.0}}}{B({{eval:xo-(ya-yo)}} ; {{eval:yo+(xa-xo)}})}$."
+				]
+			},
+			"hint": "Place d'abord O et A, puis compte le déplacement de O à A en carreaux, et fais-le tourner d'un quart de tour."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 A(9;7) : A'(5;9)",
+			"variationIndex": 0,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(5;9)"]
+		},
+		{
+			"description": "v0 A(7;4) : A'(8;7)",
+			"variationIndex": 0,
+			"variables": {
+				"dx": "1",
+				"dy": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(8;7)"]
+		},
+		{
+			"description": "v0 : sens des aiguilles (7;3)",
+			"variationIndex": 0,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(7;3)"]
+		},
+		{
+			"description": "v0 : symétrique par rapport à O (3;5)",
+			"variationIndex": 0,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(3;5)"]
+		},
+		{
+			"description": "v0 : coordonnées échangées sans signe (7;9)",
+			"variationIndex": 0,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(7;9)"]
+		},
+		{
+			"description": "v1 A(9;7) : A'(7;3)",
+			"variationIndex": 1,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(7;3)"]
+		},
+		{
+			"description": "v1 : sens inverse (5;9)",
+			"variationIndex": 1,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(5;9)"]
+		},
+		{
+			"description": "v1 : symétrique par rapport à O (3;5)",
+			"variationIndex": 1,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(3;5)"]
+		},
+		{
+			"description": "v2 A(9;7) : A'(3;5)",
+			"variationIndex": 2,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(3;5)"]
+		},
+		{
+			"description": "v2 : quart de tour seulement (5;9)",
+			"variationIndex": 2,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(5;9)"]
+		},
+		{
+			"description": "v2 : symétrique par rapport à l'axe vertical (3;7)",
+			"variationIndex": 2,
+			"variables": {
+				"dx": "3",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(3;7)"]
+		},
+		{
+			"description": "v3 : A'(9;8), B'(9;10), C'(7;9)",
+			"variationIndex": 3,
+			"variables": {
+				"dx": "2",
+				"dy": "-3",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(9;8)|point(9;10)|point(7;9)"]
+		},
+		{
+			"description": "v3 : sens des aiguilles",
+			"variationIndex": 3,
+			"variables": {
+				"dx": "2",
+				"dy": "-3",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(3;4)|point(3;2)|point(5;3)"]
+		},
+		{
+			"description": "v3 : C' oublié",
+			"variationIndex": 3,
+			"variables": {
+				"dx": "2",
+				"dy": "-3",
+				"p": "2",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(9;8)|point(9;10)"]
+		},
+		{
+			"description": "v4 O(1;2), A(4;3) : A'(0;5)",
+			"variationIndex": 4,
+			"variables": {
+				"xo": "1",
+				"yo": "2",
+				"xa": "4",
+				"ya": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;5"]
+		},
+		{
+			"description": "v4 : centre pris à l'origine (-3;4)",
+			"variationIndex": 4,
+			"variables": {
+				"xo": "1",
+				"yo": "2",
+				"xa": "4",
+				"ya": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-3;4"]
+		},
+		{
+			"description": "v4 : sens des aiguilles (2;-1)",
+			"variationIndex": 4,
+			"variables": {
+				"xo": "1",
+				"yo": "2",
+				"xa": "4",
+				"ya": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2;-1"]
+		},
+		{
+			"description": "v4 : symétrique par rapport à O (-2;1)",
+			"variationIndex": 4,
+			"variables": {
+				"xo": "1",
+				"yo": "2",
+				"xa": "4",
+				"ya": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2;1"]
+		}
+	]
+}
