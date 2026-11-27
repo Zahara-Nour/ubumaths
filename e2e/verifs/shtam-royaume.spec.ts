@@ -1,5 +1,6 @@
 import { mkdir } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
+import { textInkBoxes } from './helpers/encre-texte';
 
 /**
  * Le Shtam en journal (#1991) et les cartes du Royaume (#2138)
@@ -45,8 +46,8 @@ interface Box {
 	height: number;
 }
 
-/** Tolérance : la boîte d'un texte SVG compte la marge haute et basse des lettres */
-const INSET = 3;
+/** Tolérance, en pixels, de chaque côté d'une boîte d'encre (cases de caractères un peu larges) */
+const INSET = 1;
 
 function overlaps(a: Box, b: Box): boolean {
 	return (
@@ -137,20 +138,12 @@ test('#2138 — carte du Royaume : noms lisibles, sans chevauchement ni débord'
 	await open(page, '/royaume');
 	const names = page.locator('main svg text');
 	expect(await names.count()).toBeGreaterThan(10);
-	const boxes = (
-		await names.evaluateAll((nodes) =>
-			nodes.map((node) => {
-				const box = node.getBoundingClientRect();
-				return {
-					text: node.textContent ?? '',
-					x: box.x,
-					y: box.y,
-					width: box.width,
-					height: box.height
-				};
-			})
-		)
-	).filter((box) => box.width > 0 && box.text.trim() !== '');
+	// Boîte de l'encre, pas `getBoundingClientRect()` : celle-ci est gonflée sous le Firefox de
+	// Playwright et y faisait se chevaucher « BEDONSTAN » et « Sandomir » (nuit du 2026-11-27),
+	// qui ne se touchent pas à l'écran
+	const boxes = (await names.evaluateAll(textInkBoxes)).filter(
+		(box) => box.width > 0 && box.text.trim() !== ''
+	);
 	const collisions: string[] = [];
 	for (let i = 0; i < boxes.length; i++) {
 		for (let j = i + 1; j < boxes.length; j++) {

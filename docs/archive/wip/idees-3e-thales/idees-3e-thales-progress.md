@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3234 et son `db:migrate`._
+_Mis à jour le 2026-11-27, chantier clos._
 
 - **État** : #3228 et #3234 mergées et migrées (20261127114444 jouée par David avec
   20261127115608 de idees-6e-durees ; `migration list --linked` : plus rien en attente).
   Aucun worktree.
-  · **Prochaine action** : lire les verdicts « À revoir » en base (`question_template_reviews`,
-  `reviewed_at` du 2026-11-27 ou après), les compter, corriger, puis `publier-lot.ts` en simulation
-  · **En attente de David** : relecture dans `/dev/modeles` (`?titre=Thalès`,
-  `?titre=Agrandissement`, `?titre=semblables`) · **Pièges en cours** : aucun
-  · **Worktree / branche** : aucun ; nouveau worktree pour la PR de corrections.
+  Relecture : David a tout validé ; les 3 brouillons (1584c3b5, 1f133534, 210bffdd) ont été publiés
+  par David (`publier-lot.ts --publier`), statut `published` relu en prod. **Chantier clos et
+  archivé** (rubrique « publiée », réservations de 37c13d51 et f55d07b0 levées).
+  · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun
+  · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-27)
 

@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-6e-durees dans scripts/questions/idees-6e-durees-neufs/.
 
 Phase 0 validée par David le 2026-11-27 (« je valide les modèles », puis « je suis tes recos »,
-journal docs/wip/idees-6e-durees-progress.md) : N1 à N6. On reprend l'idée de l'autre
+journal docs/archive/wip/idees-6e-durees/idees-6e-durees-progress.md) : N1 à N6. On reprend l'idée de l'autre
 plateforme, pas sa forme ni son texte : additions de durées avec les secondes, horaires de début
 et de fin (minuit compris), conversions en jours, semaines, mois et ans, conversions avec les
 secondes, heures décimales, unités de durée et fractions d'heure.

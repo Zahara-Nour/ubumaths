@@ -111,7 +111,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Longueurs                          | 6M1   | 16        | libre                |                             |
 | Aires                              | 6M2   | 17        | libre                |                             |
 | Volumes                            | 6M3   | 3         | libre                |                             |
-| Durées                             | 6M4   | 11        | prise (2026-11-27)   | `idees-6e-durees`           |
+| Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
@@ -143,7 +143,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Statistiques                             | 3S1       | 3         | publiée (2026-11-27)                                       | `idees-3e-statistiques`      |
 | Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
-| Théorème de Thalès                       | 3G2       | 10        | prise (2026-11-27)                                         | `idees-3e-thales`            |
+| Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
 | Espace                                   | 3G4       | 6         | libre                                                      |                              |
 | Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
@@ -162,9 +162,6 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 311bf024 Convertir des durées                                | `idees-6e-durees`                                           | 2026-11-27 |                                      |
-| 37c13d51 Réciproque et contraposée de Thalès                 | `idees-3e-thales`                                           | 2026-11-27 |                                      |
-| f55d07b0 Calculer une longueur avec Thalès                   | `idees-3e-thales`                                           | 2026-11-27 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

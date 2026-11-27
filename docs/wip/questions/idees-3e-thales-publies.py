@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-thales-publies/ (chantier idees-3e-thales).
 
 Phase 0 validée par David le 2026-11-27 (« je valide tes recos » ; journal
-docs/wip/idees-3e-thales-progress.md, § Décisions) : fiches V1 et V2, Q1 = oui. Les variations
+docs/archive/wip/idees-3e-thales/idees-3e-thales-progress.md, § Décisions) : fiches V1 et V2, Q1 = oui. Les variations
 s'ajoutent À LA FIN (les réponses des élèves gardent l'indice de leur variation) ; la migration de
 contenu est générée par scripts/questions/migration-contenu.ts.
 

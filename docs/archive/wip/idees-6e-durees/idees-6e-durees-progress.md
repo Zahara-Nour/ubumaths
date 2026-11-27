@@ -2,13 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3237._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : #3233 et #3237 mergées et migrées. Les 6 modèles neufs (N1 à N6) sont en brouillon en prod, rangés (6-206 et 6-157 sur « calcul de durées », 6-159 sur « conversions », vérifié par MCP) ; la variation ajoutée à 311bf024 est en prod.
-- **Prochaine action** : relecture par David dans `/dev/modeles` (série de relecture des 6 brouillons), puis publication des modèles validés.
-- **En attente de David** : la relecture.
-- **Pièges en cours** : N6 a `form: off` (sinon 0,75 refusé face à ¾) ; N1 et N5 un peu plus larges que l'écran d'iPhone ; les messages à décimaux s'écrivent `0.3` dans les specs.
-- **Worktree / branche** : aucun (retiré par `pr:merger`).
+- **État** : clos. Les 6 modèles neufs N1 à N6 (4e63215d, c98a5fc6, fc244fa1, d48bdef9, ee8d7130, fa2e1ec0) publiés en prod, la variation F1 de 311bf024 en prod, rubrique 6M4 « publiée » dans le tableau de répartition, réservation de 311bf024 levée, journal et relevé archivés · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun
 
 ## Phase 0 (2026-11-27)
 
@@ -86,3 +82,8 @@ coup de pouce.
   on repart de 0 h »).
 - **Q4 — Conversions : deux modèles (N3, N4) ou un seul ?** Recommandation : deux, chacun une famille d'unités, plus
   simple à choisir pour un prof.
+
+## Historique
+
+- #3233 (modèles en brouillon, variation de 311bf024) et #3237 (rangement des 6 modèles neufs) mergées et migrées.
+- 2026-11-27 : brouillons montrés dans `/dev/modeles` par les filtres `?statut=draft&point=…` (le script de série refuse les brouillons) ; David : « je valide tous les modeles » ; `publier-lot.ts` simulé, 6 passent ; David lance `--publier` ; MCP : 6/6 `published`. Rubrique publiée, réservation de 311bf024 levée, journal et relevé archivés (`docs/archive/wip/idees-6e-durees/`).
