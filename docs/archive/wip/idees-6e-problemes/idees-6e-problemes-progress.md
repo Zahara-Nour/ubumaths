@@ -1,6 +1,6 @@
 # Chantier `idees-6e-problemes` : idées reprises d'ailleurs, rubrique « Résolution de problèmes » de 6e
 
-Skill [`idees-rubrique`](../../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
+Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
 [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md) (section Sixième, ligne 6N5 prise le
 2026-11-27). Relevé : [idees-6e-problemes-releve.md](idees-6e-problemes-releve.md).
 
