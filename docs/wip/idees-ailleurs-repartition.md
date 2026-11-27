@@ -162,6 +162,10 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 2af325bb Schéma en barres : parts égales et un reste         | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
+| 32b7a9bc Problèmes de produits décimaux                      | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
+| 399342ff Schéma en barres : somme et différence              | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
+| 7deff4e0 Contrôler par un ordre de grandeur                  | `idees-6e-problemes`                                        | 2026-11-27 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
