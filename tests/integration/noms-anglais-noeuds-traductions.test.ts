@@ -37,6 +37,13 @@ const EXEMPLES: Record<string, string> = {
 	'Géométrie > Théorème de Pythagore': "Pythagoras' theorem",
 	Arithmétique: 'Number theory'
 };
+/**
+ * Nœuds créés APRÈS cette migration, avec leur nom anglais posé par leur propre migration : le
+ * rejeu de celle-ci (tous les noms anglais retirés d'abord) les laisse sans nom, c'est attendu.
+ */
+const CREES_APRES = new Set([
+	'Géométrie > Agrandissement et réduction' // 20261127110709
+]);
 const CHEMINS_ACTIFS = `with recursive p as (
 	select id, name::text as chemin from public.classification_nodes
 	 where parent_id is null and archived_at is null
@@ -107,7 +114,7 @@ describe('Noms anglais des nœuds : le lot de traductions (migration de données
 	});
 
 	it('tous les nœuds actifs ont un nom anglais', () => {
-		expect(actifs.filter((chemin) => !apres.has(chemin))).toEqual([]);
+		expect(actifs.filter((chemin) => !apres.has(chemin) && !CREES_APRES.has(chemin))).toEqual([]);
 	});
 
 	it('les exemples lus à l’œil sont sur le bon nœud', () => {

@@ -80,7 +80,7 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
   portent les lignes et non le lien : pour 40 Mathoux de 10 modèles, 172 Ko de données avec les
   liens, 80 Ko avec les anciennes catégories (mesuré le 2026-10-18, avant l'ADR 0035 : une ligne
   par identifiant est plus courte encore).
-- **Nom** (`mathouName`) : d'abord le **nom propre** de la notion (`mathou-noms.ts`, 134 noms,
+- **Nom** (`mathouName`) : d'abord le **nom propre** de la notion (`mathou-noms.ts`, 135 noms,
   clé = nom de la notion comme dans la migration de seed, car les identifiants diffèrent entre la
   base locale et la prod) : « Tangentin » pour « Dérivation ». Relus en partie par David le
   2026-10-19, le reste validé par défaut (à revoir : [mathoux-noms.md](../wip/mathoux-noms.md)).

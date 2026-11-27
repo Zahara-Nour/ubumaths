@@ -43,8 +43,12 @@ export const QUESTIONS_TSPE_APPRO15 =
 /** Sous-notion « Grandeurs et mesures > Aires > aires sur quadrillage », lot 8b du CM1. */
 export const QUESTIONS_CM1_LOT8B =
 	'supabase/migrations/20261118071618_questions_cm1_lot8b_rangement_tags.sql';
+/** Notion « Géométrie > Agrandissement et réduction », chantier idees-3e-thales. */
+export const NOTION_AGRANDISSEMENT =
+	'supabase/migrations/20261127110709_notion_agrandissement_et_reduction.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	NOTION_AGRANDISSEMENT,
 	QUESTIONS_CM1_LOT8B,
 	QUESTIONS_TSPE_APPRO15,
 	QUESTIONS_TSPE_APPRO11,

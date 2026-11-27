@@ -124,10 +124,10 @@ describe('mathouName', () => {
 });
 
 describe('MATHOU_NAMES', () => {
-	it('134 notions, un nom propre chacune, sans doublon ni blanc', () => {
+	it('135 notions, un nom propre chacune, sans doublon ni blanc', () => {
 		const names = Object.values(MATHOU_NAMES);
-		expect(names).toHaveLength(134);
-		expect(new Set(names).size).toBe(134);
+		expect(names).toHaveLength(135);
+		expect(new Set(names).size).toBe(135);
 		for (const [notion, name] of Object.entries(MATHOU_NAMES)) {
 			expect(name.trim(), notion).toBe(name);
 			expect(name.length, notion).toBeGreaterThan(0);

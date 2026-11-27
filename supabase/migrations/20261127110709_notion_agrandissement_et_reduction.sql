@@ -1,7 +1,9 @@
 -- ============================================================================
 -- Chantier « idees-3e-thales » : une notion NEUVE, « Géométrie > Agrandissement et réduction »
 -- ============================================================================
--- Notion sans sous-notion, en fin de la branche Géométrie. Elle recevra le modèle « Agrandissement
+-- Notion sans sous-notion, en fin de la branche Géométrie, avec son nom anglais (ADR 0043) :
+-- « Enlargement and reduction ». Son Mathou s'appelle Maquette (src/lib/mathoux/mathou-noms.ts).
+-- Elle recevra le modèle « Agrandissement
 -- et réduction : aires et volumes », rangé SANS point (hors programme de cycle 4), par la
 -- migration de rangement du chantier, écrite après celle-ci.
 --
@@ -48,9 +50,10 @@ begin
 	            where n.parent_id = v_branche and lower(n.name) = lower('Agrandissement et réduction')) then
 		raise exception 'la notion « Agrandissement et réduction » existe déjà';
 	end if;
-	insert into public.classification_nodes (kind, parent_id, name, position)
+	insert into public.classification_nodes (kind, parent_id, name, position, translations)
 	select 'notion', v_branche, 'Agrandissement et réduction',
-	       coalesce(max(n.position), -1) + 1
+	       coalesce(max(n.position), -1) + 1,
+	       '{"en": {"name": "Enlargement and reduction"}}'::jsonb
 	  from public.classification_nodes n
 	 where n.parent_id = v_branche;
 end
