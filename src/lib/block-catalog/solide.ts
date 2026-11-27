@@ -90,7 +90,7 @@ export const solideEntry: BlockCatalogEntry = {
 					values: 'oui | non',
 					defaultValue: 'non',
 					description:
-						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Cylindre, cône, boule : la figure part du dessin à plat ; basculer ouvre les ovales jusqu’au cercle (vue de dessus), le bord caché est recalculé, les deux traits du cône disparaissent quand le sommet passe dans l’ovale ; tourner à gauche ou à droite ne change rien, un solide rond a le même aspect tout autour de son axe. Solide coté (cotes:) : les longueurs écrites ne se voient qu’à la vue de départ, elles s’effacent dès que la figure tourne ; les traits en tirets qui les accompagnent (hauteur d’une pyramide, rayon) restent et tournent. Solide coupé (section:) : la section, toujours teintée avec son contour épais, tourne avec le solide ; le rectangle d’un cylindre coupé parallèlement à son axe tourne autour de l’axe. Pas encore avec tracer: — la figure reste alors fixe et un message le dit à l’auteur.'
+						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Cylindre, cône, boule : la figure part du dessin à plat ; basculer ouvre les ovales jusqu’au cercle (vue de dessus), le bord caché est recalculé, les deux traits du cône disparaissent quand le sommet passe dans l’ovale ; tourner à gauche ou à droite ne change rien, un solide rond a le même aspect tout autour de son axe. Solide coté (cotes:) : les longueurs écrites ne se voient qu’à la vue de départ, elles s’effacent dès que la figure tourne ; les traits en tirets qui les accompagnent (hauteur d’une pyramide, rayon) restent et tournent. Solide coupé (section:) : la section, toujours teintée avec son contour épais, tourne avec le solide ; le rectangle d’un cylindre coupé parallèlement à son axe tourne autour de l’axe. Avec tracer: (vecteur à tracer) : toucher un point sans glisser le pose, glisser tourne la figure, même si le doigt part d’un point ; la flèche de l’élève suit, tourner ne change pas sa réponse. Deux points au même endroit de l’écran : le toucher pose celui de devant. Après la correction, la figure de l’élève et celle de la correction tournent encore, chacune de son côté.'
 				}
 			]
 		}
@@ -267,6 +267,18 @@ export const solideEntry: BlockCatalogEntry = {
 			source: fence('solide', 'forme: cylindre 2 4', 'section: parallele 1', 'tourner: oui'),
 			explanation:
 				'Faire glisser la figure de côté fait tourner le rectangle autour de l’axe : de face on le voit en vraie grandeur, de profil il se réduit à un trait.'
+		},
+		{
+			title: 'Un vecteur à tracer sur un pavé que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: pave 4 2 3',
+				'sommets: A B C D E F G H',
+				'tracer: vecteur AB + AD + AE depuis A',
+				'tourner: oui'
+			),
+			explanation:
+				'Toucher un point pose l’extrémité ; faire glisser le doigt tourne le pavé, même en partant d’un point. La flèche tracée suit la rotation : on voit que AG traverse le pavé.'
 		},
 		{
 			title: 'Sans arêtes cachées',
