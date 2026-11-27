@@ -215,13 +215,9 @@
 	<!--
 		Summary of rewards: Gidouilles, VIP Cards, and Riddles
 		NOTE: RewardsBlock now derives gidouilles and vipCards from studentCache
-		Only riddlesSolved and studentId are passed as props
+		Only studentId and periodId are passed as props
 	-->
-	<RewardsBlock
-		riddlesSolved={data.riddlesSolved}
-		studentId={data.profile.id}
-		periodId={currentPeriodId}
-	/>
+	<RewardsBlock studentId={data.profile.id} periodId={currentPeriodId} />
 
 	<!-- SRS REVISIONS SECTION -->
 	<!-- Quick access to spaced repetition system -->

@@ -41,9 +41,11 @@
 	import favicon from '#lib/assets/images/favicon.png';
 	import Header from '#lib/components/Header.svelte';
 	import Sidebar from '#lib/components/Sidebar.svelte';
-	import { theme } from '#lib/stores/theme.svelte.ts';
-	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
-	import { easyReading } from '#lib/stores/easyReading.svelte.ts';
+	// Chargés pour leur effet : à leur création, ces réglages s'appliquent à la page
+	// (thème, taille du texte, lecture facilitée lus dans le navigateur), sur toutes les pages
+	import '#lib/stores/theme.svelte.ts';
+	import '#lib/stores/fontSize.svelte.ts';
+	import '#lib/stores/easyReading.svelte.ts';
 	import { initializeTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import { page, updated } from '$app/state';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
@@ -105,14 +107,6 @@
 
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
-
-	// Initialize theme, fontSize and easyReading stores (ensures DOM updates on mode/size changes)
-	$effect(() => {
-		// Access to ensure reactivity
-		void theme.dark;
-		void fontSize.size;
-		void easyReading.enabled;
-	});
 
 	// Palotin de l'élève connecté (maison, écusson, passages : chantier `palotins`).
 	// Chargé à la demande : ni le visiteur ni le professeur ne téléchargent son code,
