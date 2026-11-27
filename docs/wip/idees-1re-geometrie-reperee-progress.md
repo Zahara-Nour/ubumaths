@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3221._
+_Mis à jour le 2026-11-27, après #3224._
 
-- **État** : N1 et N2 sur `main` (`scripts/questions/idees-1re-geometrie-reperee-neufs/`), pas encore en prod · **Prochaine action** : quand David a lancé la création en prod, commiter les ids écrits en tête des fichiers, puis générer la migration de rangement (`migration-rangement.ts --dir …`, projeté orthogonal, niveaux 4 et 5 à revérifier en prod, 1SPE-437) dans un nouveau worktree · **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-1re-geometrie-reperee-neufs --publier` depuis le dépôt principal · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré après #3221)
+- **État** : N1 (75a03073) et N2 (bbafb6dd) en brouillon en prod, rangés sous « projeté orthogonal » (niveaux 4 et 5), tagués 1SPE-437 (`db:migrate` fait) · **Prochaine action** : lire les verdicts « À revoir » en base (`question_template_reviews`, après le 2026-11-27), corriger, puis `publier-lot.ts --dir scripts/questions/idees-1re-geometrie-reperee-neufs` en simulation · **En attente de David** : relecture dans `/dev/modeles?noeud=3~c5066dfa-b654-4205-a228-29a352db725d&statut=draft` · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré après #3224)
 
 ## Historique
 
@@ -42,3 +42,18 @@ _Mis à jour le 2026-11-27, après #3221._
 - Écarts aux fiches (cercle de N2 passant par un point entier de (CH), rayon √n/2 ; AB² ⩽ 50 en
   N1 V2) : décidés sans question pendant l'écriture, soumis après coup ; David les valide le
   2026-11-27 (« je valide »). Rien à corriger.
+
+### 2026-11-27 — brouillons en prod, rangement
+
+- David a créé les 2 brouillons en prod : N1 75a03073, N2 bbafb6dd (niveaux 4 et 5) ; ids commités.
+- Niveaux relevés en prod juste avant : « projeté orthogonal » n'a que les niveaux 2 et 3.
+- Migration de rangement générée (`20261127105154`) : 1SPE-437, sur Géométrie > Géométrie repérée >
+  projeté orthogonal (point sur la notion, admis par la règle). Test d'intégration vert (155),
+  **rouge sans la migration** (5 échecs, fichier écarté le temps d'un passage puis remis depuis une
+  copie, `cmp` identique) ; `garde-niveaux-tags` : aucun niveau manquant.
+- `security-auditor` sur la migration : **aucun finding bloquant**. Aucune policy, aucun grant,
+  aucune fonction sûre (`SECURITY DEFINER`) ; additive ; rollback correct ; trigger toujours réactivé
+  sous `db push` ; seule migration en attente en prod. Non bloquant : `set local lock_timeout` peut
+  rester sans effet hors bloc de transaction (au pire une attente de verrou). Personne ne gagne ni
+  ne perd d'accès.
+- #3224 mergée ; `db:migrate` le 2026-11-27 (seule migration en attente) ; MCP : 2/2 rangés et tagués 1SPE-437.

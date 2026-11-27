@@ -6,15 +6,16 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, migration de rangement écrite, PR à merger._
+_Mis à jour le 2026-11-27, après #3220._
 
-- **État** : #3218 mergée, contenu des 4 publiés en prod ; 5 neufs en brouillon en prod ;
-  migration `20261127091828_questions_idees_6e_problemes_rangement_tags.sql` (5 rangés : 6-142 ×2,
-  6-120, 5-001 ×2) + fixture, test d'intégration vert · **Prochaine action** : merger la PR,
-  `db:migrate` depuis `main`, `garde-niveaux-tags.ts` en prod ; puis relecture dans `/dev/modeles`
-  (`?point=` pour les neufs, série de relecture pour les 4 publiés) · **En attente de David** :
-  rien · **Pièges en cours** : `ec` lu e × c (Euler), précédence dans `prix()` (parenthèses) ·
-  **Worktree / branche** : `../ubumaths-wt-idees-6e-problemes`, `feat/idees-6e-problemes-rangement`.
+- **État** : #3220 mergée, rangement appliqué en prod (`db:migrate`), `garde-niveaux-tags` vert ;
+  `security-auditor` sans finding bloquant ; série de relecture des 4 publiés écrite
+  (`scripts/series/6-relecture-problemes-publies.json`), publiée par David · **Prochaine action** :
+  relecture dans `/dev/modeles` (`?point=6-142`,
+  `6-120`, `5-001` pour les neufs, `?serie=1b05dafc-26df-437b-beec-187aa7dac7d0` pour les publiés), lecture des verdicts, publication ·
+  **En attente de David** : sa relecture · **Pièges en
+  cours** : `ec` lu e × c (Euler), précédence dans `prix()` (parenthèses) · **Worktree / branche** :
+  `../ubumaths-wt-idees-6e-problemes-serie`, `chore/idees-6e-problemes-serie-relecture`.
 
 ## Journal
 
@@ -70,3 +71,6 @@ publiés. Question d'accès : personne ne gagne d'accès, on range des modèles.
 - 2026-11-27 : #3218 mergée. David a lancé `db:migrate` (contenu) et `create-questions --publier` (5 brouillons, ids vérifiés en prod). Nouveau worktree pour la PR de rangement.
 - 2026-11-27 : migration de rangement générée par `migration-rangement.ts` (relevé en prod, 5 neufs
   sans nœud ni tag), test `migrations-rangement-tags` vert.
+- 2026-11-27 : #3220 mergée, `db:migrate` (seule migration en attente), garde des niveaux verte. Série
+  de relecture des 4 publiés écrite, simulation verte.
+- 2026-11-27 : série de relecture publiée par David (1b05dafc).
