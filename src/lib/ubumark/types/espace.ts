@@ -382,9 +382,8 @@ export interface EspaceNode extends BaseNode {
 	/** Phrases pour l'AUTEUR (jamais montrées à l'élève), « Ligne N : … » */
 	errors: string[];
 	/**
-	 * Phrases pour l'AUTEUR sur `tourner:` (valeur mal écrite, forme ou réglage
-	 * que la rotation ne sait pas encore faire) : le bloc n'est PAS en erreur, la
-	 * figure se dessine, fixe (chantier `solides-3d`, lot 2)
+	 * Phrases pour l'AUTEUR sur `tourner:` (valeur mal écrite) : le bloc n'est
+	 * PAS en erreur, la figure se dessine, fixe (chantier `solides-3d`, lot 2)
 	 */
 	rotationErrors?: string[];
 	/** Geste dans une question : sa case, posée par le générateur (`case: N`) */

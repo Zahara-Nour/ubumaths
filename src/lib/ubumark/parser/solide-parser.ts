@@ -42,9 +42,9 @@
  *   `case: N` y est posée par le générateur de questions.
  * - `tourner:` (facultatif, `oui` ou `non`, chantier `solides-3d`) : l'élève peut
  *   faire tourner la figure à l'écran. Toutes les formes, coupées (`section:`)
- *   et cotées (`cotes:`) comprises ; pas encore avec `tracer:`. Une valeur mal
- *   écrite ou un réglage pas encore pris en charge ne met PAS le bloc en
- *   erreur : phrase pour l'auteur (`rotationErrors`), figure fixe.
+ *   et cotées (`cotes:`) comprises, figure à geste (`tracer:`) aussi. Une
+ *   valeur mal écrite ne met PAS le bloc en erreur : phrase pour l'auteur
+ *   (`rotationErrors`), figure fixe.
  *
  * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034 ; points et
  * vecteurs : chantier `solide-vecteur`, lot 1 ; `tracer:` : lot 2.
@@ -831,14 +831,9 @@ export function parseSolideContent(source: string): {
 	let rotationErrors: string[] | undefined;
 	if (turnEntry !== undefined) {
 		const value = plain(turnEntry.value);
-		const notYet = (what: string) => `tourner: ${what} ne tourne pas encore (la figure reste fixe)`;
-		let problem: string | null = null;
-		if (value !== 'oui' && value !== 'non') problem = `tourner « ${turnEntry.value} » : oui ou non`;
-		else if (value === 'oui') {
-			if (task !== undefined) problem = notYet('un solide à geste (tracer:)');
-			else rotate = true;
-		}
-		if (problem !== null) rotationErrors = [`Ligne ${turnEntry.line} : ${problem}`];
+		if (value !== 'oui' && value !== 'non') {
+			rotationErrors = [`Ligne ${turnEntry.line} : tourner « ${turnEntry.value} » : oui ou non`];
+		} else rotate = value === 'oui';
 	}
 	return {
 		...withCase,

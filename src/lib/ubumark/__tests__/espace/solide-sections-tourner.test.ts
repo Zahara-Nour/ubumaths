@@ -125,12 +125,11 @@ describe('```solide coupé ou coté — tourner: (comportement 37)', () => {
 		expect((node.spec as SolideSpec).rotate).toBe(true);
 	});
 
-	it('tracer: ne tourne pas encore : figure fixe, phrase pour l’auteur', () => {
+	it('tracer: tourne depuis le lot 5 (comportement 52)', () => {
 		const node = read(...PAVE, 'tracer: vecteur AB + AD', 'tourner: oui');
 		expect(node.errors).toEqual([]);
-		expect(node.spec).not.toHaveProperty('rotate');
-		expect(node.rotationErrors).toHaveLength(1);
-		expect(node.rotationErrors?.[0]).toContain('tracer:');
+		expect(node.rotationErrors).toBeUndefined();
+		expect((node.spec as SolideSpec).rotate).toBe(true);
 	});
 
 	it('PDF : la vue de départ avec ses cotes, la même fiche que sans la clé (comportement 34)', () => {
