@@ -2,16 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3228._
+_Mis à jour le 2026-11-27, brouillons créés en prod par David._
 
-- **État** : PR 1 (#3228) mergée ; `db:migrate` fait (notion « Agrandissement et réduction »,
-  contenu de f55d07b0 et 37c13d51 en prod, vérifié). Les 3 modèles neufs ne sont pas encore en
-  prod. · **Prochaine action** : après la création des brouillons par David, commiter les ids,
-  générer la migration de rangement (`migration-rangement.ts --dir …-neufs`), PR 2, puis
-  relecture dans `/dev/modeles` · **En attente de David** : `create-questions --publier` du
-  dossier `scripts/questions/idees-3e-thales-neufs` depuis le worktree · **Pièges en cours** :
-  aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`,
-  `feat/idees-3e-thales-rangement`.
+- **État** : PR 1 (#3228) mergée, migrée. Brouillons en prod : 210bffdd (N1, niveau 2), 1584c3b5
+  (H1), 1f133534 (H2) ; ids commités, migration de rangement générée
+  (20261127114444, fixture comprise), PAS encore testée ni en PR.
+  · **Prochaine action** : `pnpm test:integration tests/integration/migrations-rangement-tags.test.ts`,
+  `pnpm tsx scripts/questions/garde-niveaux-tags.ts`, ouvrir la PR 2, `pnpm pr:merger`, puis
+  `db:migrate` (4 conditions ; `migration list --linked` avant) ; ensuite relecture dans
+  `/dev/modeles` (`?titre=Thalès`, `?titre=Agrandissement`, `?titre=semblables`)
+  · **En attente de David** : rien avant la relecture · **Pièges en cours** : aucun
+  · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales-rangement`.
 
 ## Phase 0 (2026-11-27)
 
