@@ -754,7 +754,8 @@ def triangles_hexagone():
                 if all(dans_hex(p) for p in pts):
                     tris.append(pts)
     centres = [(sum(p[0] for p in t) / 3, sum(p[1] for p in t) / 3) for t in tris]
-    ordre = sorted(range(len(tris)), key=lambda k: (-round(centres[k][1], 3),
+    # Rangée par rangée (bandes de hauteur h), de gauche à droite dans la rangée
+    ordre = sorted(range(len(tris)), key=lambda k: (-math.floor(centres[k][1] / h),
                                                     round(centres[k][0], 3)))
     return [tris[k] for k in ordre], [centres[k] for k in ordre]
 
@@ -788,8 +789,8 @@ def figure_triangles():
         lignes.append(f'texte({round(x - 0.2, 3)}, {round(y + 0.2, 3)}, "{k + 1}")')
     lignes.append('O = point(0, 0, etiquette="bas")')
     return ('```figure\nfenetre: -4.6 ; 4.6 ; -3.9 ; 3.9\ndescription: Hexagone régulier de '
-            'centre O découpé en 24 triangles équilatéraux numérotés de 1 à 24, de haut en bas puis '
-            'de gauche à droite.\n---\n' + '\n'.join(lignes) + '\n```')
+            'centre O découpé en 24 triangles équilatéraux numérotés de 1 à 24, rangée par rangée '
+            'depuis le haut, de gauche à droite.\n---\n' + '\n'.join(lignes) + '\n```')
 
 
 # Six configurations : (pièce, angle en degrés, positif = sens inverse des aiguilles)
