@@ -27,11 +27,13 @@
  * unité = 1 cm, étiquettes comprises dans la boîte.
  *
  * Figure que l'on peut tourner (`tourner: oui`, chantier `solides-3d`, lot 2,
- * ADR 0045) : `buildSolideScene(spec, vue)` dessine le polyèdre vu de `vue`,
+ * ADR 0045) : `buildSolideScene(spec, vue)` dessine le solide vu de `vue`,
  * dans un cadre FIXE — même échelle que le dessin fixe, centre du solide au
  * milieu d'un carré qui contient la figure sous tous les angles (la page ne
  * bouge pas quand la figure tourne). À la vue de départ, c'est le dessin fixe,
- * déplacé en bloc. Sans `vue` : le dessin fixe, celui du PDF.
+ * déplacé en bloc. Sans `vue` : le dessin fixe, celui du PDF. Cylindre, cône,
+ * boule (lot 3) : `turnedRoundDraft`, de vrais ovales qui s'ouvrent avec la
+ * bascule ; leur bascule de départ est celle de l'ovale à plat (`solideTilt`).
  *
  * @module ubumark/utils/espace-solides
  */
@@ -40,10 +42,12 @@ import type { SolideForm, SolidePoint, SolideSpec } from '../types/espace';
 import { ESPACE_STROKE, type EspacePoint } from './espace-scene';
 import {
 	VUE_DE_DEPART,
+	VUE_TILT,
 	hiddenEdges,
 	vueProjection,
 	type EspaceVue,
-	type Point3
+	type Point3,
+	type VueTilt
 } from './espace-vue';
 
 export type { Point3 } from './espace-vue';
@@ -180,6 +184,15 @@ const ELLIPSE_RATIO = 0.3;
  * sommet tombe dans l'ellipse et le cône ne se reconnaît plus ; marge jusqu'à 0,5
  */
 export const SOLIDE_FLAT_CONE = 0.5;
+
+/**
+ * Solide rond que l'on peut tourner : son dessin « à plat » est la vraie vue
+ * d'un œil placé à cette inclinaison au-dessus de l'horizontale (hauteurs non
+ * raccourcies). La figure tournée en part et la garde dans la vue droite : seule
+ * la hauteur raccourcit pendant le passage (chantier `solides-3d`, lot 3).
+ */
+const ROUND_ELEVATION = Math.asin(ELLIPSE_RATIO);
+export const SOLIDE_ROUND_TILT: VueTilt = { atRest: ROUND_ELEVATION, straight: ROUND_ELEVATION };
 
 /** Segments d'une ellipse ou d'un cercle complet */
 const ARC_STEPS = 72;
@@ -358,6 +371,10 @@ export function solideTopology(form: SolideForm): SolideTopology {
 // GÉOMÉTRIE
 // ============================================================================
 
+/** La bascule que le dessin d'une forme ajoute à celle de la vue (pour `turnVue`) */
+export const solideTilt = (form: SolideForm): VueTilt =>
+	solideTopology(form).curved ? SOLIDE_ROUND_TILT : VUE_TILT;
+
 /** Sommets 3D d'un polyèdre : x vers la droite, y vers le haut, z vers le fond */
 export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 	const p = (x: number, y: number, z: number): Point3 => ({ x, y, z });
@@ -468,6 +485,8 @@ interface Draft {
 	vertices: EspacePoint[];
 	/** Sommets qui sont des centres (étiquette à gauche, point si nommé) */
 	centers: number[];
+	/** Sommets que plus aucun trait ne montre (cône vu de haut) : un point s'ils sont nommés */
+	lone?: number[];
 	/** Arêtes (polyèdres) : un nom se pose dans le plus grand angle libre entre elles */
 	edges: [number, number][];
 	cotes: Cote[];
@@ -479,7 +498,7 @@ interface Draft {
 	points: EspacePoint[];
 }
 
-/** Un polyèdre vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
+/** Un solide vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
 interface TurnedDraft extends Draft {
 	/** Le centre du solide, projeté (repère de calcul) */
 	pivot: EspacePoint;
@@ -806,6 +825,101 @@ function roundDraft(spec: SolideSpec): Draft {
 	}
 }
 
+/**
+ * Un solide rond sans section ni cote, vu d'une vue : de vrais ovales (un
+ * cercle horizontal regardé de l'inclinaison e a pour petit axe r × sin e), les
+ * hauteurs raccourcies de cos e. Tourner autour de l'axe ne change rien au
+ * dessin. À la vue de départ : le dessin « à plat » de `roundDraft`, trait
+ * pour trait.
+ */
+function turnedRoundDraft(spec: SolideSpec, vue: EspaceVue): TurnedDraft {
+	const [r, h = 0] = spec.dims;
+	const back = spec.hidden;
+	// Rien de tourné : les nombres du dessin fixe, sans passer par sinus et cosinus
+	const still = vue.pitch === 0 && vue.oblique === 1;
+	const elevation = ROUND_ELEVATION + vue.pitch;
+	// Petit axe des ovales, signé : négatif, on regarde par-dessous (le fond passe en bas)
+	const ry = r * (still ? ELLIPSE_RATIO : Math.sin(elevation));
+	// Au repos les hauteurs sont entières ; le passage les amène à leur vraie longueur
+	const stretch = 1 + vue.oblique * (1 / Math.cos(ROUND_ELEVATION) - 1);
+	const top = still ? h : h * Math.max(0, Math.cos(elevation)) * stretch;
+	const fromAbove = ry >= 0;
+	const plainArc = (points: EspacePoint[], dashed = false): SolideLine => ({
+		points,
+		dashed,
+		thick: false
+	});
+	const shared = { fills: [], edges: [], cotes: [], section: null, sectionLabels: [], points: [] };
+	// Le centre du solide ; aucun point n'en est plus loin que `reach`, passage compris
+	const axis = {
+		pivot: { x: 0, y: top / 2 },
+		reach: Math.hypot(r, h / 2 / Math.cos(ROUND_ELEVATION))
+	};
+	const lines: SolideLine[] = [];
+	switch (spec.form) {
+		case 'cylindre': {
+			// Caché : le fond du cercle du bas vu de dessus, celui du cercle du haut vu de dessous
+			lines.push(plainArc(arc(0, 0, r, ry, 0, Math.PI), back && fromAbove));
+			lines.push(plainArc(arc(0, 0, r, ry, Math.PI, 2 * Math.PI)));
+			if (fromAbove) lines.push(plainArc(arc(0, top, r, ry, 0, 2 * Math.PI)));
+			else {
+				lines.push(plainArc(arc(0, top, r, ry, 0, Math.PI), back));
+				lines.push(plainArc(arc(0, top, r, ry, Math.PI, 2 * Math.PI)));
+			}
+			lines.push(segment({ x: -r, y: 0 }, { x: -r, y: top }, false));
+			lines.push(segment({ x: r, y: 0 }, { x: r, y: top }, false));
+			return {
+				...shared,
+				...axis,
+				lines,
+				vertices: [
+					{ x: 0, y: 0 },
+					{ x: 0, y: top }
+				],
+				centers: [0, 1]
+			};
+		}
+		case 'cone': {
+			const apex = { x: 0, y: top };
+			const flat = Math.abs(ry);
+			const outside = top > flat + 1e-9;
+			if (outside) {
+				// Sommet hors de l'ovale : deux traits tangents ; vu de dessus, l'arc du fond est caché
+				const t = Math.asin(flat / top);
+				lines.push(plainArc(arc(0, 0, r, flat, t, Math.PI - t), back && fromAbove));
+				lines.push(plainArc(arc(0, 0, r, flat, Math.PI - t, 2 * Math.PI + t)));
+				const foot = (s: number) => ({ x: s * r * Math.cos(t), y: flat * Math.sin(t) });
+				lines.push(segment(foot(-1), apex, false));
+				lines.push(segment(foot(1), apex, false));
+			} else {
+				// Sommet dans l'ovale (vu de haut ou de bas) : il ne reste que l'ovale, entier
+				lines.push(plainArc(arc(0, 0, r, flat, 0, 2 * Math.PI)));
+			}
+			return {
+				...shared,
+				...axis,
+				lines,
+				vertices: [apex, { x: 0, y: 0 }],
+				centers: [1],
+				// Plus de traits qui s'y rejoignent : son nom, s'il en a un, flotterait sans point
+				...(!outside && { lone: [0] })
+			};
+		}
+		default:
+			lines.push(plainArc(arc(0, 0, r, r, 0, 2 * Math.PI)));
+			lines.push(plainArc(arc(0, 0, r, ry, 0, Math.PI), back));
+			lines.push(plainArc(arc(0, 0, r, ry, Math.PI, 2 * Math.PI)));
+			return {
+				...shared,
+				lines,
+				pivot: { x: 0, y: 0 },
+				reach: r,
+				vertices: [{ x: 0, y: 0 }],
+				centers: [0]
+			};
+	}
+}
+
 /** Boîte d'une étiquette centrée en `at` */
 /** Boîte d'une étiquette (coins bas-gauche, haut-droit), en cm ; exportée pour les tests */
 export const labelBox = (label: SolideLabel) => {
@@ -979,8 +1093,8 @@ function leaderCote(
 }
 
 /**
- * Le dessin d'un solide. `vue` : figure que l'on peut tourner (polyèdres), vue
- * de là, dans son cadre fixe ; absente (ou solide rond) : le dessin fixe.
+ * Le dessin d'un solide. `vue` : figure que l'on peut tourner, vue de là, dans
+ * son cadre fixe ; absente (ou solide rond coupé ou coté) : le dessin fixe.
  * `held` (figure tournée) : places des noms à tenir (`labelOffsets` d'une scène
  * du même bloc) — pendant que la figure tourne, un nom ne change pas de côté ;
  * sans elles, chaque nom est placé pour cette vue.
@@ -994,7 +1108,12 @@ export function buildSolideScene(
 	// Le dessin fixe donne l'échelle, que la figure tournée garde
 	const polyhedron = curved ? null : polyhedronDraft(spec);
 	const fixed = polyhedron ?? roundDraft(spec);
-	const turned = vue === undefined || polyhedron === null ? null : polyhedronDraft(spec, vue);
+	// Un solide rond coupé ou coté ne tourne pas encore (lot 4)
+	const turns = vue !== undefined && (!curved || (spec.section === null && spec.cotes === null));
+	const view = (at: EspaceVue) => (curved ? turnedRoundDraft(spec, at) : polyhedronDraft(spec, at));
+	const turned = turns && vue !== undefined ? view(vue) : null;
+	// Le dessin au repos, repéré depuis le centre du solide
+	const rest = turned === null ? null : (polyhedron ?? view(VUE_DE_DEPART));
 	const draft = turned ?? fixed;
 
 	// Mise à l'échelle (plus grand côté : SOLIDE_SIZE) et passage en y vers le bas
@@ -1084,7 +1203,7 @@ export function buildSolideScene(
 		}));
 		const others = vertices.filter((_, k) => k !== i);
 		labels.push(nameAt(p, candidates, () => firstFree(candidates, labels, edgeSegments, others)));
-		if (draft.centers.includes(i)) dots.push(p);
+		if (draft.centers.includes(i) || draft.lone?.includes(i)) dots.push(p);
 	});
 	for (const mark of spec.marks) {
 		if (mark.kind !== 'sommet') continue;
@@ -1211,12 +1330,11 @@ export function buildSolideScene(
 		...arrows.flatMap((a) => [...a.shaft, ...a.head])
 	];
 	let all = bounds(drawn);
-	if (turned !== null && polyhedron !== null) {
-		// Au repos (cavalière), les fuyantes peuvent dépasser ce cercle
+	if (turned !== null && rest !== null) {
+		// Au repos (cavalière, ovales à plat), le dessin peut dépasser ce cercle
+		const atRest = [...rest.vertices, ...rest.points, ...rest.lines.flatMap((l) => l.points)];
 		const restReach = Math.max(
-			...[...polyhedron.vertices, ...polyhedron.points].map((p) =>
-				Math.max(Math.abs(p.x - polyhedron.pivot.x), Math.abs(p.y - polyhedron.pivot.y))
-			)
+			...atRest.map((p) => Math.max(Math.abs(p.x - rest.pivot.x), Math.abs(p.y - rest.pivot.y)))
 		);
 		const half = Math.max(turned.reach, restReach) * scale + TURN_PAD;
 		all = { minX: -half, maxX: half, minY: -half, maxY: half };

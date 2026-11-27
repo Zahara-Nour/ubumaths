@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page, type Route } from '@playwright/test';
+import { plainMarkdownText } from '../../src/lib/questions/catalogue-search';
 
 /**
  * `/automaths` — recherche, liste des notions, correctifs du catalogue — paquet 8 du tri
@@ -19,6 +20,13 @@ import { expect, test, type Locator, type Page, type Route } from '@playwright/t
  * est « Dans ma série : retirer » ; sur téléphone le bouton rond est remplacé par une barre en bas
  * (`MySeriesDock`), le bouton rond reste de 640 à 1 279 px.
  *
+ * Recherche refaite le 2026-11-26 (#3172, décision de David, `catalogue-search.ts`) : les bons
+ * résultats sont ceux du titre, de la description, de la sous-notion et des énoncés ; les modèles
+ * trouvés seulement par un corrigé ou un intitulé du programme sont dans le groupe replié « Aussi
+ * dans les corrigés et le programme » ; singulier et pluriel confondus. Les trois tests qui
+ * recomptent les résultats (« double distributivité », « aire », 4e + « pythagore ») suivent cette
+ * règle depuis le 2026-11-27 (accord de David) : ils attendaient l'ancien compteur unique.
+ *
  * Le décor (largeur) se fixe par `test.use` : le même test vaut sur tous les projets.
  */
 
@@ -31,12 +39,35 @@ interface Node {
 	parent_id: string | null;
 }
 
+/** Énoncé et correction écrite d'une variation (ou de la part commune du modèle) */
+interface Variation {
+	statement?: string | null;
+	correction?: {
+		steps?: string[] | null;
+		feedback?: {
+			correct?: string | null;
+			incorrect?: string | null;
+			partial?: string | null;
+		} | null;
+	} | null;
+}
+
 interface Template {
 	id: string;
 	title: string;
 	description: string | null;
 	grades: string[] | null;
 	classification_node_id: string | null;
+	shared?: Variation | null;
+	variations?: Variation[] | null;
+}
+
+/** Ce que la recherche doit rendre : les bons résultats, et ceux du groupe « Aussi… » */
+interface Matches {
+	/** Mots trouvés dans le titre, la description, la sous-notion ou un énoncé */
+	main: Template[];
+	/** Mots trouvés seulement avec les corrigés ou les intitulés du programme */
+	others: Template[];
 }
 
 interface Point {
@@ -83,24 +114,46 @@ async function openCatalogue(page: Page, url = '/automaths'): Promise<Catalogue>
 	return received as unknown as Catalogue;
 }
 
-/** Minuscules sans accents, tout ce qui n'est ni lettre ni chiffre devient une espace (réécrit ici) */
+/** Minuscules sans accents, « œ » / « æ » en deux lettres, tout ce qui n'est ni lettre ni chiffre devient une espace (réécrit ici) */
 function plain(text: string): string {
 	return text
 		.toLowerCase()
+		.replace(/œ/g, 'oe')
+		.replace(/æ/g, 'ae')
 		.normalize('NFKD')
 		.replace(/\p{M}/gu, '')
 		.replace(/[^\p{L}\p{N}]+/gu, ' ')
 		.trim();
 }
 
-/** Texte que la recherche lit pour un modèle : titre, description, notion, sous-notion, points du programme */
-function haystack(catalogue: Catalogue, template: Template): string {
+/** Singulier et pluriel confondus : « -eaux » → « -eau », « -aux » → « -al », « s » ou « x » final (réécrit ici) */
+function singular(word: string): string {
+	if (word.length < 4) return word;
+	if (word.endsWith('eaux')) return word.slice(0, -1);
+	if (word.endsWith('aux')) return `${word.slice(0, -3)}al`;
+	if (word.endsWith('s') || word.endsWith('x')) return word.slice(0, -1);
+	return word;
+}
+
+/** Mots d'un texte, au singulier, chacun entre deux espaces */
+function wordsOf(texts: readonly string[]): string {
+	return ` ${plain(texts.join(' ')).split(' ').map(singular).join(' ')} `;
+}
+
+/**
+ * Textes que la recherche lit pour un modèle (règle du 2026-11-26, `catalogue-search.ts`) :
+ * `main` = titre, description, sous-notion, énoncés ; `extra` = corrigés écrits et intitulés des
+ * points du programme (`programme` = ces intitulés seuls). Ni le nom de la notion, ni celui de la branche. Le nettoyage d'un énoncé
+ * (blocs, formules, variables) est celui de l'appli, `plainMarkdownText` ; le reste est recompté ici.
+ */
+function searchTexts(
+	catalogue: Catalogue,
+	template: Template
+): { main: string; extra: string; programme: string } {
 	const nodes = new Map(catalogue.nodes.map((node) => [node.id, node]));
-	let notion = '';
 	let subnotion = '';
 	let node = template.classification_node_id ? nodes.get(template.classification_node_id) : null;
 	while (node) {
-		if (node.kind === 'notion') notion = node.name;
 		if (node.kind === 'subnotion') subnotion = node.name;
 		node = node.parent_id ? nodes.get(node.parent_id) : undefined;
 	}
@@ -108,39 +161,76 @@ function haystack(catalogue: Catalogue, template: Template): string {
 	const pointNames = (catalogue.templatePoints[template.id] ?? []).map(
 		(id) => points.get(id) ?? ''
 	);
-	return ` ${plain([template.title, template.description ?? '', notion, subnotion, ...pointNames].join(' '))}`;
+	const statements: string[] = [];
+	const corrections: string[] = [];
+	for (const source of [template.shared, ...(template.variations ?? [])]) {
+		if (!source) continue;
+		if (source.statement) statements.push(plainMarkdownText(source.statement));
+		const correction = source.correction;
+		if (!correction) continue;
+		for (const step of correction.steps ?? []) corrections.push(plainMarkdownText(step));
+		const feedback = correction.feedback;
+		for (const text of [feedback?.correct, feedback?.incorrect, feedback?.partial]) {
+			if (text) corrections.push(plainMarkdownText(text));
+		}
+	}
+	return {
+		main: wordsOf([template.title, template.description ?? '', subnotion, ...statements]),
+		extra: wordsOf([...corrections, ...pointNames]),
+		programme: wordsOf(pointNames)
+	};
 }
 
-/** Modèles dont chaque mot de la recherche commence un mot du texte lu (recompté à la main) */
+/**
+ * Mots de la recherche : chacun au DÉBUT d'un mot du texte ; un mot que le singulier a raccourci
+ * (« aires » → « aire ») se cherche en mot entier.
+ */
+function queryWords(query: string): string[] {
+	return plain(query)
+		.split(' ')
+		.map((word) => (singular(word) === word ? ` ${word}` : ` ${singular(word)} `));
+}
+
+/** Résultats attendus d'une recherche, recomptés à la main sur la liste que la page a reçue */
 function expectedMatches(
 	catalogue: Catalogue,
 	query: string,
 	grades: readonly string[] | null = null
-): Template[] {
-	const words = plain(query)
-		.split(' ')
-		.map((word) => ` ${word}`);
-	return catalogue.templates.filter((template) => {
-		if (grades && !(template.grades ?? []).some((grade) => grades.includes(grade))) return false;
-		const text = haystack(catalogue, template);
-		return words.every((word) => text.includes(word));
-	});
+): Matches {
+	const words = queryWords(query);
+	const matches: Matches = { main: [], others: [] };
+	for (const template of catalogue.templates) {
+		if (grades && !(template.grades ?? []).some((grade) => grades.includes(grade))) continue;
+		const texts = searchTexts(catalogue, template);
+		if (words.every((word) => texts.main.includes(word))) matches.main.push(template);
+		else if (words.every((word) => `${texts.main}${texts.extra}`.includes(word)))
+			matches.others.push(template);
+	}
+	return matches;
 }
 
 const searchBox = (page: Page): Locator =>
 	page.getByRole('searchbox', { name: 'Chercher une question' });
 
-/** Tape dans la recherche et attend le compteur de résultats */
+/** Ligne au-dessus des résultats : « 12 questions », ou la phrase quand seul le groupe « Aussi… » a des résultats */
+const resultLine = (page: Page): Locator =>
+	page.getByText(/^(\d+ questions?|Aucune question dans les titres et les énoncés)$/);
+
+/** Tape dans la recherche et attend la ligne des résultats */
 async function search(page: Page, query: string): Promise<void> {
 	await searchBox(page).fill(query);
-	await expect(page.getByText(/^\d+ questions?$/)).toBeVisible();
+	await expect(resultLine(page)).toBeVisible();
 }
 
-/** Nombre annoncé au-dessus des résultats (« 12 questions ») */
+/** Nombre de bons résultats annoncé (« 12 questions » → 12 ; « Aucune question dans les titres et les énoncés » → 0) */
 async function resultTotal(page: Page): Promise<number> {
-	const text = await page.getByText(/^\d+ questions?$/).innerText();
-	return Number(text.split(' ')[0]);
+	const text = await resultLine(page).innerText();
+	return /^\d/.test(text) ? Number(text.split(' ')[0]) : 0;
 }
+
+/** Le groupe replié « Aussi dans les corrigés et le programme · n » */
+const othersGroup = (page: Page): Locator =>
+	page.getByRole('button', { name: /^Aussi dans les corrigés et le programme\s*· \d+$/ });
 
 /** Cartes de questions affichées (un bouton « Ajouter à ma série » ou « Dans ma série : retirer » chacune) */
 const cardButtons = (page: Page): Locator =>
@@ -226,19 +316,27 @@ test.describe('#2847 — recherche Automaths', () => {
 		page
 	}) => {
 		const catalogue = await openCatalogue(page);
-		const found = expectedMatches(catalogue, 'double distributivité');
-		// Précondition : un modèle dont ni le titre ni la description ne disent « distributivité »
-		const byProgramme = found.filter(
-			(template) =>
-				!plain(`${template.title} ${template.description ?? ''}`).includes('distributivit')
-		);
+		const { main, others } = expectedMatches(catalogue, 'double distributivité');
+		// Précondition : un modèle que seuls les intitulés de ses points du programme font trouver
+		const words = queryWords('double distributivité');
+		const byProgramme = others.filter((template) => {
+			const texts = searchTexts(catalogue, template);
+			return words.every((word) => `${texts.main}${texts.programme}`.includes(word));
+		});
 		expect(byProgramme.length, 'modèles trouvés par l’intitulé du programme seul').toBeGreaterThan(
 			0
 		);
 		await search(page, 'double distributivité');
-		expect(await resultTotal(page)).toBe(found.length);
+		expect(await resultTotal(page), 'bons résultats (titres et énoncés)').toBe(main.length);
+		// Depuis le 2026-11-26, ces modèles sont dans le groupe replié « Aussi… », sous les bons résultats
+		const group = othersGroup(page);
+		await expect(group).toHaveText(new RegExp(`· ${others.length}\\s*$`));
+		await expect(group).toHaveAttribute('aria-expanded', 'false');
+		await group.evaluate((button) => (button as HTMLElement).click());
+		await expect(group).toHaveAttribute('aria-expanded', 'true');
+		const item = group.locator('xpath=ancestor::*[@data-slot="accordion-item"][1]');
 		for (const title of new Set(byProgramme.map((template) => template.title))) {
-			await expect(page.getByText(title, { exact: true }).first()).toBeVisible();
+			await expect(item.getByText(title, { exact: true }).first()).toBeVisible();
 		}
 	});
 
@@ -246,9 +344,9 @@ test.describe('#2847 — recherche Automaths', () => {
 		page
 	}) => {
 		const catalogue = await openCatalogue(page);
-		const found = expectedMatches(catalogue, 'aire');
+		const { main: found } = expectedMatches(catalogue, 'aire');
 		const all = catalogue.templates.filter((template) =>
-			haystack(catalogue, template).includes('aire')
+			searchTexts(catalogue, template).main.includes('aire')
 		);
 		// Précondition : « aire » au milieu d'un mot (« linéaire ») ramènerait plus de modèles
 		const lineaireOnly = all.filter((template) => !found.includes(template));
@@ -304,8 +402,8 @@ test.describe('#2847 — recherche Automaths', () => {
 
 	test('#2847 — niveau 4e + « pythagore » : résultats de 4e seulement', async ({ page }) => {
 		const catalogue = await openCatalogue(page);
-		const inFourth = expectedMatches(catalogue, 'pythagore', ['4']);
-		const everywhere = expectedMatches(catalogue, 'pythagore');
+		const { main: inFourth } = expectedMatches(catalogue, 'pythagore', ['4']);
+		const { main: everywhere } = expectedMatches(catalogue, 'pythagore');
 		expect(inFourth.length).toBeGreaterThan(0);
 		expect(everywhere.length, 'des résultats d’autres niveaux existent').toBeGreaterThan(
 			inFourth.length

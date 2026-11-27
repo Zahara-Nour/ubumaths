@@ -24,7 +24,7 @@ prod (MCP en lecture seule, 2026-11-26). Aucun brouillon ni modèle sans point s
 | 5-110 | Lire un diagramme en barres                  | eeba38c7 (2)                                                 |
 | 5-134 | Calculer une fréquence                       | 21ebfb57 (3 : tableau avec total, fraction / décimal / %)    |
 
-Bornes ([cycle4.md](../systeme/programmes/bornes/cycle4.md)) : moyenne simple en 5e ; moyenne pondérée
+Bornes ([cycle4.md](../../../systeme/programmes/bornes/cycle4.md)) : moyenne simple en 5e ; moyenne pondérée
 (petits effectifs), médiane en données brutes (effectif ≤ 30) et étendue en 4e ; médiane et quartiles
 d'une série **à effectifs** (tableau ou barres, sans borne sur l'effectif) en 3e. Médiane d'effectif
 pair : toute valeur entre les deux valeurs centrales, ou bien le modèle ne tire que des cas où la

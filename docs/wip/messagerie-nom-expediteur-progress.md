@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3188 et la migration jouée en prod._
+_Mis à jour le 2026-11-27, après #3188, code et migration en prod._
 
-- **État** : #3188 mergée (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu » : clos au registre). **Migration `20261126132310` jouée en prod par David le 2026-11-26**, vérifiée en lecture seule : les sept fonctions de la messagerie portent la nouvelle version (`messagerie_nom_affiche`, refus de la classe sans élève actif, destinataires masqués à l'élève), `search_path` et droits en place. **Le code n'est pas encore déployé** : les noms et le message à une classe marchent déjà en prod, « Répondre » et les libellés attendent la mise en prod.
-- **Prochaine action** : aucune côté code. Après `pnpm deploy:prod`, proposer à David de refaire son essai (page « Écrire » du prof, « Répondre » depuis un fil côté élève, message à une classe).
-- **En attente de David** : (1) `pnpm deploy:prod` quand il le veut (V133 et l'affichage sont du code d'application) ; (2) confirmer l'extension de sa décision d'accès : un élève ne voit pas non plus les autres destinataires d'un message envoyé à plusieurs élèves cochés un à un (il voit « et N autres destinataires »).
-- **Décisions d'accès de David (2026-11-26)** : le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit ceux du prof qui lui écrit ; un élève qui reçoit un message envoyé à sa classe ne voit pas l'identité des autres destinataires.
-- **Pièges en cours** : entre la migration et la mise en prod, l'ancien code tourne avec les nouvelles fonctions (compatible : mêmes signatures, noms en plus) ; `CREATE OR REPLACE` garde les droits mais pas le `search_path` ; le cliquet des types peut rougir sur un fichier non touché quand des fichiers de test s'ajoutent (vu sur la route du détail d'un échange du marché, typée à la main dans #3188) ; restes au registre : L128 à L135, V135, T37.
+- **État** : #3188 mergée (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu » : clos au registre). **Migration `20261126132310` jouée en prod par David le 2026-11-26**, vérifiée en lecture seule (sept fonctions de la messagerie à la nouvelle version, `search_path` et droits en place). **Code en prod depuis la 0.115.0** (2026-11-26, 21 h 23, lancée par une autre session) ; 0.116.0 en ligne le 2026-11-27. Tout le chantier est livré.
+- **Prochaine action** : aucune côté code. Quand David a refait son essai en prod (page « Écrire » du prof, « Répondre » depuis un fil côté élève, message à une classe), lui proposer de clore : versement du durable, journal archivé.
+- **En attente de David** : son essai en prod, puis son go pour clore.
+- **Décisions d'accès de David** : (2026-11-26) le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit ceux du prof qui lui écrit ; un élève qui reçoit un message envoyé à sa classe ne voit pas l'identité des autres destinataires. (2026-11-27, confirmé) il ne voit pas non plus les autres destinataires d'un message envoyé à plusieurs élèves cochés un à un : « et N autres destinataires ».
+- **Pièges en cours** : `CREATE OR REPLACE` garde les droits mais pas le `search_path` ; le cliquet des types peut rougir sur un fichier non touché quand des fichiers de test s'ajoutent (vu sur la route du détail d'un échange du marché, typée à la main dans #3188) ; restes au registre : L128 à L135, V135, T37.
 - **Worktree / branche** : aucun (retirés au merge de #3188).
 
 ## Le constat (essai de David en prod, v0.113.0)

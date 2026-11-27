@@ -304,8 +304,8 @@ describe('Solide — tourner: oui', () => {
 		expect(teacher.container.querySelectorAll('polyline')).toHaveLength(12);
 	});
 
-	it('forme pas encore prise en charge (cylindre) : figure fixe, message pour le prof', async () => {
-		const round = node('forme: cylindre 2 5', 'tourner: oui');
+	it('réglage pas encore pris en charge (cylindre coté) : figure fixe, message pour le prof', async () => {
+		const round = node('forme: cylindre 2 5', 'cotes: cm', 'tourner: oui');
 		const pupil = await render(Espace, { target: mainElement(), props: { node: round } });
 		expect(svgOf(pupil.container).hasAttribute('tabindex')).toBe(false);
 		expect(pupil.container.querySelectorAll('button')).toHaveLength(0);
@@ -313,6 +313,65 @@ describe('Solide — tourner: oui', () => {
 			target: mainElement(),
 			props: { node: round, showErrors: true }
 		});
-		expect(teacher.container.textContent).toContain('un cylindre ne tourne pas encore');
+		expect(teacher.container.textContent).toContain('un solide coté (cotes:) ne tourne pas encore');
+	});
+});
+
+describe('Solide rond — tourner: oui (lot 3)', () => {
+	const CYLINDRE = ['forme: cylindre 2 5', "sommets: O O'"];
+	/** Hauteur à l'écran des deux traits des côtés (polylignes de deux points) */
+	const sideHeights = (container: Element) =>
+		[...container.querySelectorAll('polyline')]
+			.filter((l) => (l.getAttribute('points') ?? '').trim().split(' ').length === 2)
+			.map((l) => l.getBoundingClientRect().height);
+
+	it('au repos : le dessin fixe, la consigne ; glisser vers le haut montre le dessous', async () => {
+		const fixed = await render(Espace, {
+			target: mainElement(),
+			props: { node: node(...CYLINDRE) }
+		});
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node(...CYLINDRE, 'tourner: oui') }
+		});
+		const svg = svgOf(screen.container);
+		expect(svg.getAttribute('tabindex')).toBe('0');
+		expect(screen.container.textContent).toContain('Figure à tourner');
+		expect(screen.container.querySelectorAll('polyline')).toHaveLength(5);
+		expect(sideHeights(screen.container)[0]).toBeCloseTo(sideHeights(fixed.container)[0], 0);
+		const before = traits(screen.container);
+		const box = svg.getBoundingClientRect();
+
+		// 60 px vers le haut : environ 41°, le regard passe sous l'horizontale
+		drag(svg, 0, -60);
+		await expect.poll(() => resetButton(screen.container)).toBeDefined();
+		// Vu de dessous : le cercle du haut en deux moitiés, celle du fond en tirets
+		await expect.poll(() => screen.container.querySelectorAll('polyline').length).toBe(6);
+		expect(screen.container.querySelectorAll('polyline[stroke-dasharray]')).toHaveLength(1);
+		expect(screen.container.querySelectorAll('text')).toHaveLength(2);
+		expect(svg.getBoundingClientRect().width).toBe(box.width);
+		expect(svg.getBoundingClientRect().height).toBe(box.height);
+
+		resetButton(screen.container)!.click();
+		await expect.poll(() => resetButton(screen.container)).toBeUndefined();
+		expect(traits(screen.container)).toBe(before);
+	});
+
+	it('la bascule s’arrête à la vue de dessus : un cercle, les côtés réduits à rien', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node(...CYLINDRE, 'tourner: oui') }
+		});
+		const svg = svgOf(screen.container);
+		const atRest = sideHeights(screen.container)[0];
+		expect(atRest).toBeGreaterThan(50);
+		// Bien plus que le quart de tour : la figure ne passe pas tête en bas
+		drag(svg, 0, 600);
+		await expect.poll(() => resetButton(screen.container)).toBeDefined();
+		await expect.poll(() => Math.max(...sideHeights(screen.container))).toBeLessThan(2);
+		// En revenant un peu, on voit toujours le dessus (un seul arc en tirets, 5 traits)
+		drag(svg, 0, -30);
+		await expect.poll(() => Math.max(...sideHeights(screen.container))).toBeGreaterThan(10);
+		expect(screen.container.querySelectorAll('polyline')).toHaveLength(5);
 	});
 });
