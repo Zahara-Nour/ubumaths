@@ -2,25 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3244 (lot 7a mergé)._
+_Mis à jour le 2026-11-27, lot 7b écrit, pas encore mergé (dernier merge : #3244, lot 7a)._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 mergés** (#3195, #3200,
-  #3211, #3216, #3222, #3227, #3229, #3235) ; **lot 7a (droites) mergé** (#3244, § 18), essayé au doigt par
-  David (« c'est bon »). Les lots 3 à 7a et #3229 ne sont pas en prod tant qu'un
-  `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de l'affirmer). **Phase 0 du lot 7
-  validée** (§ 17, « je te suis » : dans le bloc solide ; 7a droites, 7b plans, 7c repère du solide et points
-  par coordonnées, une PR chacun ; 7d laissé ; tirets là où une face passe devant ; 7e point d'intersection
-  ensuite).
-- **Prochaine action** : **lot 7b (plans)** dans le bloc solide, selon le § 17 : worktree et branche neufs
-  depuis `main`, tests d'abord, même chaîne que le 7a (§ 18). Puis 7c.
-- **En attente de David** : **ses essais au doigt des lots 3 à 6 puis du 7a sont faits, « c'est bon »
-  (2026-11-27)**. Il n'a pas demandé de `deploy:prod` : ne pas le lancer sans sa demande. Il veut vérifier
-  lui-même chaque morceau du lot 7 **avant le merge** : lui donner le lien (`pnpm lien`, serveur 5176) dès
-  que le 7b se voit à l'écran, attendre son « c'est bon ». **Question posée deux fois, sans réponse (donc
-  rien de changé)** : un bout de droite encore derrière le solide reste en tirets (`(DC)`, `(DG)` d'un cube :
-  la droite ne ressort pas du cube sur le dessin) — l'allonger jusqu'à ce qu'elle ressorte serait un autre
-  choix. Proposé, sans réponse : mettre la description des réglages sous le réglage dans la page d'aide (tableau trop étroit sur
-  téléphone) ; teinter les cases de saisie de `retrouver:`.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 et 7a mergés**
+  (#3195 à #3244). Les lots 3 à 7a ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a
+  pas emportés. **Lot 7b (plans) écrit sur la branche** (§ 19), tests verts, vu à l'écran par la session,
+  **essayé par David (« c'est bon »)** ; PR ouverte, à merger dès la CI verte.
+- **Prochaine action** : attendre le « c'est bon » de David sur le 7b (lien `pnpm lien`, serveur **5177** :
+  le 5176 est pris par une autre session), puis PR, CI, `pnpm pr:merger`. Ensuite la petite PR du bord en butée (ci-dessous), puis **lot 7c** (repère du
+  solide et points par coordonnées, § 17), même chaîne.
+- **En attente de David** : son essai du 7b **avant le merge**. Pas de `deploy:prod` sans sa demande.
+  Proposé, sans réponse : description des réglages sous le réglage dans la page d'aide ; teinter les cases
+  de saisie de `retrouver:`.
+- **Tranché par David le 2026-11-27 (lot 7b, « suis tes recos »)** : le nom « (P) » s'écrit à côté du plan
+  quand il n'a pas la place dedans (fait, § 19) ; le bord d'un plan ou une droite posés sur une face vue par
+  la tranche (butée de la vue de dessus) prennent l'état de l'arête : **petite PR à part, après le 7b, avant
+  le 7c** ; couleurs gardées (plans vert et violet, droites bleues) ; un bout de droite encore derrière le
+  solide reste en tirets (`(DG)` d'un cube) ; « (P) » qui croise un autre nom pendant la rotation : laissé.
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
@@ -37,8 +35,8 @@ _Mis à jour le 2026-11-27, après #3244 (lot 7a mergé)._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : aucun (retirés après #3244, serveur 5176 arrêté). À créer pour le 7b :
-  `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7b`, depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7b`, serveur de dev
+  sur 5177.
 
 ## 1. D'où l'on part
 
@@ -628,3 +626,47 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   est en plein (angle que le clavier n'atteint pas) ; `droites:` vide ou `(AG` sans parenthèse fermante
   acceptés sans message.
 - Docs produites : `docs/systeme/ubumark.md` (paragraphe « Droites données »), ce journal.
+
+## 19. Lot 7b — plans : ce qui est fait (2026-11-27)
+
+- **Clé** `plans: (BDE), P = (ACG)` du bloc ` ```solide ` (`SolideSpec.plans`, `SolidePlan`, au plus
+  `SOLIDE_MAX_PLANS` = 2), polyèdres à sommets nommés ; erreurs des comportements 80 et 83, plus « même
+  plan » écrit deux fois (`readPlans`). Nom de plan : une majuscule qui n'est pas le nom d'un point.
+- **Moteur de vue** (`espace-vue.ts`) : `planeInSolid`, le polygone où le plan coupe le solide (un sommet par
+  sommet du solide posé dans le plan, un par arête traversée, dans l'ordre du tour). Témoin indépendant dans
+  le test : 7 polyèdres, tous les plans par trois points pris parmi les sommets et les milieux d'arêtes
+  (plus de 3 000), nombre de sommets, appartenance au plan, convexité.
+- **Scène** : `SolideScene.plans` (`fill`, `border`) ; le bord est découpé par `hiddenStretches` (celui des
+  droites), côté par côté. Un plan qui contient une face la teinte (comportement 75). Le plan ne change ni
+  le cadre, ni les arêtes, ni les noms des sommets. Nom « (P) » écrit dans le plan, en un point du plan choisi
+  sur le dessin de départ (le plus dégagé) ; il suit ce point pendant la rotation, hors de `labelOffsets`.
+- **Écran** (`Solide.svelte`) : `polygon.solide-plan`, `polyline.solide-plan-bord` ; premier plan vert,
+  second violet (pour les distinguer : « les plans sont-ils sécants ? »). **PDF** : `PLAN_FILLS`,
+  `PLAN_STROKES`.
+- Catalogue (`block-catalog/solide.ts` : réglage, exemple « Une droite et un plan dans un cube que l'élève
+  peut tourner », erreur « Trois points alignés pour un plan »), doc `docs/systeme/ubumark.md`.
+- Tests : `solide-plans.test.ts` (29), `Solide.svelte.test.ts` (+1). Les tests ont été écrits avant le code,
+  mais lancés seulement après : pas de passage au rouge observé.
+- Vu à l'écran par la session (captures Chromium du composant) : cube avec (BDE), avec (IG) et (BDE), avec
+  (ABG) et (BDE), avec (ABC), hexagone par trois milieux, `cachees: non`, pavé à deux plans, pyramide avec
+  (SAC) et (SO), prisme, tétraèdre ; cube, pavé et hexagone tournés sous deux angles (polygone, tirets et nom
+  suivent). **Pas vu** : la fiche PDF imprimée, le thème sombre, le doigt sur un vrai téléphone.
+- **À montrer à David** : `(BDE)` d'un cube est vu presque par la tranche à la vue de départ ; son nom « (P) »
+  y touche l'arête cachée [DH] et le bord du plan, faute de place.
+- **Revue** (`code-reviewer`, opus) : `planeInSolid` rejoué sur environ 10 600 plans (sommets, milieux, centres,
+  dimensions décimales), bord comparé à l'arête qu'il recouvre sur plus de 40 000 morceaux, figure sans plan
+  inchangée, nom jamais hors du cadre : rien trouvé. **Un défaut corrigé, test rouge avant** : le nom « (P) »
+  pouvait toucher le nom d'un sommet ou une cote (`pave 5 3 2` avec `(ABF)` : touchait D) — la place est
+  maintenant la plus dégagée où il ne touche aucune étiquette déjà posée (`spots`, `planSpots`). **Laissés** :
+  plan trop petit pour son nom (face du dessus d'un `pave 1 1 6`), le nom touche un nom de sommet ; pendant
+  la rotation, « (P) » peut passer sur un autre nom (il suit son point, il n'est pas tenu) ; à la butée de la
+  vue de dessus ou de dessous, le bord d'un plan posé sur une face vue par la tranche est en tirets alors que
+  l'arête est en plein (prisme, `(ABC)` : l'écart du 7a, atteint en tirant jusqu'au bout).
+- **Nom à côté du plan** (tranché par David, « suis tes recos ») : quand aucune place du plan ne tient sans
+  toucher un trait, un point ou un nom, « (P) » se pose à côté d'un côté du polygone (`borderSpots`,
+  `PLAN_NAME_AWAY`, `PlanSpot`) ; il suit ce point du bord pendant la rotation, ramené dans le cadre. Vu à
+  l'écran : cube avec (IG) et (BDE) (« (P) » à droite de [EB]), cube à deux plans, `pave 1 1 6` avec (EFG),
+  `pave 5 3 2` avec (ABF), prisme coté avec (ABC), pyramide avec (SAC) ; les deux cubes tournés sous deux
+  angles. Le « À montrer à David » ci-dessus n'a plus lieu d'être. Tests : `solide-plans.test.ts` (31).
+- **Essayé par David le 2026-11-27 : « c'est bon ».** Le nom à côté du plan a été écrit après la revue : il
+  n'a pas été relu par un agent (tests et captures seulement).

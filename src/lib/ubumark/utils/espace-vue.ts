@@ -282,6 +282,61 @@ export function chordInSolid(
 }
 
 /**
+ * La partie d'un plan comprise dans un polyèdre CONVEXE : le polygone où le
+ * plan (a b c) coupe le solide, ses sommets dans l'ordre du tour. `a`, `b`, `c`
+ * sont trois points non alignés du solide : le polygone a toujours une aire.
+ * Un sommet par sommet du solide posé dans le plan, un par arête traversée.
+ */
+export function planeInSolid(
+	vertices: Point3[],
+	edges: [number, number][],
+	a: Point3,
+	b: Point3,
+	c: Point3
+): Point3[] {
+	const u = minus(b, a);
+	const v = minus(c, a);
+	const cross = { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x };
+	const length = Math.hypot(cross.x, cross.y, cross.z);
+	const normal = { x: cross.x / length, y: cross.y / length, z: cross.z / length };
+	const epsilon = solidSize(vertices) * SOLID_EPSILON;
+	const sides = vertices.map((p) => scalar(normal, minus(p, a)));
+	const on = (side: number) => Math.abs(side) < epsilon;
+	const corners = vertices.filter((_, i) => on(sides[i]));
+	for (const [i, j] of edges) {
+		if (on(sides[i]) || on(sides[j]) || sides[i] > 0 === sides[j] > 0) continue;
+		const t = sides[i] / (sides[i] - sides[j]);
+		const along = minus(vertices[j], vertices[i]);
+		corners.push({
+			x: vertices[i].x + along.x * t,
+			y: vertices[i].y + along.y * t,
+			z: vertices[i].z + along.z * t
+		});
+	}
+	// Dans l'ordre du tour : l'angle de chaque sommet autour du milieu, lu dans le plan
+	const middle = {
+		x: corners.reduce((s, p) => s + p.x, 0) / corners.length,
+		y: corners.reduce((s, p) => s + p.y, 0) / corners.length,
+		z: corners.reduce((s, p) => s + p.z, 0) / corners.length
+	};
+	const uLength = Math.hypot(u.x, u.y, u.z);
+	const first = { x: u.x / uLength, y: u.y / uLength, z: u.z / uLength };
+	const second = {
+		x: normal.y * first.z - normal.z * first.y,
+		y: normal.z * first.x - normal.x * first.z,
+		z: normal.x * first.y - normal.y * first.x
+	};
+	const angle = (p: Point3) => {
+		const w = minus(p, middle);
+		return Math.atan2(scalar(w, second), scalar(w, first));
+	};
+	return corners
+		.map((p) => ({ p, angle: angle(p) }))
+		.sort((p, q) => p.angle - q.angle)
+		.map(({ p }) => p);
+}
+
+/**
  * Le segment [from, to] (dans l'espace, non tourné) découpé en morceaux cachés
  * ou visibles par un polyèdre CONVEXE plein : un point est caché quand, en
  * allant de lui vers l'œil, on traverse le solide — dedans, ou dehors mais

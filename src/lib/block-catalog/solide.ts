@@ -86,6 +86,13 @@ export const solideEntry: BlockCatalogEntry = {
 						'Cube, pavé, prisme, pyramide : des droites qui passent par deux points nommés (sommets ou points de points:), dessinées en bleu. Chaque droite traverse le solide et le dépasse un peu des deux côtés. Elle est en tirets là où une face du solide passe devant elle, en trait plein ailleurs ; avec cachees: non, en trait plein partout. d = (IG) écrit (d) près d’un bout de la droite (une minuscule, puis éventuellement un chiffre ou ’). Les parenthèses sont facultatives. Les sommets doivent être nommés ; au plus 4 droites. Le lecteur d’écran lit « droite (IG) », jamais si deux droites se coupent ou sont parallèles : ce peut être la réponse. Pas encore avec section: ni tracer:.'
 				},
 				{
+					key: 'plans',
+					values: '(BDE) | P = (ACG) (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : des plans qui passent par trois points nommés non alignés (sommets ou points de points:). On voit la partie du plan qui est dans le solide, teintée : le triangle BDE pour (BDE) dans un cube ; un plan qui contient une face teinte cette face. Le bord est en tirets là où une face du solide passe devant lui, en trait plein ailleurs ; avec cachees: non, en trait plein partout. P = (BDE) écrit (P) dans le plan (une majuscule qui n’est pas le nom d’un point, puis éventuellement un chiffre ou ’). Les parenthèses sont facultatives. Le premier plan est vert, le second violet ; au plus 2 plans. Va avec droites: ; le point où une droite perce un plan n’est pas dessiné : ce peut être la réponse. Le lecteur d’écran lit « plan (BDE) », jamais une position relative. Pas encore avec section: ni tracer:.'
+				},
+				{
 					key: 'tracer',
 					values: 'vecteur AB + AD + AE | vecteur AB + AD depuis A | vecteur 2 u - v',
 					defaultValue: null,
@@ -301,6 +308,20 @@ export const solideEntry: BlockCatalogEntry = {
 				'Pour « les droites (IG) et (BH) sont-elles sécantes ? » : chaque droite est en tirets dans le cube, en trait plein dehors. En tournant la figure, l’élève voit si elles se croisent vraiment.'
 		},
 		{
+			title: 'Une droite et un plan dans un cube que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE',
+				'droites: (IG)',
+				'plans: P = (BDE)',
+				'tourner: oui'
+			),
+			explanation:
+				'Pour « la droite (IG) et le plan (BDE) sont-ils sécants ? » : le plan est montré par sa partie dans le cube, le triangle BDE. Le point où la droite le perce n’est pas dessiné ; en tournant la figure, l’élève voit la droite traverser le plan.'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -377,6 +398,19 @@ export const solideEntry: BlockCatalogEntry = {
 			),
 			message: 'même droite',
 			explanation: 'O, le centre du cube, est sur (AG) : (AO) et (AG) sont une seule droite.'
+		},
+		{
+			title: 'Trois points alignés pour un plan',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE',
+				'plans: (AIE)'
+			),
+			message: 'alignés',
+			explanation:
+				'I est le milieu de [AE] : A, I et E sont sur une même droite, ils ne donnent pas un plan.'
 		},
 		{
 			title: 'Un plan qui ne coupe pas le solide',
