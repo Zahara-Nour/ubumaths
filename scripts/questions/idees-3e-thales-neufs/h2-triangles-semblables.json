@@ -1,0 +1,375 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Triangles semblables",
+		"point": null
+	},
+	"title": "Triangles semblables : côtés homologues et longueurs",
+	"description": "Triangles semblables (angles égaux) : calculer une longueur par l'égalité des rapports des côtés homologues, trouver le côté homologue d'un côté (hors programme de cycle 4)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les triangles $ABC$ et $DEF$ sont semblables : $\\widehat{A} = \\widehat{D}$, $\\widehat{B} = \\widehat{E}$ et $\\widehat{C} = \\widehat{F}$. On donne $AB = {{ab}}~\\unit{cm}$, $BC = {{bc}}~\\unit{cm}$ et $DE = {{de}}~\\unit{cm}$. Calcule $EF$.\n\n$EF = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "ab",
+					"expression": "3..10"
+				},
+				{
+					"name": "bc",
+					"expression": "3..12"
+				},
+				{
+					"name": "de",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [
+				"de != ab",
+				"bc != ab",
+				"round(100*(bc*de/ab)) == 100*(bc*de/ab)",
+				"round(100*(bc*de/ab)) != round(100*(bc*ab/de))",
+				"round(100*(bc*de/ab)) != round(100*(bc+de-ab))",
+				"round(100*(bc*de/ab)) != round(100*(bc*de))",
+				"round(100*(bc*ab/de)) != round(100*(bc+de-ab))",
+				"round(100*(bc*ab/de)) != round(100*(bc*de))",
+				"round(100*(bc+de-ab)) != round(100*(bc*de))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc*de/ab;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(bc*ab/de))/100;d}}",
+							"message": "Tu as renversé le rapport : écris DE/AB = EF/BC, puis isole EF.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{eval:round(100*(bc+de-ab))/100;d}}",
+							"message": "Les longueurs de deux triangles semblables sont proportionnelles : on les multiplie par un même rapport, on n'ajoute pas la même différence.",
+							"label": "Même différence ajoutée"
+						},
+						{
+							"answer": "{{eval:round(100*(bc*de))/100;d}}",
+							"message": "Tu as oublié de diviser par AB : on multiplie BC par DE, puis on divise par AB.",
+							"label": "Division oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les sommets homologues sont ceux des angles égaux : $A$ et $D$, $B$ et $E$, $C$ et $F$. Les longueurs des côtés homologues sont proportionnelles : $$\\dfrac{DE}{AB} = \\dfrac{EF}{BC} = \\dfrac{DF}{AC}$$",
+					"$$\\dfrac{DE}{AB} = \\dfrac{EF}{BC} \\quad\\text{donc}\\quad \\dfrac{ {{de}} }{ {{ab}} } = \\dfrac{EF}{ {{bc}} }$$",
+					"$$EF = \\dfrac{ {{bc}} \\times {{de}} }{ {{ab}} } = \\textcolor{{{color:primary.0}}}{{{eval:bc*de/ab;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Associe chaque côté de $ABC$ à son homologue dans $DEF$ (celui qui relie les sommets homologues), puis écris l'égalité des rapports."
+		},
+		{
+			"statement": "Les triangles $ABC$ et $DEF$ sont semblables : $\\widehat{A} = \\widehat{D}$, $\\widehat{B} = \\widehat{E}$ et $\\widehat{C} = \\widehat{F}$. On donne $AB = {{ab}}~\\unit{cm}$, $AC = {{ac}}~\\unit{cm}$ et $DE = {{de}}~\\unit{cm}$. Calcule $DF$.\n\n$DF = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "ab",
+					"expression": "3..10"
+				},
+				{
+					"name": "ac",
+					"expression": "3..12"
+				},
+				{
+					"name": "de",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [
+				"de != ab",
+				"ac != ab",
+				"round(100*(ac*de/ab)) == 100*(ac*de/ab)",
+				"round(100*(ac*de/ab)) != round(100*(ac*ab/de))",
+				"round(100*(ac*de/ab)) != round(100*(ac+de-ab))",
+				"round(100*(ac*de/ab)) != round(100*(ac*de))",
+				"round(100*(ac*ab/de)) != round(100*(ac+de-ab))",
+				"round(100*(ac*ab/de)) != round(100*(ac*de))",
+				"round(100*(ac+de-ab)) != round(100*(ac*de))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ac*de/ab;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(ac*ab/de))/100;d}}",
+							"message": "Tu as renversé le rapport : écris DE/AB = DF/AC, puis isole DF.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{eval:round(100*(ac+de-ab))/100;d}}",
+							"message": "Les longueurs de deux triangles semblables sont proportionnelles : on les multiplie par un même rapport, on n'ajoute pas la même différence.",
+							"label": "Même différence ajoutée"
+						},
+						{
+							"answer": "{{eval:round(100*(ac*de))/100;d}}",
+							"message": "Tu as oublié de diviser par AB : on multiplie AC par DE, puis on divise par AB.",
+							"label": "Division oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les sommets homologues sont ceux des angles égaux : $A$ et $D$, $B$ et $E$, $C$ et $F$. Les longueurs des côtés homologues sont proportionnelles : $$\\dfrac{DE}{AB} = \\dfrac{EF}{BC} = \\dfrac{DF}{AC}$$",
+					"$$\\dfrac{DE}{AB} = \\dfrac{DF}{AC} \\quad\\text{donc}\\quad \\dfrac{ {{de}} }{ {{ab}} } = \\dfrac{DF}{ {{ac}} }$$",
+					"$$DF = \\dfrac{ {{ac}} \\times {{de}} }{ {{ab}} } = \\textcolor{{{color:primary.0}}}{{{eval:ac*de/ab;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Associe chaque côté de $ABC$ à son homologue dans $DEF$ (celui qui relie les sommets homologues), puis écris l'égalité des rapports."
+		},
+		{
+			"statement": "Les triangles $ABC$ et $DEF$ sont semblables : $\\widehat{A} = \\widehat{D} = {{a}}^{\\circ}$, $\\widehat{B} = \\widehat{{{if:p==0|E|F}}} = {{b}}^{\\circ}$ et $\\widehat{C} = \\widehat{{{if:p==0|F|E}}} = {{eval:180-a-b}}^{\\circ}$. Quel côté du triangle $DEF$ est l'homologue du côté ${{if:q==0|[AB]|}}{{if:q==1|[BC]|}}{{if:q==2|[AC]|}}$ ?\n\n```choix\n- $[DE]$\n- $[EF]$\n- $[DF]$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "30..70"
+				},
+				{
+					"name": "b",
+					"expression": "40..80"
+				}
+			],
+			"conditions": ["a != b", "a + b <= 140", "180 - a - b != a", "180 - a - b != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+p*(2-2*q)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les sommets homologues sont ceux des angles égaux : $A$ et $D$, $B$ et ${{if:p==0|E|F}}$, $C$ et ${{if:p==0|F|E}}$.",
+					"Le côté ${{if:q==0|[AB]|}}{{if:q==1|[BC]|}}{{if:q==2|[AC]|}}$ a pour homologue le côté qui relie les homologues de ses deux extrémités : $\\textcolor{{{color:primary.0}}}{{{if:q==0|[D{{if:p==0|E|F}}]|}}{{if:q==1|[{{if:p==0|E|F}}{{if:p==0|F|E}}]|}}{{if:q==2|[D{{if:p==0|F|E}}]|}}}$.",
+					"Attention : l'ordre des lettres dans le nom $DEF$ ne dit pas quels sommets sont homologues ; ce sont les angles égaux qui le disent."
+				]
+			},
+			"hint": "Deux sommets homologues ont le même angle. Un côté a pour homologue le côté qui relie les homologues de ses deux extrémités."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 AB = 4, BC = 6, DE = 10 : 15",
+			"variationIndex": 0,
+			"variables": {
+				"ab": "4",
+				"bc": "6",
+				"de": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "v0 : Rapport renversé (2,4)",
+			"variationIndex": 0,
+			"variables": {
+				"ab": "4",
+				"bc": "6",
+				"de": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : écris DE/AB = EF/BC, puis isole EF."
+			},
+			"answers": ["2{,}4"]
+		},
+		{
+			"description": "v0 : Même différence ajoutée (12)",
+			"variationIndex": 0,
+			"variables": {
+				"ab": "4",
+				"bc": "6",
+				"de": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les longueurs de deux triangles semblables sont proportionnelles : on les multiplie par un même rapport, on n'ajoute pas la même différence."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "v0 : Division oubliée (60)",
+			"variationIndex": 0,
+			"variables": {
+				"ab": "4",
+				"bc": "6",
+				"de": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de diviser par AB : on multiplie BC par DE, puis on divise par AB."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "v1 AB = 5, AC = 7, DE = 4 : 5,6",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "5",
+				"ac": "7",
+				"de": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5{,}6"]
+		},
+		{
+			"description": "v1 : Rapport renversé (8,75)",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "5",
+				"ac": "7",
+				"de": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : écris DE/AB = DF/AC, puis isole DF."
+			},
+			"answers": ["8{,}75"]
+		},
+		{
+			"description": "v1 : Même différence ajoutée (6)",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "5",
+				"ac": "7",
+				"de": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les longueurs de deux triangles semblables sont proportionnelles : on les multiplie par un même rapport, on n'ajoute pas la même différence."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v1 : Division oubliée (28)",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "5",
+				"ac": "7",
+				"de": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de diviser par AB : on multiplie AC par DE, puis on divise par AB."
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "v2 B ↔ E, côté [AB] : [DE]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "60",
+				"p": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v2 B ↔ E, côté [AB] : [DF] faux",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "60",
+				"p": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v2 B ↔ F, côté [AB] : [DF]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "60",
+				"p": "1",
+				"q": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v2 B ↔ F, côté [AB] : [DE] faux (ordre des lettres)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "60",
+				"p": "1",
+				"q": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v2 B ↔ F, côté [BC] : [EF]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "60",
+				"p": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v2 B ↔ F, côté [AC] : [DE]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "60",
+				"p": "1",
+				"q": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v2 B ↔ F, côté [AC] : [DF] faux (ordre des lettres)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "60",
+				"p": "1",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		}
+	]
+}

@@ -23,7 +23,8 @@
  * emprunt » → 480 ; puis 20261105195513 « Géométrie repérée > parabole » → 481 ; puis
  * 20261114021510 « Suites récurrentes > récurrence linéaire d'ordre 2 » → 482 ; puis
  * 20261114111511 « Autres lois > loi de Poisson » → 483 ; puis
- * 20261118071618 « Aires > aires sur quadrillage » → 484.
+ * 20261118071618 « Aires > aires sur quadrillage » → 484 ; puis 20261127110709 la notion
+ * « Géométrie > Agrandissement et réduction » → 135 notions actives.
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source
@@ -126,7 +127,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		expect(arbre.archives).toHaveLength(74);
 	});
 
-	it("l'arbre ACTIF correspond EXACTEMENT au JSON (631 chemins), les archivés à sa liste (74)", () => {
+	it("l'arbre ACTIF correspond EXACTEMENT au JSON (638 chemins), les archivés à sa liste (74)", () => {
 		const byId = new Map(rows.map((r) => [r.id, r]));
 		const branchNames = new Set(arbre.branches.map((b) => b.nom));
 
@@ -153,7 +154,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		const extra = [...actual].filter((p) => !expected.has(p));
 		expect(missing, `chemins du JSON absents de la base`).toEqual([]);
 		expect(extra, `chemins en base absents du JSON`).toEqual([]);
-		expect(actual.size).toBe(19 + 134 + 484);
+		expect(actual.size).toBe(19 + 135 + 484);
 		expect([...archived].sort()).toEqual(arbre.archives.map((a) => `${a.kind}|${a.chemin}`).sort());
 	});
 
