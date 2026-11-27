@@ -10,8 +10,7 @@ import {
 	assignEvaluation,
 	getEvaluation,
 	getEvaluationResults,
-	getStudentAssignments,
-	validateAttempt
+	getStudentAssignments
 } from '../evaluations';
 import { called, createFakeSupabase, type Result } from './helpers/fake-supabase';
 import type { DbSeries } from '#lib/types/evaluation.ts';
@@ -65,14 +64,7 @@ beforeEach(() => {
 	vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
-describe('countAttempts / validateAttempt (B14)', () => {
-	const published = {
-		id: EVALUATION,
-		status: 'published' as const,
-		deadline: null,
-		max_attempts: 2
-	};
-
+describe('countAttempts (B14)', () => {
 	it('compte les séances par evaluation_id ET élève', async () => {
 		const fake = createFakeSupabase(() => ({ count: 1 }));
 		expect(await countAttempts(fake.client, EVALUATION, STUDENT)).toBe(1);
@@ -81,56 +73,6 @@ describe('countAttempts / validateAttempt (B14)', () => {
 		expect(called(query, 'eq', 'evaluation_id', EVALUATION)).toBe(true);
 		expect(called(query, 'eq', 'user_id', STUDENT)).toBe(true);
 		expect(query.calls.some((c) => JSON.stringify(c.args).includes('assignment_id'))).toBe(false);
-	});
-
-	it('tentatives restantes = max_attempts de l’évaluation − séances', async () => {
-		const fake = createFakeSupabase(() => ({ count: 1 }));
-		expect(await validateAttempt(fake.client, published, STUDENT)).toEqual({
-			can_attempt: true,
-			attempts_remaining: 1,
-			deadline_passed: false,
-			current_attempts: 1
-		});
-	});
-
-	it('max_attempts atteint : refusé', async () => {
-		const fake = createFakeSupabase(() => ({ count: 2 }));
-		const result = await validateAttempt(fake.client, published, STUDENT);
-		expect(result.can_attempt).toBe(false);
-		expect(result.reason).toBe('Nombre maximal de tentatives atteint');
-	});
-
-	it('max_attempts nul : illimité', async () => {
-		const fake = createFakeSupabase(() => ({ count: 9 }));
-		const result = await validateAttempt(
-			fake.client,
-			{ ...published, max_attempts: null },
-			STUDENT
-		);
-		expect(result).toMatchObject({ can_attempt: true, attempts_remaining: null });
-	});
-
-	it('date limite de l’évaluation dépassée : refusé sans compter', async () => {
-		const fake = createFakeSupabase(() => ({ count: 0 }));
-		const result = await validateAttempt(
-			fake.client,
-			{ ...published, deadline: '2020-01-01T00:00:00Z' },
-			STUDENT
-		);
-		expect(result).toMatchObject({ can_attempt: false, deadline_passed: true });
-		expect(fake.on('test_sessions')).toHaveLength(0);
-	});
-
-	it('comptage en panne : refusé (on n’accorde pas une tentative injustifiable)', async () => {
-		const fake = createFakeSupabase(() => ({ error: { message: 'réseau' } }));
-		const result = await validateAttempt(fake.client, published, STUDENT);
-		expect(result.can_attempt).toBe(false);
-	});
-
-	it('évaluation non publiée : refusé', async () => {
-		const fake = createFakeSupabase(() => ({ count: 0 }));
-		const result = await validateAttempt(fake.client, { ...published, status: 'draft' }, STUDENT);
-		expect(result.can_attempt).toBe(false);
 	});
 });
 

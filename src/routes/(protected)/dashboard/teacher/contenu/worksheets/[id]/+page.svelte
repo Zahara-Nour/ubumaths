@@ -332,7 +332,7 @@
 	 */
 	async function loadClasses() {
 		try {
-			const response = await fetch('/api/classes');
+			const response = await fetch('/api/teacher/classes');
 			const data = await response.json();
 			if (response.ok) {
 				classes = data.classes || [];

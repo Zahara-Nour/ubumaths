@@ -198,8 +198,8 @@ export async function deleteSection(
 /**
  * Réordonne les sections d'un chapitre.
  *
- * Séquentiel et non transactionnel, comme `reorderChapters` : un ordre
- * partiellement appliqué reste un ordre valide, et le professeur est seul.
+ * Séquentiel et non transactionnel : un ordre partiellement appliqué reste un
+ * ordre valide, et le professeur est seul.
  */
 export async function reorderSections(
 	owner: ContentOwner | string,
