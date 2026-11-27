@@ -2,17 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, migrations écrites, PR ouverte._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : migrations générées sur `feat/idees-6e-aires-rangement` : rangement des 7 neufs
-  (`20261127141209`) et contenu des 3 publiés (`20261127141216`, +8 variations). Tests verts, rouges vidées
-  (9 échecs) ; `security-auditor` : aucun finding bloquant.
-- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal (`migration list --linked`
-  d'abord) → vérifier en prod (7 nœuds + tags ; 9, 8, 9 variations) → relecture `/dev/modeles`.
+- **État** : rubrique « Aires » de 6e publiée : 7 modèles neufs publiés, 8 variations ajoutées à 3 modèles
+  publiés. Journal et relevé versés dans `docs/archive/wip/idees-6e-aires/`.
+- **Prochaine action** : aucune. Idées de 5e (6M2A-1, 6M2B-2) dans « Idées en attente » du tableau de répartition ;
+  outil n° 70 (corrigé animé d'un découpage-recollement) dans `outils-manquants.md`.
 - **En attente de David** : rien.
-- **Pièges en cours** : 82748db8 partage `a` (1..9), fdd849f5 la condition `a>b` ; `e` est Euler ; le bloc figure
-  n'a pas de `secteur` ; `{{eval:-b/2}}` s'écrit en fraction dans une figure (`0.5*b`).
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-aires`, `feat/idees-6e-aires-rangement`.
+- **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-27)
 
@@ -85,6 +82,14 @@ _Mis à jour le 2026-11-27, migrations écrites, PR ouverte._
   que cm², dm², m². Les bornes de ces points sont « général ». Recommandation : ne rien toucher.
 
 ## Historique
+
+- 2026-11-27 : David : « je valide les modèles » (validation orale, sans verdict en base ; série de relecture
+  écrite puis abandonnée, jamais enregistrée). `publier-lot.ts --publier` lancé par David ; vérifié en prod :
+  les 7 modèles `published`. Tableau : rubrique publiée, 3 réservations levées. Journal versé, chantier clos.
+
+- 2026-11-27 : #3246 mergée, `db:migrate` (seules nos 2 migrations en attente) ; vérifié en prod : 7 brouillons
+  sur leur nœud avec leur point (9c9c7081 sur « Aires », CM2-071), 01e205ed 9, 82748db8 8, fdd849f5 9
+  variations. Série de relecture des 3 publiés : simulation verte (3 questions, 3 min).
 
 - 2026-11-27 : migrations de rangement (7 neufs, N4 sur CM2-071 selon Q2) et de contenu (01e205ed +2,
   82748db8 +4, fdd849f5 +2 variations) générées, relevé prod concordant. Tests `migrations-rangement-tags` et

@@ -1,6 +1,6 @@
 """Écrit les modèles neufs du chantier idees-6e-aires dans scripts/questions/idees-6e-aires-neufs/.
 
-Phase 0 du 2026-11-27 (journal docs/wip/idees-6e-aires-progress.md) : David a répondu « je te suis »
+Phase 0 du 2026-11-27 (journal docs/archive/wip/idees-6e-aires/idees-6e-aires-progress.md) : David a répondu « je te suis »
 au message qui listait les fiches N1 à N8 et les questions Q1 à Q3 avec mes propositions. On reprend
 l'idée de l'autre plateforme, pas sa forme ni son texte.
 

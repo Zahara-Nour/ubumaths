@@ -109,7 +109,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Algèbre                            | 6N4   | 9         | libre                |                             |
 | Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
 | Longueurs                          | 6M1   | 16        | libre                |                             |
-| Aires                              | 6M2   | 17        | prise (2026-11-27)   | `idees-6e-aires`            |
+| Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
 | Volumes                            | 6M3   | 3         | libre                |                             |
 | Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
@@ -178,9 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 82748db8 Convertir dans une autre unité                      | `idees-6e-aires`                                            | 2026-11-27 |                                      |
-| fdd849f5 Calcul de l'aire d'un rectangle.                    | `idees-6e-aires`                                            | 2026-11-27 |                                      |
-| 01e205ed Calcul de l'aire d'un carré.                        | `idees-6e-aires`                                            | 2026-11-27 |                                      |
 
 ## Idées en attente
 
