@@ -17,6 +17,8 @@
 		icon: LucideIcon;
 		roles?: string[];
 		badge?: number;
+		/** Ce que compte la pastille, lu par les lecteurs d'écran. */
+		badgeLabel?: string;
 		/** Footer items render after a separator at the bottom of the drawer. */
 		footer?: boolean;
 		/** When true, the item triggers onLogout instead of navigating. */
@@ -86,6 +88,7 @@
 		{#if item.badge && item.badge > 0}
 			<span
 				class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground"
+				aria-label={item.badgeLabel}
 			>
 				{item.badge > 99 ? '99+' : item.badge}
 			</span>
