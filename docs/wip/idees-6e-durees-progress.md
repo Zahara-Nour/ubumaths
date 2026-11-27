@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 envoyée._
+_Mis à jour le 2026-11-27, après la validation des modèles par David._
 
-- **État** : relevé fait ([idees-6e-durees-releve.md](idees-6e-durees-releve.md), 11 exercices) ; 7 fiches et 4 questions sur la page à cocher (https://claude.ai/artifact/TsiYTczFam8NQCUt7PPcKa).
-- **Prochaine action** : lire les verdicts de la page (collection `verdicts`), puis écrire le gros lot (script `docs/wip/questions/idees-6e-durees-lot.py`).
-- **En attente de David** : les verdicts de la page à cocher.
-- **Pièges en cours** : la case à unité « durée composée » ne connaît que h, min et s (`units/composite-duration.ts`, `DurationUnit`) ; jours, semaines, mois et années passent par des cases séparées (Q2).
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-durees`, `docs/idees-6e-durees`.
+- **État** : relevé fait ([idees-6e-durees-releve.md](idees-6e-durees-releve.md), 11 exercices) ; phase 0 validée par David dans la session (« je valide les modèles ») : F1 et N1 à N6 tels que décrits ci-dessous. La page à cocher (https://claude.ai/artifact/TsiYTczFam8NQCUt7PPcKa) est restée vide.
+- **Prochaine action** : écrire le gros lot (script `docs/wip/questions/idees-6e-durees-lot.py` → `scripts/questions/idees-6e-durees-lot/`), réserver 311bf024 dans le tableau de répartition pour F1.
+- **En attente de David** : Q1 (point de N6, reco 6-159), Q3 (0 h 35 seul, reco), fin de Q2 (outil n° 69 noté « plus tard », reco). Les reposer ; elles ne bloquent que le rangement (Q1) et les specs de N2 c et d (Q3).
+- **Pièges en cours** : la case « durée composée » ne lit que h, min et s (`units/composite-duration.ts`) ; jours, semaines, mois en cases séparées.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-durees`, `docs/idees-6e-durees` (à renommer en `feat/…` au premier code, ou nouveau worktree).
 
 ## Phase 0 (2026-11-27)
 
@@ -20,6 +20,14 @@ ajoutent une variation au modèle publié 311bf024.
 Si tout est oui : 6 modèles neufs (25 variations), 1 variation ajoutée à 1 modèle publié. Chaque variation a ses
 specs (réponses justes sous plusieurs écritures, erreurs typiques refusées), trois erreurs prévues par case et un
 coup de pouce.
+
+### Décisions de David (2026-11-27)
+
+- « Je valide les modèles » (dans la session, page à cocher laissée vide) : F1, N1 à N6 validés tels que décrits.
+  N3 et N4 en deux modèles, une case par unité pour N3 : Q4 et la première moitié de Q2 sont donc tranchées par
+  les fiches.
+- **Pas encore tranché** (reposé le 2026-11-27) : Q1 (point de N6), Q3 (0 h 35 seul ou 24 h 35 accepté), et la
+  seconde moitié de Q2 (noter l'outil n° 69 « plus tard »).
 
 ### Fiches
 
