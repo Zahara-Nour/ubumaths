@@ -21,11 +21,11 @@ _Mis à jour le 2026-11-27, après #3239 (exemple « retrouver » de la page d'a
   (`pnpm voir /aide-ecriture/blocs/solide --compte prof`, fixe et tourné), § 18 « ce qui est fait », revue
   `code-reviewer` en opus (géométrie), PR, `pnpm pr:merger`. Avant de pousser : `git merge origin/main`
   (la branche est en retard).
-- **En attente de David** : son essai au doigt des lots 3 à 6 (il a les liens, serveur 5176 relancé ; l'exemple
-  « retrouver » des cubes ne sera à jour sur ce serveur qu'après `git merge origin/main` dans ce worktree).
-  Puis sa demande de `deploy:prod`. Proposé, sans réponse : mettre la description des réglages sous le
-  réglage dans la page d'aide (tableau trop étroit sur téléphone) ; teinter les cases de saisie de
-  `retrouver:`.
+- **En attente de David** : **son essai au doigt des lots 3 à 6 est fait, « c'est bon » (2026-11-27)**. Il n'a
+  pas demandé de `deploy:prod` : ne pas le lancer sans sa demande. Il veut vérifier lui-même le lot 7 : lui
+  donner le lien (`pnpm lien`, serveur 5176) dès que le 7a se voit à l'écran, avant de merger. Proposé, sans
+  réponse : mettre la description des réglages sous le réglage dans la page d'aide (tableau trop étroit sur
+  téléphone) ; teinter les cases de saisie de `retrouver:`.
 - **Tranché par David le 2026-11-27** : point gardé sur le sommet NOMMÉ du cône ; nom de vecteur qui dépasse
   de 0,08 cm laissé tel quel ; lot 5 : deux points au même endroit = celui de devant, la figure
   « Correction » tourne, « Vue de départ » reste sous la figure à geste, au-dessus des boutons (écart avec
