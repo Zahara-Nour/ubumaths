@@ -235,7 +235,10 @@ au-dessus du titre. Les autres collages (titre d'exercice, cadre de réponse, `k
 restent collés partout. Tests de mise en page réelle (page et colonne lues par `query` après
 compilation) : `generators/__tests__/coupures-colonnes.test.ts`. Le texte d'auteur échappe ses crochets (`escapeTypstBrackets`) : posé dans un
 contenu `[…]`, un intervalle écrit en texte (`]2 ; 3[`) le fermait trop tôt et le PDF ne compilait
-plus (déjà vrai avant, selon la place du crochet).
+plus (déjà vrai avant, selon la place du crochet). `escapeTypst` échappe aussi la barre qui ouvre un `//` ou un `/*` :
+Typst y lisait un commentaire et la fin de la ligne disparaissait du PDF (L85). Titre de section,
+sa consigne et consigne d'exercice d'une fiche passent par `escapeTypstBrackets` (T23) : test
+`src/lib/worksheets/document/__tests__/texte-du-prof-typst.test.ts`, qui compile pour de vrai.
 
 **Titre d'exercice jamais seul en bas de page** (chantier coupures-pdf, PR 2, 2026-11-09). Le titre
 (`sticky`) ne suit le début de l'énoncé parti sur la page suivante que si le **premier morceau** du
