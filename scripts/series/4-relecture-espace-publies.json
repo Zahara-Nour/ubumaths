@@ -1,0 +1,19 @@
+{
+	"title": "Relecture — espace, 2 modèles publiés complétés (4e)",
+	"grade": "4",
+	"description": "Relecture dans /dev/modeles des modèles publiés de 4e auxquels le chantier idees-3e-espace a ajouté une variation (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Volume d'une pyramide",
+			"templateId": "6a770d04-b763-4887-95a9-336709a92fba",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Volume d'un cône",
+			"templateId": "35002b15-46dc-4813-aa6e-d241762d1b69",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
