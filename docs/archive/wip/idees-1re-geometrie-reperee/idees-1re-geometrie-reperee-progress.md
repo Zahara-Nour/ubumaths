@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, modèles validés par David._
+_Mis à jour le 2026-11-27, chantier clos._
 
-- **État** : N1 (75a03073) et N2 (bbafb6dd) validés par David (« je valide les modeles »), `publier-lot.ts` simulé (2 passent), garde des niveaux verte · **Prochaine action** : vérifier par le MCP que les 2 sont `published`, puis finir : rubrique 1G2 « publiée » dans `idees-ailleurs-repartition.md`, journal, relevé et fiches versés selon `couvrir-un-niveau.md` (archive `docs/archive/wip/idees-1re-geometrie-reperee/`) · **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-1re-geometrie-reperee-neufs --publier` · **Pièges en cours** : aucun · **Worktree / branche** : aucun
+- **État** : clos. N1 (75a03073) et N2 (bbafb6dd) publiés en prod, rubrique 1G2 « publiée » dans le tableau de répartition, journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun
 
 ## Historique
 
@@ -58,3 +58,4 @@ _Mis à jour le 2026-11-27, modèles validés par David._
   ne perd d'accès.
 - #3224 mergée ; `db:migrate` le 2026-11-27 (seule migration en attente) ; MCP : 2/2 rangés et tagués 1SPE-437.
 - 2026-11-27 : David valide les 2 modèles (aucun verdict en base, validation dans la session) ; `publier-lot.ts` simulé : 2 brouillons passent ; `garde-niveaux-tags` verte.
+- 2026-11-27 : David lance `publier-lot.ts --publier` ; MCP : 2/2 `published`. Rubrique publiée, journal, relevé et fiches archivés (`docs/archive/wip/idees-1re-geometrie-reperee/`). Aucune réservation de modèle publié à lever.

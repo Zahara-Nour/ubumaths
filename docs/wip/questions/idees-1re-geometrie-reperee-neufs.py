@@ -3,7 +3,7 @@ scripts/questions/idees-1re-geometrie-reperee-neufs/.
 
 Phase 0 : David, le 2026-11-27, « je valide tes recos » (page à cocher
 https://claude.ai/artifact/KcQ3rQhyGqn2jhJFDjgcBJ, fiches
-docs/wip/idees-1re-geometrie-reperee-fiches.md) : N1 et N2 comme décrits, point 1SPE-437 pour les
+docs/archive/wip/idees-1re-geometrie-reperee/idees-1re-geometrie-reperee-fiches.md) : N1 et N2 comme décrits, point 1SPE-437 pour les
 deux.
 
 Rangement (migration générée après la création en brouillon), nœud « Géométrie > Géométrie
