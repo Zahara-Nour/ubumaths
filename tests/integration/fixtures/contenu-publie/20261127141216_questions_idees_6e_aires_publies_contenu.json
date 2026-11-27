@@ -1,0 +1,2279 @@
+{
+	"migration": "supabase/migrations/20261127141216_questions_idees_6e_aires_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "01e205ed-e30a-402f-8517-fd308a2fb26a",
+			"title": "Calcul de l'aire d'un carré.",
+			"fichier": "01e205ed.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[mm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[mm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[cm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[cm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[dm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[dm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[m^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[m]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[dam^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[dam]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[hm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[hm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[km^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[km]"
+							}
+						]
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["49\\unit{mm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 mm × 7 mm = 49 mm²",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["28\\unit{mm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "périmètre 28 mm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49\\unit{mm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "unité de longueur 49 mm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49\\unit{cm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 cm × 7 cm = 49 cm²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49\\unit{dm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 dm × 7 dm = 49 dm²",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["49\\unit{m^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 m × 7 m = 49 m²",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["49\\unit{dam^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 dam × 7 dam = 49 dam²",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["49\\unit{hm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 hm × 7 hm = 49 hm²",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["49\\unit{km^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 km × 7 km = 49 km²",
+						"variationIndex": 6
+					}
+				],
+				"description": "A partir d'une description"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[mm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[mm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[cm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[cm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[dm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[dm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[m^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[m]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[dam^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[dam]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[hm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[hm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:a*a;[km^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "1..11"
+							},
+							{
+								"name": "a",
+								"expression": "a1[km]"
+							}
+						]
+					},
+					{
+						"statement": "Quelle est l'aire de ce **carré** ?\n\n```figure\nfenetre: -1 ; {{eval:c+3}} ; -2 ; {{eval:c+1}}\ndescription: Un carré de {{c}} cm de côté.\n---\nA = point(0, 0, visible=faux)\nB = point({{c}}, 0, visible=faux)\nC = point({{c}}, {{c}}, visible=faux)\nD = point(0, {{c}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nM = milieu(A, B, visible=faux)\ntexte(M, \"{{c}} cm\", dy=-0.4, ancre=\"haut\")\n```\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "2..9"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:c*c}}\\unit{cm^2}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:4*c}}\\unit{cm}",
+										"message": "Ça, c'est le périmètre (le tour) ; l'aire est le côté multiplié par lui-même.",
+										"label": "Périmètre"
+									},
+									{
+										"answer": "{{eval:c*c}}\\unit{cm}",
+										"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+										"label": "Aire en cm"
+									},
+									{
+										"answer": "{{eval:2*c}}\\unit{cm^2}",
+										"message": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même.",
+										"label": "Double du côté"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les quatre côtés du carré mesurent ${{c}}$ cm.",
+								"$${{c}}~\\unit{cm} \\times {{c}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:c*c}}~\\unit{cm^2}}$$"
+							]
+						},
+						"hint": "Un seul côté est écrit : les autres ont la même longueur."
+					},
+					{
+						"statement": "Quelle est l'aire d'un **carré** de côté ${{eval:n+q/10;d}}~\\unit{cm}$ ?\n\nL'aire du carré est $?$.",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "1..5"
+							},
+							{
+								"name": "q",
+								"expression": "1..9"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(10*n+q)^2/100;d}}\\unit{cm^2}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:2*(n+q/10);d}}\\unit{cm^2}",
+										"message": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même.",
+										"label": "Double du côté"
+									},
+									{
+										"answer": "{{eval:(10*n+q)^2/10;d}}\\unit{cm^2}",
+										"message": "La virgule est mal placée : avec un chiffre après la virgule dans chaque facteur, le produit en a deux.",
+										"label": "Virgule décalée"
+									},
+									{
+										"answer": "{{eval:(100*n*n+q*q)/100;d}}\\unit{cm^2}",
+										"message": "On ne multiplie pas la partie entière et la partie décimale chacune de son côté : multiplie le nombre entier par lui-même.",
+										"label": "Parties multipliées à part"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:n+q/10;d}} \\times {{eval:n+q/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(10*n+q)^2/100;d}}~\\unit{cm^2}}$$",
+								"Pour calculer : ${{eval:10*n+q}} \\times {{eval:10*n+q}} = {{eval:(10*n+q)^2}}$, puis deux chiffres après la virgule (un dans chaque facteur)."
+							]
+						},
+						"hint": "Calcule ${{eval:10*n+q}} \\times {{eval:10*n+q}}$, puis place la virgule."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["49\\unit{mm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 mm × 7 mm = 49 mm²",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["28\\unit{mm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "périmètre 28 mm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49\\unit{mm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "unité de longueur 49 mm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49\\unit{cm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 cm × 7 cm = 49 cm²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49\\unit{dm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 dm × 7 dm = 49 dm²",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["49\\unit{m^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 m × 7 m = 49 m²",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["49\\unit{dam^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 dam × 7 dam = 49 dam²",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["49\\unit{hm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 hm × 7 hm = 49 hm²",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["49\\unit{km^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "7 km × 7 km = 49 km²",
+						"variationIndex": 6
+					},
+					{
+						"description": "Figure 6 cm : 36 cm²",
+						"variationIndex": 7,
+						"variables": {
+							"c": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["36\\unit{cm^2}"]
+					},
+					{
+						"description": "Figure 6 cm : 24 cm",
+						"variationIndex": 7,
+						"variables": {
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire est le côté multiplié par lui-même."
+						},
+						"answers": ["24\\unit{cm}"]
+					},
+					{
+						"description": "Figure 6 cm : 36 cm",
+						"variationIndex": 7,
+						"variables": {
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+						},
+						"answers": ["36\\unit{cm}"]
+					},
+					{
+						"description": "Figure 6 cm : 12 cm²",
+						"variationIndex": 7,
+						"variables": {
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même."
+						},
+						"answers": ["12\\unit{cm^2}"]
+					},
+					{
+						"description": "2,5 × 2,5 = 6,25 cm²",
+						"variationIndex": 8,
+						"variables": {
+							"n": "2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["6{,}25\\unit{cm^2}"]
+					},
+					{
+						"description": "2,5 : 5 cm²",
+						"variationIndex": 8,
+						"variables": {
+							"n": "2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L'aire n'est pas le double du côté : c'est le côté multiplié par lui-même."
+						},
+						"answers": ["5\\unit{cm^2}"]
+					},
+					{
+						"description": "2,5 : 62,5 cm²",
+						"variationIndex": 8,
+						"variables": {
+							"n": "2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "La virgule est mal placée : avec un chiffre après la virgule dans chaque facteur, le produit en a deux."
+						},
+						"answers": ["62{,}5\\unit{cm^2}"]
+					},
+					{
+						"description": "2,5 : 4,25 cm²",
+						"variationIndex": 8,
+						"variables": {
+							"n": "2",
+							"q": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "On ne multiplie pas la partie entière et la partie décimale chacune de son côté : multiplie le nombre entier par lui-même."
+						},
+						"answers": ["4{,}25\\unit{cm^2}"]
+					}
+				],
+				"description": "A partir d'une description"
+			},
+			"changements": {
+				"ajoutees": [8, 9],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "82748db8-01fe-4c2e-86b6-4ef8c1dde805",
+			"title": "Convertir dans une autre unité",
+			"fichier": "82748db8.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*0.01;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "expression4",
+								"expression": "a[dm^2] = ?[m^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{dm}^2$ à $\\text{m}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*100;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+						"variables": [
+							{
+								"name": "expression9",
+								"expression": "a[m^2] = ?[dm^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{m}^2$ à $\\text{dm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*100;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+						"variables": [
+							{
+								"name": "expression10",
+								"expression": "a[dm^2] = ?[cm^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{dm}^2$ à $\\text{cm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*0.01;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+						"variables": [
+							{
+								"name": "expression13",
+								"expression": "a[cm^2] = ?[dm^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{cm}^2$ à $\\text{dm}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 dm^2 = 0{,}07 m^2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["700"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 m^2 = 700 dm^2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["700"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 dm^2 = 700 cm^2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 cm^2 = 0{,}07 dm^2",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0{,}7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "erreur d'un rang (cm^2→dm^2)",
+						"variationIndex": 3
+					}
+				],
+				"description": "Unités d'aire"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*0.01;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "expression4",
+								"expression": "a[dm^2] = ?[m^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{dm}^2$ à $\\text{m}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*100;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+						"variables": [
+							{
+								"name": "expression9",
+								"expression": "a[m^2] = ?[dm^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{m}^2$ à $\\text{dm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*100;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+						"variables": [
+							{
+								"name": "expression10",
+								"expression": "a[dm^2] = ?[cm^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{dm}^2$ à $\\text{cm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*0.01;d}}"
+							}
+						],
+						"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+						"variables": [
+							{
+								"name": "expression13",
+								"expression": "a[cm^2] = ?[dm^2]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+								"De $\\text{cm}^2$ à $\\text{dm}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+								"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+								"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"statement": "Convertis dans l'unité demandée.\n\n$${{n}}~\\unit{{{if:g==0|dm^2|cm^2}}} = ?~\\unit{{{if:g==0|m^2|dm^2}}}$$",
+						"variables": [
+							{
+								"name": "g",
+								"expression": "0..1"
+							},
+							{
+								"name": "n",
+								"expression": "11..99"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:n/10;d}}",
+										"message": "Entre $\\unit{{{if:g==0|dm^2|cm^2}}}$ et $\\unit{{{if:g==0|m^2|dm^2}}}$, on passe par $100$, pas par $10$.",
+										"label": "Division par 10"
+									},
+									{
+										"answer": "{{eval:n*100}}",
+										"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus grande, le nombre doit diminuer.",
+										"label": "Sens inversé"
+									},
+									{
+										"answer": "{{eval:n/1000;d}}",
+										"message": "Tu as divisé par $1\\,000$ : entre deux unités d'aire voisines, on divise par $100$.",
+										"label": "Division par 1 000"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$1~\\unit{{{if:g==0|m^2|dm^2}}} = 100~\\unit{{{if:g==0|dm^2|cm^2}}}$ : pour passer en $\\unit{{{if:g==0|m^2|dm^2}}}$, on divise par $100$.",
+								"${{n}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+							]
+						},
+						"hint": "L'unité demandée est plus grande : le nombre devient plus petit. Par combien divise-t-on ?"
+					},
+					{
+						"statement": "Convertis dans l'unité demandée.\n\n$${{eval:d/10;d}}~\\unit{{{if:g==0|dm^2|m^2}}} = ?~\\unit{{{if:g==0|cm^2|dm^2}}}$$",
+						"variables": [
+							{
+								"name": "g",
+								"expression": "0..1"
+							},
+							{
+								"name": "d",
+								"expression": "11..99"
+							}
+						],
+						"conditions": ["mod(d,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:d*10}}",
+								"expectedErrors": [
+									{
+										"answer": "{{d}}",
+										"message": "Entre $\\unit{{{if:g==0|dm^2|m^2}}}$ et $\\unit{{{if:g==0|cm^2|dm^2}}}$, on passe par $100$, pas par $10$.",
+										"label": "Multiplication par 10"
+									},
+									{
+										"answer": "{{eval:d/1000;d}}",
+										"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus petite, le nombre doit augmenter.",
+										"label": "Sens inversé"
+									},
+									{
+										"answer": "{{eval:d/10;d}}00",
+										"message": "On ne colle pas deux zéros derrière un nombre à virgule : décale la virgule de deux rangs.",
+										"label": "Deux zéros collés"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$1~\\unit{{{if:g==0|dm^2|m^2}}} = 100~\\unit{{{if:g==0|cm^2|dm^2}}}$ : pour passer en $\\unit{{{if:g==0|cm^2|dm^2}}}$, on multiplie par $100$.",
+								"${{eval:d/10;d}} \\times 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+							]
+						},
+						"hint": "L'unité demandée est plus petite : le nombre devient plus grand. Décale la virgule."
+					},
+					{
+						"statement": "Convertis dans l'unité demandée.\n\n$${{n}}~\\unit{{{if:g==0|cm^2|dm^2}}} = ?~\\unit{{{if:g==0|dm^2|m^2}}}$$",
+						"variables": [
+							{
+								"name": "g",
+								"expression": "0..1"
+							},
+							{
+								"name": "n",
+								"expression": "101..999"
+							}
+						],
+						"conditions": ["mod(n,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:n/10;d}}",
+										"message": "Entre $\\unit{{{if:g==0|cm^2|dm^2}}}$ et $\\unit{{{if:g==0|dm^2|m^2}}}$, on passe par $100$, pas par $10$.",
+										"label": "Division par 10"
+									},
+									{
+										"answer": "{{eval:n*100}}",
+										"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus grande, le nombre doit diminuer.",
+										"label": "Sens inversé"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$1~\\unit{{{if:g==0|dm^2|m^2}}} = 100~\\unit{{{if:g==0|cm^2|dm^2}}}$ : on divise par $100$.",
+								"${{n}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+							]
+						},
+						"hint": "L'unité demandée est plus grande : par combien divise-t-on ?"
+					},
+					{
+						"statement": "Convertis dans l'unité demandée.\n\n$${{eval:k/10^(2-p);d}}~\\unit{{{if:g==0|dm^2|m^2}}} = ?~\\unit{{{if:g==0|cm^2|dm^2}}}$$",
+						"variables": [
+							{
+								"name": "g",
+								"expression": "0..1"
+							},
+							{
+								"name": "p",
+								"expression": "0..1"
+							},
+							{
+								"name": "k",
+								"expression": "1..9"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:k*10^p}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:k*10^(p-1);d}}",
+										"message": "Entre $\\unit{{{if:g==0|dm^2|m^2}}}$ et $\\unit{{{if:g==0|cm^2|dm^2}}}$, on passe par $100$, pas par $10$.",
+										"label": "Multiplication par 10"
+									},
+									{
+										"answer": "{{eval:k/10^(4-p);d}}",
+										"message": "Tu as converti dans le mauvais sens : l'unité demandée est plus petite, le nombre doit augmenter.",
+										"label": "Sens inversé"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$1~\\unit{{{if:g==0|dm^2|m^2}}} = 100~\\unit{{{if:g==0|cm^2|dm^2}}}$ : pour passer en $\\unit{{{if:g==0|cm^2|dm^2}}}$, on multiplie par $100$.",
+								"${{eval:k/10^(2-p);d}} \\times 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$"
+							]
+						},
+						"hint": "Multiplier par $100$, c'est décaler la virgule de deux rangs vers la droite."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 dm^2 = 0{,}07 m^2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["700"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 m^2 = 700 dm^2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["700"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 dm^2 = 700 cm^2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "7 cm^2 = 0{,}07 dm^2",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0{,}7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "erreur d'un rang (cm^2→dm^2)",
+						"variationIndex": 3
+					},
+					{
+						"description": "73 dm² = 0,73 m²",
+						"variationIndex": 4,
+						"variables": {
+							"g": "0",
+							"n": "73"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}73"]
+					},
+					{
+						"description": "70 dm² = 0,7 m²",
+						"variationIndex": 4,
+						"variables": {
+							"g": "0",
+							"n": "70"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}7"]
+					},
+					{
+						"description": "73 dm² : 7,3",
+						"variationIndex": 4,
+						"variables": {
+							"g": "0",
+							"n": "73"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Entre $\\unit{dm^2}$ et $\\unit{m^2}$, on passe par $100$, pas par $10$."
+						},
+						"answers": ["7{,}3"]
+					},
+					{
+						"description": "73 dm² : 7 300",
+						"variationIndex": 4,
+						"variables": {
+							"g": "0",
+							"n": "73"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as converti dans le mauvais sens : l'unité demandée est plus grande, le nombre doit diminuer."
+						},
+						"answers": ["7300"]
+					},
+					{
+						"description": "73 dm² : 0,073",
+						"variationIndex": 4,
+						"variables": {
+							"g": "0",
+							"n": "73"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as divisé par $1\\,000$ : entre deux unités d'aire voisines, on divise par $100$."
+						},
+						"answers": ["0{,}073"]
+					},
+					{
+						"description": "45 cm² = 0,45 dm²",
+						"variationIndex": 4,
+						"variables": {
+							"g": "1",
+							"n": "45"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}45"]
+					},
+					{
+						"description": "3,7 dm² = 370 cm²",
+						"variationIndex": 5,
+						"variables": {
+							"g": "0",
+							"d": "37"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["370"]
+					},
+					{
+						"description": "3,7 dm² : 37",
+						"variationIndex": 5,
+						"variables": {
+							"g": "0",
+							"d": "37"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Entre $\\unit{dm^2}$ et $\\unit{cm^2}$, on passe par $100$, pas par $10$."
+						},
+						"answers": ["37"]
+					},
+					{
+						"description": "3,7 dm² : 0,037",
+						"variationIndex": 5,
+						"variables": {
+							"g": "0",
+							"d": "37"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as converti dans le mauvais sens : l'unité demandée est plus petite, le nombre doit augmenter."
+						},
+						"answers": ["0{,}037"]
+					},
+					{
+						"description": "3,7 dm² : 3,700",
+						"variationIndex": 5,
+						"variables": {
+							"g": "0",
+							"d": "37"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "On ne colle pas deux zéros derrière un nombre à virgule : décale la virgule de deux rangs."
+						},
+						"answers": ["3{,}700"]
+					},
+					{
+						"description": "4,5 m² = 450 dm²",
+						"variationIndex": 5,
+						"variables": {
+							"g": "1",
+							"d": "45"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["450"]
+					},
+					{
+						"description": "457 cm² = 4,57 dm²",
+						"variationIndex": 6,
+						"variables": {
+							"g": "0",
+							"n": "457"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["4{,}57"]
+					},
+					{
+						"description": "457 cm² : 45,7",
+						"variationIndex": 6,
+						"variables": {
+							"g": "0",
+							"n": "457"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Entre $\\unit{cm^2}$ et $\\unit{dm^2}$, on passe par $100$, pas par $10$."
+						},
+						"answers": ["45{,}7"]
+					},
+					{
+						"description": "375 dm² = 3,75 m²",
+						"variationIndex": 6,
+						"variables": {
+							"g": "1",
+							"n": "375"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3{,}75"]
+					},
+					{
+						"description": "0,07 m² = 7 dm²",
+						"variationIndex": 7,
+						"variables": {
+							"g": "1",
+							"p": "0",
+							"k": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["7"]
+					},
+					{
+						"description": "0,7 m² = 70 dm²",
+						"variationIndex": 7,
+						"variables": {
+							"g": "1",
+							"p": "1",
+							"k": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["70"]
+					},
+					{
+						"description": "0,7 m² : 7",
+						"variationIndex": 7,
+						"variables": {
+							"g": "1",
+							"p": "1",
+							"k": "7"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Entre $\\unit{m^2}$ et $\\unit{dm^2}$, on passe par $100$, pas par $10$."
+						},
+						"answers": ["7"]
+					},
+					{
+						"description": "0,07 m² : 0,7",
+						"variationIndex": 7,
+						"variables": {
+							"g": "1",
+							"p": "0",
+							"k": "7"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Entre $\\unit{m^2}$ et $\\unit{dm^2}$, on passe par $100$, pas par $10$."
+						},
+						"answers": ["0{,}7"]
+					},
+					{
+						"description": "0,3 dm² = 30 cm²",
+						"variationIndex": 7,
+						"variables": {
+							"g": "0",
+							"p": "1",
+							"k": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["30"]
+					}
+				],
+				"description": "Unités d'aire"
+			},
+			"changements": {
+				"ajoutees": [5, 6, 7, 8],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "fdd849f5-56b8-4da5-82d8-37f819e3ceaf",
+			"title": "Calcul de l'aire d'un rectangle.",
+			"fichier": "fdd849f5.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[mm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[mm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[mm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[cm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[cm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[dm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[dm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[m^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[m]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[dam^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[dam]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[dam]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[hm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[hm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[hm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[km^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[km]"
+							}
+						]
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["40\\unit{mm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 mm × 5 mm = 40 mm²",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["26\\unit{mm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "périmètre 26 mm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}4\\unit{cm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "unité équivalente 0,4 cm²",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["40\\unit{cm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 cm × 5 cm = 40 cm²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["40\\unit{dm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 dm × 5 dm = 40 dm²",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["40\\unit{m^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 m × 5 m = 40 m²",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["40\\unit{dam^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 dam × 5 dam = 40 dam²",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["40\\unit{hm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 hm × 5 hm = 40 hm²",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["40\\unit{km^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 km × 5 km = 40 km²",
+						"variationIndex": 6
+					}
+				],
+				"description": "A partir d'une description"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[mm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[mm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[mm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[cm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[cm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[dm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[dm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[m^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[m]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[dam^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[dam]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[dam]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[hm^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[hm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[hm]"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:c*d;[km^2]}}"
+							}
+						],
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..11"
+							},
+							{
+								"name": "b",
+								"expression": "1..11!a"
+							},
+							{
+								"name": "c",
+								"expression": "eval:a[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b[km]"
+							}
+						]
+					},
+					{
+						"statement": "Quelle est l'aire de ce **rectangle** ?\n\n```figure\nfenetre: -1 ; {{eval:a+3}} ; -2 ; {{eval:b+1}}\ndescription: Un rectangle de {{a}} cm de longueur et {{b}} cm de largeur.\n---\nA = point(0, 0, visible=faux)\nB = point({{a}}, 0, visible=faux)\nC = point({{a}}, {{b}}, visible=faux)\nD = point(0, {{b}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nM = milieu(A, B, visible=faux)\nN = milieu(B, C, visible=faux)\ntexte(M, \"{{a}} cm\", dy=-0.4, ancre=\"haut\")\ntexte(N, \"{{b}} cm\", dx=0.3, ancre=\"gauche\")\n```\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "3..11"
+							},
+							{
+								"name": "b",
+								"expression": "2..10"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*b}}\\unit{cm^2}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:2*(a+b)}}\\unit{cm}",
+										"message": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur.",
+										"label": "Périmètre"
+									},
+									{
+										"answer": "{{eval:a*b}}\\unit{cm}",
+										"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+										"label": "Aire en cm"
+									},
+									{
+										"answer": "{{eval:a+b}}\\unit{cm^2}",
+										"message": "L'aire n'est pas une somme : multiplie la longueur par la largeur.",
+										"label": "Somme"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"On lit les deux côtés sur la figure : ${{a}}$ cm et ${{b}}$ cm.",
+								"$${{a}}~\\unit{cm} \\times {{b}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}~\\unit{cm^2}}$$"
+							]
+						},
+						"hint": "Lis la longueur et la largeur sur la figure, puis applique la formule de l'aire."
+					},
+					{
+						"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{a}}~\\unit{cm}$ et de largeur ${{eval:b+q/10;d}}~\\unit{cm}$ ?\n\nL'aire du rectangle est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "5..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..3"
+							},
+							{
+								"name": "q",
+								"expression": "1..9"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*(10*b+q)/10;d}}\\unit{cm^2}",
+								"unit": {
+									"expected": true
+								},
+								"expectedErrors": [
+									{
+										"answer": "{{eval:2*(a+b+q/10);d}}\\unit{cm}",
+										"message": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur.",
+										"label": "Périmètre"
+									},
+									{
+										"answer": "{{eval:a*(10*b+q)/100;d}}\\unit{cm^2}",
+										"message": "La virgule est mal placée : le résultat a autant de chiffres après la virgule que la largeur, un seul.",
+										"label": "Virgule décalée"
+									},
+									{
+										"answer": "{{eval:a*b+q/10;d}}\\unit{cm^2}",
+										"message": "Il faut multiplier toute la largeur, la partie après la virgule aussi.",
+										"label": "Partie décimale oubliée dans le produit"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{a}} \\times {{eval:b+q/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:a*(10*b+q)/10;d}}~\\unit{cm^2}}$$",
+								"Pour calculer : ${{a}} \\times {{eval:10*b+q}} = {{eval:a*(10*b+q)}}$, puis un chiffre après la virgule, comme dans ${{eval:b+q/10;d}}$."
+							]
+						},
+						"hint": "Calcule ${{a}} \\times {{eval:10*b+q}}$, puis place la virgule."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["40\\unit{mm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 mm × 5 mm = 40 mm²",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["26\\unit{mm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "périmètre 26 mm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}4\\unit{cm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "unité équivalente 0,4 cm²",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["40\\unit{cm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 cm × 5 cm = 40 cm²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["40\\unit{dm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 dm × 5 dm = 40 dm²",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["40\\unit{m^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 m × 5 m = 40 m²",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["40\\unit{dam^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 dam × 5 dam = 40 dam²",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["40\\unit{hm^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 hm × 5 hm = 40 hm²",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["40\\unit{km^2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "5"
+						},
+						"description": "8 km × 5 km = 40 km²",
+						"variationIndex": 6
+					},
+					{
+						"description": "Figure 7 × 4 = 28 cm²",
+						"variationIndex": 7,
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["28\\unit{cm^2}"]
+					},
+					{
+						"description": "Figure : périmètre 22 cm",
+						"variationIndex": 7,
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur."
+						},
+						"answers": ["22\\unit{cm}"]
+					},
+					{
+						"description": "Figure : 28 cm",
+						"variationIndex": 7,
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+						},
+						"answers": ["28\\unit{cm}"]
+					},
+					{
+						"description": "Figure : 11 cm²",
+						"variationIndex": 7,
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L'aire n'est pas une somme : multiplie la longueur par la largeur."
+						},
+						"answers": ["11\\unit{cm^2}"]
+					},
+					{
+						"description": "6 × 2,4 = 14,4 cm²",
+						"variationIndex": 8,
+						"variables": {
+							"a": "6",
+							"b": "2",
+							"q": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["14{,}4\\unit{cm^2}"]
+					},
+					{
+						"description": "6 × 2,4 : 1,44 cm²",
+						"variationIndex": 8,
+						"variables": {
+							"a": "6",
+							"b": "2",
+							"q": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "La virgule est mal placée : le résultat a autant de chiffres après la virgule que la largeur, un seul."
+						},
+						"answers": ["1{,}44\\unit{cm^2}"]
+					},
+					{
+						"description": "6 × 2,4 : 12,4 cm²",
+						"variationIndex": 8,
+						"variables": {
+							"a": "6",
+							"b": "2",
+							"q": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Il faut multiplier toute la largeur, la partie après la virgule aussi."
+						},
+						"answers": ["12{,}4\\unit{cm^2}"]
+					},
+					{
+						"description": "6 × 2,4 : périmètre 16,8 cm",
+						"variationIndex": 8,
+						"variables": {
+							"a": "6",
+							"b": "2",
+							"q": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur."
+						},
+						"answers": ["16{,}8\\unit{cm}"]
+					}
+				],
+				"description": "A partir d'une description"
+			},
+			"changements": {
+				"ajoutees": [8, 9],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}
