@@ -99,9 +99,9 @@ export const cubesEntry: BlockCatalogEntry = {
 		},
 		{
 			title: 'Retrouver l’assemblage d’après ses vues (geste)',
-			source: fence('cubes', 'hauteurs: 2 1 / 1 2', 'retrouver: face, droite'),
+			source: fence('cubes', 'hauteurs: 3 1 / 1 2', 'retrouver: face, droite'),
 			explanation:
-				'L’élève écrit une hauteur sur chaque carreau de la vue de dessus. 2 1 / 1 2 est juste, 1 2 / 2 1 ou 2 2 / 2 2 aussi : elles ont les mêmes vues.'
+				'La perspective est cachée. L’élève touche chaque carreau de la vue de dessus et y écrit le nombre de cubes de la pile. 3 1 / 1 2 est juste, 3 2 / 2 1 ou 3 2 / 2 2 aussi : elles ont les mêmes vues de face et de droite.'
 		}
 	],
 	mistakes: [
