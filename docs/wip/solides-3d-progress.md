@@ -2,21 +2,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot 7c relu et corrigé, poussé sur sa branche (pas encore de PR)._
+_Mis à jour le 2026-11-28, lot 7c relu et corrigé, choix confirmés par David, PR ouverte._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b et bord en
   butée mergés (#3195 à #3252). **Lot 7c** (repère du solide, points par coordonnées, § 21) : écrit, vu à
   l'écran, **relu** (`code-reviewer`, opus : deux défauts corrigés, tests rouges avant), 34 tests, typecheck
-  et cliquet verts, poussé sur `feat/solides-3d-repere`, **PR pas ouverte**. Les lots 3 à 7b ne sont pas en
-  prod sans `deploy:prod` demandé par David (le vérifier avant de l'affirmer).
-- **Prochaine action** : ouvrir la PR du lot 7c (rien d'autre à pousser), suivre la CI ; **merge seulement
-  après l'essai de David** (`pnpm pr:merger <n>`).
+  et cliquet verts, poussé sur `feat/solides-3d-repere`, **PR ouverte** (`gh pr list --head
+feat/solides-3d-repere`). Les lots 3 à 7b ne sont pas en prod sans `deploy:prod` demandé par David (le
+  vérifier avant de l'affirmer).
+- **Prochaine action** : suivre la CI de la PR du lot 7c ; **merge seulement après l'essai de David**
+  (`pnpm pr:merger <n>`) ; ensuite la petite PR des deux propositions (ci-dessous).
 - **En attente de David** : essai du lot 7c (lien `pnpm lien`, serveur du worktree sur 5176, à relancer s'il
-  est tombé ; page `/aide-ecriture/blocs/solide`, compte prof). Trois choix à confirmer (§ 21) : vecteurs du
-  repère qui partent tous de l'origine ; coordonnées décimales seulement (pas de fractions) ; point à
-  coordonnées accepté sur un sommet. Proposé, sans réponse : description des réglages sous le réglage dans
-  la page d'aide ; teinter les cases de saisie de `retrouver:`. Signalé, sans réponse : avec deux plans dans
-  un cube, « (Q) » de (BDE) est écrit sur la zone teintée de (P), contre son propre bord.
+  est tombé ; page `/aide-ecriture/blocs/solide`, compte prof). Pendant l'essai, regarder le cube à deux
+  plans : « (Q) » de (BDE) est écrit sur la zone teintée de (P), contre son propre bord.
+- **Tranché par David le 2026-11-28 (lot 7c, « je te suis »)** : les trois choix du § 21 sont gardés
+  (vecteurs du repère qui partent tous de l'origine ; coordonnées décimales seulement, les fractions le jour
+  où un modèle en a besoin ; point à coordonnées accepté sur un sommet) ; **petite PR à part, après le 7c** :
+  description des réglages sous le réglage dans la page d'aide, et cases de saisie de `retrouver:` teintées ;
+  « (Q) » sur la zone teintée de (P) : laissé, corrigé dans cette même petite PR s'il le trouve illisible.
 - **Tranché par David le 2026-11-27 (lot 7b, « suis tes recos »)** : le nom « (P) » s'écrit à côté du plan
   quand il n'a pas la place dedans (fait, § 19) ; le bord d'un plan ou une droite posés sur une face vue par
   la tranche (butée de la vue de dessus) prennent l'état de l'arête : **petite PR à part, après le 7b, avant
