@@ -1,22 +1,22 @@
 ---
 title: Tests de preuve mathAST, suite de #3108 — journal
 date: 2026-11-27
-status: en cours
+status: clos
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-27, après #3230._
 
-- **État** : tests de preuve écrits pour L117 à L121, V124, V125 dans `tests/ecarts/mathast.test.ts` (12 cas rouges, 9 témoins verts) ; test L49 retiré de `tests/ecarts/coquille.test.ts` (L49 clos « pas un écart » le 2026-11-27).
-- **Prochaine action** : après le merge, écrire la preuve des 7 lignes au registre (commit de doc sur `main`), archiver ce journal et `ecarts-valeurs-fausses-progress.md`, mettre à jour le bloc de [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **État** : clos. #3230 mergée ; L117 à L121, V124, V125 ont leur preuve au registre (7 rouges au rejeu) ; constats de L120 et L121 précisés.
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun.
-- **Worktree / branche** : `ubumaths-wt-ecarts-preuves-mathast-2` / `test/ecarts-preuves-mathast-2`.
+- **Worktree / branche** : aucun (retirés au merge).
 
 ---
 
-Chantier fils de [ecarts-a-trier](ecarts-a-trier-progress.md).
+Chantier fils de [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 
 ## Sonde du 2026-11-27 (chemin de l'Atelier, sauf L119 et L120)
 

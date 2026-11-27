@@ -9,14 +9,14 @@ status: #3108 mergée ; écarts restants au registre
 _Mis à jour le 2026-11-24, après #3108._
 
 - **État** : #3108 mergée : V85, V92, V103 corrigés et clos au registre ; L117 à L121, V124, V125 ajoutés (deux familles refusées, restes de la revue, décrits plus bas).
-- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](ecarts-a-trier-progress.md). Archiver ce journal quand L117 à L121, V124 et V125 auront leur test de preuve.
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md). Journal archivé le 2026-11-27 : L117 à L121, V124 et V125 ont leur test de preuve (#3230).
 - **En attente de David** : rien.
 - **Pièges en cours** : `pnpm test:verifs` lancé sans serveur reste accroché après les tests : lancer `pnpm dev --port 5176 --strictPort` d'abord.
 - **Worktree / branche** : aucun (retirés au merge de #3108).
 
 ---
 
-Chantier fils de [ecarts-a-trier](ecarts-a-trier-progress.md).
+Chantier fils de [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 
 ## Phase 0 (validée par David le 2026-11-24)
 
