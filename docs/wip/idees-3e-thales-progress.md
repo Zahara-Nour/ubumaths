@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, PR 2 ouverte._
+_Mis à jour le 2026-11-27, après #3234._
 
-- **État** : PR 1 (#3228) mergée, migrée. Brouillons en prod : 210bffdd (N1, niveau 2), 1584c3b5
-  (H1), 1f133534 (H2). PR 2 (rangement 20261127114444) : intégration verte, rouge sans la
-  migration (6 tests), garde des niveaux verte, `security-auditor` sans bloquant (H1/H2 rangés
-  sans tag : voulu, sans point).
-  · **Prochaine action** : merge de la PR 2 (`pnpm pr:merger`), puis
-  `db:migrate` (4 conditions réunies ; `migration list --linked` avant) ; ensuite relecture dans
+- **État** : PR 1 (#3228) mergée, migrée. PR 2 (#3234, rangement 20261127114444) mergée,
+  PAS migrée : 4 conditions réunies, mais `migration list --linked` montre aussi
+  20261127115608 (idees-6e-durees, #3233) en attente. Worktree retiré.
+  · **Prochaine action** : `db:migrate` quand 20261127115608 est jouée par sa session (ou sur
+  le go de David pour les deux) ; `migration list --linked` avant ; ensuite relecture dans
   `/dev/modeles` (`?titre=Thalès`, `?titre=Agrandissement`, `?titre=semblables`)
   · **En attente de David** : rien avant la relecture · **Pièges en cours** : aucun
   · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales-rangement`.
