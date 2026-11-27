@@ -1,7 +1,7 @@
 ---
 title: Écarts restants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; aucun lot pris
+status: lots écrits le 2026-11-28 ; en cours : commentaires
 ---
 
 # Écarts restants : lots pour des sessions en parallèle
@@ -48,13 +48,13 @@ Colonne « Pris par » : vide = libre ; `ecarts-<lot> (date)` = en cours ; `fait
 
 ## Lots sans décision (mécaniques)
 
-| Lot                 | Écarts                                                                                                                                              | Pris par | Notes                                                                                                                             |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `commentaires`      | C21, C22, C23, C24, C25, C27, C28, C30, C31, C33, C34, C37, C38, C40, C42, C43 (commentaires du code, une PR) ; C26, C29, C41 (docs, commit direct) |          | À passer en premier et vite : ses fichiers sont ceux des autres lots, mais il n'y change que des commentaires.                    |
-| `morts-utilitaires` | M27, M31, M50, M51, M53, M54, M56, M57, L115                                                                                                        |          | Avant de supprimer : grep des usages, chaînes comprises.                                                                          |
-| `morts-routes`      | M23, M24, M25, M26, M42, M43, M45                                                                                                                   |          | Routes d'API sans appelant : grep des adresses dans `src`, `e2e` et `tests` avant de supprimer.                                   |
-| `morts-interface`   | M32, M33, M34, M47, M48, M49, M52, M58                                                                                                              |          |                                                                                                                                   |
-| `formatdate`        | M55                                                                                                                                                 |          | `formatDate` recopiée 82 fois : touche des fichiers de tous les lots. **Seul, en dernier**, quand aucun autre lot n'est en cours. |
+| Lot                 | Écarts                                                                                                                                              | Pris par                         | Notes                                                                                                                             |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `commentaires`      | C21, C22, C23, C24, C25, C27, C28, C30, C31, C33, C34, C37, C38, C40, C42, C43 (commentaires du code, une PR) ; C26, C29, C41 (docs, commit direct) | ecarts-commentaires (2026-11-28) | À passer en premier et vite : ses fichiers sont ceux des autres lots, mais il n'y change que des commentaires.                    |
+| `morts-utilitaires` | M27, M31, M50, M51, M53, M54, M56, M57, L115                                                                                                        |                                  | Avant de supprimer : grep des usages, chaînes comprises.                                                                          |
+| `morts-routes`      | M23, M24, M25, M26, M42, M43, M45                                                                                                                   |                                  | Routes d'API sans appelant : grep des adresses dans `src`, `e2e` et `tests` avant de supprimer.                                   |
+| `morts-interface`   | M32, M33, M34, M47, M48, M49, M52, M58                                                                                                              |                                  |                                                                                                                                   |
+| `formatdate`        | M55                                                                                                                                                 |                                  | `formatDate` recopiée 82 fois : touche des fichiers de tous les lots. **Seul, en dernier**, quand aucun autre lot n'est en cours. |
 
 ## Lots de bugs, par zone
 
