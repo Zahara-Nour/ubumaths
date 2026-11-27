@@ -2,20 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, PR de rangement ouverte._
+_Mis à jour le 2026-11-27, après #3248._
 
-- **État** : 4 brouillons en prod (4c82bef9, a5e70b85, 277be356, bc6321ed ; ids commités). PR de rangement
-  `feat/idees-3e-transformations-rangement` : migration `20261127155302_…_rangement_tags.sql`, **sans point**,
-  nœuds Rotations (N1, N4) et Homothéties (N2, N3).
-- **Prochaine action** : merge, `db:migrate` (4 conditions, `migration list --linked` avant), puis relecture
-  par David dans `/dev/modeles?noeud=` (Rotations, Homothéties), lire `question_template_reviews`, corriger,
-  `publier-lot.ts --dir …` en simulation.
-- **En attente de David** : rien avant le merge.
+- **État** : 4 brouillons en prod (4c82bef9, a5e70b85, 277be356, bc6321ed). #3248 mergée : migration
+  `20261127155302_questions_idees_3e_transformations_rangement_tags.sql` (**sans point**, nœuds Rotations : N1, N4 ;
+  Homothéties : N2, N3), seule en attente, **pas encore jouée**.
+- **Prochaine action** : après `db:migrate`, relecture par David dans `/dev/modeles?noeud=` (Rotations,
+  Homothéties) ; lire `question_template_reviews`, corriger, `publier-lot.ts --dir …` en simulation.
+- **En attente de David** : `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies : accès « personne »,
+  test d'intégration vert, `security-auditor` sans bloquant, additive avec rollback) ; puis la relecture.
 - **Pièges en cours** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
   ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
   annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
   dans la base locale seulement.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-transformations`, `feat/idees-3e-transformations-rangement`.
+- **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Phase 0 (2026-11-27)
 
