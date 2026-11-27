@@ -99,6 +99,12 @@ avec `VERIFS_URL`). La lancer sous le verrou `supabase` (celui de la base de dev
 dans `.captures/courriels/`, les captures d'écran (téléphone, clair et sombre) écrites dans
 `.captures/verifs/carnet/`.
 
+**Élèves partagés entre fichiers de `test:verifs`** : un verrou par groupe d'élèves
+(`e2e/verifs/helpers/verrou.ts`), rangé pour toute la machine dans
+`~/.local/state/verifs/verrous/` (`VERIFS_VERROUS` pour un autre dossier). Deux worktrees, ou un
+worktree et la tâche de nuit, jouent sur la même base locale : le second attend (30 min au plus),
+un verrou de plus de 30 min est repris.
+
 **Navigateurs de `pnpm test:verifs`** (`e2e/verifs/projets.ts`) : sans `--project`, l'ordinateur
 Chrome seul (le jour) ; `--project <nom>` pour un autre (`ordi-safari`, `ordi-firefox`, `iphone`,
 `android`, `firefox-390`, motif `ordi-*` admis) ; `pnpm test:verifs:tout` pour tous (environ 15 min).

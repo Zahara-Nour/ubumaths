@@ -86,12 +86,14 @@ last_status="$state_dir/last-status"
 #   - src/ : fichiers ET dossiers. Un dossier change de date quand on y crée,
 #     supprime ou renomme un fichier — une suppression ne laisse aucun fichier
 #     « plus récent » ;
+#   - scripts/nuit/ : seul dossier de scripts/ lu par le tsconfig (défaut 5 du
+#     chantier `verifs-auto`) ;
 #   - la racine : toute config .ts/.js/.json importable par vite.config.ts,
 #     les tsconfig, package.json, le lockfile (dépendances mises à jour sans
 #     toucher package.json) et les .env (types de `$env`).
 # Voir scripts/__tests__/check-incremental-garde.test.ts.
 something_newer_than_marker() {
-	find src -newer "$marker" -print 2>/dev/null | head -1
+	find src scripts/nuit -newer "$marker" -print 2>/dev/null | head -1
 	find . -maxdepth 1 -type f \( -name '*.ts' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \
 		-o -name '*.json' -o -name 'pnpm-lock.yaml' -o -name '.env*' \) \
 		-newer "$marker" -print 2>/dev/null | head -1

@@ -92,8 +92,9 @@ entier ; pour découper une sortie de commande, `${=var}` ou `while read`. Pour 
 2026-10-10 : ~18 s, ~20 s à froid (`FRESH=1`), au lieu de ~45 s / ~80 s. **La CI garde le moteur
 classique** (`pnpm check`), qui fait foi : sur 1 812 erreurs comparées, les deux moteurs concordent
 à 2 près, dont un vrai angle mort de tsgo (type des fonctions exposées d'un composant Svelte passé
-à `render`). Rejoue le dernier verdict si rien n'a changé (`FORCE=1` pour forcer). En-tête de
-`scripts/check-incremental.sh`.
+à `render`). Rejoue le dernier verdict si rien n'a changé dans `src/`, `scripts/nuit/` (seul
+dossier de `scripts/` lu par le `tsconfig.json`) ou les configs de la racine (`FORCE=1` pour
+forcer). En-tête de `scripts/check-incremental.sh`.
 
 **Cliquet des types des tests : `pnpm types:cliquet`.** `pnpm check` exclut les tests ; ce cliquet
 les vérifie (tsgo), fichier par fichier, contre `tests/cliquet-types-tests.json`. **À 0 depuis le
@@ -174,7 +175,9 @@ démarrer dans le dépôt principal (pas en CI). Un `pnpm dev` qui sort en ⛔ =
 
 **Surveillance du Mac mini** (après le gel du 2026-11-19) : `scripts/surveillance-machine.sh`, lancé
 toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` pour la retirer). Que faire à chaque
-alerte, et toutes les commandes : [alertes-machine.md](alertes-machine.md).
+alerte, et toutes les commandes : [alertes-machine.md](alertes-machine.md). Les plists écrits par l'installation échappent leurs chemins
+(XML) et passent le dépôt en argument de `bash -c` ; `SURVEILLANCE_SANS_LAUNCHCTL=1` les écrit sans
+les charger (test : `scripts/__tests__/surveillance-installer.test.ts`).
 
 - serveur de dev dans le dépôt principal de Chiphre → **arrêté**, et signalé (jamais celui d'un worktree ni d'un autre projet) ;
 - processus de test **orphelins** (vitest, svelte-check, tsgo, navigateur de Playwright dont le
