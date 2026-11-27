@@ -234,7 +234,9 @@ cercle trigo — avec `placer:` d’une question, le cercle gradué tous les π/
   (aucune erreur, bon type de nœud) et vérifie le message de chaque erreur fréquente ; pour ``scratch,
 il y ajoute la vérification des instructions (`checkScratchProgram`), faite hors du parseur.
 `settingsKind: 'instructions'` (``scratch) : colonnes « Instruction », « Ce qu’on y écrit »,
-  « Effet », sans « Par défaut ». Les blocs
+  sans « Par défaut ». Tableau des réglages : deux lignes par réglage — la clé, ses valeurs, son
+  défaut ; puis la description **dessous**, sur toute la largeur (plus de colonne « Effet », trop
+  étroite pour les longues descriptions). Les blocs
   variation, arbre et droite graduée n'ont pas de message : un bloc invalide s'y affiche en texte
   brut, ce que dit l'explication de l'erreur.
 - **`/demo/cercle-trigo`** (vitrine, PR 6b) : 4 exemples du bloc `trig` rendus par
