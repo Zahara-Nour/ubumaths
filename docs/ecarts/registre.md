@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V137 · L136 · M60 · C44 · D45 · T37 · E92
+Derniers numéros : V137 · L137 · M60 · C44 · D45 · T37 · E92
 
 ## Écarts
 
@@ -358,3 +358,4 @@ Derniers numéros : V137 · L136 · M60 · C44 · D45 · T37 · E92
 - E90 · vérification à l'écran · plan du chapitre (prof), téléphone · au téléphone (390 px, iPhone et Android), dans le plan d'un chapitre (ChapterSectionsEditor.svelte), le titre des documents et des objectifs est écrasé à largeur nulle (span flex-1 min-w-0 truncate) : la ligne ne montre que ses pastilles (Document, Modèle, Masqué / Préparé) et ses boutons, et l'œil ou « Publier » débordent hors du cadre de la carte ; trouvé par chapitres.spec.ts #1394 (titre barré « Verifs document A » présent mais invisible), rouge sur iPhone et Android (nuit du 27, rejoué seul), vert à l'ordinateur · preuve : à la main · en attente
 - E91 · vérification à l'écran · fiche d'exercices (prof), téléphone · au téléphone (iPhone émulé), dans l'éditeur d'une fiche, le sélecteur de version d'un exercice ([data-line-version]) est recouvert par la barre « Configurer / Retirer » de la ligne, invisible (opacity-0, visible au survol seulement) mais touchable : le doigt qui vise le sélecteur touche ces boutons (« Retirer » compris) ; la page déborde aussi à l'horizontale (titre de l'exercice et « - pts » superposés) ; trouvé par versions-exercices-fiche.spec.ts « brouillon : changement direct… », rouge sur iPhone et Android (nuit du 27, rejoué seul) · preuve : à la main · en attente
 - E92 · vérification à l'écran · page d'un exercice (/exercice/[slug]) · la page d'un exercice n'a de titre h1 que dans l'affichage ordinateur d'un compte connecté ; l'affichage téléphone d'un compte connecté et la page des visiteurs sans compte posent le titre dans un Card.Title (div), sans aucun h1 (accessibilité, et référencement des exercices publics) ; trouvé par qr-codes.spec.ts « exercice public : le QR mène à l'exercice » (iPhone, Android), confirmé sans compte à l'ordinateur · preuve : à la main · en attente
+- L137 · bug latent · mathAST · areEquivalent juge différentes deux écritures égales d'un exposant ou d'une base imaginaire : x^{i/2} et x^{(1/2)i}, (i/2)^x et ((1/2)i)^x ; depuis #3240, tidy rend la seconde forme, donc une entrée et son tidy ne sont plus reconnus égaux dans ces cas (aucune réponse réelle d'élève) · preuve : à la main · à trier (revue de #3240, mesuré par sonde ; test de preuve à écrire)

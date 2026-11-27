@@ -1,22 +1,22 @@
 ---
 title: V35, le i derrière la fraction — journal
 date: 2026-11-27
-status: PR ouverte
+status: #3240 mergée ; journal archivé
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, PR ouverte._
+_Mis à jour le 2026-11-27, après #3240._
 
-- **État** : V35 corrigé sur `fix/ecarts-v35` ; ligne du registre barrée dans la PR ; test de preuve retiré de `tests/ecarts/mathast.test.ts`, remplacé par les cas de `src/lib/mathAST/tidy/__tests__/tidy-sum-lead.test.ts`.
-- **Prochaine action** : merge à la CI verte ; la suite (V39, puis V124, V125) est dans [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **État** : #3240 mergée : V35 corrigé et clos au registre ; L137 ajouté (reste de la revue). Journal archivé.
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 - **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `ubumaths-wt-ecarts-v35` / `fix/ecarts-v35`.
+- **Pièges en cours** : le port 5176 peut être pris par le serveur d'un autre worktree : `test:verifs` s'y branche sans le dire (vérifier le dossier du process, ou `VERIFS_PORT`).
+- **Worktree / branche** : aucun (retirés au merge de #3240).
 
 ---
 
-Chantier fils de [ecarts-a-trier](ecarts-a-trier-progress.md).
+Chantier fils de [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 
 ## Phase 0 (validée par David le 2026-11-27, « oui » aux trois questions)
 
