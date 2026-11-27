@@ -58,13 +58,31 @@ const LOST_ROW = {
 };
 
 // Functions
-/** Client Supabase factice : `from().select().eq().maybeSingle()` rend la ligne donnée. */
+/**
+ * Client Supabase factice : `from().select().eq().maybeSingle()` rend la ligne donnée,
+ * et toute écriture tentée par ce client (`update`, `insert`, `upsert`, `delete`, `rpc`)
+ * est notée dans `writes`.
+ */
 function fakeSupabase(row: unknown) {
+	const writes: string[] = [];
 	const chain: Record<string, unknown> = {};
 	chain.select = () => chain;
 	chain.eq = () => chain;
 	chain.maybeSingle = () => Promise.resolve({ data: row, error: null });
-	return { from: () => chain } as unknown as Parameters<typeof loadBuddyPresence>[0];
+	for (const verb of ['update', 'insert', 'upsert', 'delete']) {
+		chain[verb] = () => {
+			writes.push(verb);
+			return chain;
+		};
+	}
+	const client = {
+		from: () => chain,
+		rpc: (name: string) => {
+			writes.push(`rpc ${name}`);
+			return Promise.resolve({ data: null, error: null });
+		}
+	} as unknown as Parameters<typeof loadBuddyPresence>[0];
+	return { client, writes };
 }
 
 describe('L44 — une mise à jour optimiste garde l’échéance de l’ancienne lecture', () => {
@@ -126,16 +144,23 @@ describe('L49 — la lecture de la présence du Palotin écrit en base', () => {
 	});
 
 	it('témoin : Constance en cours, la lecture rend le Palotin sans rien écrire', async () => {
-		const presence = await loadBuddyPresence(fakeSupabase(BUDDY_ROW), STUDENT);
+		const { client, writes } = fakeSupabase(BUDDY_ROW);
+		const presence = await loadBuddyPresence(client, STUDENT);
 		expect(presence.buddy?.palotin_type).toBe('pile');
 		expect(queries.resetLostConstance).not.toHaveBeenCalled();
+		expect(writes).toEqual([]);
 	});
 
 	// Aujourd'hui : `resetLostConstance` (une écriture, par le client service) est
-	// appelée par cette lecture, que lance un simple GET de présence.
+	// appelée par cette lecture, que lance un simple GET de présence. Le test ne dit
+	// rien de la valeur rendue (Constance à 0 ou non) : seulement qu'on n'écrit pas.
+	// ⚠️ Une écriture déplacée dans un autre module, par le client service, ne serait
+	// pas vue ici : à la correction, relire `buddy-presence.ts` avant de fermer la ligne.
 	it('Constance perdue : la lecture rend le Palotin sans rien écrire', async () => {
-		const presence = await loadBuddyPresence(fakeSupabase(LOST_ROW), STUDENT);
+		const { client, writes } = fakeSupabase(LOST_ROW);
+		const presence = await loadBuddyPresence(client, STUDENT);
 		expect(presence.buddy?.palotin_type).toBe('pile');
 		expect(queries.resetLostConstance).not.toHaveBeenCalled();
+		expect(writes).toEqual([]);
 	});
 });

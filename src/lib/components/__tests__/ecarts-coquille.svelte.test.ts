@@ -21,6 +21,7 @@ import TeacherLayout from '../../../routes/(protected)/dashboard/teacher/+layout
 import type { LayoutData as TeacherLayoutData } from '../../../routes/(protected)/dashboard/teacher/$types';
 import Wheel from '../Wheel.svelte';
 import { StudentDashboardCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { clearSelectedClass } from '#lib/stores/selectedClass.svelte.ts';
 import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 import type { ClassWithData } from '#lib/server/students.ts';
 import type { ResourceKind } from '#lib/resources/kinds.ts';
@@ -113,7 +114,9 @@ async function dureeDeRotation(props: { spinDuration?: number }): Promise<string
 		.querySelector('.center-button')
 		?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 	flushSync();
-	return container.querySelector('svg')?.style.transitionDuration ?? 'absent';
+	// Style calculé, pas le style en ligne : une durée posée par une variable CSS compte aussi.
+	const svg = container.querySelector('svg');
+	return svg ? getComputedStyle(svg).transitionDuration : 'absent';
 }
 
 describe('recherche du prof : filtres au retour arrière', () => {
@@ -166,15 +169,21 @@ describe('cache élève : donnée périmée', () => {
 
 	// Aujourd'hui : l'écran garde le profil périmé (l'heure n'est pas réactive).
 	it.fails('écart L43 : après 3 heures, l’écran ne montre plus le profil périmé', () => {
+		const avant = seen;
 		vi.advanceTimersByTime(3 * HOUR);
 		flushSync();
-		expect(seen).toBeNull();
+		// Rien (null) ou un profil relu : tout sauf le profil périmé.
+		expect(seen).not.toBe(avant);
 	});
 });
 
 describe('layout du prof : données neuves après une action de formulaire', () => {
 	beforeEach(() => {
 		teacherCache.hydrateAllClasses([]);
+	});
+	// Le layout retient la première classe dans le localStorage : ne pas la laisser aux autres tests.
+	afterEach(() => {
+		clearSelectedClass();
 	});
 
 	it('témoin : les classes d’arrivée sont dans le cache', async () => {
