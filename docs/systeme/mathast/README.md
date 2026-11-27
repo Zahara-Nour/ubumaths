@@ -1908,7 +1908,13 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   ses lettres impaires sous une seule racine (`±√(ab)` si `ab ⩾ 0`, `x² − 4ab` → `±2√(ab)`,
   `x² − πab` → `±√π√(ab)`, `x² − abc` → `±√(abc)`, `x⁴ − ab` déjà `±⁴√(ab)`) ; les carrés et le
   coefficient sortent, et la condition est celle de la racine écrite (`x² − a²b` → `±|a|√b` si
-  `b ⩾ 0`, `x² − a²bc` → si `bc ⩾ 0` : la solution 0 pour a = 0, bc < 0 n'est pas dite).
+  `b ⩾ 0`, `x² − a²bc` → si `bc ⩾ 0`) ; une lettre sortie en entier de la racine annule Δ quand elle est
+  nulle : la racine double de ce cas s'ajoute avec sa condition (V124 : `0 si a = 0`), et chaque
+  racine porte alors la sienne (`{ |a|√(bc) si bc ⩾ 0 ; −|a|√(bc) si bc ⩾ 0 ; 0 si a = 0 }`). Une
+  valeur déjà solution sans condition l'emporte sur sa jumelle conditionnelle (`x³ − a²bx = 0`,
+  `x⁴ − a²bx² = 0` : 0 une seule fois, sans condition). Deux conditions différentes restent deux
+  cas (`(x² − a²b)(x² − c²d) = 0` : `0 si a = 0` et `0 si c = 0`). Une lettre aussi présente dans le
+  coefficient de x² n'ajoute rien (`a²x² − bc = 0` : pour a = 0 ce n'est plus un second degré).
   Filet : un discriminant non lu dont la forme canonique écrirait deux racines de lettres garde
   `√Δ` entière ; `ax² − 1 = 0` → condition `a ≥ 0` au lieu de `a > 0` ; conditions non
   réduites (`4α ≥ 0`, `4a + 4b ≥ 0`), racines peu lisibles (`½√(−4a)`) ; une condition réduite à

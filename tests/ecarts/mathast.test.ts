@@ -615,25 +615,6 @@ describe('L121 — refus à lever : une seule famille kπ/2, limite à droite av
 	});
 });
 
-describe('V124 — x² − a²bc = 0 : la solution 0 du cas a = 0', () => {
-	it('témoin : x² − ab = 0 rend ±√(ab) si ab ⩾ 0', () => {
-		const latex = latexOf(run('.résoudre x^2-ab=0'));
-
-		expect(latex).toContain('\\sqrt{a b}');
-		expect(latex).toContain('a b \\geqslant 0');
-	});
-
-	// Aujourd'hui `S = {√(bc)|a| ; −√(bc)|a|} si bc ⩾ 0` : rien pour a = 0 avec bc < 0,
-	// où 0 est pourtant solution. La forme de la réponse corrigée n'est pas tranchée :
-	// le test demande seulement que le cas a = 0 soit écrit.
-	it('la réponse annonce le cas a = 0', () => {
-		const latex = latexOf(run('.résoudre x^2-a^2bc=0'));
-
-		expect(latex).toContain('b c \\geqslant 0');
-		expect(latex).toMatch(/a\s*=\s*0/);
-	});
-});
-
 describe('V125 — limite à paramètre : k/k simplifié en 1', () => {
 	it('témoin : 1/(x² + k) en 0 rend 1/k, pour k ≠ 0', () => {
 		const latex = latexOf(run('.limite \\frac{1}{x^2+k} en 0'));
