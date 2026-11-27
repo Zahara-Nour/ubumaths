@@ -51,6 +51,17 @@ describe('getNavLinks', () => {
 			expect(labels(getNavLinks('teacher'))).not.toContain('La Chatterie');
 		});
 
+		it('mène à la messagerie privée, juste avant les amis et le chat (V104)', () => {
+			for (const role of ['student', 'teacher'] as const) {
+				const links = getNavLinks(role);
+				const index = links.findIndex((l) => l.label === 'Messages');
+				expect(links[index]?.href).toBe('/messages');
+				expect(links[index + 1]?.href).toBe('/dashboard/friends');
+				expect(links[index + 2]?.href).toBe('/dashboard/chat');
+			}
+			expect(labels(getNavLinks('admin'))).not.toContain('Messages');
+		});
+
 		it('expose Boutique uniquement quand marketplaceEnabled=true', () => {
 			expect(labels(getNavLinks('student', 0, false))).not.toContain(lore.nav.shop);
 			expect(labels(getNavLinks('student', 0, true))).toContain(lore.nav.shop);
@@ -94,9 +105,28 @@ describe('getNavLinks', () => {
 			expect(exportLink?.href).toBe('/dashboard/teacher/competences/export');
 		});
 
+		it('affiche le nombre de messages non lus sur « Messages » (V104)', () => {
+			for (const role of ['student', 'teacher'] as const) {
+				const messages = getNavLinks(role, 0, false, 4).find((l) => l.label === 'Messages');
+				expect(messages?.badge).toBe(4);
+				expect(messages?.badgeLabel).toBe('4 messages non lus');
+			}
+			const un = getNavLinks('student', 0, false, 1).find((l) => l.label === 'Messages');
+			expect(un?.badgeLabel).toBe('1 message non lu');
+		});
+
+		it("n'affiche pas de pastille sur « Messages » quand tout est lu", () => {
+			for (const role of ['student', 'teacher'] as const) {
+				const messages = getNavLinks(role, 0, false, 0).find((l) => l.label === 'Messages');
+				expect(messages?.badge).toBeUndefined();
+				expect(messages?.badgeLabel).toBeUndefined();
+			}
+		});
+
 		it('expose le badge "Récompenses" quand pendingVipRequestsCount > 0', () => {
 			const recompenses = getNavLinks('teacher', 3).find((l) => l.label === 'Récompenses');
 			expect(recompenses?.badge).toBe(3);
+			expect(recompenses?.badgeLabel).toBe('3 demandes en attente');
 		});
 
 		it("n'expose pas de badge quand pendingVipRequestsCount = 0", () => {
@@ -158,6 +188,13 @@ describe('isNavLinkActive', () => {
 		]) {
 			expect(isNavLinkActive('/dashboard/student/work', pathname), pathname).toBe(true);
 		}
+	});
+
+	it('surligne « Messages » sur toute la messagerie (V104)', () => {
+		for (const pathname of ['/messages', '/messages/inbox', '/messages/compose']) {
+			expect(isNavLinkActive('/messages', pathname), pathname).toBe(true);
+		}
+		expect(isNavLinkActive('/messages', '/dashboard/chat')).toBe(false);
 	});
 
 	it('ne surligne pas « Mon travail » ailleurs dans l’espace élève', () => {

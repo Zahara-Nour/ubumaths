@@ -63,12 +63,12 @@ Couleur de fond selon le rôle du profil (élève, prof, admin).
 - **Les liens dépendent du rôle de navigation** : `admin` si le profil est admin ou si une
   élévation admin est active (`adminElevation`, voir [auth.md](auth.md)), sinon le rôle du profil.
 - **Élève** : accueil, Mes cours, Ma progression, Mon travail, Cahier de textes, Carnet de liaison
-  (ce que reçoivent ses parents, toujours visible, ADR 0040), amis, Chat, le
+  (ce que reçoivent ses parents, toujours visible, ADR 0040), Messages (messagerie privée `/messages` ; pastille : messages non lus), amis, Chat, le
   marché s'il est ouvert, la Chatterie (Mathoux, [mathoux.md](mathoux.md)), inventaire, Mes
   Signalements.
 - **Prof** : accueil, Classes, Mes cours, Cahier de textes, Programme, Avancement, Mes contenus,
   Recherche, observations, export des compétences, Séries, Contrôles en ligne, Mes exercices
-  Python, Figures (figures géométriques stockées), Gamification (badge : demandes de cartes VIP en attente), Modération, amis, Chat,
+  Python, Figures (figures géométriques stockées), Gamification (badge : demandes de cartes VIP en attente), Modération, Messages (pastille : messages non lus), amis, Chat,
   Administration. Ce dernier lien renvoie un prof non élevé vers l'écran d'élévation
   (`dashboard/admin/+layout.server.ts`).
 - **Admin** : accueil, Administration et ses pages (écoles, cours particuliers, utilisateurs, classes, questions,
