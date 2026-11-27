@@ -27,6 +27,10 @@
  *   ses vues (la vue de dessus, toujours donnée, sert de grille de saisie).
  *   Les deux gestes s'excluent, et excluent `vue:`. `case: N` y est posée par le
  *   générateur de questions (chantier `solides`, § 7).
+ * - `tourner: oui` (`non` par défaut, chantier `solides-3d`, lot 6) : l'élève peut
+ *   faire tourner la perspective à l'écran. Valeur mal écrite, vue à plat
+ *   (`vue: face`…) ou geste (`dessiner:`, `retrouver:`) : le bloc n'est PAS en
+ *   erreur, phrase pour l'auteur (`rotationErrors`), dessin fixe.
  * - Une clé inconnue ou répétée est une erreur située. Dans un modèle de
  *   question, `{{a}}` est résolu AVANT : le bloc ne lit que des nombres.
  *
@@ -282,6 +286,8 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 	let caseIndex: number | undefined;
 	let givenViews: Partial<Record<CubesSideView, number[]>> | undefined;
 	const seen = new Map<string, number>();
+	/** La ligne `tourner:` telle qu'elle est écrite */
+	let turn: { value: string; line: number } | undefined;
 	/** Les lignes sans clé qui suivent `hauteurs:` sont des rangées */
 	let inHeights = false;
 
@@ -334,6 +340,8 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 			const views = readSideViews(value);
 			if (typeof views === 'string') fail(lineNo, views);
 			else task = { kind: 'retrouver', views };
+		} else if (key === 'tourner') {
+			turn = { value, line: lineNo };
 		} else if (key === 'case') {
 			if (/^\d+$/.test(value)) caseIndex = Number(value);
 			else fail(lineNo, `case « ${value} » : numéro de case entier`);
@@ -444,6 +452,29 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 	if (errors.length > 0 || heights.length === 0) {
 		return { type: 'espace', genre, source, spec: null, errors, ...withCase };
 	}
+
+	// Rotation : une ligne `tourner:` qu'on ne peut pas suivre laisse le dessin fixe, sans
+	// mettre le bloc en erreur
+	let rotate = false;
+	let rotationErrors: string[] | undefined;
+	if (turn !== undefined) {
+		const wanted = plain(turn.value);
+		const refuse = (message: string) => {
+			rotationErrors = [`Ligne ${turn!.line} : ${message}`];
+		};
+		if (wanted !== 'oui' && wanted !== 'non') refuse(`tourner « ${turn.value} » : oui ou non`);
+		else if (wanted === 'oui') {
+			if (task?.kind === 'retrouver') {
+				refuse('tourner: oui ne va pas avec retrouver: (la perspective est cachée)');
+			} else if (task?.kind === 'dessiner') {
+				refuse(
+					'tourner: oui ne va pas avec dessiner: (en tournant la perspective, l’élève recopierait la vue)'
+				);
+			} else if (view !== 'perspective') {
+				refuse(`tourner: oui ne va pas avec vue: ${view} (un dessin à plat ne tourne pas)`);
+			} else rotate = true;
+		}
+	}
 	return {
 		type: 'espace',
 		genre,
@@ -453,9 +484,11 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 			heights,
 			view,
 			...(task && { task }),
-			...(givenViews && masked && { givenViews })
+			...(givenViews && masked && { givenViews }),
+			...(rotate && { rotate: true as const })
 		},
 		errors,
+		...(rotationErrors !== undefined && { rotationErrors }),
 		...withCase
 	};
 }

@@ -454,7 +454,7 @@ Exemple suivi : un pavé ABCDEFGH, « trace le vecteur AB + AD + AE » (`tracer:
   de la cote du rayon ; cylindre très plat (rayon ≥ 3 × hauteur) coupé perpendiculairement à l'axe, la cote du
   rayon et celle de la distance se touchent.
 
-## 15. Lot 6 — assemblages de cubes : comportements (écrits le 2026-11-27, À VALIDER par David)
+## 15. Lot 6 — assemblages de cubes : comportements (validés par David le 2026-11-27)
 
 Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devant au milieu), bloc
 ` ```cubes ` avec la clé `tourner: oui`.
@@ -493,7 +493,7 @@ Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devan
     geste inchangé.
 68. `tourner: oui` avec `dessiner:` : voir la question (b).
 
-### Questions pour David
+### Questions pour David (réponse du 2026-11-27 : « je te suis » — (1) aux deux ; et les deux défauts du § 14 sont laissés tels quels, à corriger s'il les croise dans un modèle)
 
 - **(a) Teintes des faces qu'on découvre.** Aujourd'hui : dessus clair, devant gris léger, côté droit gris
   plus foncé. En tournant, on voit aussi l'arrière, la gauche et le dessous. (1) Chaque face garde sa
@@ -505,3 +505,24 @@ Exemple suivi : l'assemblage `hauteurs: 2 1 1 / 1 0 1` (six cubes, un trou devan
   perspective est à côté). Si la perspective tourne, l'élève peut se mettre bien en face et recopier la vue.
   (1) Refusé dans ce lot : message pour l'auteur, perspective fixe ; (2) permis : c'est le prof qui choisit
   d'offrir cette aide. Recommandation : (1) ; (2) reste possible plus tard sans rien défaire.
+
+## 16. Lot 6 — ce qui est fait (2026-11-27)
+
+- **Clé** `tourner: oui | non` du bloc ` ```cubes ` (`CubesSpec.rotate`), perspective sans geste seulement.
+  Valeur mal écrite, `vue:` à plat, `dessiner:`, `retrouver:` : phrase dans `EspaceNode.rotationErrors`, bloc
+  dessiné comme sans la clé (comportements 65 à 68) ; la phrase se lit au-dessus de `Cubes.svelte` et de
+  `CubesGeste.svelte` (« Bloc cubes : la figure ne tournera pas »).
+- **Scène** : `buildEspaceScene(spec, vue)` → `cubesFaces(heights, vue)` (`espace-scene.ts`). Faces libres
+  tournées vers l'œil, ordre du peintre par axe (de la case la plus loin de l'œil à la plus proche) ; teintes
+  de la question (a) : arrière = devant, gauche = droite, dessous = dessus. Cadre carré fixe : distance du
+  centre à un coin de la boîte × √(1 + déport²), tenu à tout angle et pendant le passage (l'assemblage
+  `2 1 1 / 1 0 1` passe de 3,7 × 2,7 cm à un carré de 4,4 cm). À la vue de départ : le dessin fixe, mêmes
+  faces, même ordre, déplacé en bloc.
+- **Écran** : la rotation d'un solide, rendue commune — `createEspaceRotation` (scène en réglage) dans
+  `solide-rotation.svelte.ts`, `createSolideRotation` en est le cas du solide (rien ne change pour lui).
+- Catalogue (`block-catalog/cubes.ts` : réglage et exemple), doc `docs/systeme/ubumark.md`.
+- Tests : `cubes-tourner.test.ts` (28, dont l'ordre du peintre vérifié par la profondeur réelle des faces qui
+  se recouvrent), `CubesTourner.svelte.test.ts` (13).
+- Vu à l'écran par la session (captures Chromium du composant, deux assemblages sous six angles, dont
+  l'arrière et le dessous) : cubes pleins, trou visible de derrière, teintes tenues, cadre et bouton en place.
+  **Pas vu** : le geste du doigt sur un vrai téléphone ; le thème sombre sous une vue tournée.

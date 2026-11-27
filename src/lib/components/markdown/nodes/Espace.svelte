@@ -39,7 +39,7 @@
 {:else if node.genre === 'patron'}
 	<Patron {node} {showErrors} class={className} />
 {:else if node.genre === 'cubes' && node.spec?.kind === 'cubes' && node.spec.task && node.errors.length === 0}
-	<CubesGeste {node} class={className} />
+	<CubesGeste {node} {showErrors} class={className} />
 {:else if node.genre === 'cubes'}
 	<Cubes {node} {showErrors} class={className} />
 {/if}
