@@ -1,22 +1,22 @@
 ---
 title: Tests de preuve des lots tuteur-documents, comptes-evaluations, utilitaires et modération — journal
 date: 2026-11-27
-status: en cours
+status: clos
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, avant la PR._
+_Mis à jour le 2026-11-27, après #3236._
 
-- **État** : sept tests de preuve écrits (T26, L114, L122 dans `tests/ecarts/` ; L112, L113 en intégration ; L110, L123 au navigateur), tous rouges pour la bonne raison ; L38 et M25 passent par une commande (pas de code).
-- **Prochaine action** : PR, merge, puis les neuf lignes du registre (commit de doc direct sur `main`) et `pnpm ecarts rejouer`.
+- **État** : clos. #3236 mergée ; T26, L110, L112, L113, L114, L122, L123 ont leur preuve au registre, L38 et M25 une preuve par commande (9 rouges au rejeu).
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun.
-- **Worktree / branche** : `ubumaths-wt-ecarts-preuves-divers` / `test/ecarts-preuves-divers`.
+- **Worktree / branche** : aucun (retirés au merge).
 
 ---
 
-Chantier fils de [ecarts-a-trier](ecarts-a-trier-progress.md). Lots décrits dans [ecarts-tri/tuteur-documents.md](ecarts-tri/tuteur-documents.md), [ecarts-tri/comptes-evaluations.md](ecarts-tri/comptes-evaluations.md), [ecarts-tri/utilitaires.md](ecarts-tri/utilitaires.md) ; L122 et L123 viennent de la revue de #3115.
+Chantier fils de [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md). Lots décrits dans [ecarts-tri/tuteur-documents.md](../../wip/ecarts-tri/tuteur-documents.md), [ecarts-tri/comptes-evaluations.md](../../wip/ecarts-tri/comptes-evaluations.md), [ecarts-tri/utilitaires.md](../../wip/ecarts-tri/utilitaires.md) ; L122 et L123 viennent de la revue de #3115.
 
 ## Sonde du 2026-11-27
 
