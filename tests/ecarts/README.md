@@ -11,4 +11,7 @@ quand `ECARTS_PREUVES=1`) ; la CI, `test:server` et `test:changed` ne les voient
 Un écart qui demande une vraie base n'a pas son test ici : il est en `it.fails` dans
 `tests/integration/ecarts-<domaine>.test.ts`, et le registre le suit par un marqueur.
 
+Même chose pour un écart qui demande un navigateur (composant monté, réactivité) : `it.fails` dans
+`src/**/__tests__/ecarts-<domaine>.svelte.test.ts`, suivi par un marqueur.
+
 Mode d'emploi : [docs/pratiques/registre-des-ecarts.md](../../docs/pratiques/registre-des-ecarts.md).
