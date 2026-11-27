@@ -78,6 +78,7 @@ export const SOLIDE_KEYS = [
 	'vecteurs',
 	'droites',
 	'plans',
+	'repere',
 	'tracer',
 	'tourner',
 	'case'
@@ -245,6 +246,12 @@ export interface SolideSpec {
 	 * dans le solide, teintée ; absent : aucun (la figure reste celle d'avant)
 	 */
 	plans?: SolidePlan[];
+	/**
+	 * Repère du solide (`repere: A ; AB, AD, AE`, chantier `solides-3d`, lot 7c) :
+	 * ses trois vecteurs sont dessinés depuis l'origine ; absent : aucun (la figure
+	 * reste celle d'avant)
+	 */
+	repere?: SolideRepere;
 	/** Geste de l'élève (`tracer:`, chantier `solide-vecteur`, lot 2) ; absent : affichage seul */
 	task?: SolideTask;
 	/**
@@ -371,12 +378,26 @@ export type SolideSection =
 /**
  * Un point déclaré d'un ```solide (`points: I milieu AE, O centre ABCD`) :
  * l'isobarycentre des points `of` (sommets, puis points déclarés avant lui) ;
- * `label` : sa lecture (« milieu de [AE] », « centre de ABCD », « centre du cube »)
+ * `label` : sa lecture (« milieu de [AE] », « centre de ABCD », « centre du cube »).
+ *
+ * Point donné par ses coordonnées (`M (1 ; 0,5 ; 1)`, lot 7c) : `of` est vide et
+ * `coords` porte le repère où elles se lisent ; `label` : « de coordonnées (1 ; 0,5 ; 1) »
  */
 export interface SolidePoint {
 	name: string;
 	of: number[];
 	label: string;
+	coords?: SolideRepere & { values: [number, number, number] };
+}
+
+/**
+ * Le repère d'un ```solide (`repere: A ; AB, AD, AE`) : l'origine et le bout de
+ * chacun des trois vecteurs, qui partent tous de l'origine (indices des points :
+ * sommets, puis points déclarés sans coordonnées) ; jamais dans un même plan
+ */
+export interface SolideRepere {
+	origin: number;
+	axes: [number, number, number];
 }
 
 /** Un vecteur donné (`vecteurs: AB, u = AE`) : indices des points (sommets, puis points déclarés) */
