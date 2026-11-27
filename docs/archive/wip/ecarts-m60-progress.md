@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3212._
+_Mis à jour le 2026-11-27 : chantier clos, journal archivé._
 
-- **État** : #3212 mergée le 2026-11-27 (go de David). Migration `20261126224009_suppression_modeles_de_message.sql` (DESTRUCTIVE) sur `main`, PAS encore jouée en prod : seule migration en attente (`migration list --linked` du 2026-11-27).
-- **Prochaine action** : David lance `pnpm db:migrate` depuis le dépôt principal (la session n'a pas le droit de le lancer : refus du mode auto). Puis la session relit en prod, en lecture seule, que les cinq tables et les huit fonctions n'existent plus et que `delete_user_account` ne cite plus `template_audit_log` ; barre M60 au registre ; archive ce journal.
-- **En attente de David** : `! pnpm db:migrate` dans le dépôt principal.
-- **Pièges en cours** : tant que la migration n'est pas jouée, le `db:migrate` de n'importe quelle autre session la jouera avec la sienne. Le code de prod (0.115.0) ne lit déjà plus ces tables : rien ne casse dans l'intervalle.
-- **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
+- **État** : clos. #3212 mergée le 2026-11-27 ; migration `20261126224009_suppression_modeles_de_message.sql` jouée en prod par David le même jour. Vu en base (lecture seule) : les cinq tables et les huit fonctions n'existent plus, plus aucune fonction de `public` ne les cite, `delete_user_account` garde ses droits (service_role seul) et son `search_path`. M60 barré au registre.
+- **Prochaine action** : aucune.
+- **En attente de David** : rien.
+- **Versé** : `docs/systeme/messagerie-et-moderation.md` (§ Modèles de messages), `base-de-donnees.md`, `conformite/audit-trail.md`, `evaluations.md`, dans #3212.
+- **Worktree / branche** : aucun.
 
 ## Ce qui est supprimé
 
