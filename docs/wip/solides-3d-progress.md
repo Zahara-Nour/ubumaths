@@ -2,31 +2,31 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3216._
+_Mis à jour le 2026-11-27, après #3222._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
-  du § 3) ; **lots 1, 2 et 3 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216
-  cylindre, cône, boule, § 8 et 9). Le lot 3 n'est pas en prod (un `deploy:prod` d'une autre session tournait
-  pendant son merge : vérifier s'il l'a emporté avant de l'affirmer).
-- **Prochaine action** : lot 4 — sections et cotes sur figure tournée (§ 4 ; Q1 du § 3 : cotes à la vue de
-  départ seulement), revue `code-reviewer` en opus. Comportements à écrire et à faire valider avant de coder.
-- **En attente de David** : **Q7 et Q8 du § 10** (comportements 27 à 37 du lot 4, proposés le 2026-11-27 : rien
-  n'est codé avant sa réponse) ; son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
+  du § 3) ; **lots 1 à 4 mergés** (#3195 moteur ; #3200 polyèdres ; #3211 noms tenus, § 7 ; #3216 cylindre,
+  cône, boule, § 8 et 9 ; #3222 sections et cotes, § 10 et 11). Les lots 3 et 4 ne sont pas en prod tant
+  qu'un `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de l'affirmer).
+- **Prochaine action** : lot 5 — gestes sur figure tournée (`tracer: vecteur` avec `tourner: oui` ; Q2 du
+  § 3 : toucher un point = tracer, glisser = tourner), revue `code-reviewer`. Comportements à écrire et à
+  faire valider avant de coder.
+- **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
   noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
   session) ; (2) les solides ronds (§ 9 : le point posé sur le sommet NOMMÉ du cône quand ses deux traits ont
   disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque — question
-  posée le 2026-11-27, sans réponse).
+  posée le 2026-11-27, sans réponse) ; (3) le lot 4 : longueurs qui s'effacent, section qui tourne (deux
+  exemples neufs en bas de la page du catalogue).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
-  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; solides ronds : le dessin à plat
-  est la vraie vue d'un œil à asin 0,3 ≈ 17,5° au-dessus de l'horizontale, hauteurs non raccourcies —
-  `turnVue` doit recevoir `solideTilt(form)` ; tourner autour de l'axe ne change rien au dessin (Q5, accepté) :
-  au lot 4, le rayon coté et la section parallèle à l'axe devront, eux, tourner (`vue.yaw`) ; une ligne
-  `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; « moins d'animations » et le geste
-  tactile réel n'ont pas de test ; `pnpm pr:merger` ne retire pas le worktree si son serveur de dev tourne
-  (« Directory not empty », carcasse à retirer après avoir arrêté le serveur).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-sections` (neuve, journal
-  seul commité). Serveur d'essai en marche sur 5176, lien du tailnet publié (`pnpm lien --stop` depuis le
-  worktree pour le retirer).
+  (`solide-scene-figee.test.ts`, scènes neuves à prendre sur le code de `main`) ; jamais d'instantané de
+  flottants bruts ; l'angle libre d'un nom se calcule dans le repère du dessin fixe (`fixedVertices`), jamais
+  de seuil d'égalité (il déplace des noms du dessin fixe) ; `turnVue` doit recevoir `solideTilt(form)` ; une
+  ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; `SolideGeste.svelte` dessine la
+  figure à geste, sans vue pour l'instant ; hors lot, connu : nom de vecteur qui dépasse le cadre de 0,08 cm
+  sur un pavé très profond (§ 11) ; « moins d'animations » et le geste tactile réel n'ont pas de test ;
+  `pnpm pr:merger` ne retire pas le worktree si son serveur de dev tourne (arrêter le serveur d'abord).
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-gestes` (neuve, depuis
+  `main` après #3222). Serveur d'essai sur 5176, lien du tailnet par `pnpm lien`.
 
 ## 1. D'où l'on part
 
