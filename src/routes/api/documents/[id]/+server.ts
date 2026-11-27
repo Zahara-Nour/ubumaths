@@ -5,8 +5,8 @@
  * Serves chapter documents from Supabase Storage.
  * Handles both viewing (inline) and downloading (attachment).
  *
- * GET /api/documents/[id]/view - View document inline
- * GET /api/documents/[id]/download - Download document as attachment
+ * GET /api/documents/[id]            - affiche le document (inline)
+ * GET /api/documents/[id]?download    - le télécharge (attachment)
  *
  * Security:
  * - Teachers can access documents from their chapters

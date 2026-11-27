@@ -6,7 +6,8 @@
  *
  * SECURITY:
  * - Requires teacher or admin role
- * - Verifies teacher teaches the student via verifyTeacherStudentWithRole
+ * - Vérifie les rôles par verifyTeacherStudentWithRole (appelant prof ou admin,
+ *   cible élève) ; mono-professeur : aucune vérification de classe
  * - Admins can access any student
  *
  * DATA LOADED:
@@ -42,7 +43,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const { studentId } = paramValidation.data;
 
-	// Verify teacher-student relationship (admins bypass this check)
+	// Vérifier les rôles (appelant prof ou admin, cible élève) (admins bypass this check)
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 
 	if (!hasAccess) {

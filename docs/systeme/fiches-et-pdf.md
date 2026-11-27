@@ -16,6 +16,8 @@ couvre:
   - 'src/routes/(public)/cahier/*/fiche/**'
   - 'src/routes/api/worksheets/**'
   - 'src/routes/api/student/worksheets/**'
+  - 'src/routes/api/student/reports/**'
+  - 'src/routes/(protected)/dashboard/student/reports/**'
   - 'src/routes/api/teacher/chapters/*/worksheets/**'
   - 'scripts/fiches/**'
 ---
