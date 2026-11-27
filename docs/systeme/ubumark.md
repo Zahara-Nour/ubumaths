@@ -1632,8 +1632,11 @@ centre, sans étirement) ; coupe du cylindre parallèle à l'axe : rectangle qui
 |cos yaw|), comme le rayon coté — seuls cas où `vue.yaw` change le dessin d'un solide rond. **Noms** : ceux des
 points de la section (IJKL) sont tenus pendant la rotation comme les autres ; `labelOffsets` compte une place
 par nom (sommets, section, points, vecteurs, dans cet ordre), jamais pour une cote, et existe dès la vue de
-départ d'une figure cotée. `freeDirection` : entre deux angles libres égaux (sommet F du pavé), le premier
-gagne (seuil 1e-9) — sans cela le nom changeait de côté entre le dessin fixe et la figure à tourner.
+départ d'une figure cotée. L'angle libre d'un nom (`freeDirection`) se calcule dans le repère du dessin fixe
+(`fixedVertices`), figure tournée comprise : deux angles libres égaux (sommets D et F d'un pavé) sont
+départagés par le dernier chiffre, qui doit être le même au repos que dans le dessin fixe — sinon le nom
+changeait de côté dès qu'on ajoutait `tourner: oui` (pavé 4 × 2 × 3, F). De retour à la vue de départ pendant
+que les noms se replacent, les cotes et le renvoi sont ceux du repos (`coteLabels`, `coteLines`) : rien ne saute.
 
 **Noms tenus pendant la rotation** (demande de David après essai, 2026-11-26 : recalculés à chaque image, ils
 sautaient d'un côté à l'autre de leur point). Une scène tournée rend `labelOffsets` : la place de chaque nom de

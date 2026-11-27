@@ -32,6 +32,9 @@ const PAVE = ['forme: pave 4 2 3', 'sommets: A B C D E F G H'];
 /** Solides coupés ou cotés : polyèdres, puis solides ronds */
 const POLYEDRES = [
 	[...PAVE, 'cotes: cm'],
+	// Sommets D et F à deux angles libres égaux : le nom reste du côté du dessin fixe
+	['forme: pave 3 1 4', 'sommets: A B C D E F G H', 'cotes: cm'],
+	['forme: pave 6 1 1', 'sommets: A B C D E F G H', 'section: parallele dessus 0.5 IJKL'],
 	[...PAVE, 'section: parallele dessus 1 IJKL'],
 	[...PAVE, 'section: parallele ABFE 0.5 IJKL', 'cotes: cm'],
 	['forme: cube 3', 'sommets: A B C D E F G H', 'section: parallele droite', 'cotes: oui'],
@@ -68,7 +71,12 @@ const from = (elevation: number, yaw = 0): EspaceVue => ({
 const turned = (dyaw: number, dpitch: number): EspaceVue =>
 	turnVue({ ...VUE_DE_DEPART, oblique: 0 }, dyaw, dpitch);
 
-const GRID_POLYEDRES: EspaceVue[] = [{ ...VUE_DE_DEPART, oblique: 0.5 }];
+const GRID_POLYEDRES: EspaceVue[] = [
+	{ ...VUE_DE_DEPART, oblique: 0.5 },
+	// En plein passage, déjà tournée
+	{ yaw: 1.1, pitch: 0.4, oblique: 0.7 },
+	{ yaw: -2, pitch: -0.6, oblique: 0.3 }
+];
 for (let yaw = -180; yaw < 180; yaw += 30) {
 	for (let pitch = -100; pitch <= 100; pitch += 25)
 		GRID_POLYEDRES.push(turned(deg(yaw), deg(pitch)));
@@ -252,6 +260,16 @@ describe('```solide coupé ou coté — cadre fixe (comportement 24)', () => {
 		expect(back.width).toBe(rest.width);
 		expect(back.height).toBe(rest.height);
 		expect(cotesOf(back)).toHaveLength(2);
+		// Les cotes et leur trait de renvoi sont déjà à leur place du repos : rien ne saute
+		// quand les noms ont fini de se replacer
+		expect(cotesOf(back)).toEqual(cotesOf(rest));
+		expect(back.lines.filter((l) => l.thin)).toEqual(rest.lines.filter((l) => l.thin));
+		for (const p of drawn(back)) {
+			expect(p.x).toBeGreaterThanOrEqual(-1e-9);
+			expect(p.y).toBeGreaterThanOrEqual(-1e-9);
+			expect(p.x).toBeLessThanOrEqual(back.width + 1e-9);
+			expect(p.y).toBeLessThanOrEqual(back.height + 1e-9);
+		}
 	});
 });
 

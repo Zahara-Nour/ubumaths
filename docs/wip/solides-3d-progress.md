@@ -266,7 +266,7 @@ et du sommet du cône), `marquer: sommet` et `cachees:`. `section:` et `cotes:` 
   test tautologique retiré, commentaires déplacés. Laissé à David : le point du sommet nommé est aussi posé vu
   de dessous, où le sommet est caché par le disque.
 
-## 10. Lot 4 — sections et cotes : comportements (proposés le 2026-11-27, en attente de David)
+## 10. Lot 4 — sections et cotes : comportements (validés par David le 2026-11-27)
 
 Exemples suivis : un pavé ABCDEFGH coté en cm et coupé parallèlement à sa face du dessus (section IJKL) ; un
 cylindre coté coupé parallèlement à son axe. Blocs ` ```solide ` avec `tourner: oui`. Les comportements 1 à 26
@@ -301,7 +301,7 @@ valent tels quels ; ne sont écrits ici que ceux propres aux sections et aux cot
 37. `tourner: oui` avec `tracer:` : toujours figure fixe et message pour l'auteur (lot 5). Il n'y a plus de
     message pour `section:` ni `cotes:`.
 
-### Questions pour David
+### Questions pour David (réponse du 2026-11-27 : « je te suis » — (a) aux deux)
 
 - **Q7 — Les traits qui accompagnent une cote.** Une pyramide cotée a sa hauteur dessinée en tirets, avec
   « 5 cm » à côté ; un cylindre coté a un rayon en tirets. Quand la figure tourne, le « 5 cm » s'efface (Q1).
@@ -312,3 +312,36 @@ valent tels quels ; ne sont écrits ici que ceux propres aux sections et aux cot
   rectangle est alors derrière l'axe, vu à travers le solide. (a) le dessiner toujours pareil, teinté, contour
   plein, comme si le solide était transparent — c'est ce que fait déjà le dessin fixe ; (b) mettre en tirets
   les parties du contour cachées par le solide. Recommandation : (a), plus lisible et plus simple.
+
+## 11. Lot 4 — ce qui est fait (2026-11-27)
+
+- **Parseur** : `tourner: oui` accepté avec `section:` et `cotes:`, toutes formes ; reste refusé avec
+  `tracer:` (lot 5).
+- **Cotes** (Q1, Q7) : `buildSolideScene` n'écrit les longueurs (et le trait de renvoi de la hauteur d'une
+  pyramide) qu'à la vue de départ ; les traits de hauteur, de rayon et de distance du plan restent et
+  tournent. Le rayon du haut d'un cylindre passe en tirets vu de dessous.
+- **Cadre** : le carré fixe, agrandi de la place des cotes du repos (`layoutSolide`, `coteMarks`) — plus
+  forcément carré ni centré sur le solide ; il ne bouge pas quand les cotes s'effacent.
+- **Sections** (Q8) : pavé et cube par la projection de la vue ; solides ronds par `place(x, y, z)` dans
+  `turnedRoundDraft`. Le rectangle du cylindre coupé parallèlement à l'axe et le rayon coté tournent avec
+  `vue.yaw`. Noms IJKL tenus pendant la rotation (`labelOffsets` : une place par nom, jamais pour une cote).
+- **Trouvé en route, corrigé** : sur le pavé 4 × 2 × 3, ajouter `tourner: oui` déplaçait le nom F au repos
+  (depuis le lot 2). Deux angles libres égaux autour de F, départagés par le dernier chiffre, qui n'était pas
+  le même dans le repère de la figure à tourner. L'angle libre se calcule maintenant dans le repère du dessin
+  fixe ; le dessin fixe ne change pas (deux scènes figées ajoutées, prises sur le code de `main`).
+- **Vu par la session** : planche de sept solides coupés ou cotés sous neuf vues (section, tirets, hauteur de
+  la pyramide, rayon et rectangle qui tournent, cadre) ; `/aide-ecriture/blocs/solide` chargée sans erreur de
+  console ; le composant réel dans Chromium (tests : longueurs effacées au glissement et revenues au retour,
+  rectangle du cylindre réduit à un trait au quart de tour). **Pas vu** : le geste du doigt sur un vrai
+  téléphone.
+- Tests : `solide-sections-tourner.test.ts` (rouges avant le code), `SolideTourner.svelte.test.ts` (lot 4).
+  Catalogue : deux exemples (pavé coupé et coté, cylindre coupé parallèlement à l'axe). Doc :
+  `docs/systeme/ubumark.md`, `utilitaires-et-demos.md`.
+- Revue (`code-reviewer`, opus) : géométrie de `place` juste (signes, dessous, passage, boule), repos = dessin
+  fixe sur 418 blocs, cadre fixe sur 448 vues, ordre des places tenues. Corrigé avant la PR : un premier
+  correctif du nom F (seuil d'égalité) déplaçait des noms sur 36 dessins fixes — remplacé par le calcul dans
+  le repère du dessin fixe ; le renvoi d'une pyramide pouvait sauter à la fin du retour — il reprend sa place
+  du repos. **Laissé, hors du lot** : pavés très profonds (2 × 9 × 1, 1 × 6 × 1) avec `points:` ou
+  `vecteurs:`, pendant le passage et déjà tournés : un nom de vecteur dépasse le cadre d'environ 0,08 cm
+  (existe depuis le lot 2). Dessin fixe d'une boule coupée et cotée : « 1,5 cm » touche le nom du centre
+  (dessin d'avant le chantier).

@@ -1048,9 +1048,7 @@ function freeDirection(
 	let best = { gap: -1, middle: 0 };
 	angles.forEach((angle, k) => {
 		const next = k + 1 < angles.length ? angles[k + 1] : angles[0] + 2 * Math.PI;
-		// Deux angles libres égaux (sommet F du pavé) : le premier, pas celui qu'un dernier
-		// chiffre favorise — le nom ne change pas de côté entre le dessin fixe et la figure à tourner
-		if (next - angle > best.gap + 1e-9) best = { gap: next - angle, middle: (angle + next) / 2 };
+		if (next - angle > best.gap) best = { gap: next - angle, middle: (angle + next) / 2 };
 	});
 	return { x: Math.cos(best.middle), y: Math.sin(best.middle) };
 }
@@ -1204,7 +1202,12 @@ function layoutSolide(
 	spec: SolideSpec,
 	vue?: EspaceVue,
 	held?: EspacePoint[]
-): { scene: SolideScene; coteMarks: EspacePoint[] } {
+): {
+	scene: SolideScene;
+	coteMarks: EspacePoint[];
+	coteLabels: SolideLabel[];
+	coteLines: SolideLine[];
+} {
 	const curved = solideTopology(spec.form).curved;
 	// Le dessin fixe donne l'échelle, que la figure tournée garde
 	const polyhedron = curved ? null : polyhedronDraft(spec);
@@ -1238,6 +1241,13 @@ function layoutSolide(
 	const vertices = draft.vertices.map(toScreen);
 	const points = draft.points.map(toScreen);
 	const named = [...vertices, ...points];
+	// Les sommets dans le repère du dessin fixe, pour l'angle libre où poser un nom : deux
+	// angles libres égaux (sommets D et F d'un pavé) sont départagés par le dernier chiffre,
+	// qui doit être le même au repos que dans le dessin fixe — sinon le nom change de côté
+	const fixedVertices = draft.vertices.map((p) => ({
+		x: (p.x - geometry.minX) * scale,
+		y: (geometry.maxY - p.y) * scale
+	}));
 
 	// Traits du dessin (arêtes, contour de la section) : les noms des sommets les évitent
 	const edgeSegments: [EspacePoint, EspacePoint][] = [
@@ -1288,7 +1298,7 @@ function layoutSolide(
 		const p = vertices[i];
 		let dx = p.x - middleOfDrawing.x;
 		let dy = p.y - middleOfDrawing.y;
-		const free = freeDirection(i, vertices, draft.edges);
+		const free = freeDirection(i, fixedVertices, draft.edges);
 		if (free) {
 			dx = free.x;
 			dy = free.y;
@@ -1321,8 +1331,21 @@ function layoutSolide(
 	// Cotes : le texte à côté du trait, du côté demandé ; figure tournée : à la vue de
 	// départ seulement
 	const unit = spec.cotes?.unit ? ` ${spec.cotes.unit}` : '';
+	// Figure cotée, ailleurs qu'au repos sans nom tenu : les cotes du repos, pour leur
+	// place dans le cadre et, de retour à la vue de départ pendant que les noms se
+	// replacent, pour les écrire là où elles seront (le renvoi d'une pyramide évite les noms)
+	const atRest =
+		turned !== null && spec.cotes !== null && !(atStart && !holding)
+			? layoutSolide(spec, VUE_DE_DEPART)
+			: null;
 	const coteMarks: EspacePoint[] = [];
-	for (const cote of atStart ? draft.cotes : []) {
+	const coteLabels: SolideLabel[] = [];
+	const coteLines: SolideLine[] = [];
+	if (atRest !== null && atStart) {
+		lines.push(...atRest.coteLines);
+		labels.push(...atRest.coteLabels);
+	}
+	for (const cote of atStart && atRest === null ? draft.cotes : []) {
 		const text = `${frenchNumber(cote.value)}${unit}`;
 		const halfWidth = (text.length * CHAR_WIDTH) / 2;
 		const halfHeight = SOLIDE_LABEL_SIZE / 2;
@@ -1331,6 +1354,8 @@ function layoutSolide(
 			const leader = leaderCote(p, text, vertices, lines, labels);
 			lines.push(leader.line);
 			labels.push(leader.label);
+			coteLines.push(leader.line);
+			coteLabels.push(leader.label);
 			coteMarks.push(...leader.line.points, ...labelBox(leader.label));
 			continue;
 		}
@@ -1346,6 +1371,7 @@ function layoutSolide(
 		}[cote.side];
 		const label = { at: { x: p.x + shift.x, y: p.y + shift.y }, text };
 		labels.push(label);
+		coteLabels.push(label);
 		coteMarks.push(...labelBox(label));
 	}
 
@@ -1449,19 +1475,14 @@ function layoutSolide(
 	let all = bounds(drawn);
 	if (turned !== null && rest !== null) {
 		// Au repos (cavalière, ovales à plat), le dessin peut dépasser ce cercle
-		const atRest = [...rest.vertices, ...rest.points, ...rest.lines.flatMap((l) => l.points)];
+		const restDrawn = [...rest.vertices, ...rest.points, ...rest.lines.flatMap((l) => l.points)];
 		const restReach = Math.max(
-			...atRest.map((p) => Math.max(Math.abs(p.x - rest.pivot.x), Math.abs(p.y - rest.pivot.y)))
+			...restDrawn.map((p) => Math.max(Math.abs(p.x - rest.pivot.x), Math.abs(p.y - rest.pivot.y)))
 		);
 		const half = Math.max(turned.reach, restReach) * scale + TURN_PAD;
 		// La place des cotes de la vue de départ (placées sans nom tenu), réservée à
 		// chaque angle : le cadre ne change pas quand elles s'effacent
-		const reserved =
-			spec.cotes === null
-				? []
-				: atStart && !holding
-					? coteMarks
-					: layoutSolide(spec, VUE_DE_DEPART).coteMarks;
+		const reserved = atRest?.coteMarks ?? coteMarks;
 		all = bounds([{ x: -half, y: -half }, { x: half, y: half }, ...reserved]);
 	}
 	const shift = (p: EspacePoint): EspacePoint => ({ x: p.x - all.minX, y: p.y - all.minY });
@@ -1493,7 +1514,7 @@ function layoutSolide(
 			}))
 		})
 	};
-	return { scene, coteMarks };
+	return { scene, coteMarks, coteLabels, coteLines };
 }
 
 /**
