@@ -1,22 +1,22 @@
 ---
 title: Tests de preuve du lot pédagogie — journal
 date: 2026-11-27
-status: en cours
+status: clos
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, avant la PR._
+_Mis à jour le 2026-11-27, après #3232._
 
-- **État** : `tests/ecarts/pedagogie.test.ts` écrit : V111, L85, L87, L88, L90, 5 rouges sur leur affirmation, 8 témoins verts.
-- **Prochaine action** : PR, merge, puis au registre (commit de doc sur `main`) les cinq lignes passent à `preuve : test tests/ecarts/pedagogie.test.ts › <id>` ; journal archivé.
+- **État** : clos. #3232 mergée ; V111, L85, L87, L88, L90 ont leur preuve au registre (5 rouges au rejeu).
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun.
-- **Worktree / branche** : `ubumaths-wt-ecarts-preuves-pedagogie` / `test/ecarts-preuves-pedagogie`.
+- **Worktree / branche** : aucun (retirés au merge).
 
 ---
 
-Chantier fils de [ecarts-a-trier](ecarts-a-trier-progress.md). Lot décrit dans [ecarts-tri/pedagogie.md](ecarts-tri/pedagogie.md).
+Chantier fils de [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md). Lot décrit dans [ecarts-tri/pedagogie.md](../../wip/ecarts-tri/pedagogie.md).
 
 ## Sonde du 2026-11-27
 
