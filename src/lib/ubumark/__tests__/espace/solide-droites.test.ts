@@ -357,6 +357,27 @@ describe('```solide — droites: (dessin fixe)', () => {
 		expect(onSegment(s.points[0], start, end)).toBe(true);
 	});
 
+	it('point par où passe une droite : son nom s’écarte du trait', () => {
+		const s = scene(...CUBE, 'points: I milieu AE', 'droites: (IG)');
+		const [start, end] = ends(droitesOf(s)[0]);
+		const name = s.labels.find((l) => l.text === 'I');
+		expect(name).toBeDefined();
+		if (name === undefined) return;
+		// Distance du milieu du nom à la droite : plus que la demi-hauteur d'une lettre
+		const length = distance(start, end);
+		const away =
+			Math.abs(
+				(end.x - start.x) * (name.at.y - start.y) - (end.y - start.y) * (name.at.x - start.x)
+			) / length;
+		const [lo, hi] = labelBox(name);
+		expect(away).toBeGreaterThan((hi.y - lo.y) / 2);
+		// Sans droites, le nom garde sa place d'avant
+		const bare = scene(...CUBE, 'points: I milieu AE');
+		expect(bare.labels.find((l) => l.text === 'I')?.at).toEqual(
+			scene(...CUBE, 'points: I milieu AE', 'vecteurs: AB').labels.find((l) => l.text === 'I')?.at
+		);
+	});
+
 	it('PDF : la droite en couleur, tirets compris ; sans droites, la fiche d’avant', () => {
 		const node = (...lines: string[]): EspaceNode => read(...lines);
 		const typst = generateEspaceTypst(node(...CUBE, 'droites: (AG)'));

@@ -249,6 +249,9 @@ const TURN_PAD = 0.75;
 /** Ce qu'une droite dépasse du solide, de chaque côté, en part de sa plus grande dimension */
 const DROITE_OVERHANG = 0.18;
 
+/** Nom d'un point déclaré sur une figure à droites : second tour de places, à cette part de l'écart habituel */
+const POINT_NAME_FAR = 1.7;
+
 /** Le nom d'une droite : à cette distance de son bout, le long du trait, en cm */
 const DROITE_NAME_BACK = [0.35, 0.8, 1.25];
 
@@ -1503,10 +1506,18 @@ function layoutSolide(
 		// Au milieu du dessin (centre du cube) : à gauche, un peu plus bas, comme un centre
 		const base = Math.hypot(dx, dy) < 1e-6 ? Math.atan2(0.35, -1) : Math.atan2(dy, dx);
 		const turns = [0, 1, -1, 2, -2, 3, -3, 4].map((t) => base + (t * Math.PI) / 4);
-		const candidates = turns.map((t) => ({
-			at: { x: p.x + Math.cos(t) * LABEL_GAP, y: p.y + Math.sin(t) * LABEL_GAP },
-			text: point.name
-		}));
+		// Avec des droites, un point où passe une droite n'a souvent plus de place libre
+		// tout près : un second tour, plus loin (sans droites, les places d'avant)
+		const gaps = spec.droites === undefined ? [1] : [1, POINT_NAME_FAR];
+		const candidates = gaps.flatMap((gap) =>
+			turns.map((t) => ({
+				at: {
+					x: p.x + Math.cos(t) * LABEL_GAP * gap,
+					y: p.y + Math.sin(t) * LABEL_GAP * gap
+				},
+				text: point.name
+			}))
+		);
 		const others = named.filter((_, i) => i !== vertices.length + k);
 		labels.push(nameAt(p, candidates, () => firstFree(candidates, labels, segments, others)));
 	});
