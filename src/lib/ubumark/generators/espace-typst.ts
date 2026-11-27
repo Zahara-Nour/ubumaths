@@ -176,7 +176,7 @@ const MARKED_FACE_LUMA = 215;
 /** Section (`section:`) : l'orange des figures, clair (lisible en noir et blanc) */
 const SECTION_FILL = 'rgb(248, 200, 150)';
 
-/** Droite donnée (`droites:`) : le bleu des figures (`--color-fig-bleu` à l'écran) */
+/** Droite, segment, angle droit donnés : le bleu des figures (`--color-fig-bleu` à l'écran) */
 const DROITE_STROKE = 'rgb(37, 99, 235)';
 
 /**
@@ -226,8 +226,9 @@ function solideTypst(spec: SolideSpec): string {
 			);
 		}
 	});
-	// Droites données : en couleur après les arêtes, un trait par morceau (caché ou non)
-	for (const piece of (scene.droites ?? []).flat()) {
+	// Droites données : en couleur après les arêtes, un trait par morceau (caché ou non) ;
+	// segments et carrés d'angles droits donnés : du même bleu
+	for (const piece of [...(scene.droites ?? []).flat(), ...(scene.segments ?? [])]) {
 		const dash = piece.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
 		const [from, to] = piece.points;
 		content.push(

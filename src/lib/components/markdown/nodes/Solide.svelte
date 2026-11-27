@@ -178,6 +178,14 @@
 					/>
 				{/each}
 			{/each}
+			{#each scene.segments ?? [] as piece, i (i)}
+				<polyline
+					class="solide-droite"
+					points={pointsOf(piece.points)}
+					stroke-width={solideLineStroke(piece)}
+					stroke-dasharray={piece.dashed ? SOLIDE_DASH.join(' ') : undefined}
+				/>
+			{/each}
 			{#each scene.arrows as arrow, i (i)}
 				<line
 					class="solide-trait"
@@ -260,7 +268,8 @@
 		stroke: none;
 	}
 
-	/* Droite donnée : une couleur à elle, pour ne pas la prendre pour une arête */
+	/* Droite, segment, angle droit donnés : une couleur à eux, pour ne pas les prendre
+	   pour une arête */
 	.solide-droite {
 		stroke: var(--color-fig-bleu);
 	}
