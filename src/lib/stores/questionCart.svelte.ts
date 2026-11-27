@@ -13,14 +13,20 @@
  */
 
 import { toaster } from '#lib/stores/toaster.svelte.ts';
-import { MAX_ITEM_QUANTITY, seriesItemSchema, type SeriesItem } from '#lib/validation/series.ts';
+import {
+	MAX_ITEM_QUANTITY,
+	MAX_QUESTION_DELAY_SECONDS,
+	seriesItemSchema,
+	type SeriesItem
+} from '#lib/validation/series.ts';
 
 // Constantes
 
 /** Durée par question d'une ligne ajoutée sans durée (secondes) */
 const DEFAULT_DELAY = 20;
 const MIN_DELAY = 5;
-const MAX_DELAY = 300;
+/** Celle de la série enregistrée (écart L92 : à 300, une série à 10 min perdait 5 min) */
+const MAX_DELAY = MAX_QUESTION_DELAY_SECONDS;
 
 /** Numéros distincts, dans l'ordre */
 function sortedUnique(indexes: readonly number[]): number[] {
@@ -210,7 +216,7 @@ export class QuestionCartStore {
 		}
 	}
 
-	/** Durée par question, bornée à 5..300 s */
+	/** Durée par question, bornée à 5..600 s */
 	updateDelay(templateId: string, delay: number) {
 		const item = this.find(templateId);
 		if (item) {

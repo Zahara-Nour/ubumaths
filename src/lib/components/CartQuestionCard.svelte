@@ -26,7 +26,7 @@
 	import { Clock, CopyX, Minus, Plus, Repeat, Trash2 } from '@lucide/svelte';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
-	import type { SeriesItem } from '#lib/validation/series.ts';
+	import { MAX_QUESTION_DELAY_SECONDS, type SeriesItem } from '#lib/validation/series.ts';
 	import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 	import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
@@ -35,7 +35,8 @@
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
 	const DELAY_MIN = 5;
-	const DELAY_MAX = 300;
+	// Celle de la série enregistrée (écart L92)
+	const DELAY_MAX = MAX_QUESTION_DELAY_SECONDS;
 	const QUANTITY_MAX = 99;
 
 	// Boutons révélés au survol, au focus clavier, et toujours sur écran tactile

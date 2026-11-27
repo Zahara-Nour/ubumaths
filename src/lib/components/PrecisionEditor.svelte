@@ -22,6 +22,7 @@
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 
 	interface Props {
 		precision?: PrecisionType;
@@ -45,6 +46,21 @@
 		{ value: 'magnitude', label: 'Ordre de grandeur', description: 'Arrondi à la puissance de 10' },
 		{ value: 'tolerance', label: 'Tolérance', description: "Marge d'erreur absolue ou relative" }
 	];
+
+	const PRECISION_ITEMS = PRECISION_TYPES.map((type) => ({
+		value: type.value,
+		label: `${type.label} - ${type.description}`
+	}));
+
+	const TOLERANCE_MODES: { value: 'absolute' | 'relative'; label: string }[] = [
+		{ value: 'absolute', label: 'Absolue - ±valeur fixe' },
+		{ value: 'relative', label: 'Relative - ±pourcentage' }
+	];
+
+	function handleModeChange(value: string) {
+		const mode = TOLERANCE_MODES.find((item) => item.value === value);
+		if (mode && precision.type === 'tolerance') precision = { ...precision, mode: mode.value };
+	}
 
 	// Handle type change
 	function handleTypeChange(newType: string) {
@@ -79,18 +95,16 @@
 		<!-- Precision type selector -->
 		<div class="space-y-2">
 			<Label for="precision-type">Type de précision</Label>
-			<select
+			<MySelect
+				type="single"
 				id="precision-type"
 				value={precision.type}
-				onchange={(e) => handleTypeChange(e.currentTarget.value)}
-				class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-			>
-				{#each PRECISION_TYPES as type (type.value)}
-					<option value={type.value}>
-						{type.label} - {type.description}
-					</option>
-				{/each}
-			</select>
+				items={PRECISION_ITEMS}
+				triggerAriaLabel="Type de précision : {PRECISION_ITEMS.find(
+					(item) => item.value === precision.type
+				)?.label ?? ''}"
+				onValueChange={handleTypeChange}
+			/>
 		</div>
 
 		<!-- Type-specific configuration -->
@@ -136,14 +150,16 @@
 			<div class="space-y-4">
 				<div class="space-y-2">
 					<Label for="tolerance-mode">Mode de tolérance</Label>
-					<select
+					<MySelect
+						type="single"
 						id="tolerance-mode"
-						bind:value={precision.mode}
-						class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						<option value="absolute">Absolue - ±valeur fixe</option>
-						<option value="relative">Relative - ±pourcentage</option>
-					</select>
+						value={precision.mode}
+						items={TOLERANCE_MODES}
+						triggerAriaLabel="Mode de tolérance : {precision.mode === 'relative'
+							? 'relative'
+							: 'absolue'}"
+						onValueChange={handleModeChange}
+					/>
 				</div>
 
 				<div class="space-y-2">

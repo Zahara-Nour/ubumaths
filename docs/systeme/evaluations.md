@@ -393,7 +393,7 @@ tirage comptant, **durées allouées confondues** :
   il compte « au-delà » ; **passé à vide avant la fin** (passer ≠ avoir eu le temps) ou durée
   inconnue : écarté ;
 - durée observée = la durée dans laquelle **80 %** des tirages ont été validés, **arrondie aux 5 s
-  supérieures**, bornée à 5-300 s (le réglage du panier) ; si les temps écoulés dépassent 20 %, le
+  supérieures**, bornée à 5-300 s (`OBSERVED_MAX_SECONDS` ; le panier, lui, va jusqu'à 600 s) ; si les temps écoulés dépassent 20 %, le
   chiffre n'est pas calculable (la marque « trop courte » prend le relais) ; au moins **5 élèves** ;
 - affichée seulement si elle s'écarte de la durée de la ligne (0 → 20 s) d'au moins **5 s et 25 %**,
   dans un sens ou l'autre (`observedSuggestion`, `src/lib/types/duration-signals.ts`).

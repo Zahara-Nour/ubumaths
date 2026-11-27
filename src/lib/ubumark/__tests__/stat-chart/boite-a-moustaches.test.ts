@@ -100,6 +100,10 @@ describe('```boite-a-moustaches — analyse', () => {
 
 	it('valeurs égales permises (min = Q1, médiane = Q3…)', () => {
 		expect(specOf('A = 2 ; 2 ; 5 ; 5 ; 9').boxPlot!.boxes[0].values).toEqual([2, 2, 5, 5, 9]);
+		// Écart L90 : une fraction d'entiers, comme dans `données:`
+		expect(specOf('A = 1/2 ; 1 ; 3/2 ; 11/4 ; 4').boxPlot!.boxes[0].values).toEqual([
+			0.5, 1, 1.5, 2.75, 4
+		]);
 	});
 
 	it('un point-virgule final ne compte pas (comme dans `données:`)', () => {
@@ -149,6 +153,7 @@ describe('```boite-a-moustaches — refus situés', () => {
 	it('une valeur qui n’est pas un nombre, ou vide', () => {
 		expect(errorsOf('A = 1 ; 2 ; abc ; 4 ; 5')[0]).toContain('« abc » n’est pas un nombre');
 		expect(errorsOf('A = 1 ; 2 ; ; 4 ; 5')[0]).toContain('valeur vide');
+		expect(errorsOf('A = 1/0 ; 2 ; 3 ; 4 ; 5')[0]).toContain('« 1/0 » n’est pas un nombre');
 	});
 
 	it('valeurs dans le désordre : la paire fautive est nommée', () => {

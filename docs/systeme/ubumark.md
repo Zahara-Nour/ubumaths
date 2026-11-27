@@ -727,7 +727,9 @@ les points attendus y sont dessinés, mais par réécriture du bloc (`placer:` �
 **Droite à tracer** (même chantier, lot 2, 2-316, 2-445) — `courbe-tracer.test.ts`,
 `CourbeTracer.svelte.test.ts` : `tracer: y = 2x - 1` dans un ` ```courbe ` (nœud : `spec.tracer`,
 `CourbeLineToTrace` `equation`, `line`). Équation réduite, verticale (`x = 3`) ou cartésienne
-(`2x + 3y - 6 = 0`), en syntaxe mathAST (`1/2x`, `0.5x`, `2*(x - 1)`, virgule décimale permise),
+(`2x + 3y - 6 = 0`), en syntaxe mathAST (`1/2x`, `0.5x`, `2*(x - 1)`, virgule décimale permise) ou avec
+une fraction LaTeX (`\frac{1}{2}x`, `\dfrac` : un côté qui porte une commande autre que `\pi` est lu
+par `parseLatex`, écart L88),
 80 caractères au plus ; le parseur la normalise (`normalizeCourbeExpression` puis une espace autour de
 `=`, `+`, `-` binaires : `y = -2x + -3` → `y = -2x - 3`) et la lit en `ax + by + c = 0`
 (`lineCoefficients`, `utils/courbe-tracer.ts` : évaluée en trois points, vérifiée affine en quatre
@@ -1010,7 +1012,8 @@ Danse = 7            ```                                     ```
 - ` ```boite-a-moustaches ` (chantier [boite-a-moustaches](../archive/wip/boite-a-moustaches-progress.md),
   palier 1 : affichage, pour 3-062 et la 2de) — `src/lib/ubumark/__tests__/stat-chart/boite-a-moustaches.test.ts`,
   `StatChart-boite-a-moustaches.svelte.test.ts` : une ligne par boîte `Nautic = 28 ; 30 ; 37 ; 45 ; 58`
-  (minimum ; Q1 ; médiane ; Q3 ; maximum, virgule décimale, nom avec espaces permis, `= …` seul : boîte
+  (minimum ; Q1 ; médiane ; Q3 ; maximum, virgule décimale, fraction d'entiers `1/2` comme dans `données:`
+  (écart L90, `boxValue`), nom avec espaces permis, `= …` seul : boîte
   sans nom), ou `données: 3 ; 5 ; 7 ; …` — UNE boîte sans nom calculée par `describeList`
   (`statistics/describe.ts`, quartiles du programme ; aucun second calcul). Options : `axe: 25 à 60, de 5
 en 5` (départ quelconque, décimaux permis ; sans `de p en p` : de 1 en 1 ; sinon axe calculé « rond »
@@ -2409,16 +2412,14 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   production : le corrigé imprimé d'une série d'automatismes dessine points et droite par réécriture du
   bloc (`serie-automatismes.ts`, comme la droite graduée à placer et la boîte à moustaches), et refuse le
   vecteur à tracer et la droite verticale ; l'horloge et les barres à placer n'ont pas de corrigé
-  imprimé (`generateHorlogeTypst`, `generateStatChartTypst` sans option `solved`) ; `\frac` refusé dans
-  `tracer:` (écrire `1/2x`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
-- ` ```ranger ` dans une liste sort en bloc de code (absent de `SPECIAL_BLOCK_KINDS`) : ne touche que
-  le cours ; dans une question, il est refusé de toute façon.
+  imprimé (`generateHorlogeTypst`, `generateStatChartTypst` sans option `solved`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
+- ` ```ranger ` dans une liste : lu (`SPECIAL_BLOCK_KINDS`, `parseContentWithCodeBlocks`) et affiché
+  (`ListNode`) depuis l'écart L89 ; ne sert qu'au cours, une question le refuse (« doivent être au
+  premier niveau »).
 - Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous
   la base, loin de son court trait quand la distance est petite. Restes hors chantier : voir l'en-tête
   du [journal archivé](../archive/wip/solides-progress.md).
-- **Boîte à moustaches**, laissés après revue (#2151, #2162) : fractions refusées sur une ligne de
-  boîte mais acceptées dans `données:` ; à 40 graduations (le plafond), les étiquettes de l'axe se
-  chevauchent (n'en écrire qu'une sur deux au-delà d'un seuil, si un modèle en a besoin) ; `données:`
+- **Boîte à moustaches**, laissés après revue (#2151, #2162) : `données:`
   tirées au hasard de taille paire → médiane au demi, refusée sur un axe de 1 en 1 pour ce tirage (le
   générateur ne retente pas une autre graine ; dit dans la fiche). Décidés en écrivant le geste, à
   confirmer par David : un trait posé pour la première fois passe au suivant pas posé ; une seule boîte
