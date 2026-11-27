@@ -2,14 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 envoyée._
+_Mis à jour le 2026-11-27, gros lot écrit (PR 1)._
 
-- **État** : relevé fait ([idees-3e-thales-releve.md](idees-3e-thales-releve.md)), phase 0 posée
-  à David (page à cocher, lien ci-dessous). Rien d'écrit en code.
-  · **Prochaine action** : lire les verdicts de la page (collection `verdicts`), puis écrire le
-  gros lot · **En attente de David** : verdicts V1, V2, N1, H1, H2, Q1 à Q3 · **Pièges en cours** :
-  aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `docs/idees-3e-thales` (à
-  renommer `feat/…` si le lot part sur cette branche, sinon nouveau worktree).
+- **État** : lot écrit sur `feat/idees-3e-thales` (§ Lot) : 4 variations de modèles publiés,
+  2 corrigées (Q1), 3 modèles neufs, migration de la notion « Agrandissement et réduction » et
+  migration de contenu. Specs vertes, essai en base locale, rendu vu dans Chrome.
+  · **Prochaine action** : PR 1, merge, `db:migrate` (notion + contenu), puis David crée les
+  brouillons en prod ; PR 2 = ids + migration de rangement ; relecture dans `/dev/modeles`
+  · **En attente de David** : `create-questions --publier` en prod après le merge de la PR 1
+  · **Pièges en cours** : la migration de rangement exige la notion EN PROD (lue par le script)
+  · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales` (l'ancienne
+  branche distante `docs/idees-3e-thales` reste à supprimer).
 
 ## Phase 0 (2026-11-27)
 
@@ -129,3 +132,31 @@ gardant les modèles qui seraient hors programme, comme d'habitude ».
 - **Q3** : noter dans `outils-manquants.md` une case « égalité de rapports de longueurs »,
   jugée à l'ordre des lettres, à l'ordre des rapports et à l'inversion près (3G20-2 : écrire
   l'égalité au lieu de la choisir) ? Je recommande **oui, plus tard**.
+
+## Lot (2026-11-27)
+
+Scripts : `docs/wip/questions/idees-3e-thales-publies.py` (repart de l'export de prod commité,
+fbdc2a782a) et `docs/wip/questions/idees-3e-thales-neufs.py` ; outils communs
+`idees_3e_thales_outils.py`. Décisions d'écriture en tête de chaque script.
+
+- **f55d07b0** (V1) : v5 BC et v6 AC en papillon, trois erreurs prévues chacune (rapport
+  renversé, même différence ajoutée, division oubliée), coup de pouce.
+- **37c13d51** (V2, Q1) : v0 et v1 passent au choix à quatre réponses mélangées (indices d'origine
+  0 et 1 inchangés), corrigé « pourquoi pas le théorème », coup de pouce ; v2 emboîtés et v3
+  papillon avec MB et NC donnés.
+- **N1** « Résoudre un problème avec Thalès » (3-060, niveau 2) : triangles rectangles imbriqués,
+  rectangle et diagonale (ND), MB à déduire de AB.
+- **H1** « Agrandissement et réduction : aires et volumes » (sans point, notion neuve) : k², k³,
+  k depuis deux longueurs (deux erreurs prévues seulement), aire de départ.
+- **H2** « Triangles semblables : côtés homologues et longueurs » (sans point) : deux longueurs,
+  côté homologue (choix de trois côtés).
+- **Notion neuve** (migration 20261127110709) : nom anglais « Enlargement and reduction »,
+  Mathou « Maquette » (non relu par David, validé par défaut comme les autres). Gardes mises à
+  jour : copie figée de l'arbre, `later-migrations.ts`, test des noms anglais, compte des Mathoux.
+- **Migration de contenu** 20261127111236 (générée), fixture rejouée verte.
+- Outil manquant n° 68 (Q3) noté sur main.
+
+Vérifications : `question:specs` vert sur les 5 fichiers (tirages 300 à 900), `sonde-figures`
+0 problème, `create-questions` en simulation, lot publié en base locale (ids restaurés), rendu des
+figures N1 et du choix de 37c13d51 vu dans Chrome. Tests d'intégration : arbre des notions rouge
+sans la migration de la notion, vert avec ; 8 suites de l'arbre vertes ; contenu publié vert.
