@@ -10,10 +10,10 @@ status: en cours
 
 _Mis à jour le 2026-11-28, à l'ouverture._
 
-- **État** : les 8 écarts vérifiés, tous encore vrais (7 preuves rouges + commande M19 rouge). Phase 0 posée à David.
+- **État** : 8 écarts vérifiés, phase 0 validée par David le 2026-11-28 ; correction en cours.
 - **Écarts** (8) : V77, V119, L57, L58, L59, L60, L61, M19.
 - **Prochaine action** : coder après la réponse de David (tests d'abord : preuves → tests ordinaires).
-- **En attente de David** : réponse à la phase 0 (questions Q1 à Q3 ci-dessous).
+- **En attente de David** : rien.
 - **Pièges en cours** : agent `geometry-expert` pour `src/lib/geometry-core/` ; sondes seulement pour vérifier un correctif, pas de cas voisins.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-geometrie` · `fix/ecarts-geometrie`.
 
@@ -42,3 +42,9 @@ la commande de M19 aussi (trois interfaces : `IntersectionConfig`, `NewtonConfig
 - **L60** : tan(x) + 1/(x − 3) dézoomé → l'asymptote x = 3 reste tracée.
 - **L61** : (ln x)²/√x → asymptote y = 0 vers la droite.
 - **M19** : une seule interface de réglage de Newton (code mort, rien de visible).
+
+### Phase 0 — réponses de David (2026-11-28, « ok » à mes recommandations)
+
+- **Q1** : curseur à 0 → rien dessiné, sans erreur ; le cercle revient quand le curseur bouge.
+- **Q2** : primes acceptés en fin de nom, autant qu'on veut (M', M'', …).
+- **Q3** : équation sans aucun point → courbe vide, sans erreur (cohérent avec Q1).
