@@ -98,10 +98,16 @@ export const cubesEntry: BlockCatalogEntry = {
 				'L’élève colorie la vue de face dans le quadrillage de 5 × 4 carreaux ; dans une question, ce bloc est la case.'
 		},
 		{
-			title: 'Retrouver l’assemblage d’après ses vues (geste)',
+			title: 'Retrouver une rangée de piles avec sa vue de face (geste, facile)',
+			source: fence('cubes', 'hauteurs: 2 3 1', 'retrouver: face'),
+			explanation:
+				'La perspective est cachée. Une seule rangée : chaque colonne de la vue de face donne la hauteur de sa pile. Dans les carreaux de la vue de dessus, la réponse est 2, 3 et 1 : aucune autre ne convient.'
+		},
+		{
+			title: 'Retrouver l’assemblage d’après deux vues (geste, plus difficile)',
 			source: fence('cubes', 'hauteurs: 3 1 / 1 2', 'retrouver: face, droite'),
 			explanation:
-				'La perspective est cachée. L’élève touche chaque carreau de la vue de dessus et y écrit le nombre de cubes de la pile. 3 1 / 1 2 est juste, 3 2 / 2 1 ou 3 2 / 2 2 aussi : elles ont les mêmes vues de face et de droite.'
+				'Quatre piles en carré : il faut croiser la vue de face et la vue de droite. L’élève touche chaque carreau de la vue de dessus et y écrit le nombre de cubes de la pile. 3 1 / 1 2 est juste, 3 2 / 2 1 ou 3 2 / 2 2 aussi : elles ont les mêmes vues de face et de droite.'
 		}
 	],
 	mistakes: [
