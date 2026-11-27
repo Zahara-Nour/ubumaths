@@ -44,7 +44,7 @@ async function menuRendu(pendingReportsCount: number | null): Promise<string> {
 		props: { data: data as ModerationLayoutData, children }
 	});
 	const rendu = container.innerHTML.replace(/<!--.*?-->/g, '');
-	unmount();
+	await unmount();
 	return rendu;
 }
 
