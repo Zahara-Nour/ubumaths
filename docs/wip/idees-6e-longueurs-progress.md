@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3254._
+_Mis à jour le 2026-11-28, migrations générées, PR à merger._
 
-- **État** : lot écrit (6 modèles neufs, 20 variations ; 11 variations ajoutées à 6 publiés), `question:specs`
-  vert (111 + 109 specs), essai des neufs en base locale ; #3254 mergée (fichiers du lot seuls).
-- **Prochaine action** : PR mergée → David lance `create-questions --publier` sur
-  `scripts/questions/idees-6e-longueurs-neufs` ; puis migrations de rangement et de contenu (générées).
-- **En attente de David** : la commande `--publier` ; question sur le bogue de fdd849f5 (voir Historique).
-- **Pièges en cours** : une variation `conditions: []` écrase les conditions partagées (`??` du générateur) ;
-  ccb4f5e5 gagne l'option `constraints.products: off` (« ⚠️ options » de `migration-contenu`) ; la migration de
-  contenu générée trop tôt est mise de côté, à régénérer.
-- **Worktree / branche** : aucun (le prochain, sur `origin/main`, sous le même sujet).
+- **État** : 6 brouillons en prod ; migrations `20261127233649_…_neufs_rangement_tags.sql` (6 modèles rangés, 4
+  tags) et `20261127233659_…_publies_contenu.sql` (+11 variations sur 6 publiés) ; tests verts, rouges sans elles ;
+  `security-auditor` sans finding bloquant. Niveaux relevés en prod le 2026-11-28 : inchangés.
+- **Prochaine action** : PR mergée → `migration list --linked` (seulement les 2 nôtres en attente) → `db:migrate`
+  depuis le dépôt principal → vérifier par MCP → série de relecture des 6 publiés (`scripts/series/creer-serie.ts`)
+  et relecture des 6 brouillons dans `/dev/modeles?point=…`.
+- **En attente de David** : oui / non à la correction de fdd849f5 (variation 7, `conditions: []` → `['a>b']`),
+  **hors de ce lot** faute de réponse ; à réserver d'abord, migration de contenu à part.
+- **Pièges en cours** : `conditions: []` écrase les conditions partagées ; ccb4f5e5 gagne `constraints.products:
+off` ; la commande est `pnpm tsx scripts/create-questions.ts`.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs`, `feat/idees-6e-longueurs-rangement`.
 
 ## Phase 0 (2026-11-27)
 
@@ -109,6 +111,12 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : niveaux relevés en prod (inchangés), migrations de rangement et de contenu générées ;
+  `migrations-rangement-tags` et `migrations-contenu-publie` : 511 verts, rouges sans les migrations ;
+  `security-auditor` : aucun finding bloquant (seul le texte générique du rollback parle de niveaux).
+
+- 2026-11-28 : David lance `create-questions --publier` : 6 brouillons en prod, vérifiés par MCP.
 
 - 2026-11-27 : #3254 mergée (fichiers du lot seuls, CI verte).
 
