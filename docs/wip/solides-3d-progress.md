@@ -11,12 +11,14 @@ _Mis à jour le 2026-11-27, après #3222._
 - **Prochaine action** : lot 5 — gestes sur figure tournée (`tracer: vecteur` avec `tourner: oui` ; Q2 du
   § 3 : toucher un point = tracer, glisser = tourner), revue `code-reviewer`. Comportements à écrire et à
   faire valider avant de coder.
+- **Tranché par David le 2026-11-27** : le point sur le sommet NOMMÉ du cône est gardé (dessus et dessous) ;
+  le dessin fixe d'une boule coupée et cotée, où « 1,5 cm » touche le nom du centre (§ 11), se corrige dans
+  une petite PR à part (avant ou après le lot 5 : pas tranché, le lui demander à la reprise) ; le nom de
+  vecteur qui dépasse de 0,08 cm reste tel quel ; mise en prod seulement après son essai au doigt.
 - **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
   noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
-  session) ; (2) les solides ronds (§ 9 : le point posé sur le sommet NOMMÉ du cône quand ses deux traits ont
-  disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque — question
-  posée le 2026-11-27, sans réponse) ; (3) le lot 4 : longueurs qui s'effacent, section qui tourne (deux
-  exemples neufs en bas de la page du catalogue).
+  session) ; (2) les solides ronds (§ 9) ; (3) le lot 4 : longueurs qui s'effacent, section qui tourne (deux
+  exemples neufs en bas de la page du catalogue). Puis sa demande de `deploy:prod`.
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`, scènes neuves à prendre sur le code de `main`) ; jamais d'instantané de
   flottants bruts ; l'angle libre d'un nom se calcule dans le repère du dessin fixe (`fixedVertices`), jamais
