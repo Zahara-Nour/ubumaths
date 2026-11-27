@@ -260,9 +260,10 @@ async function rejuvenateReviews(student: { id: string }): Promise<void> {
 		[student.id]
 	);
 	await sql(
+		// Aucune révision passée : décalage nul (`next_review` est NOT NULL)
 		`update srs_card_stats set next_review = next_review + (
-		   now() - (select max(last_review) from srs_card_stats where user_id = $1)
-		 ) where user_id = $1 and next_review is not null`,
+		   now() - coalesce((select max(last_review) from srs_card_stats where user_id = $1), now())
+		 ) where user_id = $1`,
 		[student.id]
 	);
 }
