@@ -120,7 +120,7 @@ describe('courbe → Typst : titres d’axes et points à placer', () => {
 	});
 
 	it('corrigé : un point par cible, nommé', () => {
-		const out = generateCourbeTypst(parseCourbeContent(BASE), { solved: true });
+		const out = generateCourbeTypst(parseCourbeContent(`${BASE}\nsolution: oui`));
 		expect(count(out, /^\s*\/\/ solution /gm)).toBe(2);
 		expect(out).toContain('[A]');
 		expect(out).toContain('[B]');
@@ -129,7 +129,7 @@ describe('courbe → Typst : titres d’axes et points à placer', () => {
 	it('droite à tracer : énoncé vide, corrigé = la droite et deux de ses nœuds', () => {
 		const source = 'x: -5 ; 5\ny: -5 ; 5\ngrille: 1\ntracer: y = 2x - 1';
 		expect(generateCourbeTypst(parseCourbeContent(source))).not.toContain('// solution');
-		const out = generateCourbeTypst(parseCourbeContent(source), { solved: true });
+		const out = generateCourbeTypst(parseCourbeContent(`${source}\nsolution: oui`));
 		expect(count(out, /^\s*\/\/ solution droite/gm)).toBe(1);
 		// Segment de (-2 ; -5) à (3 ; 5) dans un cadre de la fenêtre [-5 ; 5]²
 		expect(out).toMatch(/line\(\([\d.]+, 0\), \([\d.]+, [\d.]+\), stroke: 1pt/);
@@ -142,7 +142,7 @@ describe('courbe → Typst : titres d’axes et points à placer', () => {
 		const statement = generateCourbeTypst(parseCourbeContent(source));
 		expect(statement).not.toContain('// solution');
 		expect(statement).toContain('[A]');
-		const out = generateCourbeTypst(parseCourbeContent(source), { solved: true });
+		const out = generateCourbeTypst(parseCourbeContent(`${source}\nsolution: oui`));
 		expect(count(out, /^\s*\/\/ solution vecteur/gm)).toBe(1);
 		expect(out).toMatch(/line\([^\n]*mark: \(end: ">"/);
 	});

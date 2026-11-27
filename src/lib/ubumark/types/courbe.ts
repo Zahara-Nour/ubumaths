@@ -295,6 +295,12 @@ export interface CourbeSpec {
 	axisTitles?: CourbeAxisTitles;
 	/** Courbe de données (`données:`, jamais avec `placer:` ni `tracer:`) ; absente sans la clé */
 	donnees?: CourbeData;
+	/**
+	 * `solution: oui` (avec `placer:` ou `tracer:`, sans `case:`) : la réponse
+	 * attendue est dessinée en vert, à l'écran comme au PDF ; rien à faire pour
+	 * l'élève (corrigé imprimé d'une série d'automatismes, V108)
+	 */
+	solution?: true;
 }
 
 // ============================================================================

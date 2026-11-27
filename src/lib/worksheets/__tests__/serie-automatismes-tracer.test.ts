@@ -4,7 +4,9 @@
  *
  * Phase 0 validée le 2026-11-03 : à l'énoncé, le repère reste vide (ligne `tracer:`
  * retirée) ; au corrigé, la droite y est dessinée. Le tracé compte pour une case.
- * Refusés, message à l'appui : droite verticale, vecteur à tracer, droite masquée (`tracer: ?`), repère en retrait ou cité.
+ * Droite verticale et vecteur à tracer (V108, David le 2026-11-28) : au corrigé, le bloc
+ * dessine lui-même sa réponse (`solution: oui`), en vert.
+ * Refusés, message à l'appui : droite masquée (`tracer: ?`), repère en retrait ou cité.
  */
 import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '#lib/questions/types.ts';
@@ -12,6 +14,7 @@ import { buildSerie } from '../serie-automatismes';
 import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
 import { compile } from '#lib/mathAST/eval/compile.ts';
 import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
+import { solvedOverlay } from '#lib/ubumark/utils/courbe-solution.ts';
 
 /** Un modèle d'une variation, énoncé donné, variables m = 2 et p = -1 */
 function modele(id: string, statement: string): QuestionTemplate {
@@ -65,7 +68,10 @@ const cartesienneTiers = modele(
 	`Trace la droite.\n\n${repere('tracer: x - 3y - 3 = 0')}`
 );
 const verticale = modele('verticale', `Trace la droite.\n\n${repere('tracer: x = 3')}`);
-const vecteur = modele('vecteur', `Trace le vecteur.\n\n${repere('tracer: vecteur (3 ; -2)')}`);
+const vecteur = modele(
+	'vecteur',
+	`Trace le vecteur depuis A.\n\n${repere('points: A(-1 ; 2)', 'tracer: vecteur (3 ; -2) depuis A')}`
+);
 const deuxReperes = modele(
 	'deux-reperes',
 	`Trace $d$.\n\n${repere('tracer: y = {{m}}x + {{p}}')}\n\nTrace $d'$.\n\n${repere('tracer: y = -x + 4')}`
@@ -175,10 +181,30 @@ describe('buildSerie — droite à tracer', () => {
 		expect(valeur(blocs[1], 'f', 0)).toBeCloseTo(4);
 	});
 
-	it.each([
-		['verticale', /droite verticale/],
-		['vecteur', /vecteur à tracer/]
-	])('%s : refusé, message à l’appui', (id, message) => {
-		expect(() => buildSerie(modeles, [{ templateId: id, seed: 1 }])).toThrow(message);
+	it('droite verticale : énoncé vide, corrigé = la droite x = 3 dessinée par le bloc', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'verticale', seed: 1 }]);
+		expect(serie.statement).not.toMatch(/tracer:|case:|solution:/);
+		expect(bloc(serie.statement).errors).toEqual([]);
+
+		const corrige = bloc(serie.solution);
+		expect(corrige.errors).toEqual([]);
+		expect(corrige.spec?.solution).toBe(true);
+		expect(serie.solution).not.toMatch(/case:/);
+		const { traces } = solvedOverlay(corrige.spec!);
+		expect(traces).toHaveLength(1);
+		expect(traces[0].from.x).toBe(3);
+		expect(traces[0].to.x).toBe(3);
+	});
+
+	it('vecteur : énoncé avec A seul, corrigé = la flèche depuis A, une case', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'vecteur', seed: 1 }]);
+		expect(serie.statement).not.toMatch(/tracer:|case:|solution:/);
+		expect(bloc(serie.statement).spec?.points.map((p) => p.name)).toEqual(['A']);
+
+		const corrige = bloc(serie.solution);
+		expect(corrige.errors).toEqual([]);
+		expect(solvedOverlay(corrige.spec!).traces).toEqual([
+			{ from: { x: -1, y: 2 }, to: { x: 2, y: 0 }, arrow: true, dashed: false }
+		]);
 	});
 });

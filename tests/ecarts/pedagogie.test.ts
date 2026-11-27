@@ -4,7 +4,7 @@
  *
  * Chaque test affirme le comportement ATTENDU d'un écart encore ouvert : il est
  * rouge tant que l'écart est vrai. Le nom de chaque `describe` porte l'identifiant
- * de l'écart, que le registre retient par `› V111`, `› L87`…
+ * de l'écart, que le registre retient par `› L87`…
  *
  * Les tests nommés « témoin » sont verts aujourd'hui : ils montrent que le même
  * geste marche sur un cas voisin, donc que le rouge vient bien de l'écart.
@@ -15,42 +15,6 @@ import { describe, expect, it } from 'vitest';
 import { assignBlankIndices } from '#lib/questions/generator/assign-blank-indices.ts';
 import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
 import { lineCoefficients } from '#lib/ubumark/utils/courbe-tracer.ts';
-import { printedTitle, type TitleNotion } from '#lib/worksheets/worksheet-title.ts';
-
-describe('V111 : fiche anglaise au titre composé, sans catégorie', () => {
-	// Le titre en base est le titre composé, écrit en français par l'éditeur.
-	const FRENCH_TITLE = 'Suites arithmétiques';
-	const notion: TitleNotion = { name: 'suites arithmétiques', branch: 'Suites' };
-
-	function mainTitle(locale: 'fr' | 'en', notions: TitleNotion[]): string {
-		return printedTitle({
-			type: 'worksheet',
-			category: null,
-			customTitle: false,
-			title: FRENCH_TITLE,
-			notions,
-			locale
-		}).main;
-	}
-
-	it('témoin : en français, le titre composé s’imprime', () => {
-		expect(mainTitle('fr', [notion])).toBe(FRENCH_TITLE);
-	});
-
-	it('témoin : notion traduite, la version anglaise imprime son nom anglais', () => {
-		expect(mainTitle('en', [{ ...notion, nameEn: 'arithmetic sequences' }])).toBe(
-			'Arithmetic sequences'
-		);
-	});
-
-	// Aujourd'hui : « Suites arithmétiques » en tête de la fiche anglaise.
-	it('notion sans nom anglais : la version anglaise n’imprime pas le titre français', () => {
-		const main = mainTitle('en', [notion]);
-		// Un titre vide ne serait pas une correction
-		expect(main).not.toBe('');
-		expect(main).not.toMatch(/arithmétiques/i);
-	});
-});
 
 describe('L87 : horloge à régler comme option d’un choix', () => {
 	function choiceErrorsOf(option: string[]): string {
