@@ -32,6 +32,23 @@ modèles de questions, et on ajoute des variations à des modèles publiés).
 Chaque variation aura ses `testSpecs`, trois erreurs prévues par case saisie et un coup de pouce
 sans la réponse.
 
+## Décisions de David (2026-11-27)
+
+Réponse dans la conversation (la page à cocher est restée vide) : « je valide tes recos, en
+gardant les modèles qui seraient hors programme, comme d'habitude ».
+
+- V1, V2, N1 : oui. R : rien.
+- H1 : oui, sans point. Q2 : nœud neuf « Géométrie > Agrandissement et réduction » (notion sans
+  sous-notion), créé par une migration à part, avant la migration de rangement.
+- H2 : **gardé** (« en gardant les modèles hors programme »), alors que je recommandais non. Je
+  le lis comme un modèle sans point sous « Géométrie > Triangles semblables » (nœud existant,
+  vide). Je n'en reprends que les longueurs (3G24-2) et les côtés homologues (3G24-1), pas les
+  triangles égaux sur quadrillage (3G23) : fiche à compléter si David le veut.
+- Q1 : oui. v1 et v2 de 37c13d51 passent au choix à quatre réponses. L'ordre d'origine des
+  choix garde 0 = parallèles (réciproque) et 1 = pas parallèles (contraposée) : les réponses
+  déjà données (indices d'origine) gardent leur sens.
+- Q3 : oui, plus tard (entrée dans `outils-manquants.md`).
+
 ## Fiches de la phase 0 (copie de la page à cocher)
 
 ### V1 — Côté du grand triangle en papillon (2 variations de f55d07b0, 3-060)
