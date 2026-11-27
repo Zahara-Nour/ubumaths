@@ -49,7 +49,7 @@ _Mis à jour le 2026-11-27 : chantier clos, journal archivé._
 
 ## Décisions (2026-11-25)
 
-Voir l'[ADR 0044](../adr/0044-versions-d-un-exercice.md). Découpage : PR 1 bascule · PR 2 éditeur ·
+Voir l'[ADR 0044](../../adr/0044-versions-d-un-exercice.md). Découpage : PR 1 bascule · PR 2 éditeur ·
 PR 3 fiche · PR 4 effacement des anciennes colonnes (destructif, après `deploy:prod`, go de David).
 
 ## Plan de la PR 1 (validé le 2026-11-25)

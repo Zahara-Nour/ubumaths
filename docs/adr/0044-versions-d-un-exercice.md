@@ -1,7 +1,7 @@
 # 0044 — Versions d'un exercice : un historique, la fiche choisit la sienne
 
 - **Statut** : acceptée — phase 0 du chantier `versions-exercices` (journal
-  [`docs/wip/versions-exercices-progress.md`](../wip/versions-exercices-progress.md))
+  [`docs/archive/wip/versions-exercices-progress.md`](../archive/wip/versions-exercices-progress.md))
 - **Date** : 2026-11-25 · **Décidée par** : David (« je suis tes recommandations »)
 - Complète l'[ADR 0023](0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md) (niveau de
   guidage choisi à l'affectation), qui reste valable dans chaque version.
