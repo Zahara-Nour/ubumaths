@@ -254,7 +254,7 @@ Ordre **obligatoire** dans tout fichier `.ts` ou `<script lang="ts">` :
 
 ## Supabase — clients SSR-compatibles
 
-> ⚠️ Ne jamais utiliser `supabaseClient.ts` (déprécié, singleton non SSR). Doc complète : [database.md](base-de-donnees.md).
+> ⚠️ Jamais de client Supabase créé au chargement d'un module (singleton non SSR, sans cookies) : `locals.supabase` ou `data.supabase`. Doc complète : [database.md](base-de-donnees.md).
 
 **Trois contextes, trois patterns :**
 
@@ -421,7 +421,7 @@ Passage de kit 2 à kit 3.2.0 le 2026-11-18 (#2825). Ce que le guide de migratio
 | `$: doubled = x * 2`                                | `let doubled = $derived(x * 2)`                         |
 | `$: { sideEffect(x); }`                             | `$effect(() => { sideEffect(x); })`                     |
 | `<svelte:component this={C} />`                     | `<C />`                                                 |
-| `import { supabase } from '#lib/supabaseClient.ts'` | `locals.supabase` (serveur) ou `data.supabase` (client) |
+| client Supabase global créé au chargement du module | `locals.supabase` (serveur) ou `data.supabase` (client) |
 | Types dans `database.ts`                            | Types dans `database-helpers.ts`                        |
 | `data: any`                                         | `data: unknown` + type guard                            |
 | `<select>` / `<input type="checkbox">`              | `<MySelect>` / `<MyCheckbox>`                           |

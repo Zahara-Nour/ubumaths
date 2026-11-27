@@ -73,44 +73,21 @@ export const ASSIGNMENT_STATUS_LABELS: Record<string, string> = {
 // =============================================================================
 
 /**
- * Format date for display with French locale
- *
- * @param dateString - ISO timestamp string or null
- * @returns Formatted date string or '-' if null
- *
- * @example
- * ```typescript
- * formatDate('2024-01-20T15:30:00Z') // "20 janvier 2024 15:30"
- * formatDate(null) // "-"
- * ```
- */
-export function formatDate(dateString: string | null): string {
-	if (!dateString) return '-';
-	const date = new Date(dateString);
-	return date.toLocaleDateString('fr-FR', {
-		day: 'numeric',
-		month: 'long',
-		year: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit'
-	});
-}
-
-/**
  * Format duration in minutes to human-readable string
+ * (`formatDuration` de `utils/format.ts`, elle, attend des secondes)
  *
  * @param minutes - Duration in minutes or null
  * @returns Formatted duration string or '-' if null
  *
  * @example
  * ```typescript
- * formatDuration(45) // "45 min"
- * formatDuration(90) // "1h 30min"
- * formatDuration(60) // "1h"
- * formatDuration(null) // "-"
+ * formatMinutes(45) // "45 min"
+ * formatMinutes(90) // "1h 30min"
+ * formatMinutes(60) // "1h"
+ * formatMinutes(null) // "-"
  * ```
  */
-export function formatDuration(minutes: number | null): string {
+export function formatMinutes(minutes: number | null): string {
 	if (!minutes) return '-';
 	if (minutes < 60) return `${minutes} min`;
 	const hours = Math.floor(minutes / 60);

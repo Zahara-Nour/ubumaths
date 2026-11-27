@@ -103,21 +103,3 @@ export function getFileExtension(filename: string): string {
 	const lastDot = filename.lastIndexOf('.');
 	return lastDot > 0 ? filename.substring(lastDot) : '';
 }
-
-/**
- * Get filename without extension
- *
- * @param filename - Filename with extension
- * @returns Filename without extension
- *
- * @example
- * ```typescript
- * getFilenameWithoutExtension('document.pdf') // 'document'
- * getFilenameWithoutExtension('archive.tar.gz') // 'archive.tar'
- * getFilenameWithoutExtension('noextension') // 'noextension'
- * ```
- */
-export function getFilenameWithoutExtension(filename: string): string {
-	const lastDot = filename.lastIndexOf('.');
-	return lastDot > 0 ? filename.substring(0, lastDot) : filename;
-}

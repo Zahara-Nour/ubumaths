@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '#lib/utils/mathlive-styles.ts';
+	import { escapeHtml } from '#lib/utils/html-escape.ts';
 	import ElementPopover from './ElementPopover.svelte';
 	import SliderControl from './SliderControl.svelte';
 	import type { Snippet } from 'svelte';
@@ -463,10 +464,6 @@
 		} catch {
 			return [{ type: 'text', content, bold: false, italic: false, code: false }];
 		}
-	}
-
-	function escapeHtml(s: string): string {
-		return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	}
 
 	/**
