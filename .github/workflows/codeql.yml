@@ -3,7 +3,7 @@ name: CodeQL
 # Static security analysis (free for public repos). Scans JS/TS for vulnerabilities
 # on push to main and weekly, to catch newly-published CodeQL queries.
 #
-# PAS sur `pull_request`, délibérément. Ce job dure ~6 min 25 et n'a jamais été
+# PAS sur `pull_request`, délibérément. Ce job dure 13 à 20 min et n'a jamais été
 # un check REQUIS (cf. la protection de branche) — mais tant qu'il tourne, l'état
 # de la PR reste `UNSTABLE` et **l'auto-merge de GitHub ne déclenche pas**. Il
 # ajoutait donc son temps complet à chaque PR sans jamais rien bloquer.
@@ -39,7 +39,9 @@ jobs:
     # 2026-11-23). Le cron du lundi n'a pas de `head_commit` : il tourne toujours.
     if: "${{ !startsWith(github.event.head_commit.message, 'chore(release): ') }}"
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 30 et non 20 : l'analyse dure 13 à 20 min sur main (fin 2026-11), et deux runs
+    # du 2026-11-26 ont été coupés à 20 min pile, rendus « cancelled » sans finding.
+    timeout-minutes: 30
     permissions:
       actions: read
       contents: read
