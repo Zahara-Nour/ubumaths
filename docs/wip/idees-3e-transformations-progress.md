@@ -2,22 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3247._
+_Mis à jour le 2026-11-27, PR de rangement ouverte._
 
-- **État** : lot mergé (#3247) : 4 modèles neufs, 20 variations, 80 specs, dans
-  `scripts/questions/idees-3e-transformations-neufs/` (script `docs/wip/questions/idees-3e-transformations-neufs.py`).
-  Pas encore en prod.
-- **Prochaine action** : après la publication par David, commiter les ids écrits en tête des fichiers, puis
-  migrations de rangement **sans point** (`rangement` déjà dans les fichiers : notions Rotations et Homothéties,
-  `migration-rangement.ts --dir …`), `security-auditor`, PR ; puis relecture dans `/dev/modeles`.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-3e-transformations-neufs --publier` depuis le dépôt principal (brouillons en prod).
+- **État** : 4 brouillons en prod (4c82bef9, a5e70b85, 277be356, bc6321ed ; ids commités). PR de rangement
+  `feat/idees-3e-transformations-rangement` : migration `20261127155302_…_rangement_tags.sql`, **sans point**,
+  nœuds Rotations (N1, N4) et Homothéties (N2, N3).
+- **Prochaine action** : merge, `db:migrate` (4 conditions, `migration list --linked` avant), puis relecture
+  par David dans `/dev/modeles?noeud=` (Rotations, Homothéties), lire `question_template_reviews`, corriger,
+  `publier-lot.ts --dir …` en simulation.
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : un point à `placer:` dans un ` ```courbe ` ne peut pas s'appeler `A'` ; un nom de point de
   ` ```figure ` refuse `'` et `′` ; la variable `i` est lue comme l'imaginaire ; `git restore` après un essai local
   annule aussi les fichiers régénérés depuis le dernier commit. Un modèle « ESSAI LOCAL pavage triangles » traîne
   dans la base locale seulement.
-- **Worktree / branche** : aucun (retiré par `pr:merger`) ; la PR suivante part d'un worktree neuf
-  `../ubumaths-wt-idees-3e-transformations` sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-transformations`, `feat/idees-3e-transformations-rangement`.
 
 ## Phase 0 (2026-11-27)
 
@@ -88,3 +86,9 @@ maintenant. Q1 : oui, sans point. Q2 : sans point. La page à cocher est restée
 longueurs non décimales), demande k « en écriture décimale », et ses corrigés n'écrivent jamais |k| (la notation
 de la valeur absolue est hors des bornes du cycle 4) ; N3 (b) et (c) ont deux erreurs prévues ; N1 (e) et N2 (e)
 nomment B le point à placer ; N4 (c) a six configurations fixes, pavage numéroté rangée par rangée.
+
+## En prod (2026-11-27)
+
+David a publié les brouillons (`create-questions --publier`) : 4c82bef9 (N1), a5e70b85 (N2), 277be356 (N3),
+bc6321ed (N4), `draft`, `grades` = 3, vérifiés en prod. Migration de rangement générée
+(`migration-rangement.ts`), sans tag, nœuds Rotations et Homothéties.
