@@ -88,9 +88,9 @@
 		{#if item.badge && item.badge > 0}
 			<span
 				class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground"
-				aria-label={item.badgeLabel}
 			>
-				{item.badge > 99 ? '99+' : item.badge}
+				<span aria-hidden="true">{item.badge > 99 ? '99+' : item.badge}</span>
+				{#if item.badgeLabel}<span class="sr-only">{item.badgeLabel}</span>{/if}
 			</span>
 		{/if}
 	</a>

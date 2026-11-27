@@ -190,6 +190,13 @@ describe('isNavLinkActive', () => {
 		}
 	});
 
+	it('surligne « Messages » sur toute la messagerie (V104)', () => {
+		for (const pathname of ['/messages', '/messages/inbox', '/messages/compose']) {
+			expect(isNavLinkActive('/messages', pathname), pathname).toBe(true);
+		}
+		expect(isNavLinkActive('/messages', '/dashboard/chat')).toBe(false);
+	});
+
 	it('ne surligne pas « Mon travail » ailleurs dans l’espace élève', () => {
 		expect(isNavLinkActive('/dashboard/student/work', '/dashboard/student/riddles')).toBe(false);
 		expect(isNavLinkActive('/dashboard/student/work', '/dashboard/student/progression')).toBe(

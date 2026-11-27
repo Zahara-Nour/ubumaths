@@ -241,7 +241,9 @@ const ACTIVE_PREFIXES: Record<string, string[]> = {
 		'/dashboard/student/worksheets',
 		'/dashboard/student/assessments'
 	],
-	'/dashboard/bug-reports': ['/dashboard/bug-reports']
+	'/dashboard/bug-reports': ['/dashboard/bug-reports'],
+	// `/messages` renvoie à `/messages/inbox` : toute la messagerie surligne le lien
+	'/messages': ['/messages']
 };
 
 /** Le lien `href` de la barre latérale est-il celui de la page `pathname` ? */

@@ -426,9 +426,9 @@
 				{#if link.badge && link.badge > 0}
 					<span
 						class="absolute top-1 right-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
-						aria-label={link.badgeLabel}
 					>
-						{link.badge > 99 ? '99+' : link.badge}
+						<span aria-hidden="true">{link.badge > 99 ? '99+' : link.badge}</span>
+						<span class="sr-only">{link.badgeLabel}</span>
 					</span>
 				{/if}
 			{/snippet}
