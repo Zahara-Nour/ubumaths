@@ -84,7 +84,8 @@
 	const HIT_RADIUS = 0.45;
 	/**
 	 * Figure que l'on tourne : la zone ne descend pas sous ce rayon (cm) quand deux points se
-	 * rapprochent à l'écran — là où deux zones se recouvrent, le toucher pose le point de devant
+	 * rapprochent à l'écran — là où deux zones se recouvrent, le toucher pose le point le plus
+	 * près du doigt, et celui de devant s'ils sont au même endroit (`solideTouchedPoint`)
 	 */
 	const HIT_MIN = 0.2;
 	/** Rayon (cm) de l'anneau qui montre qu'un point se touche, et du point choisi */

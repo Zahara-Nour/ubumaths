@@ -130,10 +130,14 @@ export interface SolideTouchZone {
 	nearness: number;
 }
 
+/** Deux points à moins de cet écart (cm) du doigt l'un de l'autre : au même endroit pour lui */
+const SAME_PLACE = 0.1;
+
 /**
  * Le point que pose un toucher sur une figure tournée : parmi ceux dont la zone
- * (disque de rayon `radius`) contient le toucher, celui de devant — deux points
- * au même endroit de l'écran, c'est le plus près de l'œil qui se touche
+ * (disque de rayon `radius`) contient le toucher, le plus près du doigt ; ceux
+ * qui en sont aussi près à 1 mm (`SAME_PLACE`) sont au même endroit de l'écran,
+ * et c'est alors celui de devant, le plus près de l'œil, qui se touche
  * (chantier `solides-3d`, lot 5, question (a)). null : aucune zone sous le doigt.
  */
 export function solideTouchedPoint(
@@ -141,12 +145,14 @@ export function solideTouchedPoint(
 	touch: EspacePoint,
 	radius: number
 ): number | null {
-	let front: SolideTouchZone | null = null;
-	for (const zone of zones) {
-		if (Math.hypot(zone.at.x - touch.x, zone.at.y - touch.y) > radius) continue;
-		if (front === null || zone.nearness > front.nearness) front = zone;
-	}
-	return front?.index ?? null;
+	const under = zones
+		.map((zone) => ({ zone, far: Math.hypot(zone.at.x - touch.x, zone.at.y - touch.y) }))
+		.filter((z) => z.far <= radius);
+	if (under.length === 0) return null;
+	const nearest = Math.min(...under.map((z) => z.far));
+	return under
+		.filter((z) => z.far <= nearest + SAME_PLACE)
+		.reduce((front, z) => (z.zone.nearness > front.zone.nearness ? z : front)).zone.index;
 }
 
 /** Le vecteur de la combinaison, en 3D */

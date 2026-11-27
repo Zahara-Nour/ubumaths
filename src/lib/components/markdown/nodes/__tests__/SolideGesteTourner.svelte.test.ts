@@ -303,7 +303,7 @@ describe('SolideGeste — tourner: oui', () => {
 		expect(traits(figures(root)[0])).not.toBe(before);
 	});
 
-	it('deux points presque au même endroit : le toucher pose celui de devant (48)', async () => {
+	it('deux points presque au même endroit : le toucher entre les deux pose celui de devant (48)', async () => {
 		// Pavé peu profond (4 × 1 × 3) : après une flèche à droite et une vers le haut, la vue est
 		// presque de face — D est à moins de 2 mm de A, derrière lui
 		const { probe, answer } = answerProbe();
@@ -328,7 +328,10 @@ describe('SolideGeste — tourner: oui', () => {
 		const d = point(root, 'D').getBoundingClientRect();
 		const gap = Math.hypot(a.left - d.left, a.top - d.top);
 		expect(gap).toBeLessThan(a.width / 2);
-		await userEvent.click(point(root, 'D'));
+		// Le doigt entre les deux, sur la zone de D : aussi près de l'un que de l'autre, A est devant
+		await userEvent.click(point(root, 'D'), {
+			position: { x: d.width / 2 + (a.left - d.left) / 2, y: d.height / 2 + (a.top - d.top) / 2 }
+		});
 		await expect.poll(() => probe.value).toBe('A/');
 		// Au clavier, D reste D
 		point(root, 'D').focus();

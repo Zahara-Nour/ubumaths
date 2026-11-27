@@ -1606,8 +1606,8 @@ d'un point, et le clic que le navigateur envoie ensuite est arrêté sur la figu
 avant le `onclick` du point. Anneaux, points choisis et flèche sont dessinés depuis la scène de la vue : ils
 suivent. La réponse de la case reste `A/G` ; la vue n'y entre pas. Clavier : flèches et Échap remontent du point
 à la figure (Tab, Espace et Entrée inchangés). **Deux points au même endroit de l'écran** : la zone de toucher
-ne descend pas sous `HIT_MIN` (0,2 cm) ; là où deux zones se recouvrent, `solideTouchedPoint` pose le point de
-devant (`solidePointNearness` : profondeur vers l'œil dans la vue) — au clavier, chaque point reste lui-même.
+ne descend pas sous `HIT_MIN` (0,2 cm) ; là où deux zones se recouvrent, `solideTouchedPoint` pose le point le
+plus près du doigt, et celui de devant s'ils en sont aussi près à 1 mm (`solidePointNearness` : profondeur vers l'œil dans la vue) — au clavier, chaque point reste lui-même.
 `SolideGeste` crée **deux** rotations : la figure de l'élève (ou la bonne réponse seule, `solution`) et la
 figure « Correction » tournent chacune de son côté, verrouillées comprises.
 

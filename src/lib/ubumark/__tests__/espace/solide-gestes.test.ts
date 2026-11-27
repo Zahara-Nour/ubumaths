@@ -477,6 +477,18 @@ describe('```solide + tracer: + tourner: — le point de devant', () => {
 		expect(solideTouchedPoint(all, all.find((z) => z.index === 0)!.at, 0.2)).toBe(3);
 	});
 
+	it('deux zones qui se recouvrent, doigt nettement sur le point du fond : celui du fond', () => {
+		// A devant, D derrière, à 2,5 mm l'un de l'autre ; le doigt à 0,5 mm de D, à 2 mm de A
+		const all = [
+			{ index: 0, at: { x: 0, y: 0 }, nearness: 1 },
+			{ index: 3, at: { x: 0.25, y: 0 }, nearness: 0 }
+		];
+		expect(solideTouchedPoint(all, { x: 0.2, y: 0 }, 0.2)).toBe(3);
+		// Le doigt entre les deux, à 1 mm près : celui de devant
+		expect(solideTouchedPoint(all, { x: 0.15, y: 0 }, 0.2)).toBe(0);
+		expect(solideTouchedPoint(all, { x: 0.05, y: 0 }, 0.2)).toBe(0);
+	});
+
 	it('un seul point sous le doigt : lui, même au fond', () => {
 		const all = zones(cube(), VUE_DE_DEPART);
 		const d = all.find((z) => z.index === 3)!;
