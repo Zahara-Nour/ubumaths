@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 écrite._
+_Mis à jour le 2026-11-27, phase 0 validée._
 
 - **État** : rubrique prise (9d73c269a9), relevé écrit ([idees-6e-longueurs-releve.md](idees-6e-longueurs-releve.md)),
   fiches F1 à F6, N1 à N5 et questions Q1, Q2 sur la page à cocher.
-- **Prochaine action** : lire les verdicts de David (page à cocher ou message), puis écrire le lot
-  (`docs/wip/questions/idees-6e-longueurs-neufs.py` et `…-publies.py`), réserver les modèles publiés retenus.
-- **En attente de David** : verdicts des fiches, Q1 (point de N3), Q2 (point de N4 et N5).
+- **Prochaine action** : écrire le lot (`docs/wip/questions/idees-6e-longueurs-neufs.py` et `…-publies.py`),
+  simulation, specs, essai en base locale, puis PR du lot.
+- **En attente de David** : rien (« je te suis » : fiches F1 à F6, N1 à N5 ; Q1 → 6-148 ; Q2 → 6e sans point).
 - **Pièges en cours** : le bloc `figure` n'a pas de secteur (arc + rayons tracés à part, comme 60f165a8).
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs`, `chore/idees-6e-longueurs`.
 
@@ -108,5 +108,8 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
 
 ## Historique
 
+- 2026-11-27 : David répond « je te suis » aux recommandations (toutes les fiches oui ; Q1 : N3 sur 6-148 ;
+  Q2 : N4 et N5 modèles de 6e sans point). Modèles 060086c8, 4343af4c, 60f165a8, 66f9abbf, ccb4f5e5, cfb4c692
+  réservés (b871d0f3ac).
 - 2026-11-27 : rubrique prise (9d73c269a9), relevé par deux agents Sonnet, plages recoupées dans le code, nos
   modèles relevés en prod ; phase 0 écrite.
