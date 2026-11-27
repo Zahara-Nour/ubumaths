@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-transformations-neufs/ (N1 à N4).
 
 Phase 0 tranchée par David le 2026-11-27 (« je te suis » : recommandations suivies ; journal
-docs/wip/idees-3e-transformations-progress.md).
+docs/archive/wip/idees-3e-transformations/idees-3e-transformations-progress.md).
 
 Rangement, tout SANS point : rotation et homothétie sont absentes du BO de cycle 4 en vigueur
 (docs/systeme/programmes/bornes/cycle4.md, bornes générales n° 13 : « aucun point ne doit les

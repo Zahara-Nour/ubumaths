@@ -3,6 +3,10 @@
 	 * Bug Report Card
 	 *
 	 * Displays a single bug report with status, category, and metadata.
+	 *
+	 * E89 : la case à cocher de sélection est elle-même un bouton (bits-ui) ; elle vit à côté
+	 * du bouton de la carte, jamais dedans (un bouton dans un bouton est du HTML invalide, que
+	 * le navigateur répare en déplaçant les nœuds).
 	 */
 	import { cn } from '#lib/utils.ts';
 	import type {
@@ -60,87 +64,82 @@
 			onSelectionChange?.(checked);
 		}
 	}
-
-	// Handle card click - don't trigger if selection mode is active
-	function handleCardClick(event: MouseEvent) {
-		// Prevent card click when clicking on checkbox or its label
-		if (selectable && event.target instanceof HTMLElement) {
-			const checkboxWrapper = event.target.closest('.checkbox-wrapper');
-			if (checkboxWrapper) {
-				return;
-			}
-		}
-		onclick?.();
-	}
 </script>
 
-<button
-	type="button"
-	onclick={handleCardClick}
+<div
 	class={cn(
-		'w-full rounded-lg border bg-card p-4 text-left',
+		'flex w-full items-start gap-3 rounded-lg border bg-card p-4',
 		'transition-colors hover:bg-muted/50',
-		'focus:ring-2 focus:ring-ring focus:outline-none',
+		'focus-within:ring-2 focus-within:ring-ring',
 		className
 	)}
 >
-	<div class="flex items-start justify-between gap-3">
-		{#if selectable}
-			<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-			<div class="flex-shrink-0 pt-1" onclick={(e) => e.stopPropagation()}>
-				<MyCheckbox checked={selected} onCheckedChange={handleSelectionChange} />
-			</div>
+	{#if selectable}
+		<div class="flex-shrink-0 pt-1">
+			<MyCheckbox
+				checked={selected}
+				onCheckedChange={handleSelectionChange}
+				aria-label={`Sélectionner le rapport « ${report.title} »`}
+			/>
+		</div>
+	{/if}
+
+	<button
+		type="button"
+		onclick={() => onclick?.()}
+		class="min-w-0 flex-1 text-left focus:outline-none"
+	>
+		<span class="flex flex-col-reverse items-start gap-2 sm:flex-row sm:justify-between sm:gap-3">
+			<span class="block w-full min-w-0 sm:w-auto sm:flex-1">
+				<!-- Title with category icon -->
+				<span class="flex items-center gap-2">
+					<span class="text-lg">{categoryIcon}</span>
+					<span class="truncate font-medium">{report.title}</span>
+				</span>
+
+				<!-- Description preview -->
+				<span class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+					{report.description}
+				</span>
+
+				<!-- Metadata -->
+				<span class="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+					<span class={cn('font-medium', severityColor)}>
+						{report.severity.charAt(0).toUpperCase() + report.severity.slice(1)}
+					</span>
+					<span>•</span>
+					<span>{categoryLabel}</span>
+					<span>•</span>
+					<span>{timeAgo}</span>
+					{#if report.author}
+						<span>•</span>
+						<span>{authorName}</span>
+					{/if}
+				</span>
+
+				<!-- Resolution notes preview -->
+				{#if report.resolution_notes}
+					<span class="mt-2 block rounded bg-muted p-2 text-sm">
+						<span class="font-medium">Réponse :</span>
+						<span class="line-clamp-1 text-muted-foreground">{report.resolution_notes}</span>
+					</span>
+				{/if}
+			</span>
+
+			<!-- Status badge -->
+			<BugReportStatusBadge status={report.status as BugReportStatus} />
+		</span>
+
+		<!-- Screenshot indicator -->
+		{#if report.screenshot_url}
+			<span class="mt-2 block text-xs text-muted-foreground">📷 Capture d'écran attachée</span>
 		{/if}
 
-		<div class="min-w-0 flex-1">
-			<!-- Title with category icon -->
-			<div class="flex items-center gap-2">
-				<span class="text-lg">{categoryIcon}</span>
-				<h3 class="truncate font-medium">{report.title}</h3>
-			</div>
-
-			<!-- Description preview -->
-			<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-				{report.description}
-			</p>
-
-			<!-- Metadata -->
-			<div class="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-				<span class={cn('font-medium', severityColor)}>
-					{report.severity.charAt(0).toUpperCase() + report.severity.slice(1)}
-				</span>
-				<span>•</span>
-				<span>{categoryLabel}</span>
-				<span>•</span>
-				<span>{timeAgo}</span>
-				{#if report.author}
-					<span>•</span>
-					<span>{authorName}</span>
-				{/if}
-			</div>
-
-			<!-- Resolution notes preview -->
-			{#if report.resolution_notes}
-				<div class="mt-2 rounded bg-muted p-2 text-sm">
-					<span class="font-medium">Réponse :</span>
-					<span class="line-clamp-1 text-muted-foreground">{report.resolution_notes}</span>
-				</div>
-			{/if}
-		</div>
-
-		<!-- Status badge -->
-		<BugReportStatusBadge status={report.status as BugReportStatus} />
-	</div>
-
-	<!-- Screenshot indicator -->
-	{#if report.screenshot_url}
-		<div class="mt-2 text-xs text-muted-foreground">📷 Capture d'écran attachée</div>
-	{/if}
-
-	<!-- Auto-generated indicator -->
-	{#if report.auto_generated}
-		<div class="mt-2 text-xs text-orange-600 dark:text-orange-400">
-			⚡ Rapport généré automatiquement (freeze détecté)
-		</div>
-	{/if}
-</button>
+		<!-- Auto-generated indicator -->
+		{#if report.auto_generated}
+			<span class="mt-2 block text-xs text-orange-600 dark:text-orange-400">
+				⚡ Rapport généré automatiquement (freeze détecté)
+			</span>
+		{/if}
+	</button>
+</div>

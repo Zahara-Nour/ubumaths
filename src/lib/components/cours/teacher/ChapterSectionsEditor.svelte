@@ -933,7 +933,7 @@
 		{#each liste as ressource (dndKey(ressource))}
 			<div
 				animate:flip={{ duration: FLIP_MS }}
-				class="flex items-center gap-2 rounded-md border bg-card px-2 py-1.5
+				class="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border bg-card px-2 py-1.5
 					{ressource.id === SHADOW_PLACEHOLDER_ITEM_ID || estOmbre(ressource) ? 'opacity-40' : ''}"
 			>
 				<GripVertical class="h-4 w-4 shrink-0 cursor-grab text-muted-foreground" />
@@ -942,7 +942,7 @@
 					{@render marqueModele()}
 				{/if}
 				<span
-					class="min-w-0 flex-1 truncate text-sm {ressource.hidden
+					class="min-w-0 flex-1 basis-40 truncate text-sm {ressource.hidden
 						? 'text-muted-foreground line-through'
 						: ''}">{ressource.label}</span
 				>

@@ -142,7 +142,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Proportionnalité                         | 3P1       | 3         | publiée (2026-11-26)                                       | `idees-3e-proportionnalite`  |
 | Statistiques                             | 3S1       | 3         | publiée (2026-11-27)                                       | `idees-3e-statistiques`      |
 | Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
-| Homothétie et rotation                   | 3G1       | 8         | prise (2026-11-27)                                         | `idees-3e-transformations`   |
+| Homothétie et rotation                   | 3G1       | 8         | publiée (2026-11-27)                                       | `idees-3e-transformations`   |
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
 | Espace                                   | 3G4       | 6         | libre                                                      |                              |
