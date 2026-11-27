@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot écrit, PR ouverte._
+_Mis à jour le 2026-11-27, après #3221._
 
-- **État** : N1 et N2 écrits (`scripts/questions/idees-1re-geometrie-reperee-neufs/`), simulation verte, essayés en base locale · **Prochaine action** : après le merge, David lance `create-questions --publier` en prod, je commite les ids puis génère les migrations de rangement (projeté orthogonal, niveaux 4 et 5, 1SPE-437) · **En attente de David** : la création en brouillon en prod · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-1re-geometrie-reperee`, `feat/idees-1re-geometrie-reperee`
+- **État** : N1 et N2 sur `main` (`scripts/questions/idees-1re-geometrie-reperee-neufs/`), pas encore en prod · **Prochaine action** : quand David a lancé la création en prod, commiter les ids écrits en tête des fichiers, puis générer la migration de rangement (`migration-rangement.ts --dir …`, projeté orthogonal, niveaux 4 et 5 à revérifier en prod, 1SPE-437) dans un nouveau worktree · **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-1re-geometrie-reperee-neufs --publier` depuis le dépôt principal · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré après #3221)
 
 ## Historique
 
@@ -37,3 +37,5 @@ _Mis à jour le 2026-11-27, lot écrit, PR ouverte._
 - Base locale : les deux modèles créés en brouillon, aperçus vus avec `pnpm voir` (figure, cases,
   choix, 0 erreur de console) ; le jugement des réponses justes et des erreurs prévues est vérifié
   par les specs. Ids locaux retirés des fichiers.
+
+- #3221 mergée le 2026-11-27 (fichiers seuls, sans migration).
