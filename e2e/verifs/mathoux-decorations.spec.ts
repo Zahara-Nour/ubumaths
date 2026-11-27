@@ -94,6 +94,8 @@ let startProfiles: {
 }[] = [];
 
 let lockHeld = false;
+/** Dates de révision d'eleve14 avant leur rajeunissement (`rejuvenateReviews`), remises à la fin */
+let reviewDates: { id: string; next_review: string | null }[] = [];
 
 test.beforeAll(async () => {
 	test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
@@ -138,6 +140,15 @@ test.afterAll(async () => {
 
 async function restoreDecor(): Promise<void> {
 	if (!startedAt) return;
+	if (reviewDates.length > 0) {
+		await sql(
+			`update srs_card_stats s set next_review = r.next_review::timestamptz
+			 from jsonb_to_recordset($1::jsonb) as r(id uuid, next_review text)
+			 where s.id = r.id`,
+			[JSON.stringify(reviewDates)]
+		);
+		reviewDates = [];
+	}
 	for (const table of APPENDED_TABLES) {
 		await sql(`delete from ${table} where student_id = any($1) and created_at >= $2`, [
 			ALL_IDS,
@@ -235,6 +246,25 @@ async function bornMathoux(student: { id: string }): Promise<Born[]> {
 		[student.id]
 	);
 	return rows.map((r) => ({ notionId: r.notion_id, notionName: r.name, asleep: r.asleep }));
+}
+
+/**
+ * Le remplissage date les cartes de révision du jour où il a tourné : chaque jour qui passe
+ * en rend d'autres « dues », et le Mathoux de leur point s'endort (nuit du 2026-11-27 : un seul
+ * éveillé chez eleve14 au lieu de trois). On décale les dates de révision de l'élève comme si sa
+ * dernière révision venait d'avoir lieu : le décor redevient celui du jour du remplissage.
+ */
+async function rejuvenateReviews(student: { id: string }): Promise<void> {
+	reviewDates = await sql<{ id: string; next_review: string | null }>(
+		`select id, next_review::text from srs_card_stats where user_id = $1`,
+		[student.id]
+	);
+	await sql(
+		`update srs_card_stats set next_review = next_review + (
+		   now() - (select max(last_review) from srs_card_stats where user_id = $1)
+		 ) where user_id = $1 and next_review is not null`,
+		[student.id]
+	);
 }
 
 async function setStage(
@@ -424,6 +454,7 @@ test.describe('décor : les Mathoux d’eleve14', () => {
 		test.setTimeout(120_000);
 		await studentPage(page, E14);
 		await resetLooks(E14);
+		await rejuvenateReviews(E14);
 		await chatterie(page);
 		// Éveillé ou non : ce que la page DIT maintenant (la sieste est recalculée à l'affichage)
 		const all = await bornMathoux(E14);

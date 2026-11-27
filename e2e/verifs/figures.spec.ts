@@ -53,7 +53,14 @@ test('#1341 figures : erreur de script, aperçu, enregistrement, filtre, page pu
 	// Le menu « Figures » mène à la liste
 	await page.goto('/dashboard');
 	await page.waitForLoadState('networkidle');
-	await page.getByRole('link', { name: 'Figures', exact: true }).first().click();
+	// Au téléphone, le menu est replié derrière « Ouvrir le menu » : on l'ouvre comme le doigt
+	const menu = page.getByRole('button', { name: 'Ouvrir le menu' }).locator('visible=true');
+	if ((await menu.count()) > 0) await menu.first().click();
+	await page
+		.getByRole('link', { name: 'Figures', exact: true })
+		.locator('visible=true')
+		.first()
+		.click();
 	await expect(page).toHaveURL(/\/dashboard\/teacher\/figures$/);
 	await page.getByRole('link', { name: 'Nouvelle figure' }).click();
 	await expect(page).toHaveURL(/\/figures\/new$/);
