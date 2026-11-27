@@ -3,7 +3,7 @@
  * ================================
  *
  * Shared configuration constants for text colors, highlights, emojis, and math templates.
- * Unified from RichTextEditor.svelte and FormRichTextEditor.svelte.
+ * Used by RichTextEditor.svelte.
  */
 
 import type {
@@ -309,7 +309,7 @@ export const MATH_TEMPLATES_FULL: MathTemplate[] = [
 
 /**
  * Math Templates - Basic Set (4 templates)
- * Subset of templates for simplified UI (FormRichTextEditor)
+ * Subset of templates for RichTextEditor with mathTemplates = 'basic'
  */
 export const MATH_TEMPLATES_BASIC: MathTemplate[] = [
 	{ label: 'Fraction', latex: '\\frac{a}{b}', icon: 'ᵃ⁄ᵦ', title: 'Fraction' },

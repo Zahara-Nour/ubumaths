@@ -13,12 +13,15 @@ couvre:
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
   - 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
   - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching,programme-tree,programme-map,template-select-items}.ts'
-  - 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
+  - 'src/routes/api/teacher/{chapter-templates,curriculum,periods}/**'
+  - src/routes/api/teacher/chapters/+server.ts
+  - 'src/routes/api/teacher/chapters/*/+server.ts'
+  - 'src/routes/api/teacher/chapters/*/{checklist,document-upload-url,documents,exercises,progress,reorder,sections}/**'
   - 'src/routes/api/student/{chapters,checklist}/**'
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
   - 'src/routes/(protected)/dashboard/teacher/contenu/templates/**'
   - 'src/routes/(protected)/dashboard/student/{cours,cahier-texte,progression,notions}/**'
-  - 'src/routes/(public)/cahier/**'
+  - 'src/routes/(public)/cahier/*/+page.{server.ts,svelte}'
   - 'src/routes/(public)/cours/**'
 ---
 

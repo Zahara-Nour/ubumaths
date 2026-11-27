@@ -1,35 +1,19 @@
 <!--
-	Student Dashboard Component
-	============================
+	Tableau de bord de l'élève
+	==========================
 
-	This component is rendered when a user with role='student' accesses /dashboard.
-	It displays student-specific information and features.
+	Rendu par +page.svelte quand data.profile.role === 'student'.
 
-	STUDENT ROLE CAPABILITIES:
-	--------------------------
-	Students can:
-	- View their pending assignments
-	- Track their total points earned
-	- Monitor their mastery level across topics
-	- See recent activity (exercise attempts, submissions)
-	- View classes they're enrolled in
+	CE QU'IL AFFICHE :
+	- boîte de réception (InboxWidget, data.inbox)
+	- carte de progression (notions du programme, compétences observées : data.progression)
+	- accès aux énigmes (data.riddlesSolved)
+	- récompenses et avertissements de la période courante (RewardsBlock, lus dans
+	  studentCache), accès aux révisions
 
-	RENDERED BY:
-	------------
-	+page.svelte when data.profile.role === 'student'
-
-	RECEIVED DATA:
-	--------------
-	- data.profile: User's profile with { id, email, full_name, role }
-	- Future: Will receive real assignment, progress, and class data
-
-	FUTURE ENHANCEMENTS:
-	--------------------
-	- Fetch real assignment data from database
-	- Display actual student progress from student_progress table
-	- Show real class enrollment from class_members table
-	- Add interactive charts for progress visualization
-	- Link to individual assignments and exercises
+	DONNÉES :
+	- data.user, data.profile, data.academicPeriods (période courante)
+	- au montage : studentCache.getRewards() et getWarnings(<période courante>)
 -->
 
 <script lang="ts">

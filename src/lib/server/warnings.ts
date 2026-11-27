@@ -151,7 +151,8 @@ export async function getCurrentAcademicPeriod(options: {
  * Get warning counts for all students in a class for a specific period
  *
  * Uses optimized single-query aggregation with GROUP BY and COUNT.
- * Automatically verifies teacher ownership via RLS policies.
+ * Vérifie seulement que la classe existe (mono-professeur : prof et admin voient
+ * toutes les classes) ; l'accès réel est tenu par la RLS.
  *
  * @param options - Configuration object
  * @param options.classId - The class UUID
@@ -187,12 +188,12 @@ export async function getClassWarnings(options: {
 		.maybeSingle();
 
 	if (classError) {
-		logger.error('[getClassWarnings] Error verifying class ownership:', classError);
-		throw error(500, `Failed to verify class ownership: ${classError.message}`);
+		logger.error('[getClassWarnings] Error checking class existence:', classError);
+		throw error(500, `Failed to check class existence: ${classError.message}`);
 	}
 
 	if (!classCheck) {
-		logger.error('[getClassWarnings] Teacher does not own class:', classId);
+		logger.error('[getClassWarnings] Class not found or not visible:', classId);
 		throw error(403, 'Accès refusé aux avertissements de cette classe');
 	}
 

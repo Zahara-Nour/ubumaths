@@ -1,58 +1,20 @@
 <!--
-	Teacher Dashboard Component
-	============================
+	Tableau de bord du prof
+	=======================
 
-	This component is rendered when a user with role='teacher' accesses /dashboard.
-	It displays teacher-specific information and management tools.
+	Rendu par +page.svelte quand data.profile.role === 'teacher'.
 
-	TEACHER ROLE CAPABILITIES:
-	--------------------------
-	Teachers can:
-	- Select and manage their classes via dropdown
-	- Find their current class based on schedule (auto-detection)
-	- View quick stats: total classes, students, assignments, pending reviews
-	- Create and manage classes
-	- Add students to their classes
-	- Create custom exercises for their students
-	- Create assignments from existing exercises
-	- Review student submissions
-	- Track student progress across all their classes
-	- Generate class performance reports
+	CE QU'IL AFFICHE :
+	- sélecteur de classe (choix gardé dans localStorage, selectedClass) et de période
+	- bouton « Trouver ma classe » : jour et heure courants face aux emplois du temps,
+	  jours chômés selon le `week_config` de l'école
+	- tirage au sort d'un élève (Wheel), carte VIP, actions rapides par élève
+	  (StudentQuickActionsTable), lien vers les decks de révision, dialogues de jeux
 
-	NEW FEATURES (Class Selection):
-	--------------------------------
-	1. **Class Selector Dropdown**:
-	   - Displays all teacher's classes
-	   - Selection persists to localStorage
-	   - Auto-selects first class on initial load
-	   - Shows selected class info with student count
-
-	2. **"Find Current Class" Button**:
-	   - Matches current day (Sunday-Thursday) and time against schedules
-	   - Auto-selects matching class in dropdown
-	   - Shows success toast with schedule details
-	   - Handles edge cases: weekends, no classes, no schedules
-
-	RENDERED BY:
-	------------
-	+page.svelte when data.profile.role === 'teacher'
-
-	RECEIVED DATA:
-	--------------
-	- data.profile: User's profile with { id, email, full_name, role }
-	- data.teacherClasses: Array of teacher's classes with:
-	  - Class info (id, name, description, join_code, etc.)
-	  - student_count: Number of enrolled students
-	  - schedules: Array of ClassSchedule entries
-
-	FUTURE ENHANCEMENTS:
-	--------------------
-	- Replace hardcoded stats with real database queries
-	- Show active assignments (where is_published = true)
-	- List recent submissions needing review
-	- Add quick action buttons that navigate to creation pages
-	- Display class performance analytics and charts
-	- Use selected class for filtering dashboard data
+	DONNÉES :
+	- classes : teacherCache (cache d'abord, sinon /api/teacher/classes)
+	- périodes : data.academicPeriods, sinon teacherCache / /api/teacher/periods
+	- data.profile, data.weekConfig, data.students
 -->
 
 <script lang="ts">

@@ -3,7 +3,7 @@
   "info": {
     "title": "Chiphre API",
     "version": "1.0.0",
-    "description": "# Chiphre API Documentation\n\nEducational mathematics platform API with comprehensive Zod validation.\n\n## Features\n\n- **Assessments**: séries et contrôles\n- **Exercises**: Mathematical exercises with solutions\n- **SRS (Spaced Repetition)**: Flashcard system with FSRS algorithm\n- **Messages**: Internal messaging system\n- **Questions**: Question template management\n- **Notifications**: User notification system\n- **Classes**: Class management for teachers\n- **Rewards**: Gamification with gidouilles currency\n- **Admin**: Administrative operations\n\n## Authentication\n\nAll endpoints require authentication via session cookies. Users must be logged in to access the API.\n\n## Rate Limiting\n\n- AI Chatbot: 5 requests per 15 minutes\n- General API: No rate limiting currently implemented\n\n## Error Handling\n\nAll errors follow a consistent format:\n\n```json\n{\n  \"error\": {\n    \"message\": \"Human-readable error message\",\n    \"code\": \"ERROR_CODE\",\n    \"details\": {}\n  }\n}\n```\n\n## Validation\n\nAll request bodies and query parameters are validated using Zod schemas. Invalid requests will return a 400 status code with detailed validation errors.",
+    "description": "# Chiphre API Documentation\n\nEducational mathematics platform API with comprehensive Zod validation.\n\n## Features\n\n- **Assessments**: séries et contrôles\n- **Exercises**: Mathematical exercises with solutions\n- **SRS (Spaced Repetition)**: Flashcard system with FSRS algorithm\n- **Classes**: Class management for teachers\n\n## Authentication\n\nAll endpoints require authentication via session cookies. Users must be logged in to access the API.\n\n## Rate Limiting\n\n- AI Chatbot: 5 requests per 15 minutes\n- General API: No rate limiting currently implemented\n\n## Error Handling\n\nAll errors follow a consistent format:\n\n```json\n{\n  \"error\": {\n    \"message\": \"Human-readable error message\",\n    \"code\": \"ERROR_CODE\",\n    \"details\": {}\n  }\n}\n```\n\n## Validation\n\nAll request bodies and query parameters are validated using Zod schemas. Invalid requests will return a 400 status code with detailed validation errors.",
     "contact": {
       "name": "Chiphre Team",
       "url": "https://chiph.re"
@@ -37,32 +37,8 @@
       "description": "Spaced repetition system (flashcards) with FSRS algorithm"
     },
     {
-      "name": "Messages",
-      "description": "Internal messaging system for teachers and students"
-    },
-    {
-      "name": "Questions",
-      "description": "Question template management and generation"
-    },
-    {
-      "name": "Notifications",
-      "description": "User notification system"
-    },
-    {
       "name": "Classes",
       "description": "Class management for teachers"
-    },
-    {
-      "name": "Admin",
-      "description": "Administrative operations (admin role required)"
-    },
-    {
-      "name": "Rewards",
-      "description": "Gamification and gidouilles reward system"
-    },
-    {
-      "name": "Riddles",
-      "description": "Daily riddles and puzzles"
     },
     {
       "name": "Errors",
@@ -374,168 +350,6 @@
         }
       }
     },
-    "/api/messages": {
-      "post": {
-        "tags": [
-          "Messages"
-        ],
-        "summary": "Send message",
-        "description": "Send a new message",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "subject",
-                  "content"
-                ],
-                "properties": {
-                  "recipientIds": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/UUID"
-                    },
-                    "maxItems": 100
-                  },
-                  "subject": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 200
-                  },
-                  "content": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 10000
-                  },
-                  "isGroupMessage": {
-                    "type": "boolean",
-                    "default": false
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Message sent successfully"
-          }
-        }
-      }
-    },
-    "/api/questions": {
-      "get": {
-        "tags": [
-          "Questions"
-        ],
-        "summary": "List question templates",
-        "description": "List question templates with filtering and pagination",
-        "responses": {
-          "200": {
-            "description": "List of question templates"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Questions"
-        ],
-        "summary": "Create question template",
-        "description": "Create a new question template",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "type",
-                  "title",
-                  "grades",
-                  "level"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "fill_in_blanks",
-                      "course_card"
-                    ]
-                  },
-                  "title": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 200
-                  },
-                  "grades": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Grade"
-                    },
-                    "minItems": 1
-                  },
-                  "classification_node_id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "level": {
-                    "type": "integer",
-                    "minimum": 1
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Question template created successfully"
-          }
-        }
-      }
-    },
-    "/api/notifications": {
-      "get": {
-        "tags": [
-          "Notifications"
-        ],
-        "summary": "List notifications",
-        "description": "List notifications with pagination",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 50
-            }
-          },
-          {
-            "name": "unreadOnly",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of notifications"
-          }
-        }
-      }
-    },
     "/api/teacher/classes": {
       "get": {
         "tags": [
@@ -546,44 +360,6 @@
         "responses": {
           "200": {
             "description": "List of classes"
-          }
-        }
-      }
-    },
-    "/api/rewards/award": {
-      "post": {
-        "tags": [
-          "Rewards"
-        ],
-        "summary": "Award gidouilles",
-        "description": "Award gidouilles to a student",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "studentId",
-                  "amount"
-                ],
-                "properties": {
-                  "studentId": {
-                    "$ref": "#/components/schemas/UUID"
-                  },
-                  "amount": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 1000
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Gidouilles awarded successfully"
           }
         }
       }

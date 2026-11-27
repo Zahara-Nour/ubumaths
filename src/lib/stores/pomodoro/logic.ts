@@ -189,7 +189,7 @@ export function skip(
 
 /**
  * Advance the clock to `now` and emit any phase transitions that should
- * have fired. Capped at 1 transition per call (option B in the design doc):
+ * have fired. Capped at 1 transition per call (choix délibéré) :
  * a long sleep / reload jumps straight to a fresh new-phase timer rather
  * than replaying through several phases.
  */
