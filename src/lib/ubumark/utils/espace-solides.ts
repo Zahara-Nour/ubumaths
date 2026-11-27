@@ -371,11 +371,11 @@ export function solideTopology(form: SolideForm): SolideTopology {
 // GÉOMÉTRIE
 // ============================================================================
 
-/** Sommets 3D d'un polyèdre : x vers la droite, y vers le haut, z vers le fond */
 /** La bascule que le dessin d'une forme ajoute à celle de la vue (pour `turnVue`) */
 export const solideTilt = (form: SolideForm): VueTilt =>
 	solideTopology(form).curved ? SOLIDE_ROUND_TILT : VUE_TILT;
 
+/** Sommets 3D d'un polyèdre : x vers la droite, y vers le haut, z vers le fond */
 export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 	const p = (x: number, y: number, z: number): Point3 => ({ x, y, z });
 	const box = (l: number, d: number, h: number) => [
@@ -498,7 +498,7 @@ interface Draft {
 	points: EspacePoint[];
 }
 
-/** Un polyèdre vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
+/** Un solide vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
 interface TurnedDraft extends Draft {
 	/** Le centre du solide, projeté (repère de calcul) */
 	pivot: EspacePoint;

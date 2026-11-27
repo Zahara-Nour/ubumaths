@@ -8,15 +8,13 @@ _Mis à jour le 2026-11-27, après #3211._
   du § 3) ; **lots 1 et 2 mergés** (#3195, #3200) ; **noms tenus mergés** (#3211, § 7) ; **lot 3 (cylindre,
   cône, boule) codé sur la branche**, comportements du § 8 validés par David (« je te suis », 2026-11-27),
   détail au § 9. Rien n'est en prod.
-- **Prochaine action** : finir la PR du lot 3. Code commité et poussé (aucune PR ouverte encore). Une revue
-  `code-reviewer` opus a été lancée le 2026-11-27 dans la session précédente : son rapport n'a pas été lu —
-  **relancer la revue** (brief : parties cachées sous tous les angles, figure fixe inchangée, cadre, bornes de
-  `turnVue`, § 9), corriger, puis ouvrir la PR, suivre la CI, `pnpm pr:merger`. Ensuite lot 4 — sections et
-  cotes sur figure tournée (Q1 du § 3), nouvelle session, comportements à écrire d'abord.
+- **Prochaine action** : PR du lot 3 ouverte, revue `code-reviewer` opus faite (aucun bloquant, § 9) : suivre
+  la CI et merger (`pnpm pr:merger`). Ensuite lot 4 — sections et cotes sur figure tournée (Q1 du § 3),
+  nouvelle session, comportements à écrire d'abord.
 - **En attente de David** : son essai au doigt, sur `/aide-ecriture/blocs/solide` (compte prof) : (1) les
   noms tenus (§ 7 : glissement de 150 ms à l'arrêt, « arrêt au clavier = touche relâchée », choix de la
   session) ; (2) les solides ronds (§ 9 : le point posé sur le sommet NOMMÉ du cône quand ses deux traits ont
-  disparu est un choix de la session).
+  disparu est un choix de la session, y compris vu de dessous où le sommet est derrière le disque).
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
   (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; solides ronds : le dessin à plat
   est la vraie vue d'un œil à asin 0,3 ≈ 17,5° au-dessus de l'horizontale, hauteurs non raccourcies —
@@ -258,3 +256,9 @@ et du sommet du cône), `marquer: sommet` et `cachees:`. `section:` et `cotes:` 
 - Tests : `solide-ronds-tourner.test.ts` (49, rouges avant le code), `SolideTourner.svelte.test.ts` (cylindre :
   dessous, arrêt à la vue de dessus). Catalogue : exemple « Un cône que l'élève peut tourner ». Doc :
   `docs/systeme/ubumark.md`, `utilitaires-et-demos.md`.
+- Revue (`code-reviewer`, opus) : aucun bloquant. Trouvé juste : parties cachées sous tous les angles (0° et
+  ±90° compris), figure fixe et polyèdres tournés inchangés (bornes de `turnVue` identiques au bit près),
+  cadre (preuve et balayage de 21 passages × 201 bascules sur les dimensions extrêmes, marge minimale
+  0,235 cm), pas de NaN. Corrigé : test de l'arc caché du cône (ses bouts sont les pieds des deux traits),
+  test tautologique retiré, commentaires déplacés. Laissé à David : le point du sommet nommé est aussi posé vu
+  de dessous, où le sommet est caché par le disque.

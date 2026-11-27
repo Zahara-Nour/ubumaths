@@ -139,12 +139,6 @@ describe('```solide rond — bascule bornée', () => {
 			expect(turnVue(start, 0, -10, SOLIDE_ROUND_TILT).pitch + REST).toBeCloseTo(-Math.PI / 2, 12);
 		}
 	});
-
-	it('sans précision, la bascule reste celle des polyèdres', () => {
-		const start = { yaw: 0, pitch: 0, oblique: 0 };
-		expect(turnVue(start, 0, 10)).toEqual(turnVue(start, 0, 10, solideTilt('cube')));
-		expect(turnVue(start, 0, -10)).toEqual(turnVue(start, 0, -10, solideTilt('cube')));
-	});
 });
 
 describe('```solide rond — scène tournée', () => {
@@ -359,8 +353,17 @@ describe('cône qui tourne (comportement 20, Q6)', () => {
 		const scene = buildSolideScene(CONE, from(deg(40)));
 		const dashed = scene.lines.filter((l) => l.dashed);
 		expect(dashed).toHaveLength(1);
-		const center = scene.vertices[1];
+		const [apex, center] = scene.vertices;
 		for (const p of dashed[0].points) expect(p.y).toBeLessThan(center.y);
+		// Pas toute la moitié arrière : l'arc s'arrête aux pieds des deux traits
+		const feet = scene.lines
+			.filter(straight)
+			.map((l) => l.points.find((p) => distance(p, apex) > 1e-9) as Point);
+		const ends = [dashed[0].points[0], dashed[0].points[dashed[0].points.length - 1]];
+		for (const end of ends) {
+			expect(Math.min(...feet.map((f) => distance(f, end)))).toBeCloseTo(0, 9);
+		}
+		expect(distance(ends[0], ends[1])).toBeGreaterThan(0.5);
 	});
 
 	it('vu de dessous : le disque de base entier en trait plein', () => {
