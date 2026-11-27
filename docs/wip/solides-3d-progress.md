@@ -2,18 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, lot 7b écrit, pas encore mergé (dernier merge : #3244, lot 7a)._
+_Mis à jour le 2026-11-27, après #3251 (lot 7b mergé)._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6 et 7a mergés**
-  (#3195 à #3244). Les lots 3 à 7a ne sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a
-  pas emportés. **Lot 7b (plans) écrit sur la branche** (§ 19), tests verts, vu à l'écran par la session,
-  **essayé par David (« c'est bon »)** ; PR ouverte, à merger dès la CI verte.
-- **Prochaine action** : attendre le « c'est bon » de David sur le 7b (lien `pnpm lien`, serveur **5177** :
-  le 5176 est pris par une autre session), puis PR, CI, `pnpm pr:merger`. Ensuite la petite PR du bord en butée (ci-dessous), puis **lot 7c** (repère du
-  solide et points par coordonnées, § 17), même chaîne.
-- **En attente de David** : son essai du 7b **avant le merge**. Pas de `deploy:prod` sans sa demande.
-  Proposé, sans réponse : description des réglages sous le réglage dans la page d'aide ; teinter les cases
-  de saisie de `retrouver:`.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; **lots 1 à 6, 7a (droites) et 7b
+  (plans) mergés** (#3195 à #3251, § 18 et 19), le 7b essayé par David (« c'est bon »). Les lots 3 à 7b ne
+  sont pas en prod tant qu'un `deploy:prod` demandé par David ne les a pas emportés (le vérifier avant de
+  l'affirmer).
+- **Prochaine action** : **petite PR du bord en butée** (tranchée, ci-dessous) : un trait posé sur une arête
+  (bord d'un plan, droite) prend l'état de cette arête, y compris quand la face est vue exactement par la
+  tranche (butée de la vue de dessus ou de dessous ; cas témoin : `prisme triangle 3,3 2,1 4,7` avec
+  `plans: (ABC)`). Puis **lot 7c** (repère du solide et points par coordonnées, § 17). Worktree et branche
+  neufs depuis `main`, tests d'abord.
+- **En attente de David** : il vérifie chaque morceau du lot 7 **avant le merge** (lien `pnpm lien`). Pas de
+  `deploy:prod` sans sa demande. Proposé, sans réponse : description des réglages sous le réglage dans la
+  page d'aide ; teinter les cases de saisie de `retrouver:`. Signalé, sans réponse : avec deux plans dans un
+  cube, « (Q) » de (BDE) est écrit sur la zone teintée de (P), contre son propre bord.
 - **Tranché par David le 2026-11-27 (lot 7b, « suis tes recos »)** : le nom « (P) » s'écrit à côté du plan
   quand il n'a pas la place dedans (fait, § 19) ; le bord d'un plan ou une droite posés sur une face vue par
   la tranche (butée de la vue de dessus) prennent l'état de l'arête : **petite PR à part, après le 7b, avant
@@ -35,8 +38,8 @@ _Mis à jour le 2026-11-27, lot 7b écrit, pas encore mergé (dernier merge : #3
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : `../ubumaths-wt-solides-3d`, branche `feat/solides-3d-lot-7b`, serveur de dev
-  sur 5177.
+- **Worktree / branche** : aucun (retirés après #3251, serveur arrêté). À créer : `../ubumaths-wt-solides-3d`,
+  depuis `origin/main` ; le port 5176 peut être pris par une autre session (5177 utilisé pour le 7b).
 
 ## 1. D'où l'on part
 
