@@ -1,0 +1,234 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Aires > rectangle",
+		"point": "6-200"
+	},
+	"title": "La formule de l'aire du rectangle",
+	"description": "Écrire la formule A = L × l, la dire en mots (le produit de la longueur par la largeur), l'utiliser pour des valeurs de L et l ; pièges : L + l, le périmètre, le produit doublé",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un rectangle a pour longueur $L$ et pour largeur $l$. Écris la formule de son aire $A$.\n\n$A = ?$",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "L\\times l",
+					"expectedErrors": [
+						{
+							"answer": "L+l",
+							"message": "L'aire n'est pas une somme : c'est la longueur **multipliée** par la largeur.",
+							"label": "Somme"
+						},
+						{
+							"answer": "2\\times(L+l)",
+							"message": "Ça, c'est le périmètre du rectangle (son tour).",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "2\\times L\\times l",
+							"message": "On multiplie la longueur par la largeur, une seule fois.",
+							"label": "Produit doublé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'aire d'un rectangle est le produit de sa longueur par sa largeur :",
+					"$$A = \\textcolor{{{color:primary.0}}}{L \\times l}$$"
+				]
+			},
+			"hint": "Pour un rectangle de $5$ cm sur $3$ cm, combien de carrés de $1$ cm de côté ? Quel calcul as-tu fait ?"
+		},
+		{
+			"statement": "Complète la phrase.\n\nL'aire d'un rectangle est égale à … de sa longueur par sa largeur.\n\n```choix\nmelanger: non\n- la somme\n- le produit\n- la différence\n- le quotient\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'aire d'un rectangle est égale au $\\textcolor{{{color:primary.0}}}{\\text{produit}}$ de sa longueur par sa largeur : $A = L \\times l$."
+				]
+			},
+			"hint": "Pour un rectangle de $5$ cm sur $3$ cm, on calcule $5 \\times 3$ : quelle opération est-ce ?"
+		},
+		{
+			"statement": "L'aire d'un rectangle de longueur $L$ et de largeur $l$ est $A = L \\times l$.\n\nCalcule $A$ pour $L = {{L}}$ cm et $l = {{l}}$ cm.\n\n$A = ?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..12"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["L>l"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L+l}}\\unit{cm^2}",
+							"message": "L'aire n'est pas une somme : c'est la longueur **multipliée** par la largeur.",
+							"label": "Somme"
+						},
+						{
+							"answer": "{{eval:2*(L+l)}}\\unit{cm}",
+							"message": "Ça, c'est le périmètre du rectangle (son tour).",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "{{eval:L*l}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $L$ par ${{L}}$ cm et $l$ par ${{l}}$ cm :",
+					"$$A = {{L}}~\\unit{cm} \\times {{l}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:L*l}}~\\unit{cm^2}}$$"
+				]
+			},
+			"hint": "Remplace chaque lettre par sa valeur dans la formule."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "L × l",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["L\\times l"]
+		},
+		{
+			"description": "l × L",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["l\\times L"]
+		},
+		{
+			"description": "L + l",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas une somme : c'est la longueur **multipliée** par la largeur."
+			},
+			"answers": ["L+l"]
+		},
+		{
+			"description": "2 × (L + l)",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre du rectangle (son tour)."
+			},
+			"answers": ["2\\times(L+l)"]
+		},
+		{
+			"description": "2 × L × l",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On multiplie la longueur par la largeur, une seule fois."
+			},
+			"answers": ["2\\times L\\times l"]
+		},
+		{
+			"description": "Le produit",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "La somme refusée",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "8 × 3 = 24 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24\\unit{cm^2}"]
+		},
+		{
+			"description": "8 + 3 = 11 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas une somme : c'est la longueur **multipliée** par la largeur."
+			},
+			"answers": ["11\\unit{cm^2}"]
+		},
+		{
+			"description": "Périmètre 22 cm",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre du rectangle (son tour)."
+			},
+			"answers": ["22\\unit{cm}"]
+		},
+		{
+			"description": "24 cm",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+			},
+			"answers": ["24\\unit{cm}"]
+		}
+	]
+}

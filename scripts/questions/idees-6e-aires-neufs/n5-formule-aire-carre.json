@@ -1,0 +1,222 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Aires > carré",
+		"point": "6-151"
+	},
+	"title": "La formule de l'aire du carré",
+	"description": "Écrire la formule A = c × c, la dire en mots (le produit du côté par lui-même), l'utiliser pour une valeur de c ; pièges : 4 × c (le périmètre), c + c, 2 × c",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off",
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un carré a des côtés de longueur $c$. Écris la formule de son aire $A$.\n\n$A = ?$",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "c\\times c",
+					"expectedErrors": [
+						{
+							"answer": "4\\times c",
+							"message": "Ça, c'est le périmètre du carré (son tour) : $4 \\times c$.",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "c+c",
+							"message": "L'aire n'est pas une somme : $c + c = 2 \\times c$. C'est le côté **multiplié** par le côté.",
+							"label": "Somme (c + c ou 2 × c)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'aire d'un carré est le produit de son côté par lui-même :",
+					"$$A = \\textcolor{{{color:primary.0}}}{c \\times c}$$"
+				]
+			},
+			"hint": "Un carré, c'est un rectangle dont la longueur et la largeur sont égales."
+		},
+		{
+			"statement": "Complète la phrase.\n\nL'aire d'un carré est égale à … de son côté par lui-même.\n\n```choix\nmelanger: non\n- la somme\n- le produit\n- la différence\n- le quotient\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'aire d'un carré est égale au $\\textcolor{{{color:primary.0}}}{\\text{produit}}$ de son côté par lui-même : $A = c \\times c$."
+				]
+			},
+			"hint": "Pour un carré de $3$ cm de côté, on calcule $3 \\times 3$ : quelle opération est-ce ?"
+		},
+		{
+			"statement": "L'aire d'un carré de côté $c$ est $A = c \\times c$.\n\nCalcule $A$ pour $c = {{c}}$ cm.\n\n$A = ?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*c}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*c}}\\unit{cm^2}",
+							"message": "$2 \\times c$, c'est $c + c$ : l'aire est le côté multiplié par lui-même.",
+							"label": "Double du côté"
+						},
+						{
+							"answer": "{{eval:4*c}}\\unit{cm}",
+							"message": "Ça, c'est le périmètre du carré (son tour) : $4 \\times c$.",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "{{eval:c*c}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $c$ par ${{c}}$ cm :",
+					"$$A = {{c}}~\\unit{cm} \\times {{c}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:c*c}}~\\unit{cm^2}}$$"
+				]
+			},
+			"hint": "Remplace la lettre $c$ par sa valeur dans la formule."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c × c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["c\\times c"]
+		},
+		{
+			"description": "c²",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["c^2"]
+		},
+		{
+			"description": "4 × c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre du carré (son tour) : $4 \\times c$."
+			},
+			"answers": ["4\\times c"]
+		},
+		{
+			"description": "c + c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas une somme : $c + c = 2 \\times c$. C'est le côté **multiplié** par le côté."
+			},
+			"answers": ["c+c"]
+		},
+		{
+			"description": "2 × c",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas une somme : $c + c = 2 \\times c$. C'est le côté **multiplié** par le côté."
+			},
+			"answers": ["2\\times c"]
+		},
+		{
+			"description": "Le produit",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "La somme refusée",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c = 7 : 49 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["49\\unit{cm^2}"]
+		},
+		{
+			"description": "c = 7 : 14 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$2 \\times c$, c'est $c + c$ : l'aire est le côté multiplié par lui-même."
+			},
+			"answers": ["14\\unit{cm^2}"]
+		},
+		{
+			"description": "c = 7 : 28 cm",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre du carré (son tour) : $4 \\times c$."
+			},
+			"answers": ["28\\unit{cm}"]
+		},
+		{
+			"description": "c = 7 : 49 cm",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+			},
+			"answers": ["49\\unit{cm}"]
+		}
+	]
+}

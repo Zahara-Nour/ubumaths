@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, phase 0 envoyée._
+_Mis à jour le 2026-11-27, lot écrit, PR des fichiers ouverte._
 
-- **État** : relevé fait ([idees-6e-aires-releve.md](idees-6e-aires-releve.md)), phase 0 écrite ci-dessous (8 fiches,
-  3 questions), page à cocher envoyée à David :
-  https://claude.ai/artifact/MJrYFZmJzEVpyPmJUFwjnq (verdicts dans sa base, collection `verdicts`).
-- **Prochaine action** : lire ses réponses (page à cocher + session), puis écrire le gros lot (7 modèles neufs,
-  variations de 82748db8, fdd849f5, 01e205ed).
-- **En attente de David** : fiches N1 à N8, questions Q1 à Q3.
-- **Pièges en cours** : 82748db8, fdd849f5 et 01e205ed sont à réserver dans le tableau avant d'y toucher.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-aires`, `docs/idees-6e-aires` (sur `origin/main`, rien commité :
-  la phase 0 est de la doc, commitée sur `main`).
+- **État** : phase 0 tranchée (« je te suis ») ; gros lot écrit : 7 modèles neufs
+  (`scripts/questions/idees-6e-aires-neufs/`, 22 variations) et 8 variations ajoutées à 82748db8, fdd849f5,
+  01e205ed (`scripts/questions/idees-6e-aires-publies/`) ; specs vertes, sonde des figures 0 problème, essai en
+  base locale (7 brouillons joués dans l'aperçu).
+- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --publier` (brouillons en prod)
+  → commiter les ids → migrations de rangement et de contenu.
+- **En attente de David** : `create-questions --publier` après le merge.
+- **Pièges en cours** : 82748db8 partage `a` (1..9), fdd849f5 la condition `a>b` ; `e` est Euler (variable
+  renommée `q`) ; le bloc figure n'a pas de `secteur` (demi-disque en polygone) ; `{{eval:-b/2}}` s'écrit en
+  fraction LaTeX dans une figure (passer par `0.5*b`).
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-aires`, `feat/idees-6e-aires`.
 
 ## Phase 0 (2026-11-27)
 
@@ -85,6 +87,11 @@ _Mis à jour le 2026-11-27, phase 0 envoyée._
   que cm², dm², m². Les bornes de ces points sont « général ». Recommandation : ne rien toucher.
 
 ## Historique
+
+- 2026-11-27 : David répond « je te suis » au message des fiches N1 à N8 et des questions Q1 à Q3 (page à
+  cocher sans verdict) : fiches et propositions retenues telles quelles. Modèles 82748db8, fdd849f5, 01e205ed
+  réservés ; idées de 5e (6M2A-1, 6M2B-2) dans « Idées en attente ». Lot écrit par
+  `docs/wip/questions/idees-6e-aires-neufs.py` et `…-publies.py`.
 
 - 2026-11-27 : rubrique prise (84e8c5568f), relevé par deux agents Sonnet, plages recoupées dans le code, nos
   modèles relevés en prod ; phase 0 écrite ; outil n° 70 ajouté à `outils-manquants.md`.
