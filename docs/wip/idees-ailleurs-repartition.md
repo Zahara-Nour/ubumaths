@@ -178,6 +178,9 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 82748db8 Convertir dans une autre unité                      | `idees-6e-aires`                                            | 2026-11-27 |                                      |
+| fdd849f5 Calcul de l'aire d'un rectangle.                    | `idees-6e-aires`                                            | 2026-11-27 |                                      |
+| 01e205ed Calcul de l'aire d'un carré.                        | `idees-6e-aires`                                            | 2026-11-27 |                                      |
 
 ## Idées en attente
 
@@ -197,3 +200,4 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 - `idees-6e-proportionnalite` (2026-11-25, pour la session de 5e) : utiliser une échelle 1/n (1/100 à
   1/5 000 000) pour calculer une distance réelle ou sur le plan (6P3E, clone d'un exercice de 5e) ; la 5e
   n'a que « trouver l'échelle » (c1a54695, 24a8e2b1).
+- `idees-6e-aires` (2026-11-27, pour la session de 5e) : conversions d'aire au-delà de m², dm², cm² (mm², dam², hm², km², ha, a ; deux sauts, QCM ×10/×100) et assemblages carré + rectangle + triangle où l'on déduit un côté d'une aire puis l'aire d'un triangle (6M2A-1, 6M2B-2) : hors bornes de 6e.
