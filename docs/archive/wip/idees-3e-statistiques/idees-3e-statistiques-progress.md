@@ -2,21 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3209 et #3210, migration appliquée._
+_Mis à jour le 2026-11-27 : chantier clos, journal archivé._
 
-- **État** : #3209 mergée, migration `20261126222711` **appliquée en prod** (db:migrate du 2026-11-26 : 5 variations par modèle, specs 19, 14, 18). Les deux copies non suivies du dépôt principal sont supprimées avec l'accord de David. Trois séries de relecture (une par niveau : 3, 4, 5) écrites dans `scripts/series/{3,4,5}-relecture-idees-3e-statistiques-publies.json`, simulation verte.
-- **Prochaine action** : quand David a lancé les trois `creer-serie.ts … --publier`, commiter les ids écrits en tête des fichiers, ouvrir la PR, puis lire les verdicts (`question_template_reviews`, `reviewed_at` postérieur au 2026-11-26) et corriger les « À revoir ».
-- **En attente de David** : publier les trois séries (commandes ci-dessous), puis relire dans `/dev/modeles`.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-statistiques` · `chore/idees-3e-statistiques-relecture`.
-
-Commandes pour David, depuis ce worktree :
-
-```bash
-pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/3-relecture-idees-3e-statistiques-publies.json --publier
-pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/4-relecture-idees-3e-statistiques-publies.json --publier
-pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/5-relecture-idees-3e-statistiques-publies.json --publier
-```
+- **État** : clos. #3209 mergée et migrée (5 variations : 96992ea8, c2497d96, 21ebfb57), trois séries de relecture publiées (db1be7eb, a937e617, f4b416d8), modèles validés par David le 2026-11-27 (« je valide les modèles », sans verdict en base). Rubrique « publiée » dans `idees-ailleurs-repartition.md`, réservations rendues.
+- **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Relevé (2026-11-26)
 
