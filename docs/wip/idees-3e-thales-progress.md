@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3234._
+_Mis à jour le 2026-11-27, après #3234 et son `db:migrate`._
 
-- **État** : PR 1 (#3228) mergée, migrée. PR 2 (#3234, rangement 20261127114444) mergée,
-  PAS migrée : 4 conditions réunies, mais `migration list --linked` montre aussi
-  20261127115608 (idees-6e-durees, #3233) en attente. Worktree retiré.
-  · **Prochaine action** : `db:migrate` quand 20261127115608 est jouée par sa session (ou sur
-  le go de David pour les deux) ; `migration list --linked` avant ; ensuite relecture dans
-  `/dev/modeles` (`?titre=Thalès`, `?titre=Agrandissement`, `?titre=semblables`)
-  · **En attente de David** : rien avant la relecture · **Pièges en cours** : aucun
-  · **Worktree / branche** : `../ubumaths-wt-idees-3e-thales`, `feat/idees-3e-thales-rangement`.
+- **État** : #3228 et #3234 mergées et migrées (20261127114444 jouée par David avec
+  20261127115608 de idees-6e-durees ; `migration list --linked` : plus rien en attente).
+  Aucun worktree.
+  · **Prochaine action** : lire les verdicts « À revoir » en base (`question_template_reviews`,
+  `reviewed_at` du 2026-11-27 ou après), les compter, corriger, puis `publier-lot.ts` en simulation
+  · **En attente de David** : relecture dans `/dev/modeles` (`?titre=Thalès`,
+  `?titre=Agrandissement`, `?titre=semblables`) · **Pièges en cours** : aucun
+  · **Worktree / branche** : aucun ; nouveau worktree pour la PR de corrections.
 
 ## Phase 0 (2026-11-27)
 
