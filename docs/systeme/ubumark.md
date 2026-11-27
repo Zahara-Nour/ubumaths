@@ -1607,7 +1607,11 @@ face passe devant : `hiddenStretches` (moteur de vue, polyèdre **convexe**) cou
 le plan d'une face et là où son dessin croise celui d'une arête, puis lit chaque morceau en son milieu (en
 allant du point vers l'œil, traverse-t-on le solide ?). Un bout de droite encore derrière le solide reste en
 tirets (diagonale `(DG)` de la face du fond d'un cube, en cavalière) ; `cachees: non` → tout en plein. Posée
-sur une face tournée vers l'œil, la droite se voit ; sur une face du fond, non. Les bouts des droites comptent
+sur une face tournée vers l'œil, la droite se voit ; sur une face du fond, non. **Un trait posé sur une arête a
+l'état de cette arête** (droite comme côté du bord d'un plan) : un segment dans le plan d'une face que l'œil
+voit, de face ou exactement par la tranche (`faceTowardEye`, la règle de `hiddenEdges`), est en plein d'un bout
+à l'autre — butée de la vue de dessus ou de dessous, face de côté après un demi-tour
+(`solide-bord-en-butee.test.ts`). Les bouts des droites comptent
 dans le cadre fixe d'une figure que l'on peut tourner (`reach`). Nom : « (d) » près d'un bout, à côté du
 trait (`DROITE_NAME_BACK`, `firstFree`) ; il se tient pendant la rotation comme les autres (une place de plus
 dans `labelOffsets`, après les vecteurs) ; les noms des sommets et des points évitent les droites. Écran
