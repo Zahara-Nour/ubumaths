@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3254._
+_Mis à jour le 2026-11-28, brouillons créés en prod._
 
-- **État** : lot écrit (6 modèles neufs, 20 variations ; 11 variations ajoutées à 6 publiés), `question:specs`
-  vert (111 + 109 specs), essai des neufs en base locale ; #3254 mergée (fichiers du lot seuls).
-- **Prochaine action** : PR mergée → David lance `create-questions --publier` sur
-  `scripts/questions/idees-6e-longueurs-neufs` ; puis migrations de rangement et de contenu (générées).
-- **En attente de David** : la commande `--publier` ; question sur le bogue de fdd849f5 (voir Historique).
-- **Pièges en cours** : une variation `conditions: []` écrase les conditions partagées (`??` du générateur) ;
-  ccb4f5e5 gagne l'option `constraints.products: off` (« ⚠️ options » de `migration-contenu`) ; la migration de
-  contenu générée trop tôt est mise de côté, à régénérer.
-- **Worktree / branche** : aucun (le prochain, sur `origin/main`, sous le même sujet).
+- **État** : #3254 mergée ; David a lancé `create-questions --publier` : 6 brouillons en prod (c26b4d4c, 0d55c1de,
+  8ac28cf5, 84648b3b, 0031e3ea, 10dc7b1c ; vérifiés par MCP, `draft`, sans nœud), ids commités sur la branche.
+- **Prochaine action** : relever les niveaux en prod, puis générer `migration-rangement.ts --dir
+scripts/questions/idees-6e-longueurs-neufs` et `migration-contenu.ts --dir …-publies` ; tests
+  `migrations-rangement-tags` et `migrations-contenu-publie` (rouges sans les migrations), `security-auditor`, PR,
+  merge, `db:migrate` (4 conditions ; `migration list --linked` d'abord) ; série de relecture des 6 publiés.
+- **En attente de David** : oui / non à la correction de fdd849f5 dans la migration de contenu (variation 7,
+  `conditions: []` → `['a>b']`, à réserver d'abord ; `migration-contenu` accepte une variation corrigée).
+- **Pièges en cours** : `conditions: []` écrase les conditions partagées ; ccb4f5e5 gagne `constraints.products:
+off` ; la commande est `pnpm tsx scripts/create-questions.ts` (pas `pnpm create-questions`).
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs`, `feat/idees-6e-longueurs-rangement`.
 
 ## Phase 0 (2026-11-27)
 
@@ -109,6 +111,8 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : David lance `create-questions --publier` : 6 brouillons en prod, vérifiés par MCP.
 
 - 2026-11-27 : #3254 mergée (fichiers du lot seuls, CI verte).
 
