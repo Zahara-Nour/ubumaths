@@ -16,7 +16,6 @@ couvre:
   - 'src/routes/(public)/cahier/*/fiche/**'
   - 'src/routes/api/worksheets/**'
   - 'src/routes/api/student/worksheets/**'
-  - 'src/routes/api/teacher/chapters/*/worksheets/**'
   - 'scripts/fiches/**'
 ---
 
@@ -120,8 +119,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 - API : `src/routes/api/worksheets/` (CRUD, `sections/`, `exercises/`, `duplicate/`,
   `exercise-number/[number]/`, `assignments/`, `templates/`, `pdf/`,
   `print-settings/` : taille du texte et lecture facilitée d'un élève, GET / PUT),
-  `src/routes/api/student/worksheets/` (vue résolue, signalements),
-  `src/routes/api/teacher/chapters/[id]/worksheets/` (fiche dans un chapitre).
+  `src/routes/api/student/worksheets/` (vue résolue, signalements). Une fiche s'attache à un
+  chapitre par l'action `linkWorksheet` de la page du chapitre.
 
 ### Composants
 
