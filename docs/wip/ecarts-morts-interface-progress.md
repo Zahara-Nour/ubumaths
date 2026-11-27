@@ -38,5 +38,8 @@ M32, M33, M34, M47, M48, M49, M52, M58 (code mort, lot sans décision, `docs/wip
 - **M48** laissé : la fonction est celle qui servirait à corriger V118 (lot `interface-prof`, phase 0).
 - **M58** laissé : `FontSelector.svelte` est supprimé par la branche `ecarts-morts-utilitaires` ; reste
   `exerciseFont.svelte.ts` et la règle CSS, après son merge.
+- CI rouge (shard 1/4) : `side-effect-modules.test.ts`. Le build déclare les modules de `src/lib`
+  sans effet sauf ceux de `scripts/side-effect-modules.ts` : un import nu des trois réglages
+  aurait pu être élagué en prod (invisible en dev). Les trois y sont ajoutés.
 - Vérifs : `check:incremental` 0 erreur, `types:cliquet` tenu, tests ciblés verts, `pnpm voir`
   `/dashboard` (élève) et `/dashboard/teacher/documents` (prof) : 0 erreur de console.
