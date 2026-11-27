@@ -181,6 +181,48 @@ describe('Solide — figure', () => {
 		expect(Number(sub?.getAttribute('dy'))).toBeGreaterThan(0);
 	});
 
+	it('plan posé sur une face, figure tirée jusqu’à la butée : le bord reste en trait plein', async () => {
+		// La base (ABC) du prisme est alors vue par la tranche : son bord se dessine sur
+		// des arêtes en trait plein, il a leur état
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node(
+					'forme: prisme triangle 3,3 2,1 4,7',
+					'sommets: A B C D E F',
+					'plans: (ABC)',
+					'tourner: oui'
+				)
+			}
+		});
+		const svg = screen.container.querySelector('svg') as SVGSVGElement;
+		const box = svg.getBoundingClientRect();
+		const x = box.left + box.width / 2;
+		const y = box.top + box.height / 2;
+		const pointer = (type: string, clientY: number) =>
+			svg.dispatchEvent(
+				new PointerEvent(type, {
+					pointerId: 7,
+					isPrimary: true,
+					button: 0,
+					clientX: x,
+					clientY,
+					bubbles: true
+				})
+			);
+		for (const dy of [400, -800]) {
+			// 400 px : bien plus qu'un quart de tour, la bascule s'arrête à la butée
+			pointer('pointerdown', y);
+			pointer('pointermove', y + dy / 2);
+			pointer('pointermove', y + dy);
+			pointer('pointerup', y + dy);
+			await new Promise((resolve) => setTimeout(resolve, 450));
+			const border = [...screen.container.querySelectorAll('polyline.solide-plan-bord')];
+			expect(border.length).toBeGreaterThan(0);
+			expect(border.filter((piece) => piece.hasAttribute('stroke-dasharray'))).toEqual([]);
+		}
+	});
+
 	it('bloc en erreur : cadre neutre pour l’élève, messages pour le prof', async () => {
 		const pupil = await render(Espace, {
 			target: mainElement(),
