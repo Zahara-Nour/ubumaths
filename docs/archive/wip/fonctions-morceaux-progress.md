@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3298 (chantier clos, journal archivé)._
 
-- **État** : `origin/main` fusionné ; rendu vérifié à l'écran (`e2e/verifs/atelier-intervalle-parametre.spec.ts`, vert sur les 5 navigateurs de `test:verifs:tout`) ; revue `code-reviewer` (Opus) faite, findings 1, 2, 6 corrigés (22 tests) ; `check:incremental` 0, cliquet tenu ; PR ouverte, `pnpm pr:merger` lancé.
-- **Prochaine action** : après le merge, archiver ce journal (versement : la doc durable est déjà dans `docs/systeme/atelier.md`).
+- **État** : `origin/main` fusionné ; rendu vérifié à l'écran (`e2e/verifs/atelier-intervalle-parametre.spec.ts`, vert sur les 5 navigateurs de `test:verifs:tout`) ; revue `code-reviewer` (Opus) faite, findings 1, 2, 6 corrigés (22 tests) ; `check:incremental` 0, cliquet tenu ; #3298 mergée.
+- **Prochaine action** : aucune ; doc durable dans `docs/systeme/atelier.md`. Une réponse « oui » de David à (a) ou (b) ouvre un nouveau chantier.
 - **En attente de David** : (a) `j = f(3)` reste juste quand le curseur sort 3 de l'ensemble de f (trou d'avant la PR, contrôle seulement à la création) : à corriger ? (b) `ℝ \ {k}` refusé (la phase 0 parle de bornes) : à couvrir ?
 - **Pièges en cours** : `recomputeAll` repasse UNE fois si les ensembles à paramètre changent (`#recomputingAgain`) ; une relecture (`#restoringObjects`) ou un ensemble gardé par `update` n'est pas jugé sur les valeurs du moment.
 - **Worktree / branche** : `../ubumaths-wt-fonctions-morceaux` · `feat/fonctions-morceaux`.
