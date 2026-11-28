@@ -121,11 +121,36 @@ describe('judgeParametricLineAnswer — faux', () => {
 	});
 
 	it('une égalité dans une ligne est illisible', () => {
-		expect(judge('x=1+2t', '2', '-1+3t').status).toBe('incorrect');
+		expect(judge('1+2t=3', '2', '-1+3t').status).toBe('incorrect');
 	});
 
 	it('une division par zéro est fausse, sans exception', () => {
 		expect(judge('\\frac{1}{0}+2t', '2', '-1+3t').status).toBe('incorrect');
+	});
+});
+
+describe('judgeParametricLineAnswer — retours de revue', () => {
+	it('« x = » retapé dans la ligne de x : toléré', () => {
+		expect(judge('x=1+2t', 'y=2', 'z=-1+3t').status).toBe('correct');
+	});
+
+	it('exposant négatif démesuré : refusé sans calcul', () => {
+		const verdict = judge('(1+t)^{-999}', '2', '-1+3t');
+		expect(verdict.status).toBe('incorrect');
+		expect(verdict.feedback).toBe(PARAMETRIC_FEEDBACK.unreadable('x'));
+	});
+
+	it('e ou π pris pour paramètre : message propre', () => {
+		for (const letter of ['e', '\\pi']) {
+			const verdict = judge(`1+2${letter}`, '2', `-1+3${letter}`);
+			expect(verdict.status).toBe('incorrect');
+			expect(verdict.feedback).toBe(PARAMETRIC_FEEDBACK.constantParameter);
+		}
+	});
+
+	it('paramètre λ : la lettre grecque dans le message', () => {
+		const verdict = judge('2+\\lambda', '2\\lambda', '3-\\lambda');
+		expect(verdict.feedback).toBe("Le point obtenu pour λ = 0 n'est pas sur la droite.");
 	});
 });
 

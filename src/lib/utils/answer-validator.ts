@@ -2626,8 +2626,14 @@ function validateBlanksOrderIndependent(
 	}
 
 	// Réponse hostile ou démesurée (garde Q58) : fausse, avec son message. Les cases
-	// « intervalles » ont leur propre garde (dans `validateBlankValue`).
-	const ordinaryBlanks = blanks.every((blank) => blank.answerKind !== 'intervalles');
+	// « intervalles » ont leur propre garde (dans `validateBlankValue`) ; les cases à
+	// plusieurs lignes (« resolution », « droite-parametrique ») mesurent chaque ligne.
+	const ordinaryBlanks = blanks.every(
+		(blank) =>
+			blank.answerKind !== 'intervalles' &&
+			blank.answerKind !== 'resolution' &&
+			blank.answerKind !== 'droite-parametrique'
+	);
 	// Le bouton « impossible » (sa marque) n'est pas une expression : jamais mesuré
 	const isButton = (answer: string, latex: string | undefined) =>
 		blanks.some((blank) => blank.impossibleLabel !== undefined) &&

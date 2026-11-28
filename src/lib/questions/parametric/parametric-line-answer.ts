@@ -57,9 +57,26 @@ type ReadLine = ReadLineOk | { ok: false; feedback: string; empty?: boolean };
 
 // Constantes
 
-/** Lettre affichée dans un message : `t`, ou « le paramètre » pour `\lambda` */
-function parameterLabel(name: string): string {
-	return name.length === 1 ? name : 'le paramètre';
+/** Lettres grecques affichées dans un message (`lambda` → `λ`) */
+const GREEK_LETTERS: Readonly<Record<string, string>> = {
+	alpha: 'α',
+	beta: 'β',
+	gamma: 'γ',
+	delta: 'δ',
+	theta: 'θ',
+	lambda: 'λ',
+	mu: 'μ',
+	nu: 'ν',
+	rho: 'ρ',
+	sigma: 'σ',
+	tau: 'τ',
+	phi: 'φ',
+	omega: 'ω'
+};
+
+/** Lettre affichée dans un message : `t`, `λ`, sinon `null` */
+function parameterLabel(name: string): string | null {
+	return name.length === 1 ? name : (GREEK_LETTERS[name] ?? null);
 }
 
 /** Messages figés (français, tutoiement) */
@@ -71,8 +88,14 @@ export const PARAMETRIC_FEEDBACK = {
 	notAffine: (name: string) =>
 		`La ligne de ${name} doit s'écrire a + b t : un nombre, plus un nombre fois le paramètre.`,
 	zero: 'Ton vecteur directeur est nul : ces lignes ne décrivent pas une droite.',
-	pointOff: (parameter: string) =>
-		`Le point obtenu pour ${parameterLabel(parameter)} = 0 n'est pas sur la droite.`,
+	constantParameter:
+		'e, i et π sont des nombres : ils ne servent pas de paramètre. Écris tes lignes avec une lettre, par exemple t.',
+	pointOff: (parameter: string) => {
+		const label = parameterLabel(parameter);
+		return label
+			? `Le point obtenu pour ${label} = 0 n'est pas sur la droite.`
+			: "Le point obtenu pour la valeur 0 du paramètre n'est pas sur la droite.";
+	},
 	notCollinear: "Ton vecteur directeur n'est pas colinéaire à celui de la droite."
 } as const;
 
@@ -84,16 +107,37 @@ const FORBIDDEN_PARAMETERS = new Set<string>(PARAMETRIC_COORDINATES);
 
 // Functions
 
-/** Un exposant entier écrit au-delà de MAX_WRITTEN_EXPONENT, ou un exposant non entier */
+/** Exposant écrit sans parenthèses ni signe : `(-999)` → `999` */
+function unsignedExponent(node: MathNode): MathNode {
+	let inner = node;
+	while (inner.type === 'delimiter' || inner.type === 'opposite' || inner.type === 'positive') {
+		inner = inner.type === 'delimiter' ? inner.content : inner.operand;
+	}
+	return inner;
+}
+
+/** Un exposant entier écrit au-delà de MAX_WRITTEN_EXPONENT, en valeur absolue */
 function hasHugeExponent(node: MathNode): boolean {
 	let huge = false;
 	mapNode(node, (n) => {
 		if (n.type !== 'superscript') return n;
-		const exponent = n.superscript.type === 'delimiter' ? n.superscript.content : n.superscript;
-		if (exponent.type === 'number' && Number(exponent.value) > MAX_WRITTEN_EXPONENT) huge = true;
+		const exponent = unsignedExponent(n.superscript);
+		if (exponent.type === 'number' && Math.abs(Number(exponent.value)) > MAX_WRITTEN_EXPONENT) {
+			huge = true;
+		}
 		return n;
 	});
 	return huge;
+}
+
+/** Une constante écrite comme une lettre : `e`, `\pi`, `i` */
+function hasConstantLetter(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (n.type === 'constant' || n.type === 'complex') found = true;
+		return n;
+	});
+	return found;
 }
 
 /** Une ligne : expression lisible sans égalité, `null` sinon */
@@ -163,14 +207,23 @@ function readLine(text: string): ReadLine {
 
 	const nodes: MathNode[] = [];
 	for (const [k, line] of lines.entries()) {
-		const node = parseLine(line);
+		// « x = » retapé dans la ligne de x (recopie du tableau) : retiré
+		const name = PARAMETRIC_COORDINATES[k];
+		const node = parseLine(line.replace(new RegExp(`^${name}\\s*=`), ''));
 		if (!node)
 			return { ok: false, feedback: PARAMETRIC_FEEDBACK.unreadable(PARAMETRIC_COORDINATES[k]) };
 		nodes.push(node);
 	}
 
 	const letters = new Set(nodes.flatMap((node) => [...getVariables(node)]));
-	if (letters.size === 0) return { ok: false, feedback: PARAMETRIC_FEEDBACK.zero };
+	if (letters.size === 0) {
+		return {
+			ok: false,
+			feedback: nodes.some(hasConstantLetter)
+				? PARAMETRIC_FEEDBACK.constantParameter
+				: PARAMETRIC_FEEDBACK.zero
+		};
+	}
 	const [parameter] = letters;
 	if (letters.size > 1 || FORBIDDEN_PARAMETERS.has(parameter)) {
 		return { ok: false, feedback: PARAMETRIC_FEEDBACK.letters };

@@ -183,6 +183,7 @@ function validateVariation(
 	// Type-specific validation (per-variation)
 	switch (questionType) {
 		case 'fill_in_blanks':
+			errors.push(...parametricPlacementErrors(variation, prefix, shared));
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
 			// un bloc ```figure-a-completer aussi (la figure de l'élève), un bloc ```collection
 			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite ou une horloge
@@ -244,6 +245,31 @@ function validateVariation(
 	}
 
 	return errors;
+}
+
+/**
+ * Case « droite-parametrique » posée ailleurs que seule dans un bloc `$$?$$` : l'élève
+ * n'aurait qu'un champ, jamais les trois lignes, et aucune réponse ne serait juste
+ */
+function parametricPlacementErrors(
+	variation: QuestionVariation,
+	prefix: string,
+	shared?: SharedVariationDefaults
+): string[] {
+	const blanks = variation.blanks ?? [];
+	const defaultKind =
+		variation.blankDefaults?.answerKind ?? shared?.blankDefaults?.answerKind ?? undefined;
+	if (!blanks.some((blank) => (blank.answerKind ?? defaultKind) === 'droite-parametrique')) {
+		return [];
+	}
+	const { statement } = assignBlankIndices(String(variation.statement ?? shared?.statement ?? ''));
+	return blanks.flatMap((blank, i) => {
+		if ((blank.answerKind ?? defaultKind) !== 'droite-parametrique') return [];
+		const alone = new RegExp(`\\$\\$\\s*\\\\placeholder\\[${i}\\]\\{\\}\\s*\\$\\$`);
+		return alone.test(statement)
+			? []
+			: [`${prefix} case ${i + 1} (droite paramétrique) : à poser seule dans un bloc $$?$$`];
+	});
 }
 
 /** Énoncé avec un bloc ```operation à remplir (pas `cases: aucune`) */

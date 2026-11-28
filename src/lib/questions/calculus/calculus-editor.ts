@@ -1,6 +1,7 @@
 /**
  * Éditeur de modèle : réglages des cases « primitive », « solution-ed » et
- * « resolution » (équation résolue ligne par ligne, outil 55)
+ * « resolution » (équation résolue ligne par ligne, outil 55), et la case
+ * « droite-parametrique » (outil 64, sans champ à elle)
  * (valeurs par défaut des cases, `shared.blankDefaults`).
  *
  * L'état du formulaire est un objet plat de champs texte ; il se lit depuis
@@ -21,6 +22,8 @@ export interface CalculusEditorState {
 	general: boolean;
 	/** Case « resolution » : équation résolue ligne par ligne */
 	resolution: boolean;
+	/** Case « droite-parametrique » : représentation paramétrique d'une droite de l'espace */
+	parametric: boolean;
 	/** Resolution : nombre de lignes exigé (texte du champ, vide = 1) */
 	minLines: string;
 	integrand: string;
@@ -40,6 +43,7 @@ export function calculusEditorState(defaults: BlankDefaults | undefined): Calcul
 		solution: defaults?.answerKind === 'solution-ed',
 		general: defaults?.solutionMode === 'generale',
 		resolution: defaults?.answerKind === 'resolution',
+		parametric: defaults?.answerKind === 'droite-parametrique',
 		minLines: defaults?.minLines === undefined ? '' : String(defaults.minLines),
 		integrand: defaults?.integrand ?? '',
 		variable: defaults?.variable ?? '',
@@ -97,5 +101,6 @@ export function calculusBlankDefaults(
 			...(Number.isInteger(minLines) && minLines >= 2 && { minLines })
 		};
 	}
+	if (state.parametric) return { answerKind: 'droite-parametrique' };
 	return null;
 }

@@ -1,16 +1,16 @@
 ---
 title: Lot d'outils « espace » (outils 64 et 65)
 date: 2026-11-28
-status: outil 64 codé, en revue ; outil 65 à faire
+status: outil 64 en PR ; outil 65 à faire
 ---
 
 # Lot d'outils « espace »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR de l'outil 64._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR de l'outil 64._
 
-- **État** : outil 64 codé (case `droite-parametrique`), tests verts, rendu vu (`pnpm voir`, verso par capture de test) ; revues code (Opus) + sécurité lancées dans la session d'avant le /clear : si leurs résultats ne sont pas dans ce journal, les relancer sur le commit de l'outil 64 · **Prochaine action** : corriger les findings, PR, `pnpm pr:merger`, puis outil 65 (point au tiers dans ` ```solide `) · **En attente de David** : Q2 du 64, la droite du PLAN (deux lignes) — non tranchée, faite en espace seulement (choix qui ne change rien) · **Pièges en cours** : `{{u}}` négatif sans parenthèses donne `1+-2t`, illisible : écrire `+({{u}})t` ou `cleanCoefficients` · **Worktree / branche** : `../ubumaths-wt-outil-espace`, `feat/outil-espace`, serveur de dev 5180
+- **État** : outil 64 (case `droite-parametrique`) en PR, revues code + sécurité faites et corrigées · **Prochaine action** : merger la PR (CI verte), passer la ligne 64 en « Livré », puis outil 65 (point au tiers d'une arête dans ` ```solide `), phase 0 d'abord · **En attente de David** : rien · **Pièges en cours** : `{{u}}` négatif sans parenthèses donne `1+-2t`, illisible : écrire `+({{u}})t` ou `cleanCoefficients` · **Worktree / branche** : `../ubumaths-wt-outil-espace`, `feat/outil-espace`, serveur de dev 5180
 
 ## Outil 64 — phase 0 (envoyée le 2026-11-28)
 
@@ -23,7 +23,10 @@ dans le message de la session.
 Réponse de David (2026-11-28) : « je te suis » → Q1 : toute lettre de paramètre, la même sur les
 trois lignes (recommandation) ; Q3 : la droite seule est jugée, pas l'écriture (recommandation).
 Q2 (droite du plan) : pas de recommandation, donc **non tranchée** ; reposée, faite en espace
-seulement en attendant (le lanceur de specs refuse une attendue de deux lignes).
+seulement en attendant (le lanceur de specs refuse une attendue de deux lignes). Puis ma
+recommandation explicite « espace seulement » (au programme, la représentation paramétrique n'est
+qu'en Terminale spé, dans l'espace ; le plan a la case `equation`), et David : « je te suis »
+(2026-11-28) → **Q2 tranchée : espace seulement**.
 
 ## Outil 64 — livré sur la branche
 
@@ -34,3 +37,16 @@ seulement en attendant (le lanceur de specs refuse une attendue de deux lignes).
   directeur n'est pas colinéaire à celui de la droite. »).
 - Vu : `pnpm voir /dev/carte-question?question=droite_parametrique --compte admin --chrome` (recto) ;
   verso juste et faux par capture du test `FlashCard-parametrique` (systèmes bien rendus).
+
+## Outil 64 — revues (2026-11-28)
+
+- `code-reviewer` (Opus) : 1 important corrigé (le formulaire effaçait `blankDefaults.answerKind:
+'droite-parametrique'` → case à cocher dans `calculus-editor.ts` / `SharedFieldsEditor.svelte`) ;
+  mineurs corrigés : « x = » retapé toléré, exposants négatifs bornés, e/π/i pris pour paramètre
+  (message propre), λ dans les messages, garde de complexité des cases appariées (aussi pour
+  `resolution`), case hors d'un `$$?$$` seul refusée par `validateTemplate` (droite paramétrique
+  seulement ; `resolution` a le même trou, laissé), doc. Laissé : `1+2t+\sqrt{t}^2-t` accepté
+  (aucun cas réel).
+- `security-auditor` (Opus) : aucun bloquant ; corrigé : bornes de rendu du verso mesurées sur la
+  réponse entière (3 lignes au plafond triplaient la page du professeur), `&` inertes, 4e ligne
+  montrée en texte inerte.

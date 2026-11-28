@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import { blankSchema, blankDefaultsSchema } from '../template-schema';
 import { runTestSpec } from '../test-spec-runner';
+import { validateTemplate } from '../validators/template-validator';
 import { gradeQuestion } from '../grading';
 import { toPublicQuestion } from '../public-question';
 import { validateAnswer } from '#lib/utils/answer-validator.ts';
@@ -89,6 +90,32 @@ describe('validateAnswer : case droite paramétrique', () => {
 		expect(verdictOf(['1+2t', '2+t', '-1+3t']).feedback).toBe(
 			"Ton vecteur directeur n'est pas colinéaire à celui de la droite."
 		);
+	});
+});
+
+describe('retours de revue', () => {
+	it('cases sans ordre imposé : la garde de complexité mesure chaque ligne, pas les trois', () => {
+		const pad = Array.from({ length: 70 }, () => '+0').join('');
+		const lines = [`1+2t${pad}`, `2${pad}`, `-1+3t${pad}`];
+		const answer = formatParametricAnswer(lines);
+		expect(answer.length).toBeGreaterThan(400);
+		const instance = {
+			...instanceWith(BLANK),
+			statement:
+				'Deux droites\n\n$$\\placeholder[0]{}$$\n\n$$\\placeholder[1]{}$$' as ResolvedMarkdown,
+			blanks: [BLANK, { ...BLANK, expectedAnswer: 'x=t\\\\y=t\\\\z=t' }],
+			options: { orderIndependent: true }
+		} as QuestionInstance;
+		const other = formatParametricAnswer(['2t', '2t', '2t']);
+		const result = validateAnswer([other, answer], instance, [other, answer]);
+		expect(result.isCorrect).toBe(true);
+	});
+
+	it('modèle : une case posée dans une ligne de texte est refusée', () => {
+		const inline = templateWith(TEMPLATE_BLANK);
+		inline.variations[0].statement = templateMarkdown('Représentation de $d$ : $?$');
+		expect(validateTemplate(inline).join(' ')).toContain('à poser seule dans un bloc $$?$$');
+		expect(validateTemplate(templateWith(TEMPLATE_BLANK))).toEqual([]);
 	});
 });
 
