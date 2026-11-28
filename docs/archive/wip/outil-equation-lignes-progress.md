@@ -1,21 +1,19 @@
 ---
 title: Lot d'outils equation-lignes — résoudre une équation ligne par ligne (outil 55)
 date: 2026-11-28
-status: outil 55 codé, PR à ouvrir
+status: clos — outil 55 livré (#3292)
 ---
 
 # Lot `equation-lignes` (outil 55)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR de l'outil 55._
+_Mis à jour le 2026-11-28, après #3292._
 
-- **État** : outil 55 codé, revue faite et corrigée, tests verts, rendu vu
-  (`pnpm voir /dev/carte-question?question=resolution`) · **Prochaine action** : PR,
-  `pnpm pr:merger`, puis ligne 55 dans « Livré » d'`outils-manquants.md` et clôture du lot · **En attente de David** : rien · **Pièges en
-  cours** : lot « mathAST » (un seul à la fois) ; `read-only="false"` laisse MathLive en lecture
-  seule ; `onbeforeinput` de Svelte est délégué (écouteur natif nécessaire) · **Worktree /
-  branche** : `../ubumaths-wt-outil-equation-lignes`, `feat/outil-equation-lignes`.
+- **État** : lot clos, outil 55 livré par #3292 (mergée), journal archivé · **Prochaine action** :
+  aucune ; les modèles qui se servent de la case `resolution` vont aux sessions « questions » /
+  « idées » · **En attente de David** : rien · **Pièges** : `read-only="false"` laisse MathLive
+  en lecture seule ; `onbeforeinput` de Svelte est délégué (écouteur natif nécessaire).
 
 ## Outil 55 — phase 0 (2026-11-28)
 
