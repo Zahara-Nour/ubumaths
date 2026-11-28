@@ -150,4 +150,25 @@ describe('case « figure » : médiatrice à la règle graduée et à l’équer
 			.poll(() => container.textContent)
 			.toContain('Ta droite est perpendiculaire à [AB] mais ne passe pas par son milieu.');
 	});
+
+	it('‹ › avec l’outil Règle : ils posent et déplacent un point, jamais un segment (revue)', async () => {
+		const { container } = await render(FlashCard, {
+			target: mainElement(),
+			props: { instance: instance(), interactive: true }
+		});
+		const rect = await zone(container);
+		tool(container, 'regle').click();
+		tap(rect, 2.02, 3.02);
+		tap(rect, 7.98, 3.02);
+		await expect.poll(() => all(container, 'regle').length).toBe(1);
+		const plus = container.querySelector('[data-testid="regle-plus"]') as HTMLButtonElement;
+		for (let i = 0; i < 30; i++) plus.click();
+		tool(container, 'equerre').click();
+		tap(rect, 7, 3.02);
+		await expect.poll(() => all(container, 'droite-choisie').length).toBe(1);
+		tap(rect, 5.03, 3.03);
+		await expect.poll(() => all(container, 'droite-eleve').length).toBe(1);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
 });

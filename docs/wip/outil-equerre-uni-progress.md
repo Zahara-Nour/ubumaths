@@ -1,24 +1,21 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outil 40 livré (#3290) ; 38 codé (branche) ; 45 à faire
+status: outil 40 livré (#3290) ; 38 en PR ; 45 à faire
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, outil 38 codé (pas encore de PR)._
+_Mis à jour le 2026-11-28, outil 38 en PR._
 
-- **État** : outil 38 codé et testé sur `feat/outil-equerre-uni-38` (§ 2, § 2 bis : décisions de David prises,
-  « je te suis ») ; tests ciblés verts (509 fichiers questions + ubumark, 3 navigateur) · **Prochaine action** :
-  `pnpm check:incremental` (était verrouillé par `outil-second-tag`), `pnpm types:cliquet`, `merge origin/main`,
-  rendu vu à l'écran (`pnpm voir` / `pnpm lien`), revue `code-reviewer` (Opus : correction des réponses), ligne
-  38 de `outils-manquants.md` → livré, puis PR et `pnpm pr:merger` ; ensuite outil 45 · **En attente de David** :
-  rien · **Pièges en cours** : `triangle-quadrillage` touche le même module ; à dire à David : la correction de
-  l'outil 40 s'affiche aussi sur quadrillage, (d) segment → pied possible hors du segment ; outil 38 : la droite
-  reste exigée dans `outils:` (`droite, regle, point, equerre`) · **Worktree / branche** :
-  `../ubumaths-wt-outil-equerre-uni`, `feat/outil-equerre-uni-38`.
+- **État** : outil 38 codé, revu, PR ouverte depuis `feat/outil-equerre-uni-38` (§ 2, § 2 bis) · **Prochaine
+  action** : CI verte → `pnpm pr:merger` ; puis sur `main` : n° de PR dans la ligne « Livré » de
+  `outils-manquants.md`, ce bloc ; ensuite outil 45 (figure composée), nouveau worktree · **En attente de
+  David** : rien · **Pièges en cours** : à dire à David : la correction de l'outil 40 s'affiche aussi sur
+  quadrillage, (d) segment → pied possible hors du segment ; outil 38 : `droite` reste exigée dans `outils:` ·
+  **Worktree / branche** : `../ubumaths-wt-outil-equerre-uni`, `feat/outil-equerre-uni-38`.
 
 ## 1. Outil 40 — phase 0 (2026-11-28)
 
@@ -169,3 +166,9 @@ David : « je te suis » sur les 4 questions (comportements ; le Point aimanté 
   (`nudgeRulerEnd`, forme `point`) — sans eux, toucher le bon millimètre au doigt est trop dur.
 - Tests : `construction-mediatrice-regle.test.ts` (27 ; les 25 du juge, 22 rouges avant le code ; 2 de ‹ › écrits après),
   `figure-a-completer-mediatrice-regle.svelte.test.ts` (3, navigateur ; 2 rouges sans l'écran).
+- Rendu vu à l'écran (captures du navigateur de test) : règle posée, point marqué à 3 cm, ‹ 1 mm / 1 mm › ;
+  « Juste » ; faux à 3,5 cm avec le message, la médiatrice en pointillés, l'angle droit et les moitiés codés.
+- Revue (`code-reviewer`, Opus). Corrigé : ‹ › hors de l'outil Point posaient un segment (hors palette → réponse
+  fausse sans message) : sans Segment dans la palette, ils posent et déplacent le point, quel que soit l'outil
+  (test navigateur, vu rouge sans la correction) ; le milieu à l'œil ne se lit que sur un point posé SUR (AB)
+  (test) ; `m[eé]diatrice` dans `rulerMidpointOf` ; l'aide « touche Point » passe avant celle du compas.

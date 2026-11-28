@@ -485,13 +485,15 @@ function throughEyeballedPoint(
 	objects: readonly DrawnObject[],
 	construction: Construction,
 	base: readonly Position[],
-	rulerLength: number
+	rulerLength: number,
+	segment: ExpectedLine
 ): boolean {
 	const [p, q] = ends(line);
 	return objects.some((o) => {
 		if (!isDrawnPoint(o)) return false;
 		const at = { x: o.x, y: o.y };
-		if (!isOnLine(at, { a: p, b: q })) return false;
+		// Le milieu essayé : un point posé sur la droite de l'élève ET sur (AB) (revue)
+		if (!isOnLine(at, { a: p, b: q }) || !isOnLine(at, segment)) return false;
 		const eps = tolerance(at);
 		if (base.some((b) => Math.hypot(b.x - at.x, b.y - at.y) <= eps)) return false;
 		return !isOnRulerGraduation(at, objects, construction, rulerLength);
@@ -623,6 +625,8 @@ export function judgeLines(
 		if (
 			withRuler &&
 			mediatrice &&
+			a &&
+			b &&
 			construction &&
 			shapes &&
 			throughEyeballedPoint(
@@ -630,7 +634,8 @@ export function judgeLines(
 				objects,
 				construction,
 				basePointsOf(points, shapes.segments),
-				rulerLengthOf(shapes.window)
+				rulerLengthOf(shapes.window),
+				{ a, b }
 			)
 		) {
 			return { status: 'incorrect', feedback: midpointEyeballedFeedback(...mediatrice) };

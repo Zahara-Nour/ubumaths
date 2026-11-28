@@ -225,7 +225,16 @@
 	let checks = $derived(node.construction?.checks ?? []);
 	let tools = $derived<ConstructionTool[]>(node.construction?.tools ?? ['droite']);
 	/** Palette au compas sans segment : le cercle de rayon donné en cm (PR 3) */
-	let compassOnly = $derived(tools.includes('compas') && !tools.includes('segment'));
+	/**
+	 * Outil n° 38 : la règle graduée marque un point (le milieu), sans Segment dans la
+	 * palette ; ‹ › y déplacent le point, quel que soit l'outil choisi (revue)
+	 */
+	let rulerMarksPoint = $derived(
+		tools.includes('regle') && tools.includes('point') && !tools.includes('segment')
+	);
+	let compassOnly = $derived(
+		tools.includes('compas') && !tools.includes('segment') && !rulerMarksPoint
+	);
 	/** Outil de départ : celui de la vérification s'il est dans la palette (le point, le segment) */
 	let firstTool = $derived.by((): ConstructionTool => {
 		// Cercle de rayon donné en cm (PR 3) : on pose la règle avant d'ouvrir le compas
@@ -242,7 +251,7 @@
 		compassOnly || (tools.includes('compas') && tool === 'compas')
 			? 'cercle'
 			: // Outil n° 38 : le milieu marqué au Point sur la règle
-				tool === 'point'
+				tool === 'point' || rulerMarksPoint
 				? 'point'
 				: 'segment'
 	);
@@ -270,6 +279,10 @@
 			if (ruler && rulerShape === 'cercle') {
 				return 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
+			// Outil n° 38 : le milieu se marque au Point sur une graduation
+			if (ruler && rulerMarksPoint) {
+				return 'Règle posée : touche Point pour marquer une graduation. Pour la reposer, touche où mettre le 0.';
+			}
 			// Triangle coté en cm : le compas s'ouvre sur la règle ; avec l'angle (rapporteur), le
 			// côté se trace aussi le long de la règle (revue de #2658), comme au rectangle sans
 			// équerre (O à 3 cm, D à 6 cm de B)
@@ -277,10 +290,6 @@
 				return tools.includes('rapporteur') || checks.some(isDiagonalRectangleCheck)
 					? 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.'
 					: 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
-			}
-			// Outil n° 38 : le milieu se marque au Point sur une graduation
-			if (ruler && tools.includes('point')) {
-				return 'Règle posée : touche Point pour marquer une graduation. Pour la reposer, touche où mettre le 0.';
 			}
 			if (ruler && segmentMeasure) {
 				return 'Règle posée : lis la longueur du segment, puis tape-la sous la figure. Pour la reposer, touche où mettre le 0.';

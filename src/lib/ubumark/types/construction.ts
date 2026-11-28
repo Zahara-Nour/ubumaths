@@ -84,7 +84,7 @@ export function bissectriceOf(expression: string): [string, string, string] | nu
 
 /** `mediatrice(A, B)` / `milieu(A, B)` : deux points nommés */
 const RULER_MIDPOINT_REGEX = {
-	droite: /^mediatrice\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/,
+	droite: /^m[eé]diatrice\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/,
 	point: /^milieu\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/
 } as const;
 

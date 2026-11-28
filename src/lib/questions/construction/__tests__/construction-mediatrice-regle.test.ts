@@ -197,6 +197,27 @@ describe('médiatrice à la règle graduée et à l’équerre : verdicts', () =
 		});
 	});
 
+	it('bon milieu, droite tracée vers un Point posé à l’œil hors de (AB) → tracée à l’œil (revue)', () => {
+		const { a, b } = positionsOf(MEDIATRICE);
+		const r = ruler(a, b);
+		const m = rulerGraduation(r, 30);
+		const q = { x: 5, y: 7 };
+		const objects: DrawnObject[] = [
+			r,
+			pointAt(m),
+			pointAt(q),
+			{ kind: 'droite', x1: m.x, y1: m.y, x2: q.x, y2: q.y }
+		];
+		expect(judge(MEDIATRICE, objects)).toEqual({
+			status: 'incorrect',
+			feedback: LINE_EYEBALLED_FEEDBACK
+		});
+	});
+
+	it('« médiatrice » avec accent : la palette n’est pas refusée à tort (revue ; l’expression, elle, ne se calcule pas)', () => {
+		expect(headerErrors(figure('droite m = médiatrice(A, B)'))).toEqual([]);
+	});
+
 	it('règle et point marqué, rien d’autre → « Trace la médiatrice »', () => {
 		const { a, b } = positionsOf(MEDIATRICE);
 		const r = ruler(a, b);
