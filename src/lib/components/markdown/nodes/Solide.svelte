@@ -40,8 +40,8 @@
 	  Même vue que la figure de la page : la grande tourne si la petite tourne, et
 	  la petite garde l'angle laissé dans la grande. Rien n'est replacé : noms et
 	  traits grossissent avec le dessin. Un autre bloc referme la fenêtre. Pas de
-	  bouton dans un choix à cocher ni dans une carte que l'on touche (le bouton
-	  y cocherait le choix) ; rien n'est enregistré.
+	  bouton dans un choix à cocher (`figure-in-choice.ts`) ni dans une carte que
+	  l'on touche (le bouton y cocherait le choix) ; rien n'est enregistré.
 
 	@module components/markdown/nodes/Solide
 -->
@@ -65,6 +65,7 @@
 		type SolideScene
 	} from '#lib/ubumark/utils/espace-solides.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import { readFigureInChoice } from '../figure-in-choice.ts';
 	import { createSolideRotation } from './solide-rotation.svelte.ts';
 	import SolideRotationNote from './SolideRotationNote.svelte';
 	import SolideVueDeDepart from './SolideVueDeDepart.svelte';
@@ -92,18 +93,25 @@
 	let scene = $derived(rotation.scene);
 
 	/**
-	 * Le bloc dont la figure est agrandie : un autre bloc (nouvelle question,
-	 * nouvelle variation) referme la fenêtre ; null : fermée
+	 * La figure est-elle agrandie ? Un autre bloc (nouvelle question, nouvelle
+	 * variation) referme la fenêtre, et elle ne se rouvre pas seule s'il revient
 	 */
-	let enlargedSource = $state<string | null>(null);
-	let enlarged = $derived(enlargedSource !== null && enlargedSource === node.source);
-	/** Figure dans un élément que l'on touche (choix à cocher, carte) : pas de bouton */
-	let nested = $state(false);
+	let enlarged = $derived.by(() => {
+		void node.source;
+		return false;
+	});
+	/**
+	 * Figure dans un choix à cocher (contexte, connu dès le rendu serveur) ou dans
+	 * un autre élément que l'on touche (carte : lu au montage) : pas de bouton
+	 */
+	let nested = $state(readFigureInChoice());
+	/** Le bouton « Agrandir » : le clavier y revient quand la fenêtre se referme */
+	let enlargeButton = $state<HTMLElement | null>(null);
 
 	const CLICKABLE_PARENT = 'button, a, label, [role="button"], [role="option"], [role="radio"]';
 
 	function watchParent(element: HTMLElement) {
-		nested = element.parentElement?.closest(CLICKABLE_PARENT) != null;
+		if (element.parentElement?.closest(CLICKABLE_PARENT) != null) nested = true;
 	}
 
 	/** Points au format de l'attribut `points`, marge comprise */
@@ -262,7 +270,8 @@
 						size="sm"
 						class="text-muted-foreground"
 						aria-label="Agrandir la figure"
-						onclick={() => (enlargedSource = node.source)}
+						bind:ref={enlargeButton}
+						onclick={() => (enlarged = true)}
 					>
 						<Maximize2 class="size-4" aria-hidden="true" />
 						Agrandir
@@ -272,10 +281,14 @@
 		{/if}
 	</div>
 	{#if !nested}
-		<Dialog.Root bind:open={() => enlarged, (open) => (enlargedSource = open ? node.source : null)}>
+		<Dialog.Root bind:open={enlarged}>
 			<Dialog.Content
 				class="solide-fenetre max-h-[100dvh] max-w-[calc(100%-1rem)] gap-1 p-3 pt-10 sm:max-w-4xl"
 				aria-describedby={undefined}
+				onCloseAutoFocus={(event) => {
+					event.preventDefault();
+					enlargeButton?.focus({ preventScroll: true });
+				}}
 			>
 				<Dialog.Title class="sr-only">Figure agrandie</Dialog.Title>
 				<div class="flex flex-col items-center gap-1">

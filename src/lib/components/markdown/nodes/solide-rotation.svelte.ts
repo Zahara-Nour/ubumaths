@@ -355,7 +355,8 @@ export function createEspaceRotation<S>(options: EspaceRotationOptions<S>): Espa
 		);
 		return () => {
 			off();
-			figures.splice(figures.indexOf(element), 1);
+			const index = figures.indexOf(element);
+			if (index >= 0) figures.splice(index, 1);
 			// La fenêtre refermée : la figure de la page redevient celle que l'on tourne
 			figure = figures.at(-1) ?? null;
 		};

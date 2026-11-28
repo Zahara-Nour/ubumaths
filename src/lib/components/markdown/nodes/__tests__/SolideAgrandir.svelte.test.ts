@@ -10,6 +10,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import Espace from '../Espace.svelte';
 import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { FIGURE_IN_CHOICE_KEY } from '../../figure-in-choice.ts';
 
 let hosts: HTMLElement[] = [];
 function host(tag = 'main'): HTMLElement {
@@ -220,6 +221,46 @@ describe('Solide — bouton « Agrandir »', () => {
 		await opened();
 		await screen.rerender({ node: node(...CUBE) });
 		await expect.poll(() => dialog()).toBeNull();
+	});
+
+	it('le premier bloc revient après un autre : la fenêtre ne se rouvre pas seule', async () => {
+		const screen = await render(Espace, { target: host(), props: { node: node(...PAVE) } });
+		enlargeButton(screen.container)!.click();
+		await opened();
+		await screen.rerender({ node: node(...CUBE) });
+		await expect.poll(() => dialog()).toBeNull();
+		await screen.rerender({ node: node(...PAVE) });
+		await settled();
+		await settled();
+		expect(dialog()).toBeNull();
+	});
+
+	it('à la fermeture, le clavier revient sur le bouton « Agrandir »', async () => {
+		const screen = await render(Espace, { target: host(), props: { node: node(...PAVE) } });
+		const button = enlargeButton(screen.container)!;
+		button.click();
+		const window_ = await opened();
+		buttonOf(window_, 'Fermer')!.click();
+		await expect.poll(() => dialog()).toBeNull();
+		await expect.poll(() => document.activeElement).toBe(button);
+	});
+
+	it('figure dans un choix (contexte posé par la liste de choix) : pas de bouton, dès le premier rendu', async () => {
+		const screen = await render(Espace, {
+			target: host(),
+			props: { node: node(...PAVE) },
+			context: new Map([[FIGURE_IN_CHOICE_KEY, true]])
+		});
+		expect(svgOf(screen.container)).not.toBeNull();
+		expect(screen.container.querySelectorAll('button')).toHaveLength(0);
+	});
+
+	it('figure dans une carte que l’on touche (role="button") : pas de bouton « Agrandir »', async () => {
+		const card = host('div');
+		card.setAttribute('role', 'button');
+		const screen = await render(Espace, { target: card, props: { node: node(...PAVE) } });
+		await settled();
+		expect(enlargeButton(screen.container)).toBeUndefined();
 	});
 
 	it('figure dans un choix à cocher (un bouton) : pas de bouton « Agrandir »', async () => {

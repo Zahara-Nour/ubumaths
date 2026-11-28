@@ -18,6 +18,7 @@
 	import { Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
+	import { provideFigureInChoice } from '../figure-in-choice.ts';
 	import { parseMarkdown } from '#lib/ubumark/index.ts';
 	import { monnaieChoiceSize } from '#lib/ubumark/utils/monnaie-choix.ts';
 	import { choiceLetter } from '#lib/questions/choices.ts';
@@ -40,6 +41,9 @@
 	}
 
 	let { items, multiple = false, corrected = false }: Props = $props();
+
+	// Une figure dans un choix n'y pose pas de bouton à elle (« Agrandir » du bloc solide)
+	provideFigureInChoice();
 
 	const monnaieSize = $derived(monnaieChoiceSize(items.map((c) => c.content)));
 

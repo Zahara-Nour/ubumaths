@@ -61,15 +61,17 @@ Exemple suivi : le cube avec la droite (IG), le plan (BDE) et le point K, sur t�
 ## 3. Ce qui est fait (2026-11-28)
 
 - `Solide.svelte` : le `<svg>` est un snippet dessiné deux fois (page, fenêtre `Dialog`), depuis la même
-  rotation ; `enlargedSource` (le bloc agrandi : un autre bloc referme) ; bouton sous la figure.
+  rotation ; `enlarged` (un `$derived` remis à faux quand le bloc change) ; bouton sous la figure.
+- `figure-in-choice.ts` : contexte posé par `ChoiceList.svelte` et `MultipleChoiceInput.svelte`, pour ne pas
+  rendre un bouton dans un bouton dès le rendu serveur.
 - `solide-rotation.svelte.ts` : `attach` tient la liste des `<svg>` (`figures`) ; avant, la fenêtre refermée
   laissait la figure de la page sans capture du pointeur ni retour du clavier.
-- Tests : `SolideAgrandir.svelte.test.ts` (12, rouges avant le code : 9 sur 12, les 3 autres disent « pas de
-  bouton ») ; `SolideTourner.svelte.test.ts` : la figure fixe a maintenant un bouton, « Agrandir ».
+- Tests : `SolideAgrandir.svelte.test.ts` (16 ; les 12 premiers rouges avant le code : 9 sur 12, les 3 autres
+  disent « pas de bouton ») ; `SolideTourner.svelte.test.ts` : la figure fixe a maintenant un bouton, « Agrandir ».
 - Doc : `docs/systeme/ubumark.md` (paragraphe « Bouton Agrandir »), catalogue (`block-catalog/solide.ts`).
 - **Écarts avec la phase 0, à dire à David** :
   - **pas de bouton quand la figure est dans un choix à cocher** (ou une carte que l'on touche) : le choix
-    est lui-même un bouton, « Agrandir » y cocherait le choix ;
+    est lui-même un bouton, « Agrandir » y cocherait le choix ; pas non plus dans la liste des choix corrigée ;
   - Échap sur une grande figure **tournée** ramène d'abord la vue de départ (règle du chantier `solides-3d`),
     un second Échap ferme ;
   - **gain mesuré sur téléphone (390 px)** : une figure fixe presque × 2 ; une figure à tourner environ × 1,3
@@ -78,3 +80,9 @@ Exemple suivi : le cube avec la droite (IG), le plan (BDE) et le point K, sur t�
   fixe, page et fenêtre ; ordinateur 1280 px) ; page d'aide du bloc solide en Safari grand écran (`pnpm voir`,
   bouton sous le cylindre, le cône et la boule, 0 erreur de console). **Pas vu** : la fenêtre ouverte en
   Safari, le thème sombre, le doigt sur un vrai téléphone.
+- **Revue** (`code-reviewer`) : aucun bloquant. **Corrigés** : la fenêtre se rouvrait seule quand le premier
+  bloc revenait après un autre ; le bouton était rendu dans le bouton d'un choix au rendu serveur (contexte
+  `figure-in-choice.ts`), et sous chaque figure de 3 cm de la liste corrigée ; le clavier revient sur le bouton
+  à la fermeture ; garde d'indice dans `attach`. **Laissés** : deux questions de suite au même texte de bloc ne
+  referment pas la fenêtre (rien ne les distingue) ; pendant la fermeture animée, la capture du pointeur reste
+  à la grande figure (la page n'est pas atteignable à ce moment) ; pas de test au doigt réel.
