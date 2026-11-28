@@ -116,7 +116,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
 | Médiatrices                        | 6G3   | 5         | libre                |                             |
-| Angles                             | 6G4   | 12        | libre                |                             |
+| Angles                             | 6G4   | 12        | prise (2026-11-28)   | `idees-6e-angles`           |
 | Bissectrices                       | 6G5   | 3         | libre                |                             |
 | Triangles                          | 6G6   | 16        | libre                |                             |
 | Symétrie axiale                    | 6G7   | 13        | libre                |                             |
