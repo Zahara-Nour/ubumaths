@@ -38,6 +38,7 @@ import {
 	INSTRUMENT_TOOLS,
 	LINE_GRID_TOOLS,
 	bissectriceOf,
+	throughLineOf,
 	centeredCircleOf,
 	centeredCircleTools,
 	PLAIN_PAPER_TOOLS,
@@ -985,6 +986,13 @@ function coherenceError(
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `${check.kind} ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		// Outil n° 40 : sur papier uni, la perpendiculaire et la parallèle par un point se
+		// tracent à l'équerre (décision 2 de David, 2026-11-28) ; sur quadrillage, compter suffit
+		const through = check.kind === 'droite' ? throughLineOf(check.expression) : null;
+		if (through && !grid && !spec.tools.includes('equerre')) {
+			const what = through.kind === 'perpendiculaire' ? 'perpendiculaire' : 'parallèle';
+			return `droite ${check.name} : la ${what} se trace à l’équerre sur papier uni (outils: droite, equerre)`;
+		}
 		// Lot 9 (§ 25) : sur quadrillage, la médiatrice passe par les nœuds ; le Report garde un écartement libre
 		if (check.kind === 'droite' && grid && spec.tools.includes('report')) {
 			return `droite ${check.name} : le report se prend sur papier uni ; le retirer de outils: (ou retirer « grille: »)`;

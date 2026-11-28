@@ -1,7 +1,7 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outil 40 en phase 0, en attente de David
+status: outil 40 codé, PR à ouvrir
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
@@ -10,9 +10,9 @@ status: outil 40 en phase 0, en attente de David
 
 _Mis à jour le 2026-11-28, avant toute PR._
 
-- **État** : outil 40 (perpendiculaire / parallèle par un point, à l'équerre, sur papier uni) en phase 0 (§ 1) ·
-  **Prochaine action** : tests rouges de l'outil 40 après la réponse de David · **En attente de David** : les
-  4 questions du § 1 · **Pièges en cours** : le lot `triangle-quadrillage` touche le même module (figure à
+- **État** : outil 40 codé et vérifié (§ 1 bis), PR à ouvrir · **Prochaine action** : PR de l'outil 40,
+  `pnpm pr:merger`, puis phase 0 de l'outil 38 (médiatrice à la règle graduée et à l'équerre) · **En attente
+  de David** : rien · **Pièges en cours** : le lot `triangle-quadrillage` touche le même module (figure à
   compléter) : `merge origin/main` avant chaque PR · **Worktree / branche** : `../ubumaths-wt-outil-equerre-uni`,
   `feat/outil-equerre-uni`.
 
@@ -69,3 +69,21 @@ perpendiculaire intermédiaire en trait fin, avec ses deux angles droits codés.
    recevraient tout de suite) ? Reco : oui, même juge, et « pas à sa place » n'aide pas l'élève.
 4. La correction (angle droit codé ; trait fin de la perpendiculaire intermédiaire pour la parallèle) : OK ? Reco :
    oui ; sinon la droite seule, comme aujourd'hui.
+
+### 1 bis. Outil 40 : décisions et travail (2026-11-28)
+
+David : « je suis tes recos » sur les 4 questions (comportements et messages ; équerre exigée dans `outils:` sur
+papier uni ; messages aussi sur quadrillage ; correction avec angle droit et perpendiculaire intermédiaire).
+
+- `throughLineOf` (`ubumark/types/construction.ts`) lit `perpendiculaire(A, d)` / `parallele(A, d)` (forme à deux
+  arguments ; `perpendiculaire(P, A, B)` reste refusée sur papier uni) ; garde de palette dans le parseur.
+- `line.ts` : `throughLineSupportError` (parallèle par un point de (d) refusée partout ; sur papier uni : (d)
+  tracée, A visible et dans la fenêtre, 2 unités de droite) ; `judgeThroughLine` lit la cause sur la DERNIÈRE
+  droite qui ne repasse pas la figure (les précédentes sont des traits de construction). Écart à la phase 0 :
+  « l'une pour l'autre » vaut aussi quand la droite ne passe pas par A (la direction est la première erreur).
+- Correction : `throughLineCorrections` / `solutionThroughLines`, dessinée dans `FigureACompleterView.svelte`.
+- Tests : `construction-droite-equerre.test.ts` (24, rouges avant le code), deux attentes changées dans
+  `construction-line.test.ts` (messages de l'outil sur quadrillage, point invisible) ;
+  `figure-a-completer-droite-equerre.svelte.test.ts` (4, navigateur : équerre posée, message, correction).
+- Rendu vu à l'écran (capture du navigateur de test) : message, droite attendue en pointillés, angle droit au
+  pied ; parallèle : perpendiculaire par A en trait fin.

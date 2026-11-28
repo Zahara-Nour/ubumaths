@@ -959,11 +959,20 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    avec tes instruments. ». Messages : il manque la droite (« Trace la médiatrice de [AB]. », « Trace la
    droite m. »), puis, pour une médiatrice, la droite qui touche au but (perpendiculaire à [AB] ou par
    son milieu ; une droite qui repasse un trait de la figure, (AB) elle-même, n'est pas un essai) : « … perpendiculaire à [AB] mais ne passe pas par son milieu. », « … passe par le milieu
-   de [AB] mais n'est pas perpendiculaire à [AB]. », « Ce n'est pas la médiatrice de [AB]. » ; autre
-   expression : « Ta droite n'est pas à sa place. ». Un point ou un segment dans la réponse : faux, sans
+   de [AB] mais n'est pas perpendiculaire à [AB]. », « Ce n'est pas la médiatrice de [AB]. » ;
+   perpendiculaire ou parallèle par un point (`perpendiculaire(A, d)`, `parallele(A, d)`, outil n° 40,
+   `throughLineOf`), aussi sur quadrillage, lue sur la DERNIÈRE droite de l'élève qui ne repasse pas un
+   trait de la figure : rien → « Trace la perpendiculaire à (d) passant par A. », l'une pour l'autre →
+   « Ta droite est parallèle à (d) : on demande la perpendiculaire. » (et l'inverse), bonne direction →
+   « … perpendiculaire à (d) mais ne passe pas par A. », par A → « Ta droite passe par A mais n'est pas
+   perpendiculaire à (d). » ; autre expression : « Ta droite n'est pas à sa place. ». Un point ou un segment dans la réponse : faux, sans
    message. Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas une droite, droite
    hors de la fenêtre, deux vérifications pour la même droite ; sur quadrillage, droite sans deux nœuds
-   dans la fenêtre ; sur papier uni, autre chose qu'une médiatrice, A ou B invisible, ou médiatrice
+   dans la fenêtre ; parallèle par un point de (d) ((d) elle-même) ; sur papier uni, autre chose qu'une
+   médiatrice, une bissectrice, une perpendiculaire ou une parallèle par un point (forme à deux arguments
+   seulement : (d) nommée), (d) non tracée, A invisible ou hors de la fenêtre, droite attendue sans 2
+   unités dans la fenêtre (`throughLineSupportError` ; l'élève pose l'équerre le long de (d) et la glisse
+   jusqu'à A, la parallèle en deux équerres : `isSupported` le reconnaît depuis le lot 2b), A ou B invisible, ou médiatrice
    qui n'a pas 2 unités dans la fenêtre (`mediatriceSupportError`, aussi pour `milieu(A, B)` : l'élève y
    croise deux cercles de même rayon, quel qu'il soit ; avant le lot 9, les cercles de rayon AB devaient
    s'y couper). Une `droite` ne se mêle à aucune autre
@@ -971,7 +980,9 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage, et le report sur papier uni (lot 9 : il garde l'écartement des deux cercles égaux ; `LINE_GRID_TOOLS` sur quadrillage, où `outils: report` est refusé)
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
    d'abord sa droite). Correction : la droite en pointillés ;
-   médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). Bissectrice
+   médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`) ; perpendiculaire par un
+   point : angle droit codé au pied sur (d) ; parallèle : la perpendiculaire à (d) par A en trait fin et
+   ses deux angles droits (`solutionThroughLines`). Bissectrice
    (`droite d = bissectrice(A, O, B)`, lot 9) : papier uni seulement ; O, A, B visibles, non alignés, les deux côtés tracés (un trait droit de la
    figure par O qui s'en va vers A, même plus court que OA, et de même vers B, `sideDrawn` : sinon l'arc
    en O n'a rien à couper ; le message nomme le côté manquant),

@@ -23,18 +23,30 @@
  * pas de trait droit par O, trait dans l'angle qui ne part pas de O, trait par O
  * à l'œil, l'angle voisin (perpendiculaire à la bissectrice), angles inégaux.
  *
+ * Outil n° 40 (chantier `outil-equerre-uni`, 2026-11-28) : `droite p =
+ * perpendiculaire(A, d)` / `parallele(A, d)` sur papier uni, à l'équerre (le juge
+ * reconnaissait déjà ce tracé, c'est la garde de l'auteur qui manquait). Messages,
+ * aussi sur quadrillage : il manque la droite, l'une pour l'autre, bonne direction
+ * mais pas par A, par A mais mauvaise direction.
+ *
  * Pur : positions de la figure et droites attendues données par l'appelant
  * (registre `positions.ts`).
  *
  * @module questions/construction/line
  */
 
-import { bissectriceOf, type LineCheck } from '#lib/ubumark/types/construction.ts';
+import {
+	bissectriceOf,
+	throughLineOf,
+	type LineCheck,
+	type ThroughLine
+} from '#lib/ubumark/types/construction.ts';
 import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
 import {
 	angleSideVertex,
 	basePointsOf,
 	constructionOf,
+	isInFrame,
 	isOnSomeTrait,
 	isStraight,
 	lineCrossesFrame,
@@ -51,6 +63,24 @@ export const LINE_EYEBALLED_FEEDBACK =
 export const LINE_NOT_IN_PLACE_FEEDBACK = 'Ta droite n’est pas à sa place.';
 
 export const lineMissingFeedback = (name: string) => `Trace la droite ${name}.`;
+
+type ThroughKind = ThroughLine['kind'];
+const throughWord = (kind: ThroughKind) =>
+	kind === 'perpendiculaire' ? 'perpendiculaire' : 'parallèle';
+export const throughLineMissingFeedback = (kind: ThroughKind, line: string, point: string) =>
+	`Trace la ${throughWord(kind)} à (${line}) passant par ${point}.`;
+export const notThroughPointFeedback = (kind: ThroughKind, line: string, point: string) =>
+	`Ta droite est ${throughWord(kind)} à (${line}) mais ne passe pas par ${point}.`;
+export const throughPointWrongDirectionFeedback = (
+	kind: ThroughKind,
+	line: string,
+	point: string
+) => `Ta droite passe par ${point} mais n’est pas ${throughWord(kind)} à (${line}).`;
+/** L'une pour l'autre : `kind` est la droite DEMANDÉE */
+export const swappedDirectionFeedback = (kind: ThroughKind, line: string) =>
+	kind === 'perpendiculaire'
+		? `Ta droite est parallèle à (${line}) : on demande la perpendiculaire.`
+		: `Ta droite est perpendiculaire à (${line}) : on demande la parallèle.`;
 export const mediatriceMissingFeedback = (a: string, b: string) =>
 	`Trace la médiatrice de [${a}${b}].`;
 export const notMidpointFeedback = (a: string, b: string) =>
@@ -115,6 +145,11 @@ function coincides(line: DrawnLine, expected: ExpectedLine): boolean {
 /** Directions perpendiculaires (relatif : cosinus nul au calcul flottant près) */
 function isPerpendicular(u: Position, v: Position): boolean {
 	return Math.abs(dot(u, v)) <= 1e-9 * Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y);
+}
+
+/** Directions parallèles (relatif : produit vectoriel nul au calcul flottant près) */
+function isParallel(u: Position, v: Position): boolean {
+	return Math.abs(cross(u, v)) <= 1e-9 * Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y);
 }
 
 function expectedOf(check: LineCheck, expected: ExpectedPoints | undefined): ExpectedLine {
@@ -288,11 +323,47 @@ export function mediatriceSupportError(
 }
 
 /**
+ * Perpendiculaire ou parallèle par un point (outil n° 40) : la parallèle par un
+ * point de (d) est (d) elle-même ; sur papier uni, (d) tracée (l'équerre s'y
+ * pose), A visible dans la fenêtre (l'équerre y glisse), au moins 2 unités de
+ * droite dans la fenêtre. Le message, ou null.
+ */
+function throughLineSupportError(
+	through: ThroughLine,
+	target: ExpectedLine,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): string | null {
+	const { point, line } = through;
+	const guide = shapes.lines.get(line);
+	const a = points.get(point);
+	if (through.kind === 'parallele' && guide && a && isOnLine(a, guide)) {
+		return `${point} est sur ${line} : la parallèle à ${line} par ${point} est ${line} elle-même`;
+	}
+	if (shapes.grid) return null;
+	if (!guide || !guide.visible) {
+		return `${line} n’est pas tracée (l’élève ne peut pas y poser l’équerre)`;
+	}
+	if (!shapes.visiblePoints.has(point)) {
+		return `${point} n’est pas visible (l’élève ne peut pas y glisser l’équerre)`;
+	}
+	if (!a || !shapes.window) return null;
+	if (!isInFrame(a, shapes.window)) return `${point} est hors de la fenêtre`;
+	const u = sub(target.b, target.a);
+	const length = Math.hypot(u.x, u.y);
+	if (length === 0) return null;
+	const room = roomInFrame(a, { x: u.x / length, y: u.y / length }, shapes.window);
+	if (room >= MEDIATRICE_MIN_ROOM) return null;
+	return `la droite attendue n’a pas ${MEDIATRICE_MIN_ROOM} unités dans la fenêtre (l’élève ne peut pas la tracer) : agrandir la fenêtre ou déplacer ${point}`;
+}
+
+/**
  * Les droites sont-elles faisables ? Erreur d'AUTEUR sinon : expression qui ne
  * se calcule pas ou ne donne pas une droite, droite hors de la fenêtre, deux
  * vérifications pour la même droite ; sur quadrillage, droite qui ne passe pas
- * par deux nœuds ; sur papier uni, autre chose qu'une médiatrice ou une
- * bissectrice, ou qui ne se construit pas dans la fenêtre
+ * par deux nœuds ; sur papier uni, autre chose qu'une médiatrice, une
+ * bissectrice, une perpendiculaire ou une parallèle par un point (outil n° 40),
+ * ou qui ne se construit pas dans la fenêtre
  * (`mediatriceSupportError`, `bissectriceSupportError`) ; une bissectrice sur
  * quadrillage.
  */
@@ -331,6 +402,12 @@ export function assertLines(
 			if (message) throw new LineAuthorError(`${label} : ${message}`);
 			continue;
 		}
+		const through = throughLineOf(check.expression);
+		if (through) {
+			const message = throughLineSupportError(through, line, points, shapes);
+			if (message) throw new LineAuthorError(`${label} : ${message}`);
+			if (!shapes.grid) continue;
+		}
 		if (shapes.grid && gridNodesOn(line, shapes) < 2) {
 			throw new LineAuthorError(
 				`${label} : la droite attendue ne passe pas par deux nœuds du quadrillage dans la fenêtre (l’élève ne peut pas la tracer)`
@@ -340,7 +417,7 @@ export function assertLines(
 		const mediatrice = mediatriceOf(check.expression);
 		if (!mediatrice) {
 			throw new LineAuthorError(
-				`${label} : sans quadrillage, seulement une médiatrice (mediatrice(A, B)) ou une bissectrice (bissectrice(A, O, B)) ; sinon ajouter « grille: 1 »`
+				`${label} : sans quadrillage, seulement une médiatrice (mediatrice(A, B)), une bissectrice (bissectrice(A, O, B)), une perpendiculaire (perpendiculaire(A, d)) ou une parallèle (parallele(A, d)) ; sinon ajouter « grille: 1 »`
 			);
 		}
 		const message = mediatriceSupportError(mediatrice, points, shapes);
@@ -431,6 +508,17 @@ export function judgeLines(
 			taken.add(verdict);
 			continue;
 		}
+		const through = throughLineOf(check.expression);
+		if (through) {
+			const free = lineIndexes.filter((i) => !taken.has(i));
+			const verdict = judgeThroughLine(through, target, points, objects, free, built, {
+				guide: shapes?.lines.get(through.line) ?? null,
+				figureTraits
+			});
+			if (typeof verdict !== 'number') return verdict;
+			taken.add(verdict);
+			continue;
+		}
 		const mediatrice = mediatriceOf(check.expression);
 		const free = lineIndexes.filter((i) => !taken.has(i));
 		const covering = free.filter((i) => coincides(objects[i] as DrawnLine, target));
@@ -457,6 +545,61 @@ export function judgeLines(
 		};
 	}
 	return { status: 'correct' };
+}
+
+/**
+ * Perpendiculaire ou parallèle par un point (outil n° 40) : l'indice de la droite
+ * de l'élève retenue, ou le verdict faux et sa cause, lue sur la DERNIÈRE droite
+ * tracée (les précédentes sont souvent des traits de construction : la
+ * perpendiculaire intermédiaire de la parallèle). Une droite qui repasse un trait
+ * de la figure ((d) elle-même) n'est pas un essai.
+ */
+function judgeThroughLine(
+	through: ThroughLine,
+	target: ExpectedLine,
+	points: ReadonlyMap<string, Position>,
+	objects: readonly DrawnObject[],
+	free: readonly number[],
+	built: (i: number) => boolean,
+	context: { guide: ExpectedLine | null; figureTraits: readonly Trait[] }
+): number | ConstructionVerdict {
+	const { kind, point, line: name } = through;
+	const line = (i: number) => objects[i] as DrawnLine;
+	const covering = free.filter((i) => coincides(line(i), target));
+	const good = covering.find(built);
+	if (good !== undefined) return good;
+	if (covering.length > 0) return { status: 'incorrect', feedback: LINE_EYEBALLED_FEEDBACK };
+	const retraces = (i: number) => {
+		const [p, q] = ends(line(i));
+		return context.figureTraits.some(
+			(t) => isStraight(t) && isOnLine(t.a, { a: p, b: q }) && isOnLine(t.b, { a: p, b: q })
+		);
+	};
+	const own = free.filter((i) => !retraces(i));
+	if (own.length === 0) {
+		return { status: 'incorrect', feedback: throughLineMissingFeedback(kind, name, point) };
+	}
+	const shown = own[own.length - 1];
+	if (!built(shown)) return { status: 'incorrect', feedback: LINE_EYEBALLED_FEEDBACK };
+	const a = points.get(point);
+	const { guide } = context;
+	if (!a || !guide) return { status: 'incorrect', feedback: LINE_NOT_IN_PLACE_FEEDBACK };
+	const [p, q] = ends(line(shown));
+	const v = sub(q, p);
+	const u = sub(guide.b, guide.a);
+	const perpendicular = isPerpendicular(v, u);
+	const parallel = isParallel(v, u);
+	const wanted = kind === 'perpendiculaire' ? perpendicular : parallel;
+	const swapped = kind === 'perpendiculaire' ? parallel : perpendicular;
+	if (swapped) return { status: 'incorrect', feedback: swappedDirectionFeedback(kind, name) };
+	if (wanted) return { status: 'incorrect', feedback: notThroughPointFeedback(kind, name, point) };
+	if (isOnLine(a, { a: p, b: q })) {
+		return {
+			status: 'incorrect',
+			feedback: throughPointWrongDirectionFeedback(kind, name, point)
+		};
+	}
+	return { status: 'incorrect', feedback: LINE_NOT_IN_PLACE_FEEDBACK };
 }
 
 /** Angle (en degrés, entre 0 et 90) entre deux directions de droites */
@@ -681,3 +824,53 @@ export function bissectriceCorrections(
 		];
 	});
 }
+
+/**
+ * Correction d'une perpendiculaire ou d'une parallèle par un point (outil n° 40,
+ * décision 4) : l'angle droit codé au pied sur (d) ; pour la parallèle, la
+ * perpendiculaire à (d) par A en trait fin, et son angle droit en A aussi
+ */
+export interface ThroughLineCorrection {
+	guides: DrawnLine[];
+	/** Le petit carré en `center`, entre [center from) et [center to) */
+	rightAngles: { center: Position; from: Position; to: Position }[];
+}
+
+export function throughLineCorrections(
+	checks: readonly LineCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined
+): ThroughLineCorrection[] {
+	return checks.flatMap((check): ThroughLineCorrection[] => {
+		const through = throughLineOf(check.expression);
+		if (!through) return [];
+		const a = points.get(through.point);
+		const guide = shapes?.lines.get(through.line);
+		if (!a || !guide) return [];
+		const u = sub(guide.b, guide.a);
+		const length2 = dot(u, u);
+		if (length2 === 0) return [];
+		const t = dot(sub(a, guide.a), u) / length2;
+		const foot = { x: guide.a.x + t * u.x + 0, y: guide.a.y + t * u.y + 0 };
+		const normal = { x: -u.y, y: u.x };
+		const alongD = { x: foot.x + u.x, y: foot.y + u.y };
+		const onA = { x: a.x + u.x, y: a.y + u.y };
+		const towardA = Math.hypot(a.x - foot.x, a.y - foot.y) > 0 ? a : add(foot, normal);
+		if (through.kind === 'perpendiculaire') {
+			return [{ guides: [], rightAngles: [{ center: foot, from: alongD, to: towardA }] }];
+		}
+		return [
+			{
+				guides: [
+					{ kind: 'droite', x1: a.x, y1: a.y, x2: a.x + normal.x + 0, y2: a.y + normal.y + 0 }
+				],
+				rightAngles: [
+					{ center: foot, from: alongD, to: a },
+					{ center: a, from: onA, to: foot }
+				]
+			}
+		];
+	});
+}
+
+const add = (p: Position, q: Position): Position => ({ x: p.x + q.x, y: p.y + q.y });
