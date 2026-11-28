@@ -965,6 +965,7 @@ function objectMark(o: AtelierObject): string {
 		o.status,
 		'interval' in o ? o.interval : null,
 		'inheritedInterval' in o ? o.inheritedInterval : null,
+		'parameterInterval' in o ? o.parameterInterval : null,
 		'reciprocalOn' in o ? o.reciprocalOn : null,
 		o.kind === 'sequence' ? [o.mode, o.firstIndex, o.firstTerm] : null
 	]);
