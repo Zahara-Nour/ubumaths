@@ -155,6 +155,12 @@ export function createEspaceRotation<S>(options: EspaceRotationOptions<S>): Espa
 	const scene = $derived(options.build(rotatable ? vue : undefined, heldOffsets));
 	let dragging = $state(false);
 
+	/**
+	 * Les `<svg>` qui montrent cette vue : la figure de la page et, quand elle est
+	 * agrandie, celle de la fenêtre (chantier `solide-agrandir`). La dernière posée
+	 * est celle que l'élève a sous la main
+	 */
+	const figures: SVGSVGElement[] = [];
 	let figure: SVGSVGElement | null = null;
 	/** Glissement en cours : le pointeur et sa dernière position */
 	let drag: { id: number; x: number; y: number; started: boolean } | null = null;
@@ -334,6 +340,7 @@ export function createEspaceRotation<S>(options: EspaceRotationOptions<S>): Espa
 	 * point de la figure serait servi avant un écouteur posé à la remontée
 	 */
 	function attach(element: SVGSVGElement) {
+		figures.push(element);
 		figure = element;
 		const off = on(
 			element,
@@ -348,7 +355,9 @@ export function createEspaceRotation<S>(options: EspaceRotationOptions<S>): Espa
 		);
 		return () => {
 			off();
-			if (figure === element) figure = null;
+			figures.splice(figures.indexOf(element), 1);
+			// La fenêtre refermée : la figure de la page redevient celle que l'on tourne
+			figure = figures.at(-1) ?? null;
 		};
 	}
 
