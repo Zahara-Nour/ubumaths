@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3323._
+_Mis à jour le 2026-11-28, migrations générées (PR ouverte)._
 
-- **État** : fichiers du lot mergés (#3323) : 2 modèles neufs (`scripts/questions/idees-6e-cercles-neufs`), 9
-  variations ajoutées à b8939937, 48524505, 2f3da9ce (`…-publies`). Rien en base de prod.
-- **Prochaine action** : après les brouillons, commiter les ids écrits en tête des fichiers ; nouveau worktree
-  sur `origin/main` ; migrations de rangement (N1, N2 : `Géométrie > Figures planes > cercle`, 6-162 ; niveaux 3
-  et 2 à revérifier en prod) et de contenu (3 publiés), générées ; `security-auditor` ; `db:migrate`.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-cercles-neufs --publier`
-  depuis le dépôt principal.
+- **État** : migrations générées et commitées sur `feat/idees-6e-cercles-migrations` : rangement de N1 c9bc598a
+  (niveau 3) et N2 10d20825 (niveau 2) sur `Géométrie > Figures planes > cercle`, tag 6-162 ; contenu des 3
+  publiés (+3 variations chacun). Intégration rouge sans (9 échecs), verte avec ; garde des niveaux sans écart.
+- **Prochaine action** : `security-auditor` sur la PR, CI verte → merge ; puis depuis `main` à jour
+  `migration list --linked` (une autre en attente → stop) et `db:migrate` ; vérifier en base ; relecture des
+  brouillons dans `/dev/modeles?noeud=` et série de relecture des 3 publiés.
+- **En attente de David** : rien.
 - **Pièges en cours** : deux `verifier:` de la même famille (deux cercles) ne font pas une figure composée, et
   la garde de la règle graduée refuse alors le cercle « passant par » : N1 c commence par le segment [CD].
-- **Worktree / branche** : aucun (retiré par `pr:merger`).
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-cercles`, `feat/idees-6e-cercles-migrations` (poussée).
 
 ## Phase 0 (2026-11-28)
 
@@ -75,6 +75,10 @@ Page à cocher : https://claude.ai/artifact/WtKPymyPCYikJrmezzon8f (Oui / Non / 
 
 ## Journal
 
+- 2026-11-28 : migrations générées (rangement 20261128171523, contenu 20261128171531). Nœud `cercle` revérifié
+  en prod (sous-notion active ; publiés 1/1/2/2/3, N2 en 2 et N1 en 3, rien de neuf depuis le relevé).
+  Intégration : 9 échecs avec les SQL vidés, 622 verts avec ; `garde-niveaux-tags` sans écart.
+- 2026-11-28 : brouillons N1 (c9bc598a) et N2 (10d20825) créés en prod par David, vérifiés (draft, sans nœud).
 - 2026-11-28 : #3323 mergée (fichiers du lot seuls, CI verte).
 - 2026-11-28 : lot écrit (`docs/wip/questions/idees-6e-cercles-neufs.py`, `…-publies.py`). Écarts à la phase 0 :
   N1 c reprend le programme de leur exercice (segment [CD] de n cm d'abord, puis les deux cercles : figure

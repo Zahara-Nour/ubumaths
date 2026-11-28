@@ -1,0 +1,25 @@
+{
+	"migration": "supabase/migrations/20261128171523_questions_idees_6e_cercles_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "c9bc598a-ffcd-4222-98d6-96292c7be4c7",
+			"title": "Construire des cercles d'après un programme",
+			"fichier": "n1-construire-des-cercles.json",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sousNotion": "cercle",
+			"points": ["6-162"]
+		},
+		{
+			"id": "10d20825-99e7-4e1f-9779-9323728ad792",
+			"title": "Retrouver le programme d'un cercle tracé",
+			"fichier": "n2-retrouver-le-programme-d-un-cercle.json",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sousNotion": "cercle",
+			"points": ["6-162"]
+		}
+	],
+	"niveaux": [],
+	"tags": []
+}
