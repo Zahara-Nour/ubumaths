@@ -49,7 +49,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = deleteMessageSchema.safeParse(body);

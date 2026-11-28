@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	try {
 		raw = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 	const parsed = combatQuestionSchema.safeParse(raw);
 	if (!parsed.success) throw error(400, parsed.error.issues[0].message);

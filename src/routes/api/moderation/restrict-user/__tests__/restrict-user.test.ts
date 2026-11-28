@@ -271,7 +271,7 @@ describe('POST /api/moderation/restrict-user - Input Validation', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toBe('Invalid JSON');
+			expect(error.body.message).toBe('Corps de requête JSON invalide');
 		}
 	});
 

@@ -76,7 +76,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			}
 		} else {
 			// Unknown role
-			throw error(403, 'Not authorized');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Fetch progress

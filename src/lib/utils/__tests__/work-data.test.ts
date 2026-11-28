@@ -10,6 +10,7 @@ import {
 	isWorkDataKey,
 	watchWorkDataOwner
 } from '../work-data';
+import { STORAGE_KEY as POMODORO_STORAGE_KEY } from '#lib/stores/pomodoro/logic.ts';
 
 class MemoryStorage implements Storage {
 	private items = new Map<string, string>();
@@ -158,6 +159,11 @@ describe('isWorkDataKey', () => {
 		for (const key of Object.keys(WORK)) expect(isWorkDataKey(key)).toBe(true);
 		for (const key of Object.keys(PREFERENCES)) expect(isWorkDataKey(key)).toBe(false);
 		expect(isWorkDataKey(OWNER)).toBe(false);
+	});
+
+	// Écart L108 : l'élève suivant ne retrouve ni le minuteur ni le compteur du jour.
+	it('le minuteur Pomodoro est une donnée de travail', () => {
+		expect(isWorkDataKey(POMODORO_STORAGE_KEY)).toBe(true);
 	});
 });
 

@@ -4,6 +4,8 @@ couvre:
   - 'src/routes/(protected)/+layout.svelte'
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
   - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,FlipCard,Wheel}.svelte'
+  - src/lib/components/wheel-landing.ts
+  - src/lib/navigation/public-nav-items.ts
   - 'src/lib/components/{skeleton,modals}/**'
   - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
@@ -115,6 +117,10 @@ tableau de bord, il rend `Header` et `Sidebar`, son `<main>` défile et porte l'
 `contenu-principal`. Sous `/dashboard`, il ne rend ni l'un ni l'autre, cède l'ancre au `<main>` du
 layout du tableau de bord et ne masque plus la page pendant une navigation : c'est ce layout-là qui
 pose son propre squelette.
+
+Les liens publics vivent dans une seule liste, `#lib/navigation/public-nav-items.ts` : `Sidebar`
+(barre, grand écran) et le tiroir mobile de `Header` la lisent toutes les deux. Un lien s'ajoute
+là, jamais dans un des deux composants.
 
 Le lien « Aller au contenu » (`+layout.svelte:109-113`, WCAG 2.4.1) est le premier élément
 focusable. Il est caché par une translation (`-translate-y-[200%]`, `focus:translate-y-0`), pas
@@ -272,7 +278,10 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
 `Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `/dev/roue`. Les
 prénoms en double sont départagés par le plus court préfixe du nom (« Léa M. », « Léa P. »). Avec
 `addJokerIfOdd`, une case « Joker » complète un nombre impair : si elle sort, aucun gagnant n'est
-annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`).
+annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`). L'angle d'arrêt
+vient de `wheel-landing.ts` : il tombe à au moins 2° d'une frontière de case, calculé sur l'angle
+final (départ + tirage) et pas sur le seul tirage, pour que la case affichée soit bien celle
+annoncée.
 
 ### Petits composants
 
@@ -304,10 +313,8 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 
 ## Pièges
 
-- **Les getters `*Sync` du cache prof et `getBuddySync` ne réagissent pas au temps.** Ils
-  comparent `Date.now()` au TTL, qui n'est pas réactif : un `$derived` ne se recalcule pas à
-  l'expiration, il rend `null` au prochain recalcul déclenché par autre chose. Le cache élève
-  (récompenses, avertissements) n'a plus ce défaut : il se relit à l'échéance.
+- **Les getters `*Sync` du cache prof et `getBuddySync` ne suivent pas leur échéance** : écart
+  L141 au [registre](../ecarts/registre.md).
 - **Les classes du cache prof ne viennent que de l'hydratation** : aucune lecture d'API ne
   remplit une classe seule (`getAllClassesSync` lit ce que les pages ont versé).
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
@@ -315,8 +322,6 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
   avant. Mais le load d'une page tourne **en parallèle** de celui du layout : il ne lit rien de
   sensible sans `await parent()` ou sa propre garde de rôle (`documents/+page.server.ts` ne rend
   rien et ne relit plus le rôle, M32).
-- **Deux listes de liens publics** : `Header.svelte` (tiroir mobile) et `Sidebar.svelte` (barre)
-  ont chacun leur copie. Une entrée ajoutée à l'une manque à l'autre.
 
 ## Écarts connus
 

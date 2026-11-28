@@ -21,7 +21,7 @@ import {
 } from '#lib/mathAST/index.ts';
 import { formatPointNames } from '#lib/mathAST/common/point-names.ts';
 import { resolveCapitalPairs } from './capital-pairs';
-import { assignBlankIndices } from './generator/assign-blank-indices';
+import { assignBlankIndices, variationCasesUnresolved } from './generator/assign-blank-indices';
 import type { QuestionTemplate } from './types';
 
 // Constantes
@@ -58,11 +58,14 @@ export function figureNameWarnings(
 		// Type des cases lu dans l'énoncé, comme au tirage (`[_]` = texte)
 		const statement = variation.statement ?? template.shared?.statement ?? '';
 		const answerFormats = variation.answerFormats ?? template.shared?.answerFormats;
-		const {
-			blankTypes,
-			operationBlanks = {},
-			variationBlanks = {}
-		} = assignBlankIndices(statement, answerFormats);
+		const assigned = assignBlankIndices(statement, answerFormats);
+		const { blankTypes, operationBlanks = {}, variationBlanks = {} } = assigned;
+		// Tableau à compléter à variables : il compte pour une case sur l'énoncé brut,
+		// le rang (et le type) des cases qui le suivent n'est connu qu'au tirage. Seules
+		// les cases d'avant le premier tableau sont lues (outil 63)
+		const firstUnreliable = variationCasesUnresolved(assigned)
+			? Math.min(...Object.keys(variationBlanks).map(Number))
+			: Infinity;
 		// Case d'un bloc ```operation ou d'un tableau de signes : réponse tirée du bloc,
 		// souvent omise de blanks[]
 		const operationIndices = [...Object.keys(operationBlanks), ...Object.keys(variationBlanks)].map(
@@ -74,6 +77,7 @@ export function figureNameWarnings(
 			.filter((i) => !omitted || !operationIndices.includes(i));
 		variation.blanks?.forEach((blank, position) => {
 			const blankIndex = caseIndices[position] ?? position;
+			if (blankIndex >= firstUnreliable) return;
 			if (blankTypes[blankIndex] === 'text' || operationIndices.includes(blankIndex)) return;
 			const figure = figureNameIn(blank.expectedAnswer);
 			if (!figure) return;

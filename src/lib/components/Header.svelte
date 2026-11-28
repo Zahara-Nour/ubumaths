@@ -40,13 +40,9 @@
 	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '#lib/types/database-helpers.ts';
-	import type { LucideIcon } from '@lucide/svelte';
+	import { PUBLIC_NAV_ITEMS, type NavItem } from '#lib/navigation/public-nav-items.ts';
 	import {
 		Menu,
-		FlaskConical,
-		Zap,
-		Newspaper,
-		KeyRound,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -55,15 +51,7 @@
 		Minus,
 		Plus,
 		Maximize,
-		Minimize,
-		Home,
-		Gamepad2,
-		Terminal,
-		Turtle,
-		Blocks,
-		Calculator,
-		PenTool,
-		Laugh
+		Minimize
 	} from '@lucide/svelte';
 	import gidouille from '#lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
@@ -99,50 +87,13 @@
 		};
 	});
 
-	// Navigation item type
-	type NavItem = { label: string; href: string; icon: LucideIcon; roles?: string[] };
-
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
 	let {
 		title = 'Chiphre',
 		user = null,
 		profile = null,
-		sidebarItems = [
-			{ label: 'Accueil', href: '/', icon: Home },
-			// D14 (décision de David, 2026-10-12) : les deux pages publiques les plus vivantes
-			{ label: 'Automaths', href: '/automaths', icon: Zap },
-			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
-			{
-				label: 'Python',
-				href: '/python',
-				icon: Terminal,
-				roles: ['student', 'teacher']
-			},
-			// La Tortue (chantier blockly, PR 3) : publique, aucune donnée serveur
-			{ label: 'La Tortue', href: '/tortue', icon: Turtle },
-			// Programmes de calcul (chantier blockly) : publique, aucune donnée serveur
-			{ label: 'Programmes de calcul', href: '/programmes-de-calcul', icon: Blocks },
-			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : ni l'atelier, ni Automaths, ni le Shtam ne lisent de
-			// donnée serveur réservée, ils sont donc ouverts, y compris hors connexion.
-			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore).
-			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
-			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
-			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
-			{ label: 'Le Shtam', href: '/shtam', icon: Newspaper },
-			{
-				label: 'Whiteboard',
-				href: '/whiteboard',
-				icon: PenTool,
-				roles: ['teacher']
-			},
-			{
-				label: 'Zygomatics',
-				href: '/presques-evaluations',
-				icon: Laugh
-			}
-		]
+		sidebarItems = PUBLIC_NAV_ITEMS
 	}: {
 		title?: string;
 		user?: User | null; // Verified user from server

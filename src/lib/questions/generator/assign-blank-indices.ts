@@ -151,6 +151,20 @@ export interface VariationBlank {
 	cell: number;
 }
 
+/**
+ * Un tableau à compléter de l'énoncé porte-t-il une variable (`{{al}}`) ou une
+ * expression ? Sur l'énoncé brut, il ne se lit alors souvent pas et compte pour une
+ * case : le nombre de ses cases, et le rang des cases qui le suivent, ne se savent
+ * qu'au tirage (outil 63, `docs/wip/outil-tableau-variation-progress.md`).
+ */
+export function variationCasesUnresolved(
+	result: Pick<AssignBlankIndicesResult, 'variationBlanks'>
+): boolean {
+	return Object.values(result.variationBlanks ?? {}).some(({ source }) =>
+		/\{\{|<<expr:/.test(source)
+	);
+}
+
 /** Marque d'un bloc ```choix mis à l'abri : début, rang du bloc, fin */
 const CHOICE_MARK_START = '\u0000choice:';
 const CHOICE_MARK_END = '\u0000';

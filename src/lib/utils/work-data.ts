@@ -1,7 +1,7 @@
 /**
  * Données de travail d'élève gardées dans le navigateur (`localStorage`) : code Python,
  * Blockly, atelier, console de calcul, calculatrice, grapheur, tableur, tableau blanc,
- * parties de jeux, conversation du Père Ubu.
+ * parties de jeux, conversation du Père Ubu, minuteur Pomodoro.
  *
  * Sur une tablette partagée, un compte ne doit pas retrouver celles d'un autre (T17 étendu,
  * décision de David du 2026-10-13 : effacées à la déconnexion). Le navigateur retient à
@@ -23,6 +23,7 @@
  */
 
 import { clearFreezeDetectionData } from '#lib/utils/freezeDetection.ts';
+import { STORAGE_KEY as POMODORO_STORAGE_KEY } from '#lib/stores/pomodoro/logic.ts';
 
 const OWNER_KEY = 'chiphre:work-data-owner';
 const ANONYMOUS = 'anonymous';
@@ -46,6 +47,8 @@ const WORK_DATA_KEYS: readonly string[] = [
 	'chiphre:depeches-du-czar:indices',
 	// Heure du dernier passage du Palotin (plafond de 10 min) : propre à l'élève de l'onglet
 	'chiphre:palotin:dernier-passage',
+	// Minuteur Pomodoro et compteur du jour (écart L108)
+	POMODORO_STORAGE_KEY,
 	'minesweeper_game',
 	'2048-best-score',
 	'2048-game-state',
