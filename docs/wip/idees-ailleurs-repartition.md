@@ -145,8 +145,8 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Homothétie et rotation                   | 3G1       | 8         | publiée (2026-11-27)                                       | `idees-3e-transformations`   |
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
-| Espace                                   | 3G4       | 6         | en cours : 5 variations publiées, F1 attend l’outil n° 72  | `idees-3e-espace`            |
-| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
+| Espace                                   | 3G4       | 6         | publiée (2026-11-28)                                       | `idees-3e-espace`            |
+| Algorithmique et programmation           | 3I1       | 11        | prise (2026-11-28)                                         | `idees-3e-algorithmique`     |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 | Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 
