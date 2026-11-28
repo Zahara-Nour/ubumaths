@@ -111,10 +111,13 @@ export async function createNotification(
 
 			if (data.target_type === 'users' && data.target_user_ids) {
 				// Mono-teacher: every enrolled student is "ours". Targets just have to be
-				// students enrolled in some class.
+				// students enrolled in some class — d'une adhésion ACTIVE : un élève dont
+				// toutes les adhésions sont archivées a quitté les classes du professeur
+				// (écart L83).
 				const { data: teacherStudents, error: teacherStudentsError } = await supabase
 					.from('class_members')
-					.select('student_id');
+					.select('student_id')
+					.eq('status', 'active');
 
 				// Même contrôle, même piège : la liste vide accusait le professeur de
 				// cibler des élèves qui ne sont pas les siens.

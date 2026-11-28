@@ -229,7 +229,7 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			expect(actif).toMatchObject({ success: true });
 		});
 
-		it.fails('écart L83 : un élève dont la seule adhésion est archivée est refusé', () => {
+		it('un élève dont la seule adhésion est archivée est refusé (L83)', () => {
 			expect(parti.success).toBe(false);
 		});
 	});
