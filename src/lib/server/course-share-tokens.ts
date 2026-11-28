@@ -25,11 +25,8 @@ import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
-import {
-	endOfSchoolYear,
-	type JournalShareToken,
-	type PublicWorksheet
-} from '#lib/server/journal-share-tokens.ts';
+import type { JournalShareToken, PublicWorksheet } from '#lib/server/journal-share-tokens.ts';
+import { endOfSchoolYear } from '#lib/server/school-year.ts';
 import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '#lib/validation/series.ts';
 import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';

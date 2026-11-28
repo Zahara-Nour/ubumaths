@@ -475,8 +475,9 @@ export async function createEvaluationTask(
 export async function cleanupCompetenceTestData(): Promise<void> {
 	const service = createServiceRoleClient();
 
-	// Step 0: les points de test de getKnowledgeSkill — leurs tags d'abord (clé étrangère en
-	// RESTRICT), puis les points (leurs états d'élèves partent en cascade).
+	// Step 0: les points de test de getKnowledgeSkill — leurs tags, les états des élèves et la
+	// couverture des séances d'abord (clés en RESTRICT / NO ACTION depuis L112 : supprimer un
+	// point travaillé est refusé), puis les points.
 	const { data: testPoints } = await service
 		.from('curriculum_points')
 		.select('id')
@@ -487,6 +488,8 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 			.from('question_template_points' as never)
 			.delete()
 			.in('point_id', testPointIds);
+		await service.from('student_point_state').delete().in('point_id', testPointIds);
+		await service.from('journal_entry_points').delete().in('point_id', testPointIds);
 		const { data: deleted } = await service
 			.from('curriculum_points')
 			.delete()

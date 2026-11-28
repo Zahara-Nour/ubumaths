@@ -2,20 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, après #3293._
 
-- **État** : lot réservé (c825324f80) ; outil 61 vérifié manquant. Phase 0 validée par David le
-  2026-11-28 (recommandations de Q1-Q4). Code, tests, revue (opus) faits ; rendu vu (WebKit,
-  iPhone). PR ouverte.
-- **Prochaine action** : CI verte → merge → outil 61 au § 4 d'`outils-manquants.md`, clore le lot.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-outil-graduer-segment` · `feat/outil-graduer-segment`.
+- **État** : lot clos. Outil 61 livré (#3293), journal archivé.
+- **Prochaine action** : aucune.
+- **En attente de David** : avis sur les choix faits sans lui (§ Implémentation).
+- **Worktree / branche** : retirés.
 
 ## Outil 61 — Graduer un segment (6-129)
 
-Source : [outils-manquants.md](outils-manquants.md) n° 61 ; décision de David du 2026-11-25
-(chantier `idees-6e-fractions`, Q1, [journal archivé](../archive/wip/idees-6e-fractions/idees-6e-fractions-progress.md)).
+Source : [outils-manquants.md](../../wip/outils-manquants.md) n° 61 ; décision de David du 2026-11-25
+(chantier `idees-6e-fractions`, Q1, [journal archivé](idees-6e-fractions/idees-6e-fractions-progress.md)).
 
 ### Phase 0 (2026-11-28)
 

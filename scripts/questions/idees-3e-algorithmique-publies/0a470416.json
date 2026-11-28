@@ -1,0 +1,316 @@
+{
+	"id": "0a470416-e296-4f2b-b11d-dee7150ebc7a",
+	"title": "Bloc personnalisé",
+	"description": "Lire un programme Scratch qui définit et appelle un bloc personnalisé « dessine carré » : côté du plus grand carré, nombre de carrés, longueur tracée",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+(n-1)*k}}"
+				}
+			],
+			"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\nmettre [c v] à ({{a}})\nrépéter ({{n}}) fois\ndessine carré (c)\najouter ({{k}}) à [c v]\nfin\n```\n\nQuelle est la longueur du côté du **plus grand** carré dessiné (en pas) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..40"
+				},
+				{
+					"name": "n",
+					"expression": "3..6"
+				},
+				{
+					"name": "k",
+					"expression": "5..20"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+					"La boucle appelle ${{n}}$ fois le bloc, avec $c = {{a}}$, puis ${{eval:a+k}}$, ${{eval:a+2*k}}$, … : $c$ augmente de ${{k}}$ **après** chaque carré.",
+					"Le dernier carré (le ${{n}}$e) a pour côté ${{a}} + {{eval:n-1}} \\times {{k}} = {{eval:a+(n-1)*k}}$ ; l'ajout qui suit ne dessine plus rien.",
+					"Le plus grand carré a un côté de $\\textcolor{{{color:primary.0}}}{{{eval:a+(n-1)*k}}}$ pas."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((s-a)/k)+1}}"
+				}
+			],
+			"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\nmettre [c v] à ({{a}})\nrépéter jusqu'à ce que <(c) > [{{s}}]>\ndessine carré (c)\najouter ({{k}}) à [c v]\nfin\n```\n\nCombien de carrés le programme dessine-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..30"
+				},
+				{
+					"name": "k",
+					"expression": "5..15"
+				},
+				{
+					"name": "s",
+					"expression": "60..120"
+				}
+			],
+			"conditions": ["floor((s-a)/k)+1>=3", "floor((s-a)/k)+1<=10"],
+			"correction": {
+				"steps": [
+					"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+					"Les carrés ont pour côtés ${{a}}$, ${{eval:a+k}}$, ${{eval:a+2*k}}$, … tant que $c \\leqslant {{s}}$ (la condition est testée avant chaque passage).",
+					"Le dernier côté dessiné est ${{eval:a+floor((s-a)/k)*k}} \\leqslant {{s}}$ ; le suivant, ${{eval:a+(floor((s-a)/k)+1)*k}}$, dépasse ${{s}}$ : la boucle s'arrête.",
+					"De ${{a}}$ à ${{eval:a+floor((s-a)/k)*k}}$ de ${{k}}$ en ${{k}}$ : ${{eval:floor((s-a)/k)}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:floor((s-a)/k)+1}}}$ carrés."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*(a+b)}}"
+				}
+			],
+			"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\ndessine carré ({{a}})\ndessine carré ({{b}})\n```\n\nQuelle longueur le stylo trace-t-il en tout (en pas) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..60"
+				},
+				{
+					"name": "b",
+					"expression": "10..60"
+				}
+			],
+			"conditions": ["a!=b", "a%10==0 or b%10==0"],
+			"correction": {
+				"steps": [
+					"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+					"Un appel « dessine carré (côté) » avance $4$ fois de *côté* pas : il trace $4 \\times$ *côté* pas.",
+					"Premier appel : $4 \\times {{a}} = {{eval:4*a}}$ pas ; second appel : $4 \\times {{b}} = {{eval:4*b}}$ pas.",
+					"En tout : ${{eval:4*a}} + {{eval:4*b}} = \\textcolor{{{color:primary.0}}}{{{eval:4*(a+b)}}}$ pas."
+				]
+			}
+		},
+		{
+			"statement": "Le bloc « losange » doit tracer un **losange** dont les côtés mesurent ${{c}}$ pas.\n\n```scratch\ndéfinir losange\nstylo en position d'écriture\nrépéter (2) fois\navancer de ({{c}}) pas\ntourner ↻ de ({{t}}) degrés\navancer de (a) pas\ntourner ↻ de (b) degrés\nfin\nrelever le stylo\n```\n\nPar quels nombres faut-il remplacer $a$ et $b$ ?\n\n$a = ?$ et $b = ?$",
+			"variables": [
+				{
+					"name": "kc",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10*kc"
+				},
+				{
+					"name": "t",
+					"expression": "50|60|70"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:180-t}}",
+					"expectedErrors": [
+						{
+							"answer": "{{t}}",
+							"message": "Si la tortue tourne toujours de ${{t}}$ degrés, elle ne revient pas à son point de départ : les deux angles d'un même côté du losange font $180$ degrés ensemble.",
+							"label": "Même angle que le premier"
+						},
+						{
+							"answer": "90",
+							"message": "Un angle de $90$ degrés donnerait un carré ou un rectangle, pas ce losange.",
+							"label": "Angle droit"
+						},
+						{
+							"answer": "180",
+							"message": "En tournant de $180$ degrés, la tortue fait demi-tour et repasse sur le même côté.",
+							"label": "Demi-tour"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les quatre côtés d'un losange ont la même longueur : $a = \\textcolor{{{color:primary.0}}}{{{c}}}$.",
+					"Après le premier côté, la tortue tourne de ${{t}}$ degrés ; pour revenir au départ après deux allers, les deux rotations d'un tour de boucle font $180$ degrés ensemble : ${{t}} + b = 180$.",
+					"Donc $b = 180 - {{t}} = \\textcolor{{{color:primary.0}}}{{{eval:180-t}}}$."
+				]
+			},
+			"hint": "Un losange a quatre côtés de même longueur. Pour l'angle : en un tour de boucle, la tortue doit finir tournée dans le sens opposé à celui du départ."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"n": "4"
+			},
+			"description": "a = 20, 4 carrés, +10 : 50",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"n": "4"
+			},
+			"description": "Erreur : le dernier ajout compté (60)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"n": "4"
+			},
+			"description": "Erreur : le premier carré (20)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"s": "75"
+			},
+			"description": "a = 20, +10, jusqu'à > 75 : 6 carrés",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"s": "75"
+			},
+			"description": "Erreur : un carré de moins (5)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"s": "75"
+			},
+			"description": "Erreur : un carré de trop (7)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["320"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"description": "Carrés de 30 et 50 : 320",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["80"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"description": "Erreur : les côtés seuls (80)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"description": "Erreur : le premier carré seul (120)",
+			"variationIndex": 2
+		},
+		{
+			"description": "H : a = 40, b = 120",
+			"variationIndex": 3,
+			"variables": {
+				"kc": "4",
+				"t": "60"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40", "120"]
+		},
+		{
+			"description": "H : même angle (60)",
+			"variationIndex": 3,
+			"variables": {
+				"kc": "4",
+				"t": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Si la tortue tourne toujours de $60$ degrés, elle ne revient pas à son point de départ : les deux angles d'un même côté du losange font $180$ degrés ensemble."
+			},
+			"answers": ["40", "60"]
+		},
+		{
+			"description": "H : angle droit",
+			"variationIndex": 3,
+			"variables": {
+				"kc": "4",
+				"t": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un angle de $90$ degrés donnerait un carré ou un rectangle, pas ce losange."
+			},
+			"answers": ["40", "90"]
+		},
+		{
+			"description": "H : demi-tour",
+			"variationIndex": 3,
+			"variables": {
+				"kc": "4",
+				"t": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En tournant de $180$ degrés, la tortue fait demi-tour et repasse sur le même côté."
+			},
+			"answers": ["40", "180"]
+		}
+	]
+}
