@@ -16,15 +16,15 @@ actives.
 
 ## Décision
 
-| Sujet              | Décision                                                                                                                                                                                         |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Nœuds traduits     | Branches, notions et sous-notions (une branche s'imprime en titre quand plusieurs notions en viennent)                                                                                           |
-| Étendue            | Tout l'arbre, proposé en un lot et relu par David sur une page à cocher                                                                                                                          |
-| Rangement          | `classification_nodes.translations` (jsonb, `{}` par défaut), forme `{"en": {"name": "…"}}`, comme `worksheets.translations` ; nom anglais non vide, 200 caractères au plus, vérifié par la base |
-| Qui écrit          | L'admin, par migration, comme les noms français ; pas d'écran d'édition                                                                                                                          |
-| Qui lit            | Comme le nom français : tout le monde, visiteur compris. Les liens de partage rendent les traductions des notions de la fiche                                                                    |
-| Nom anglais absent | Fiche anglaise : il suffit qu'un nom à imprimer (notion ou branche) n'ait pas d'anglais pour n'imprimer aucune notion (catégorie seule). Jamais de mélange français / anglais                    |
-| Signalement        | L'éditeur d'une fiche qui a une version anglaise nomme les notions sans nom anglais                                                                                                              |
+| Sujet              | Décision                                                                                                                                                                                                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Nœuds traduits     | Branches, notions et sous-notions (une branche s'imprime en titre quand plusieurs notions en viennent)                                                                                                                                                                      |
+| Étendue            | Tout l'arbre, proposé en un lot et relu par David sur une page à cocher                                                                                                                                                                                                     |
+| Rangement          | `classification_nodes.translations` (jsonb, `{}` par défaut), forme `{"en": {"name": "…"}}`, comme `worksheets.translations` ; nom anglais non vide, 200 caractères au plus, vérifié par la base                                                                            |
+| Qui écrit          | L'admin, par migration, comme les noms français ; pas d'écran d'édition                                                                                                                                                                                                     |
+| Qui lit            | Comme le nom français : tout le monde, visiteur compris. Les liens de partage rendent les traductions des notions de la fiche                                                                                                                                               |
+| Nom anglais absent | Fiche anglaise : il suffit qu'un nom à imprimer (notion ou branche) n'ait pas d'anglais pour n'imprimer aucune notion (catégorie seule). Jamais de mélange français / anglais. Sans catégorie (amendé le 2026-11-28, V111) : nom anglais de la branche, sinon « Worksheet » |
+| Signalement        | L'éditeur d'une fiche qui a une version anglaise nomme les notions sans nom anglais                                                                                                                                                                                         |
 
 ## Écarté
 

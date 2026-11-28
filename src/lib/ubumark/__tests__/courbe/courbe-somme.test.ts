@@ -287,7 +287,9 @@ describe('tracer: vecteur u + v — pointillés de la correction', () => {
 	it('PDF corrigé : la flèche juste et les pointillés', () => {
 		const node = block(...WINDOW, POINTS, GIVEN, 'tracer: vecteur u + v depuis A');
 		expect(generateCourbeTypst(node)).not.toContain('dash');
-		const solved = generateCourbeTypst(node, { solved: true });
+		const solved = generateCourbeTypst(
+			block(...WINDOW, POINTS, GIVEN, 'tracer: vecteur u + v depuis A', 'solution: oui')
+		);
 		expect(solved).toContain('// solution vecteur');
 		expect(solved).toContain('// construction');
 		expect(solved).toMatch(/dash: "dashed"/);

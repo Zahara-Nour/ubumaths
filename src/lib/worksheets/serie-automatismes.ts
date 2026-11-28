@@ -291,12 +291,23 @@ function pointsDuRepere(
 }
 
 /**
+ * Vecteur à tracer, droite verticale : aucune ligne `f(x) = …` ne les dessine, le bloc
+ * dessine lui-même sa réponse (V108). À l'énoncé, le repère vide (lignes `tracer:` et
+ * `case:` retirées) ; au corrigé, `case:` retirée et `solution: oui` ajoutée : la flèche
+ * (avec les pointillés d'une somme) ou la droite, en vert.
+ */
+function dessineParLeBloc(corps: readonly string[], corrige: boolean): string[] {
+	if (!corrige) return corps.filter((ligne) => !CASE_LINE.test(ligne) && !TRACER_LINE.test(ligne));
+	return [...corps.filter((ligne) => !CASE_LINE.test(ligne)), 'solution: oui'];
+}
+
+/**
  * Repères à compléter (```courbe à `tracer:` ou `placer:`).
  *
  * Droite à tracer (`tracer: y = 2x - 1`) : à l'énoncé, le repère vide (lignes `tracer:`
  * et `case:` retirées) ; au corrigé (`corrige`), la ligne `tracer:` devient la droite
- * dessinée, en vert. Une case par droite. Seule une droite non verticale se dessine
- * (`f(x) = …`) : vecteur à tracer, droite masquée ou verticale → refus.
+ * dessinée, en vert. Une case par droite. Vecteur à tracer, droite verticale : cf.
+ * `dessineParLeBloc`. Droite ou vecteur masqués → refus.
  *
  * Points à placer : cf. `pointsDuRepere`. Repère en retrait ou cité → refus, message à
  * l'appui.
@@ -325,12 +336,29 @@ function droitesATracer(
 			cases += placer.length;
 			continue;
 		}
-		if (node.spec.vecteur) throw refus('vecteur à tracer non pris en charge');
+		if (node.spec.vecteur) {
+			if (!node.spec.vecteur.coords) throw refus('vecteur à tracer masqué');
+			lignes.splice(
+				repere.startIndex + 1,
+				repere.body.length,
+				...dessineParLeBloc(repere.body, corrige)
+			);
+			cases += 1;
+			continue;
+		}
 		const tracer = node.spec.tracer;
 		if (!tracer) throw refus('repère à compléter sans droite à tracer');
 		const droite = lineCoefficients(tracer.equation);
 		if (typeof droite === 'string') throw refus(`droite à tracer masquée ou illisible (${droite})`);
-		if (droite.b === 0) throw refus('droite verticale non prise en charge');
+		if (droite.b === 0) {
+			lignes.splice(
+				repere.startIndex + 1,
+				repere.body.length,
+				...dessineParLeBloc(repere.body, corrige)
+			);
+			cases += 1;
+			continue;
+		}
 
 		const pris = new Set(node.spec.functions.map((f) => f.name));
 		const nom = NOMS_DE_DROITE.find((n) => !pris.has(n));

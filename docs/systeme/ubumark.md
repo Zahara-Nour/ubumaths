@@ -235,7 +235,10 @@ au-dessus du titre. Les autres collages (titre d'exercice, cadre de réponse, `k
 restent collés partout. Tests de mise en page réelle (page et colonne lues par `query` après
 compilation) : `generators/__tests__/coupures-colonnes.test.ts`. Le texte d'auteur échappe ses crochets (`escapeTypstBrackets`) : posé dans un
 contenu `[…]`, un intervalle écrit en texte (`]2 ; 3[`) le fermait trop tôt et le PDF ne compilait
-plus (déjà vrai avant, selon la place du crochet).
+plus (déjà vrai avant, selon la place du crochet). `escapeTypst` échappe aussi la barre qui ouvre un `//` ou un `/*` :
+Typst y lisait un commentaire et la fin de la ligne disparaissait du PDF (L85). Titre de section,
+sa consigne et consigne d'exercice d'une fiche passent par `escapeTypstBrackets` (T23) : test
+`src/lib/worksheets/document/__tests__/texte-du-prof-typst.test.ts`, qui compile pour de vrai.
 
 **Titre d'exercice jamais seul en bas de page** (chantier coupures-pdf, PR 2, 2026-11-09). Le titre
 (`sticky`) ne suit le début de l'énoncé parti sur la page suivante que si le **premier morceau** du
@@ -721,8 +724,16 @@ as échangé l'abscisse et l'ordonnée. ») ; cadre rouge dès qu'un point est f
 justes ; le repère juste à côté, points nommés en vert. Hors question : le même geste, rien de jugé.
 PDF : le repère sans les points (l'enfant fait ses croix). Corrigé imprimé d'une série d'automatismes :
 les points attendus y sont dessinés, mais par réécriture du bloc (`placer:` → `points:`,
-`pointsDuRepere` de `worksheets/serie-automatismes.ts`), pas par l'option `solved` de
-`courbe-typst.ts`, qu'aucun appel de production ne passe.
+`pointsDuRepere` de `worksheets/serie-automatismes.ts`).
+
+**Repère au corrigé dessiné** (`solution: oui`, V108, décision de David du 2026-11-28) —
+`courbe-solution.test.ts`. Avec `placer:` ou `tracer:` (refusé sans geste, ou avec `case:`) : la
+réponse attendue est dessinée en vert, à l'écran comme au PDF, et le repère n'est plus un geste
+(`findCourbesToPlace` le saute, aucune case). Points attendus nommés ; droite (verticale comprise)
+d'un bord à l'autre et deux de ses nœuds ; flèche juste, et les pointillés d'une somme de deux
+vecteurs. Une source pour les deux rendus : `solvedOverlay` (`utils/courbe-solution.ts`), lue par
+`Courbe.svelte` (repère sans ses gestes, réponse par-dessus) et `courbe-typst.ts`. Seul écrivain :
+le corrigé d'une série d'automatismes, pour le vecteur à tracer et la droite verticale.
 
 **Droite à tracer** (même chantier, lot 2, 2-316, 2-445) — `courbe-tracer.test.ts`,
 `CourbeTracer.svelte.test.ts` : `tracer: y = 2x - 1` dans un ` ```courbe ` (nœud : `spec.tracer`,
@@ -748,7 +759,7 @@ n'est pas celle d'équation » suivie de l'équation en formule (`MathInline`), 
 `equationLatex` (`tidy` de mathAST côté par côté : `y = 1x + 0` des variables s'écrit `y = x`) ;
 correction : la droite juste et ses deux nœuds les plus proches de l'origine (`correctionPoints`,
 `solutionLine`), en vert ; rien quand l'équation est masquée (`tracer: ?`). PDF : le repère seul ;
-`solved` dessine la droite et ses deux nœuds. La phrase écrit une espace insécable avant la formule
+`solution: oui` dessine la droite et ses deux nœuds. La phrase écrit une espace insécable avant la formule
 (`&nbsp;` dans le gabarit : Svelte retire celle du texte).
 
 **Vecteur à tracer** (même chantier, lot 3, 2-298, décisions § 10) — `courbe-vecteur.test.ts`,
@@ -775,7 +786,7 @@ l'ordonnée. », sinon « Ta flèche représente le vecteur (2 ; 1), pas (3 ; -2
 et les coordonnées en formule). Correction : la flèche juste en vert (`solutionVector`) depuis A,
 sinon depuis l'origine de l'élève si elle tient dans la fenêtre, sinon depuis le nœud le plus proche
 de l'origine du repère où elle tient ; rien quand les coordonnées sont masquées. PDF : le repère (avec
-A) ; `solved` dessine la flèche juste (`mark: (end: ">")`).
+A) ; `solution: oui` dessine la flèche juste (`mark: (end: ">")`).
 
 **Vecteurs donnés et somme à tracer** (chantier `somme-vecteurs`, 2-297, phase 0 du 2026-11-08) —
 `courbe-somme.test.ts`, `CourbeSomme.svelte.test.ts`. `vecteurs: u = AB, v = AC` (ou `AB` sans nom ; au plus
@@ -799,7 +810,7 @@ vecteur (2 ; 2), pas $\vec{u}+\vec{v}$. » (un couple s'écrit `\overrightarrow{
 (`constructionTraces`, deux termes) : en pointillés verts sous la flèche juste, les deux côtés du
 parallélogramme qui manquent quand les deux représentants partent de l'origine de la flèche juste (plus le côté d'un
 terme que l'énoncé ne dessine pas : coefficient ≠ 1, ou couple de points absent de `vecteurs:`), sinon le premier terme depuis cette origine puis le second à son bout (Chasles) ; un
-trait dont un bout sort de la fenêtre est laissé. PDF `solved` : les mêmes pointillés (`dash: "dashed"`).
+trait dont un bout sort de la fenêtre est laissé. PDF `solution: oui` : les mêmes pointillés (`dash: "dashed"`).
 Défaut connu : le nom d'un point (en haut à droite) peut chevaucher une flèche qui en part.
 
 **Cercle trigonométrique à placer** (chantier [cercle-trotteuse](../archive/wip/cercle-trotteuse-progress.md)
@@ -2429,11 +2440,11 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   ambiguë) ; tolérance de `isGridNode` (1e-9 × pas) : un pas irrationnel avec de grandes valeurs
   (`grille: pi/2`, `y: 1000 ; 1010`) peut refuser au prof une cible écrite en décimal, le juge n'est pas
   touché ; les juges de la droite et du vecteur ne vérifient pas que les points sont des nœuds (l'écran
-  n'en pose pas d'autres) ; l'option `solved` de `courbe-typst.ts` n'est passée par aucun appel de
-  production : le corrigé imprimé d'une série d'automatismes dessine points et droite par réécriture du
-  bloc (`serie-automatismes.ts`, comme la droite graduée à placer et la boîte à moustaches), et refuse le
-  vecteur à tracer et la droite verticale ; l'horloge et les barres à placer n'ont pas de corrigé
-  imprimé (`generateHorlogeTypst`, `generateStatChartTypst` sans option `solved`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
+  n'en pose pas d'autres) ; le corrigé imprimé d'une série d'automatismes dessine points et droite
+  non verticale par réécriture du bloc (`serie-automatismes.ts`, comme la droite graduée à placer et
+  la boîte à moustaches), vecteur à tracer et droite verticale par `solution: oui` ; l'horloge et les
+  barres à placer n'ont pas de corrigé imprimé (`generateHorlogeTypst`, `generateStatChartTypst` sans
+  option `solved`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
 - ` ```ranger ` dans une liste : lu (`SPECIAL_BLOCK_KINDS`, `parseContentWithCodeBlocks`) et affiché
   (`ListNode`) depuis l'écart L89 ; ne sert qu'au cours, une question le refuse (« doivent être au
   premier niveau »).

@@ -356,8 +356,8 @@ par élève visé, jamais stocké :
   à remplir (jamais les classes de toute l'affectation).
 - **Nom et classe = texte, jamais code** : l'élève écrit lui-même son nom (profil). Le générateur
   les insère en chaîne Typst littérale (`typstTextLiteral` : `#"…";`, `\` et `"` échappés,
-  caractères de contrôle remplacés), pour toutes les fiches ; `escapeTypst` laissait passer `]`,
-  `//`, `<…>` (un nom pouvait fermer un bloc du gabarit et faire évaluer la suite, ou casser tout
+  caractères de contrôle remplacés), pour toutes les fiches ; `escapeTypst` laissait passer `]`
+  (il le laisse toujours : `escapeTypstBrackets` l'échappe), `//` (échappé depuis L85), `<…>` (un nom pouvait fermer un bloc du gabarit et faire évaluer la suite, ou casser tout
   le paquet).
 - **Compilations une à une** : elles partagent le compilateur et ses images (`resetShadow`) ;
   le dernier choix du sélecteur gagne. Retour : la fiche, ou l'aperçu si l'on en vient
@@ -424,7 +424,9 @@ nom anglais (`translations.en.name` du nœud, ADR 0043 ; `englishName`, lu par `
 grand, « Arithmetic sequences · Geometric sequences » dessous. Il suffit qu'**un** nom à imprimer
 (une notion, ou la branche commune quand elle sert de titre) n'ait pas d'anglais pour qu'aucune
 notion ne s'imprime : la catégorie seule, jamais de mélange (`missingEnglishNames`, David,
-2026-11-23) ; la branche commune se décide sur les noms français. Le **niveau**
+2026-11-23) ; sans catégorie, le nom anglais de la branche de toutes les notions (une notion seule
+comprise : `loadBranches` lit aussi sa branche), sinon « Worksheet », jamais le titre français (V111,
+David, 2026-11-28) ; la branche commune se décide sur les noms français. Le **niveau**
 (`worksheets.grades`) : un badge par niveau, forme courte (« 1ère Spé »), plein orange texte blanc
 (`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; fiche en anglais → le même badge, nom
 français du niveau (David, 2026-11-25) ; aucun niveau →
@@ -755,8 +757,10 @@ accents retirés (`NFKD`, « Équations » → `Equations`), tout autre caractè
 
 **Polices** : les gabarits et le PDF élève demandent `"New Computer Modern"` ; aucun code
 n'en charge côté navigateur — ce sont les polices fournies par le bundle typst.ts.
-`scripts/fiches/compile-prod.mjs` charge en plus STIX Two Math (chemin macOS) pour les formules,
-et, avec `--polices-corrige`, les trois polices du Corrigé (ci-dessus).
+`scripts/fiches/compile-prod.mjs` charge les mêmes (les polices « text » de typst-assets, dont New
+Computer Modern Math pour les formules), et rien d'autre (sa police STIX Two Math de macOS, qui
+pouvait donner un glyphe absent de la prod, est retirée : L9) ; avec `--polices-corrige`, il
+ajoute les trois polices du Corrigé (ci-dessus).
 Une police sans un glyphe donne des carrés (cas de `n⃗`,
 [journal figures-pdf](../archive/wip/figures-pdf-progress.md)).
 

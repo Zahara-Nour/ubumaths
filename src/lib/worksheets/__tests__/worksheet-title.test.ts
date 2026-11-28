@@ -530,3 +530,48 @@ describe('englishName', () => {
 		expect(englishName([])).toBeNull();
 	});
 });
+
+describe('V111 : fiche anglaise sans catégorie, notion sans nom anglais', () => {
+	// Le titre en base est le titre composé, écrit en français par l'éditeur
+	const FRENCH_TITLE = 'Suites arithmétiques';
+	const notion: TitleNotion = { name: 'suites arithmétiques', branch: 'Suites' };
+
+	function mainTitle(locale: 'fr' | 'en', notions: TitleNotion[]): string {
+		return printedTitle({
+			type: 'worksheet',
+			category: null,
+			customTitle: false,
+			title: FRENCH_TITLE,
+			notions,
+			locale
+		}).main;
+	}
+
+	it('en français : le titre composé', () => {
+		expect(mainTitle('fr', [notion])).toBe(FRENCH_TITLE);
+	});
+
+	it('notion traduite : son nom anglais', () => {
+		expect(mainTitle('en', [{ ...notion, nameEn: 'arithmetic sequences' }])).toBe(
+			'Arithmetic sequences'
+		);
+	});
+
+	it('branche traduite : le nom anglais de la branche', () => {
+		expect(mainTitle('en', [{ ...notion, branchEn: 'sequences' }])).toBe('Sequences');
+	});
+
+	it('rien de traduit : « Worksheet », jamais le titre français', () => {
+		expect(mainTitle('en', [notion])).toBe('Worksheet');
+	});
+
+	it('deux notions de branches différentes, une sans nom anglais : « Worksheet »', () => {
+		const other: TitleNotion = {
+			name: 'probabilités',
+			branch: 'Probabilités',
+			nameEn: 'probability',
+			branchEn: 'probability'
+		};
+		expect(mainTitle('en', [{ ...notion, branchEn: 'sequences' }, other])).toBe('Worksheet');
+	});
+});
