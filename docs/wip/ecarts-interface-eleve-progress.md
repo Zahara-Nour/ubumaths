@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 3 (L42, erreurs 500) ouverte._
+_Mis à jour le 2026-11-28, après #3330._
 
-- **État** : PR 1 (#3288) et PR 2 (#3325) mergées ; PR 3 ouverte (L42 : 500 en français, détail au journal ; garde `erreurs-500.test.ts`, preuve de L42 complétée). V117 : consignes et cartes modèles déposées dans `~/Downloads`.
-- **Prochaine action** : merger la PR 3 ; L42 sera barré par la tâche de nuit. Ensuite, lot clos sauf V117 (rangement des images par David).
-- **En attente de David** : les 4 images de V117 (consignes : `~/Downloads/consignes-cartes-vip-mathemo.md`), puis leur rangement dans le stockage Supabase et `image_path` (écriture en prod).
+- **État** : PR 1 (#3288), PR 2 (#3325), PR 3 (#3330, L42 : 500 en français, détail au journal) mergées ; L42 sera barré par la tâche de nuit (preuve = garde `erreurs-500.test.ts`). V117 : consignes et cartes modèles déposées dans `~/Downloads`.
+- **Prochaine action** : quand David a rangé les 4 images de V117 en prod, vérifier l'affichage des cartes de Mathémo puis clore le lot (versement du journal, `docs/wip/ecarts-lots.md`).
+- **En attente de David** : les 4 images de V117 (consignes : `~/Downloads/consignes-cartes-vip-mathemo.md`), leur rangement dans le stockage Supabase `vip-card-images` et la mise à jour de `image_path` (écriture en prod).
 - **Pièges en cours** : port 5176 souvent pris : prendre le suivant libre.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-interface-eleve-500` · `fix/ecarts-interface-eleve-500`.
+- **Worktree / branche** : aucun (celui de la PR 3 est retiré).
 
 ## Décisions de David (2026-11-28, phase 0 validée)
 
