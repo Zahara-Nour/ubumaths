@@ -86,7 +86,7 @@ function reseau(messages: unknown[] | null): void {
 
 /** La zone « Contexte de la conversation » de la fenêtre ouverte (portail). */
 async function zoneDuMessage(report: ReportData): Promise<HTMLElement> {
-	render(ReviewReportDialog, { props: { open: true, report } });
+	await render(ReviewReportDialog, { props: { open: true, report } });
 	await expect.poll(() => document.querySelector('[role="dialog"] .max-h-64')).not.toBeNull();
 	const zone = document.querySelector<HTMLElement>('[role="dialog"] .max-h-64');
 	if (!zone) throw new Error('zone du message absente');
