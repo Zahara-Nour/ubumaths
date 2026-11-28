@@ -22,10 +22,10 @@ _Mis à jour le 2026-11-28, avant l'ouverture de la première PR._
 | ----- | ----------- | ---------------------------------------------------------------------- | --------------------------- |
 | V107  | bug visible | notification « importante » rangée après les « normales »              | corrigé (tri en mémoire)    |
 | L78   | bug latent  | adresse de parent invalide restée « confirmée »                        | webhook Brevo, seconde PR   |
-| L79   | bug latent  | compteur d'ouvertures qui mélange lien et courriels                    | migration, en attente       |
+| L79   | bug latent  | compteur d'ouvertures qui mélange lien et courriels                    | corrigé (migration)         |
 | L80   | bug latent  | avertissement d'exception renvoyé après une panne de base              | corrigé (passage en erreur) |
 | L81   | bug latent  | type TypeScript des notifications plus large que la base               | corrigé                     |
-| L82   | bug latent  | avertissement posé par le prof dans une classe qui n'est pas la sienne | migration, en attente       |
+| L82   | bug latent  | avertissement posé par le prof dans une classe qui n'est pas la sienne | corrigé (migration)         |
 | L83   | bug latent  | notification visant un élève qui a quitté les classes du prof          | corrigé (adhésion active)   |
 
 ## Historique
