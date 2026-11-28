@@ -48,6 +48,7 @@
 	import type { ImageUploadConfig } from './types';
 	import type { Variable } from '#lib/ubumark/index.ts';
 	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import { toStoredAddress } from '#lib/utils/supabase-address.ts';
 
 	// Props
 	interface Props {
@@ -291,7 +292,7 @@
 
 				const imageName = file.name.replace(/\.[^/.]+$/, '');
 				const altText = imageName.replace(/[-_]/g, ' ');
-				const markdown = `![${altText}](${publicUrl})`;
+				const markdown = `![${altText}](${toStoredAddress(publicUrl)})`;
 
 				if (onImageInsert) {
 					onImageInsert(markdown);

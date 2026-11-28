@@ -1,0 +1,69 @@
+{
+	"migration": "supabase/migrations/20261127141209_questions_idees_6e_aires_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "57720668-5451-43ed-b965-cbe225a1b257",
+			"title": "Les relations entre m², dm² et cm²",
+			"fichier": "n1-relations-unites-aire.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sousNotion": "unités et conversions",
+			"point": "6-150"
+		},
+		{
+			"id": "36b7d2e8-5709-4b2e-a015-16406434cbd2",
+			"title": "Aire en cm² sur un quadrillage",
+			"fichier": "n3-aire-sur-quadrillage.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sousNotion": "rectangle",
+			"point": "6-201"
+		},
+		{
+			"id": "9c9c7081-addb-4c56-a1ed-fb8710dfd892",
+			"title": "Comparer des aires sans mesurer",
+			"fichier": "n4-comparer-aires-sans-mesurer.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sousNotion": null,
+			"point": "CM2-071"
+		},
+		{
+			"id": "533bb8d0-4964-42cb-b1c4-340fcfeec547",
+			"title": "La formule de l'aire du carré",
+			"fichier": "n5-formule-aire-carre.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sousNotion": "carré",
+			"point": "6-151"
+		},
+		{
+			"id": "6aef6255-ece6-456a-a90f-c249a60a48d6",
+			"title": "La formule de l'aire du rectangle",
+			"fichier": "n5-formule-aire-rectangle.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sousNotion": "rectangle",
+			"point": "6-200"
+		},
+		{
+			"id": "7a8294a4-fdfc-4528-a65d-eb6e7da4b85f",
+			"title": "Aire et périmètre d'un rectangle",
+			"fichier": "n6-aire-et-perimetre-rectangle.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sousNotion": "rectangle",
+			"point": "6-201"
+		},
+		{
+			"id": "3e3c05d6-29a2-4d69-93b0-62ddde23b74e",
+			"title": "Rectangles accolés",
+			"fichier": "n8-rectangles-accoles.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sousNotion": "rectangle",
+			"point": "6-200"
+		}
+	],
+	"niveaux": []
+}

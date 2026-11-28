@@ -8,22 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StudentDashboardCache } from '../studentDashboardCache.svelte';
-import type { StudentProfile } from '#lib/types/student-cache.ts';
-
 const originalFetch = global.fetch;
-
-const profile: StudentProfile = {
-	id: 'eleve-1',
-	email: 'eleve@local.test',
-	firstname: 'Ada',
-	lastname: null,
-	full_name: null,
-	avatar_url: null,
-	grade: null,
-	is_test: false,
-	school_id: null,
-	classes: []
-};
 
 function okFetch(body: object) {
 	return vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(body) } as Response));
@@ -60,15 +45,6 @@ describe('StudentDashboardCache : échec réseau jamais stocké', () => {
 		expect(global.fetch).toHaveBeenCalledTimes(1);
 	});
 
-	it("profil : un échec n'est pas stocké, l'accès suivant relit", async () => {
-		global.fetch = failingFetch();
-		expect((await cache.getProfile()).id).toBe('');
-		expect(cache.getProfileSync()).toBeNull();
-
-		global.fetch = okFetch({ profile });
-		expect(await cache.getProfile()).toEqual(profile);
-	});
-
 	it("avertissements : un échec n'est pas stocké, l'accès suivant relit", async () => {
 		global.fetch = failingFetch();
 		expect((await cache.getWarnings('p1')).warnings).toEqual([]);
@@ -86,7 +62,8 @@ describe('StudentDashboardCache : échec réseau jamais stocké', () => {
 		setNow(now + 11 * 60 * 1000); // TTL de 10 min dépassé
 		global.fetch = failingFetch();
 		expect((await cache.getRewards()).gidouilles).toBe(5);
-		expect(cache.getRewardsSync()).toBeNull(); // toujours expirée
+		// L'écran garde la dernière valeur connue (écart L43), l'entrée reste expirée
+		expect(cache.getRewardsSync()?.gidouilles).toBe(5);
 
 		await cache.getRewards();
 		expect(global.fetch).toHaveBeenCalledTimes(2); // relit à chaque accès

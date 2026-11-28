@@ -152,6 +152,17 @@ Créée le 2026-10-29.
 
 ---
 
+## `prendre-lot` — une session de plus sur les écarts restants
+
+`/prendre-lot` (ou « prends un lot ») dans une session neuve : elle lit
+[`docs/wip/ecarts-lots.md`](../wip/ecarts-lots.md), où les écarts « à faire » du registre sont
+rangés en lots qui ne touchent pas les mêmes fichiers, prend le premier lot libre, le **réserve**
+par un commit poussé avant tout travail, puis ouvre son chantier (`ecarts-<lot>` : worktree,
+branche, journal). `/prendre-lot <nom>` pour choisir toi-même. Elle refuse de prendre un lot quand
+quatre sont déjà en cours, ou un deuxième lot mathAST en même temps qu'un premier. À la fin du lot
+elle l'écrit « fait » dans le fichier et te propose `/clear` puis `/prendre-lot` pour le suivant ;
+un lot interrompu se reprend par `/reprendre ecarts-<lot>`. Créée le 2026-11-28.
+
 ## Les commandes du projet : retirées le 2026-10-10
 
 Les quatorze commandes de `.claude/commands/` (`/feature`, `/fix`, `/pr`, `/check`…) ont été retirées.

@@ -12,3 +12,11 @@
 export function numberAfterFactorMessage(num: string): string {
 	return `Nombre « ${num} » écrit après un facteur : écris le nombre devant (${num}x) ou utilise \\cdot (x\\cdot ${num})`;
 }
+
+/** Début commun à tous ces refus, lu par `numberAfterFactorIn` */
+const NUMBER_AFTER_FACTOR = /^Nombre « (.+?) » écrit après un facteur/;
+
+/** Le nombre mis en cause si `message` est ce refus, `null` pour tout autre message */
+export function numberAfterFactorIn(message: string): string | null {
+	return NUMBER_AFTER_FACTOR.exec(message)?.[1] ?? null;
+}

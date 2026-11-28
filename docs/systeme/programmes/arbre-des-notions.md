@@ -39,7 +39,7 @@ un programme (un niveau scolaire) est un ensemble de **points** du BO, chacun po
 
 | Quoi                                                     | Où                                                                                         |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Les nœuds (source de vérité)                             | `classification_nodes` — 19 branches, 134 notions, 472 sous-notions actives ; 74 archivées |
+| Les nœuds (source de vérité)                             | `classification_nodes` — 19 branches, 135 notions, 484 sous-notions actives ; 74 archivées |
 | Les points des programmes                                | `curriculum_points` (`node_id` NOT NULL, `grade`, `code`, `display_order`, archivage)      |
 | Rangement d'un modèle                                    | `question_templates.classification_node_id`                                                |
 | Rangement d'un exercice                                  | `exercise_classifications`                                                                 |
@@ -136,6 +136,10 @@ programme), `schema-cible-points`, `scission-points-programme`, `tags-lot-2bis`,
 
 ## Écarts connus et suites
 
+Les écarts de cette zone sont au [registre des écarts](../../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 État au 2026-10-24, rien ne touche un élève :
 
 - **Couverture faible** des programmes (tableau plus haut), surtout primaire, collège et Tle techno. Points qui ont
@@ -148,10 +152,8 @@ programme), `schema-cible-points`, `scission-points-programme`, `tags-lot-2bis`,
   specs rouges `27d77564`, `103cf8d9`, `e02fb162` ; `9a6087c5` (12 tirages sur 600 en échec, jamais examiné).
 - **Laissés sans tag par décision** : QCM de cours et vrai/faux à 4 points ou plus ; `f8ccc8b6`, `a80a780f`,
   `318ea542`.
-- **51 exercices ne sont rangés nulle part** : aucun écran ne range un exercice (rangements posés par migration),
-  donc ils ne peuvent prendre aucun point.
 
-Chantiers à venir, annoncés par David le 2026-10-24 (non lancés) :
+Chantiers à venir, annoncés le 2026-10-24 (non lancés), ni au registre ni dans l'index du tri :
 
 1. Page programme : y inclure les programmes officiels (PDF + transcription ubumark).
 2. Page de gestion des questions non taguées.

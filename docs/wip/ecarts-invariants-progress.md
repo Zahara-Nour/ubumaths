@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-01, à l'ouverture de la PR._
 
 ## Journal
 
-- 2026-11-01 : ouverture. Écarts pris dans `docs/wip/ecarts-a-trier.md` (section A, « Latents »).
+- 2026-11-01 : ouverture. Écarts pris dans `docs/archive/wip/ecarts-a-trier.md` (section A, « Latents »).
 - L21 : rouge 9/9 (« Unknown command »), rd lit les deux commandes comme pratt.
 - L28 : cas réel `-1e-8` (|f| à gauche de 0) substitué en littéral négatif ; `numericNode`.
 - L31 : aucun cas visible (le nœud fait main était identique à `opposite()`) ; rouge = garde de source ; `variable` faits main remplacés aussi.

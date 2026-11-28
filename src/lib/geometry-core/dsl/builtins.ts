@@ -40,7 +40,8 @@ import {
 	findCriticalInflections
 } from '#lib/mathAST/analysis/index.ts';
 import { classifyConic } from '../geometry/conic-classify';
-import { curveShapeOf } from '../geometry/curve-nature';
+import { conicCoefficientNodes, curveShapeOf } from '../geometry/curve-nature';
+import type { QuadraticShape } from '../geometry/curve-nature';
 import {
 	asymptoteLines,
 	axisLines as computeAxisLines,
@@ -70,9 +71,17 @@ import {
 	isAngle,
 	isVector,
 	isVectorByPoints,
-	isLine
+	isLine,
+	isSlider
 } from '../types/elements';
-import type { GeoVector, GeoSegment, GeoLine, LabelPosition, TextAnchor } from '../types/elements';
+import type {
+	CurveParameter,
+	GeoVector,
+	GeoSegment,
+	GeoLine,
+	LabelPosition,
+	TextAnchor
+} from '../types/elements';
 import { intersectLL } from '../geometry/intersections';
 import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
@@ -3623,7 +3632,7 @@ function handleAngle(ctx: BuiltinCtx): BuiltinResult {
 HANDLERS.set('angle', handleAngle);
 
 function handleAnglePolaire(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, figure, line, label } = ctx;
+	const { pos, figure, line, label, angleMode } = ctx;
 	if (pos.length !== 2) {
 		throw new DslRuntimeError(
 			{
@@ -3631,7 +3640,8 @@ function handleAnglePolaire(ctx: BuiltinCtx): BuiltinResult {
 				forms: [
 					{
 						syntax: 'angle_polaire(O, P)',
-						description: 'angle polaire du vecteur `OP` = `atan2(P.y - O.y, P.x - O.x)` en radians'
+						description:
+							'angle polaire du vecteur `OP` = `atan2(P.y - O.y, P.x - O.x)`, dans l’unité d’angle de la figure'
 					}
 				]
 			},
@@ -3640,7 +3650,7 @@ function handleAnglePolaire(ctx: BuiltinCtx): BuiltinResult {
 	}
 	const oId = requireElement(pos[0], 'O', line);
 	const pId = requireElement(pos[1], 'P', line);
-	const id = figure.createScalarPolarAngle(oId, pId, { label });
+	const id = figure.createScalarPolarAngle(oId, pId, { label, unite: angleMode });
 	return { figureId: id, symbolType: 'scalar' };
 }
 HANDLERS.set('angle_polaire', handleAnglePolaire);
@@ -4498,16 +4508,34 @@ function handleSommets(ctx: BuiltinCtx): BuiltinMultiResult {
 }
 HANDLERS.set('sommets', handleSommets);
 
+const SLIDER_PARAMS = ['min', 'max', 'valeur', 'pas'] as const;
+
 function handleSlider(ctx: BuiltinCtx): BuiltinResult {
-	const { named, figure, line, label } = ctx;
-	const minVal = requireNumber(named.get('min') ?? { type: 'nombre', value: 0 }, 'min', line);
-	const maxVal = requireNumber(named.get('max') ?? { type: 'nombre', value: 10 }, 'max', line);
+	const { pos, named, figure, line, label } = ctx;
+	// Positionnels dans l'ordre (min, max, valeur, pas) : `slider(0, 5, 2)`.
+	// Un argument nommé l'emporte sur sa position.
+	if (pos.length > SLIDER_PARAMS.length)
+		throw new DslRuntimeError(
+			{
+				summary: `\`slider()\` attend au plus 4 arguments (min, max, valeur, pas), ${pos.length} reçu(s).`,
+				forms: [
+					{ syntax: 'slider(0, 5, 2)', description: 'curseur de 0 à 5, valeur initiale 2' },
+					{ syntax: 'slider(min=0, max=5, valeur=2, pas=0.5)', description: 'même chose, nommé' }
+				]
+			},
+			line
+		);
+	const arg = (name: (typeof SLIDER_PARAMS)[number]): ResolvedValue | undefined =>
+		named.get(name) ?? pos[SLIDER_PARAMS.indexOf(name)];
+	const minVal = requireNumber(arg('min') ?? { type: 'nombre', value: 0 }, 'min', line);
+	const maxVal = requireNumber(arg('max') ?? { type: 'nombre', value: 10 }, 'max', line);
 	const valeur = requireNumber(
-		named.get('valeur') ?? { type: 'nombre', value: (minVal + maxVal) / 2 },
+		arg('valeur') ?? { type: 'nombre', value: (minVal + maxVal) / 2 },
 		'valeur',
 		line
 	);
-	const step = named.has('pas') ? requireNumber(named.get('pas')!, 'pas', line) : undefined;
+	const stepArg = arg('pas');
+	const step = stepArg ? requireNumber(stepArg, 'pas', line) : undefined;
 	const id = figure.createSlider(minVal, maxVal, valeur, { label, step });
 	return { figureId: id, symbolType: 'scalar' };
 }
@@ -5543,12 +5571,41 @@ function buildAngularBisector(figure: Figure, aId: string, vId: string, bId: str
 
 // ─── 1. mediatrice(A, B) → droite ───────────────────────────────────
 
+const MEDIATRICE_FORMS = [
+	{ syntax: 'mediatrice(A, B)', description: 'médiatrice du segment `[AB]`' },
+	{ syntax: 'mediatrice(s)', description: 'médiatrice du segment `s`' }
+];
+
+/** Extrémités (identifiants + coordonnées) de `mediatrice(s)` ou de `mediatrice(A, B)`. */
+function mediatriceEnds(ctx: BuiltinCtx): { ids: string[]; coords: { x: number; y: number }[] } {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 1)
+		return requireNPoints(ctx, 2, ['A', 'B'], 'mediatrice', MEDIATRICE_FORMS[0]);
+	const el = figure.getElementById(requireElement(pos[0], 's', line));
+	if (!el || !isSegment(el))
+		throw new DslRuntimeError(
+			{
+				summary: '`mediatrice()` à 1 argument attend un segment.',
+				forms: MEDIATRICE_FORMS
+			},
+			line
+		);
+	const ids = [el.startId, el.endId];
+	const coords = ids.map((id) => {
+		const p = figure.getPosition(id);
+		if (!p)
+			throw new DslRuntimeError(
+				{ summary: '`mediatrice(s)` : position d’une extrémité de `s` introuvable.' },
+				line
+			);
+		return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
+	});
+	return { ids, coords };
+}
+
 function handleMediatrice(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
-	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'mediatrice', {
-		syntax: 'mediatrice(A, B)',
-		description: 'médiatrice du segment `[AB]`'
-	});
+	const { ids, coords } = mediatriceEnds(ctx);
 	const [Aid, Bid] = ids;
 	const [A, B] = coords;
 	const ddx = B.x - A.x;
@@ -6674,10 +6731,32 @@ function createCurveFromEquation(
 		return createLineFromCoefficients(shape.a, shape.b, shape.c, equation, figure, label);
 	}
 
+	// Curseurs cités par leur nom (`x^2 + y^2 = a^2`) : la courbe les suit.
+	const parameters = sliderParametersOf(F, figure, symbols);
+
 	// --- Try 2: y = f(x) (affine in y alone) ---
 	if (shape.kind === 'function') {
 		if (isZeroExpression(shape.g)) {
-			throw new DslRuntimeError("courbe(): la variable y est absente de l'expression", line);
+			// Sans « = » (`x^2 - 1`), la forme annoncée est y = f(x) : y manque.
+			if (!(isRelation(parsed) && parsed.relation === '=')) {
+				throw new DslRuntimeError("courbe(): la variable y est absente de l'expression", line);
+			}
+			// Équation sans y (`x^2 = 4`) : l'ensemble des solutions, des droites
+			// verticales (ou rien, `x^2 = -1`), tracé comme une courbe implicite.
+			if (domainResult) {
+				throw new DslRuntimeError(
+					'courbe(): la variable y est absente de l\'expression, la restriction "sur"/"avec" ne s\'applique pas',
+					line
+				);
+			}
+			return createImplicitCurve(
+				F,
+				compileImplicit(F, figure, parameters, line),
+				equation,
+				figure,
+				label,
+				parameters
+			);
 		}
 		return createFunctionFromCoefficients(
 			shape.g,
@@ -6700,6 +6779,9 @@ function createCurveFromEquation(
 
 	// --- Try 3: Quadratic curve (conic section) ---
 	if (shape.kind === 'quadratic') {
+		if (parameters.length > 0) {
+			return createParametricQuadraticCurve(F, shape, equation, figure, parameters, label);
+		}
 		return createQuadraticCurveFromCoefficients(F, shape, equation, figure, line, label);
 	}
 
@@ -6902,15 +6984,86 @@ function createQuadraticCurveFromCoefficients(
 	return { figureId: qcId, symbolType: 'courbe' };
 }
 
+/**
+ * Une conique dont des coefficients suivent des curseurs (`x^2 + y^2 = a^2`) :
+ * `parameterRecipe`, recalculée et reclassée à chaque mouvement par la figure.
+ * Curseur à 0 : conique dégénérée, rien n'est dessiné, sans erreur.
+ */
+function createParametricQuadraticCurve(
+	F: MathNode,
+	shape: QuadraticShape,
+	equation: string,
+	figure: Figure,
+	parameters: readonly CurveParameter[],
+	label?: string
+): BuiltinResult {
+	const coefficients: CompiledFn[] = conicCoefficientNodes(shape).map((node) =>
+		node === undefined ? () => 0 : compile(node)
+	);
+	// Conique de départ quelconque : `createQuadraticCurve` la recalcule aussitôt.
+	const zero: [number, number, number, number, number, number] = [0, 0, 0, 0, 0, 0];
+	const qcId = figure.createQuadraticCurve(F, equation, zero, classifyConic(...zero), {
+		label,
+		parameterRecipe: { coefficients, parameters }
+	});
+	return { figureId: qcId, symbolType: 'courbe' };
+}
+
+/**
+ * Les curseurs de la table des symboles que F cite par leur nom (hors x, y).
+ * Les nombres statiques sont déjà substitués en amont.
+ */
+function sliderParametersOf(
+	F: MathNode,
+	figure: Figure,
+	symbols: SymbolTable | undefined
+): CurveParameter[] {
+	if (!symbols) return [];
+	const parameters: CurveParameter[] = [];
+	for (const name of getVariables(F)) {
+		if (name === 'x' || name === 'y') continue;
+		const sliderId = symbols.get(name)?.figureId;
+		const el = sliderId ? figure.getElementById(sliderId) : undefined;
+		if (sliderId && el && isSlider(el)) parameters.push({ sliderId, name });
+	}
+	return parameters;
+}
+
+/**
+ * F compilée NON liée (la figure la lie aux curseurs), vérifiée en (0, 0) aux
+ * valeurs courantes des curseurs : une lettre inconnue est une erreur.
+ */
+function compileImplicit(
+	F: MathNode,
+	figure: Figure,
+	parameters: readonly CurveParameter[],
+	line: number
+): CompiledFn {
+	const compiledFn = compile(F);
+	const env: Record<string, number> = { x: 0, y: 0 };
+	for (const { sliderId, name } of parameters) env[name] = figure.getScalarValue(sliderId) ?? NaN;
+	if (isNaN(compiledFn(env))) {
+		throw new DslRuntimeError(
+			{
+				summary: '`courbe()` : impossible de compiler `F(x, y)` pour cette équation.',
+				hint: 'Vérifier la syntaxe de l’équation et que toutes les variables sont reconnues.'
+			},
+			line
+		);
+	}
+	return compiledFn;
+}
+
 /** Create a general implicit curve F(x,y) = 0 rendered via marching squares. */
 function createImplicitCurve(
 	F: MathNode,
 	compiledFn: CompiledFn,
 	equation: string,
 	figure: Figure,
-	label?: string
+	label?: string,
+	parameters: readonly CurveParameter[] = []
 ): BuiltinResult {
-	const icId = figure.createImplicitCurve(F, compiledFn, equation, { label });
+	const icId = figure.createImplicitCurve(F, compiledFn, equation, { label, parameters });
 	return { figureId: icId, symbolType: 'courbe' };
 }
 

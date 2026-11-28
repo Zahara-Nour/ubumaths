@@ -1,0 +1,979 @@
+{
+	"id": "8adac6d1-3537-48b8-9bc4-dcf41eb27590",
+	"title": "Repérer un nombre décimal",
+	"description": "Lire l'abscisse d'un point sur une demi-droite graduée : en dixièmes, en centièmes (droite agrandie), en demis ou en quarts",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 45,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*n+k)/10;d}}"
+				}
+			],
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{n}}\nend: {{eval:(10*n+15)/10;d}}\nstep: 0.1\nmajor: 10\npoints: A={{eval:(10*n+k)/10;d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				}
+			],
+			"conditions": ["k!=10"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre deux entiers qui se suivent, l'unité est partagée en $10$ : chaque petit intervalle vaut $0.1$.",
+					"${{eval:(10*n+k)/10;d}}$, c'est ${{k}}$ petits intervalles à partir de ${{n}}$ : ${{n}} + {{k}} \\times 0.1 = \\textcolor{{{color:primary.0}}}{{{eval:(10*n+k)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+10*b+k)/100;d}}"
+				}
+			],
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{eval:(10*a+b)/10;d}}\nend: {{eval:(100*a+10*b+15)/100;d}}\nstep: 0.01\nmajor: 10\nlabels: {{eval:(10*a+b)/10;d}}, {{eval:(10*a+b+1)/10;d}}\npoints: A={{eval:(100*a+10*b+k)/100;d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				}
+			],
+			"conditions": ["k!=10"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{eval:(10*a+b)/10;d}}$ et ${{eval:(10*a+b+1)/10;d}}$, le dixième est partagé en $10$ : chaque petit intervalle vaut $0.01$.",
+					"${{eval:(100*a+10*b+k)/100;d}}$, c'est ${{k}}$ petits intervalles à partir de ${{eval:(10*a+b)/10;d}}$ : ${{eval:(10*a+b)/10;d}} + {{k}} \\times 0.01 = \\textcolor{{{color:primary.0}}}{{{eval:(100*a+10*b+k)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/q;d}}"
+				}
+			],
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: 0\nend: 4\nstep: {{eval:1/q;d}}\nmajor: {{q}}\npoints: A={{eval:k/q;d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|4"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:4*q-1}}"
+				}
+			],
+			"conditions": ["mod(k,q)!=0"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** L'unité est partagée en ${{q}}$ : chaque petit intervalle vaut ${{eval:1/q;d}}$.",
+					"${{eval:k/q;d}}$, c'est ${{k}}$ petits intervalles à partir de $0$ : ${{k}} \\times {{eval:1/q;d}} = \\textcolor{{{color:primary.0}}}{{{eval:k/q;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{L1}}\nend: {{eval:(1000*a+10*B+15)/1000;d}}\nstep: 0.001\nmajor: 10\nlabels: {{L1}}, {{L2}}\npoints: A={{X}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "B",
+					"expression": "1..98"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				},
+				{
+					"name": "L1",
+					"expression": "eval:(100*a+B)/100;d"
+				},
+				{
+					"name": "L2",
+					"expression": "eval:(100*a+B+1)/100;d"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(1000*a+10*B+k)/1000;d"
+				}
+			],
+			"conditions": ["k!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*a+B+k)/100;d}}",
+							"message": "Chaque petit intervalle vaut $0.001$ : entre ${{L1}}$ et ${{L2}}$, le centième est partagé en $10$.",
+							"label": "Intervalle lu 0,01"
+						},
+						{
+							"answer": "{{eval:(1000*a+10*B+k+1)/1000;d}}",
+							"message": "Tu as compté les graduations, celle de ${{L1}}$ comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						},
+						{
+							"answer": "{{eval:(10^(1+floor(k/10))*(100*a+B)+k)/10^(3+floor(k/10));d}}",
+							"message": "Tu as écrit le nombre de petits intervalles à la suite de ${{L1}}$ : ${{k}}$ millièmes, c'est ${{k}} \\times 0.001 = {{eval:k/1000;d}}$.",
+							"label": "Nombre d'intervalles écrit à la suite"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{L1}}$ et ${{L2}}$, le centième est partagé en $10$ : chaque petit intervalle vaut $0.001$.",
+					"${{X}}$, c'est ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} à partir de ${{L1}}$ : ${{L1}} + {{k}} \\times 0.001 = \\textcolor{{{color:primary.0}}}{{{X}}}$."
+				]
+			},
+			"hint": "Commence par trouver ce que vaut un petit intervalle : entre ${{L1}}$ et ${{L2}}$, combien y a-t-il de bonds ?"
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{o}}\nend: {{eval:o+2*p}}\nstep: {{S}}\nmajor: {{q}}\nlabels: {{o}}, {{eval:o+p}}\npoints: A={{X}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "5|8"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "o",
+					"expression": "2..15"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:2*q-1}}"
+				},
+				{
+					"name": "S",
+					"expression": "eval:p/q;d"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(o*q+k*p)/q;d"
+				}
+			],
+			"conditions": ["mod(k,q)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(10*o+k)/10;d}}",
+							"message": "Chaque petit intervalle ne vaut pas $0.1$ : entre ${{o}}$ et ${{eval:o+p}}$, il y a ${{q}}$ petits intervalles.",
+							"label": "Intervalle lu 0,1"
+						},
+						{
+							"answer": "{{eval:(o*q+k)/q;d}}",
+							"message": "Entre ${{o}}$ et ${{eval:o+p}}$, l'écart est de $2$, pas de $1$ : chaque petit intervalle vaut $2 \\div {{q}}$.",
+							"label": "Écart entre les nombres écrits lu 1"
+						},
+						{
+							"answer": "{{eval:(o*q+(k+1)*p)/q;d}}",
+							"message": "Tu as compté les graduations, celle de ${{o}}$ comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{o}}$ et ${{eval:o+p}}$, l'écart est de ${{p}}$, partagé en ${{q}}$ petits intervalles : chacun vaut ${{p}} \\div {{q}} = {{S}}$.",
+					"${{X}}$, c'est ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} à partir de ${{o}}$ : ${{o}} + {{k}} \\times {{S}} = \\textcolor{{{color:primary.0}}}{{{X}}}$."
+				]
+			},
+			"hint": "Calcule d'abord ce que vaut un petit intervalle : l'écart entre les deux nombres écrits, partagé en parts égales."
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{L1}}\nend: {{eval:(10*m+15)*10^w}}\nstep: {{eval:10^w}}\nmajor: 10\nlabels: {{L1}}, {{L2}}\npoints: A={{X}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "4..5"
+				},
+				{
+					"name": "m",
+					"expression": "1..99"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				},
+				{
+					"name": "L1",
+					"expression": "eval:m*10^(w+1)"
+				},
+				{
+					"name": "L2",
+					"expression": "eval:(m+1)*10^(w+1)"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(10*m+k)*10^w"
+				}
+			],
+			"conditions": ["k!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*m+k)*10^(w-1)}}",
+							"message": "Entre ${{L1}}$ et ${{L2}}$, il y a $10$ petits intervalles : chacun vaut ${{eval:10^w}}$, pas ${{eval:10^(w-1)}}$.",
+							"label": "Pas lu dix fois trop petit"
+						},
+						{
+							"answer": "{{eval:(10*m+k+1)*10^w}}",
+							"message": "Tu as compté les graduations, celle de ${{L1}}$ comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						},
+						{
+							"answer": "{{eval:m*10^(w+1)+k}}",
+							"message": "Chaque petit intervalle vaut ${{eval:10^w}}$, pas $1$ : regarde l'écart entre ${{L1}}$ et ${{L2}}$.",
+							"label": "Intervalle lu 1"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{L1}}$ et ${{L2}}$, l'écart est de ${{eval:10^(w+1)}}$, partagé en $10$ : chaque petit intervalle vaut ${{eval:10^w}}$.",
+					"${{X}}$, c'est ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} à partir de ${{L1}}$ : ${{L1}} + {{k}} \\times {{eval:10^w}} = \\textcolor{{{color:primary.0}}}{{{X}}}$."
+				]
+			},
+			"hint": "Calcule l'écart entre les deux nombres écrits, puis partage-le entre les petits intervalles."
+		},
+		{
+			"statement": "Le point $A$ repère un nombre. Écris ce nombre de trois façons.\n\n```line\nstart: {{n}}\nend: {{eval:(10*n+15)/10;d}}\nstep: 0.1\nmajor: 10\npoints: A={{X}}\n```\n\nEn écriture décimale : $A = ?$\n\nAvec sa partie entière et une fraction décimale plus petite que $1$ : $A = ?$\n\nAvec une seule fraction décimale : $A = ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				},
+				{
+					"name": "N",
+					"expression": "eval:n+floor(k/10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(k,10)"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(10*n+k)/10;d"
+				},
+				{
+					"name": "F",
+					"expression": "eval:10*n+k"
+				}
+			],
+			"conditions": ["mod(k,2)==1", "mod(k,5)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n+k)/100;d}}",
+							"message": "Chaque petit intervalle vaut $0.1$ : l'unité est partagée en $10$, pas en $100$.",
+							"label": "Intervalle lu 0,01"
+						},
+						{
+							"answer": "{{eval:(10*n+k+1)/10;d}}",
+							"message": "Tu as compté les graduations, celle de ${{n}}$ comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						},
+						{
+							"answer": "{{eval:n+k}}",
+							"message": "Chaque petit intervalle vaut $0.1$, pas $1$ : il y en a $10$ entre deux entiers.",
+							"label": "Intervalle lu 1"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{N}}+\\frac{{{r}}}{10}",
+					"requiredForm": {
+						"pattern": "{{N}} + p:integer & gte(1) & lt(w) / w:integer & (eq(10) | eq(100) | eq(1000))"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{N}}+\\frac{{{r}}}{100}",
+							"message": "La partie décimale, c'est ${{r}}$ dixième{{if:r>1|s|}}, pas ${{r}}$ centième{{if:r>1|s|}}.",
+							"label": "Dixièmes écrits en centièmes"
+						},
+						{
+							"answer": "\\frac{{{r}}}{10}",
+							"message": "Tu as oublié la partie entière : $A$ est plus grand que ${{N}}$.",
+							"label": "Partie entière oubliée"
+						},
+						{
+							"answer": "{{eval:(10*n+k+1)/10;d}}",
+							"message": "Tu as compté les graduations, celle de ${{n}}$ comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\frac{{{F}}}{10}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer & (eq(10) | eq(100) | eq(1000))"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{F}}}{100}",
+							"message": "${{X}}$, ce sont ${{F}}$ dixièmes : le dénominateur est $10$.",
+							"label": "Dixièmes écrits en centièmes"
+						},
+						{
+							"answer": "\\frac{{{eval:N+r}}}{10}",
+							"message": "Tu as ajouté la partie entière au numérateur : ${{N}}$ unité{{if:N>1|s|}}, ce sont ${{eval:10*N}}$ dixièmes.",
+							"label": "Partie entière ajoutée au numérateur"
+						},
+						{
+							"answer": "\\frac{{{r}}}{10}",
+							"message": "Tu as oublié la partie entière : $A$ est plus grand que ${{N}}$.",
+							"label": "Partie entière oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire le point.** Chaque petit intervalle vaut $0.1$ : $A$ est à ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} de ${{n}}$, donc $A = \\textcolor{{{color:primary.0}}}{{{X}}}$.",
+					"**Partie entière et partie décimale.** ${{X}} = {{N}} + 0.{{r}}$ et $0.{{r}} = \\frac{{{r}}}{10}$ : $A = \\textcolor{{{color:primary.0}}}{{{N}} + \\frac{{{r}}}{10}}$.",
+					"**Une seule fraction décimale.** ${{N}}$ unité{{if:N>1|s|}}, ce sont ${{eval:10*N}}$ dixièmes ; avec ${{r}}$ dixième{{if:r>1|s|}} de plus, ${{X}}$ fait ${{F}}$ dixièmes : $A = \\textcolor{{{color:primary.0}}}{\\frac{{{F}}}{10}}$."
+				]
+			},
+			"hint": "Commence par l'écriture décimale. Puis souviens-toi : $0.1 = \\frac{1}{10}$, et $10$ dixièmes font une unité."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2,3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "2,3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2,03"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur : 2,03 (centièmes)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur : 3 (graduations comptées)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3,3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "13",
+				"n": "2"
+			},
+			"description": "Après l'entier suivant : 3,3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2,13"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "13",
+				"n": "2"
+			},
+			"description": "Erreur : 2,13",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2,37"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"description": "Loupe : 2,37",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"description": "Erreur : 3 (intervalle lu 0,1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2,307"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"description": "Erreur : 2,307",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5,02"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "9",
+				"k": "12"
+			},
+			"description": "Loupe, après le dixième suivant : 5,02",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,75"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"q": "4"
+			},
+			"description": "Quarts : 0,75",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"q": "4"
+			},
+			"description": "Erreur : 0,3 (intervalle lu 0,1)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"q": "2"
+			},
+			"description": "Demis : 2,5",
+			"variationIndex": 2
+		},
+		{
+			"description": "F7 millièmes : 2,315",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}315"]
+		},
+		{
+			"description": "F7 millièmes : point décimal",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2.315"]
+		},
+		{
+			"description": "F7 millièmes : intervalle lu 0,01",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque petit intervalle vaut $0.001$ : entre $2.31$ et $2.32$, le centième est partagé en $10$."
+			},
+			"answers": ["2{,}36"]
+		},
+		{
+			"description": "F7 millièmes : graduations comptées",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle de $2.31$ comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["2{,}316"]
+		},
+		{
+			"description": "F7 millièmes : après 2,32, 2,322",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}322"]
+		},
+		{
+			"description": "F7 millièmes : 12 écrit à la suite",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le nombre de petits intervalles à la suite de $2.31$ : $12$ millièmes, c'est $12 \\times 0.001 = 0.012$."
+			},
+			"answers": ["2{,}3112"]
+		},
+		{
+			"description": "F7 cinquièmes : 7,6",
+			"variationIndex": 4,
+			"variables": {
+				"q": "5",
+				"p": "1",
+				"o": "7",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}6"]
+		},
+		{
+			"description": "F7 cinquièmes : intervalle lu 0,1",
+			"variationIndex": 4,
+			"variables": {
+				"q": "5",
+				"p": "1",
+				"o": "7",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque petit intervalle ne vaut pas $0.1$ : entre $7$ et $8$, il y a $5$ petits intervalles."
+			},
+			"answers": ["7{,}3"]
+		},
+		{
+			"description": "F7 cinquièmes : graduations comptées",
+			"variationIndex": 4,
+			"variables": {
+				"q": "5",
+				"p": "1",
+				"o": "7",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle de $7$ comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["7{,}8"]
+		},
+		{
+			"description": "F7 pas 2 en 8 : 10,75",
+			"variationIndex": 4,
+			"variables": {
+				"q": "8",
+				"p": "2",
+				"o": "10",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10{,}75"]
+		},
+		{
+			"description": "F7 pas 2 en 8 : écart lu 1",
+			"variationIndex": 4,
+			"variables": {
+				"q": "8",
+				"p": "2",
+				"o": "10",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $10$ et $12$, l'écart est de $2$, pas de $1$ : chaque petit intervalle vaut $2 \\div 8$."
+			},
+			"answers": ["10{,}375"]
+		},
+		{
+			"description": "F7 huitièmes : 3,625",
+			"variationIndex": 4,
+			"variables": {
+				"q": "8",
+				"p": "1",
+				"o": "3",
+				"k": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}625"]
+		},
+		{
+			"description": "F7 pas 2 en 5 : 14,8 après 14",
+			"variationIndex": 4,
+			"variables": {
+				"q": "5",
+				"p": "2",
+				"o": "12",
+				"k": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14{,}8"]
+		},
+		{
+			"description": "F7 grand : 3 730 000",
+			"variationIndex": 5,
+			"variables": {
+				"w": "4",
+				"m": "37",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3\\,730\\,000"]
+		},
+		{
+			"description": "F7 grand : sans espace",
+			"variationIndex": 5,
+			"variables": {
+				"w": "4",
+				"m": "37",
+				"k": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["3730000"]
+		},
+		{
+			"description": "F7 grand : pas lu 1 000",
+			"variationIndex": 5,
+			"variables": {
+				"w": "4",
+				"m": "37",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $3700000$ et $3800000$, il y a $10$ petits intervalles : chacun vaut $10000$, pas $1000$."
+			},
+			"answers": ["3\\,703\\,000"]
+		},
+		{
+			"description": "F7 grand : graduations comptées",
+			"variationIndex": 5,
+			"variables": {
+				"w": "4",
+				"m": "37",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle de $3700000$ comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["3\\,740\\,000"]
+		},
+		{
+			"description": "F7 grand : intervalle lu 1",
+			"variationIndex": 5,
+			"variables": {
+				"w": "4",
+				"m": "37",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque petit intervalle vaut $10000$, pas $1$ : regarde l'écart entre $3700000$ et $3800000$."
+			},
+			"answers": ["3\\,700\\,003"]
+		},
+		{
+			"description": "F7 grand : pas 100 000, 1 300 000",
+			"variationIndex": 5,
+			"variables": {
+				"w": "5",
+				"m": "1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\,300\\,000"]
+		},
+		{
+			"description": "F7 trois écritures : 2,3",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}3", "2+\\frac{3}{10}", "\\frac{23}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : point décimal",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2.3", "2+\\frac{3}{10}", "\\frac{23}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : 230/100, à simplifier",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["2{,}3", "2+\\frac{3}{10}", "\\frac{230}{100}"]
+		},
+		{
+			"description": "F7 trois écritures : 2 + 6/20 refusé (pas décimale)",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["2{,}3", "2+\\frac{6}{20}", "\\frac{23}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : 46/20 refusé (pas décimale)",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["2{,}3", "2+\\frac{3}{10}", "\\frac{46}{20}"]
+		},
+		{
+			"description": "F7 trois écritures : intervalle lu 0,01",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque petit intervalle vaut $0.1$ : l'unité est partagée en $10$, pas en $100$."
+			},
+			"answers": ["2{,}03", "2+\\frac{3}{10}", "\\frac{23}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : intervalle lu 1",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque petit intervalle vaut $0.1$, pas $1$ : il y en a $10$ entre deux entiers."
+			},
+			"answers": ["5", "2+\\frac{3}{10}", "\\frac{23}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : centièmes",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La partie décimale, c'est $3$ dixièmes, pas $3$ centièmes."
+			},
+			"answers": ["2{,}3", "2+\\frac{3}{100}", "\\frac{23}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : partie entière oubliée",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la partie entière : $A$ est plus grand que $2$."
+			},
+			"answers": ["2{,}3", "\\frac{3}{10}", "\\frac{23}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : fraction sur 100",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$2.3$, ce sont $23$ dixièmes : le dénominateur est $10$."
+			},
+			"answers": ["2{,}3", "2+\\frac{3}{10}", "\\frac{23}{100}"]
+		},
+		{
+			"description": "F7 trois écritures : partie entière au numérateur",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté la partie entière au numérateur : $2$ unités, ce sont $20$ dixièmes."
+			},
+			"answers": ["2{,}3", "2+\\frac{3}{10}", "\\frac{5}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : décimal dans la 3e case",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["2{,}3", "2+\\frac{3}{10}", "2{,}3"]
+		},
+		{
+			"description": "F7 trois écritures : fraction plus grande que 1",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "13"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3{,}3", "2+\\frac{13}{10}", "\\frac{33}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : après 3, 3,3",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "13"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}3", "3+\\frac{3}{10}", "\\frac{33}{10}"]
+		},
+		{
+			"description": "F7 trois écritures : 13 écrit à la suite",
+			"variationIndex": 6,
+			"variables": {
+				"n": "2",
+				"k": "13"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque petit intervalle vaut $0.1$ : l'unité est partagée en $10$, pas en $100$."
+			},
+			"answers": ["2{,}13", "3+\\frac{3}{10}", "\\frac{33}{10}"]
+		}
+	]
+}

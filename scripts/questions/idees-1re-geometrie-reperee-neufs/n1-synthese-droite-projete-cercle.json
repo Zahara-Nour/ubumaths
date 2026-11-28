@@ -1,0 +1,860 @@
+{
+	"id": "75a03073-8b67-47f3-bb4e-c566f200cf0f",
+	"rangement": {
+		"noeud": "Géométrie > Géométrie repérée > projeté orthogonal",
+		"point": "1SPE-437"
+	},
+	"title": "Synthèse : droite, perpendiculaire, projeté et cercle",
+	"description": "Dans un repère : équation de (AB), de la perpendiculaire à (AB) passant par C, coordonnées du projeté H de C sur (AB), longueur AB, milieu de [AB] et équation du cercle de diamètre [AB]",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 480,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xA}}\\,;{{yA}})$, $B({{xB}}\\,;{{yB}})$ et $C({{xC}}\\,;{{yC}})$.\n\n**1.** Donne une équation cartésienne de la droite $(AB)$.\n\n$?$\n\n**2.** Donne une équation cartésienne de la droite $d$ perpendiculaire à $(AB)$ passant par $C$.\n\n$?$\n\n**3.** Les droites $(AB)$ et $d$ se coupent en $H$. Donne les coordonnées de $H$.\n\n$H(?\\,;?)$\n\n**4.** Calcule la longueur $AB$ (valeur exacte).\n\n$AB=?$\n\n**5.** Donne les coordonnées du milieu $\\Omega$ du segment $[AB]$.\n\n$\\Omega(?\\,;?)$\n\n**6.** Donne une équation du cercle de diamètre $[AB]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "k",
+					"expression": "1|2"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:xA+3*p"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:yA+3*q"
+				},
+				{
+					"name": "xC",
+					"expression": "eval:xA+k*p-s*q"
+				},
+				{
+					"name": "yC",
+					"expression": "eval:yA+k*q+s*p"
+				},
+				{
+					"name": "P",
+					"expression": "eval:xB-xA"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:yB-yA"
+				},
+				{
+					"name": "mP",
+					"expression": "eval:-(xB-xA)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:(xB-xA)^2+(yB-yA)^2"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:(xB-xA)*yA-(yB-yA)*xA"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:-((xB-xA)*xC+(yB-yA)*yC)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(xC-xA)*(xB-xA)+(yC-yA)*(yB-yA)"
+				}
+			],
+			"conditions": [
+				"abs(xB) <= 5",
+				"abs(yB) <= 5",
+				"abs(xC) <= 5",
+				"abs(yC) <= 5",
+				"c1 != 0",
+				"c2 != 0",
+				"xA+xB != 0",
+				"yA+yB != 0",
+				"N != 0",
+				"N != S"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{Q}}x{{mP;+}}y{{c1;+}}=0",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "{{P}}x{{Q;+}}y{{eval:-(P*xA+Q*yA);+}}=0",
+							"message": "$\\overrightarrow{AB}$ est un vecteur directeur de $(AB)$, pas un vecteur normal : ta droite est perpendiculaire à $(AB)$.",
+							"label": "AB pris comme vecteur normal"
+						},
+						{
+							"answer": "{{Q}}x{{mP;+}}y{{eval:-c1;+}}=0",
+							"message": "Vérifie la constante : les coordonnées de $A$ doivent vérifier l'équation.",
+							"label": "Constante de signe faux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{P}}x{{Q;+}}y{{c2;+}}=0",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "{{Q}}x{{mP;+}}y{{eval:P*yC-Q*xC;+}}=0",
+							"message": "Ta droite est parallèle à $(AB)$ : $d$ est perpendiculaire à $(AB)$, donc $\\overrightarrow{AB}$ est un vecteur normal à $d$.",
+							"label": "Parallèle au lieu de perpendiculaire"
+						},
+						{
+							"answer": "{{P}}x{{Q;+}}y{{eval:-(P*xA+Q*yA);+}}=0",
+							"message": "Ta droite passe par $A$ : $d$ passe par $C$.",
+							"label": "Passe par A"
+						},
+						{
+							"answer": "{{P}}x{{Q;+}}y{{eval:-c2;+}}=0",
+							"message": "Vérifie la constante : les coordonnées de $C$ doivent vérifier l'équation.",
+							"label": "Constante de signe faux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:xA+N*P/S}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xA+xB)/2}}",
+							"message": "$H$ n'est pas le milieu de $[AB]$ : c'est le pied de la perpendiculaire à $(AB)$ passant par $C$.",
+							"label": "Milieu de [AB]"
+						},
+						{
+							"answer": "{{xC}}",
+							"message": "$C$ n'est pas sur $(AB)$ : $H$ est le point de $(AB)$ le plus proche de $C$.",
+							"label": "Point C"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:yA+N*Q/S}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(yA+yB)/2}}",
+							"message": "$H$ n'est pas le milieu de $[AB]$ : c'est le pied de la perpendiculaire à $(AB)$ passant par $C$.",
+							"label": "Milieu de [AB]"
+						},
+						{
+							"answer": "{{yC}}",
+							"message": "$C$ n'est pas sur $(AB)$ : $H$ est le point de $(AB)$ le plus proche de $C$.",
+							"label": "Point C"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{S}}",
+							"message": "Tu as donné $AB^2$ : il reste à prendre la racine carrée.",
+							"label": "AB² au lieu de AB"
+						},
+						{
+							"answer": "{{eval:abs(P)+abs(Q)}}",
+							"message": "$AB$ se calcule avec la racine de la somme des carrés des écarts, pas avec la somme des écarts.",
+							"label": "Somme des écarts"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(xA+xB)/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xB-xA)/2}}",
+							"message": "Le milieu a pour coordonnées la demi-somme des coordonnées, pas la demi-différence.",
+							"label": "Demi-différence"
+						},
+						{
+							"answer": "{{eval:xA+xB}}",
+							"message": "N'oublie pas de diviser par $2$ la somme des coordonnées.",
+							"label": "Pas divisé par 2"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(yA+yB)/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(yB-yA)/2}}",
+							"message": "Le milieu a pour coordonnées la demi-somme des coordonnées, pas la demi-différence.",
+							"label": "Demi-différence"
+						},
+						{
+							"answer": "{{eval:yA+yB}}",
+							"message": "N'oublie pas de diviser par $2$ la somme des coordonnées.",
+							"label": "Pas divisé par 2"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "(x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{eval:S/4}}",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "(x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{eval:sqrt(S)/2}}",
+							"message": "Le second membre est le carré du rayon, $r^2$, pas $r$.",
+							"label": "r au lieu de r²"
+						},
+						{
+							"answer": "(x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{S}}",
+							"message": "Le rayon est la moitié de $AB$ : le second membre vaut $\\dfrac{AB^2}{4}$.",
+							"label": "AB² au lieu de r²"
+						},
+						{
+							"answer": "(x{{eval:(xA+xB)/2;+}})^2+(y{{eval:(yA+yB)/2;+}})^2={{eval:S/4}}",
+							"message": "Les signes du centre sont inversés : pour un centre d'abscisse $a$, on écrit $\\left( x - a \\right)^2$.",
+							"label": "Signes du centre inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{P}}\\\\{{Q}}\\end{pmatrix}$ dirige $(AB)$, donc $\\vec n\\begin{pmatrix}{{Q}}\\\\{{mP}}\\end{pmatrix}$ est normal à $(AB)$ : $(AB)$ a une équation de la forme ${{if:Q==1|x}}{{if:Q==-1|-x}}{{if:Q>1|{{eval:Q}}x}}{{if:Q< -1|{{eval:Q}}x}}{{if:mP==1|+y}}{{if:mP==-1|-y}}{{if:mP>1|+{{eval:mP}}y}}{{if:mP< -1|{{eval:mP}}y}}+c=0$. $A$ est sur $(AB)$ : ${{Q}}\\times{{xA;()}}{{mP;+}}\\times{{yA;()}}+c=0$, donc $c={{c1}}$ et $(AB) : \\textcolor{{{color:primary.0}}}{ {{if:Q==1|x}}{{if:Q==-1|-x}}{{if:Q>1|{{eval:Q}}x}}{{if:Q< -1|{{eval:Q}}x}}{{if:mP==1|+y}}{{if:mP==-1|-y}}{{if:mP>1|+{{eval:mP}}y}}{{if:mP< -1|{{eval:mP}}y}}{{if:c1>0|+{{eval:c1}}}}{{if:c1< 0|{{eval:c1}}}}=0 }$.",
+					"$d$ est perpendiculaire à $(AB)$, donc $\\overrightarrow{AB}$ est normal à $d$ : $d$ a une équation de la forme ${{if:P==1|x}}{{if:P==-1|-x}}{{if:P>1|{{eval:P}}x}}{{if:P< -1|{{eval:P}}x}}{{if:Q==1|+y}}{{if:Q==-1|-y}}{{if:Q>1|+{{eval:Q}}y}}{{if:Q< -1|{{eval:Q}}y}}+c=0$. $C$ est sur $d$ : ${{P}}\\times{{xC;()}}{{Q;+}}\\times{{yC;()}}+c=0$, donc $c={{c2}}$ et $d : \\textcolor{{{color:primary.0}}}{ {{if:P==1|x}}{{if:P==-1|-x}}{{if:P>1|{{eval:P}}x}}{{if:P< -1|{{eval:P}}x}}{{if:Q==1|+y}}{{if:Q==-1|-y}}{{if:Q>1|+{{eval:Q}}y}}{{if:Q< -1|{{eval:Q}}y}}{{if:c2>0|+{{eval:c2}}}}{{if:c2< 0|{{eval:c2}}}}=0 }$.",
+					"$H$ est le projeté orthogonal de $C$ sur $(AB)$ : $\\overrightarrow{AH}=\\dfrac{\\overrightarrow{AC}\\cdot\\overrightarrow{AB}}{AB^2}\\,\\overrightarrow{AB}$, avec $\\overrightarrow{AC}\\cdot\\overrightarrow{AB}={{N}}$ et $AB^2={{S}}$. Donc $\\overrightarrow{AH}={{eval:N/S}}\\,\\overrightarrow{AB}$ et $H\\left(\\textcolor{{{color:primary.0}}}{ {{eval:xA+N*P/S}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:yA+N*Q/S}} }\\right)$. (On trouve la même chose en résolvant le système des deux équations.)",
+					"$AB=\\sqrt{ {{P;()}}^2+{{Q;()}}^2 }=\\sqrt{ {{S}} }=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(S)}} }$.",
+					"$\\Omega\\left(\\dfrac{ {{xA}}{{xB;+}} }{2}\\,;\\dfrac{ {{yA}}{{yB;+}} }{2}\\right)$, soit $\\Omega\\left(\\textcolor{{{color:primary.0}}}{ {{eval:(xA+xB)/2}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:(yA+yB)/2}} }\\right)$.",
+					"Le cercle de diamètre $[AB]$ a pour centre $\\Omega$ et pour rayon $r=\\dfrac{AB}{2}$, donc $r^2=\\dfrac{ {{S}} }{4}$. Une équation est $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{eval:S/4}} }$."
+				]
+			},
+			"hint": "$\\overrightarrow{AB}$ dirige $(AB)$ et il est normal à toute droite perpendiculaire à $(AB)$. Pour $H$, résous le système formé par les deux équations."
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xA}}\\,;{{yA}})$, $B({{xB}}\\,;{{yB}})$ et $C({{xC}}\\,;{{yC}})$.\n\n**1.** Donne une équation cartésienne de la droite $(AB)$.\n\n$?$\n\n**2.** Donne une équation cartésienne de la droite $d$ perpendiculaire à $(AB)$ passant par $C$.\n\n$?$\n\n**3.** Les droites $(AB)$ et $d$ se coupent en $H$. Donne les coordonnées de $H$.\n\n$H(?\\,;?)$\n\n**4.** Calcule la longueur $AB$ (valeur exacte).\n\n$AB=?$\n\n**5.** Donne les coordonnées du milieu $\\Omega$ du segment $[AB]$.\n\n$\\Omega(?\\,;?)$\n\n**6.** Donne une équation du cercle de diamètre $[AB]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xB",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yB",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xC",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yC",
+					"expression": "-5..5"
+				},
+				{
+					"name": "P",
+					"expression": "eval:xB-xA"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:yB-yA"
+				},
+				{
+					"name": "mP",
+					"expression": "eval:-(xB-xA)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:(xB-xA)^2+(yB-yA)^2"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:(xB-xA)*yA-(yB-yA)*xA"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:-((xB-xA)*xC+(yB-yA)*yC)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(xC-xA)*(xB-xA)+(yC-yA)*(yB-yA)"
+				}
+			],
+			"conditions": [
+				"P != 0",
+				"Q != 0",
+				"S >= 8",
+				"S <= 50",
+				"(xB-xA)*(yC-yA)-(yB-yA)*(xC-xA) != 0",
+				"mod(N*P, S) != 0 || mod(N*Q, S) != 0",
+				"c1 != 0",
+				"c2 != 0",
+				"xA+xB != 0",
+				"yA+yB != 0",
+				"N != 0",
+				"N != S"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{Q}}x{{mP;+}}y{{c1;+}}=0",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "{{P}}x{{Q;+}}y{{eval:-(P*xA+Q*yA);+}}=0",
+							"message": "$\\overrightarrow{AB}$ est un vecteur directeur de $(AB)$, pas un vecteur normal : ta droite est perpendiculaire à $(AB)$.",
+							"label": "AB pris comme vecteur normal"
+						},
+						{
+							"answer": "{{Q}}x{{mP;+}}y{{eval:-c1;+}}=0",
+							"message": "Vérifie la constante : les coordonnées de $A$ doivent vérifier l'équation.",
+							"label": "Constante de signe faux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{P}}x{{Q;+}}y{{c2;+}}=0",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "{{Q}}x{{mP;+}}y{{eval:P*yC-Q*xC;+}}=0",
+							"message": "Ta droite est parallèle à $(AB)$ : $d$ est perpendiculaire à $(AB)$, donc $\\overrightarrow{AB}$ est un vecteur normal à $d$.",
+							"label": "Parallèle au lieu de perpendiculaire"
+						},
+						{
+							"answer": "{{P}}x{{Q;+}}y{{eval:-(P*xA+Q*yA);+}}=0",
+							"message": "Ta droite passe par $A$ : $d$ passe par $C$.",
+							"label": "Passe par A"
+						},
+						{
+							"answer": "{{P}}x{{Q;+}}y{{eval:-c2;+}}=0",
+							"message": "Vérifie la constante : les coordonnées de $C$ doivent vérifier l'équation.",
+							"label": "Constante de signe faux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:xA+N*P/S}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xA+xB)/2}}",
+							"message": "$H$ n'est pas le milieu de $[AB]$ : c'est le pied de la perpendiculaire à $(AB)$ passant par $C$.",
+							"label": "Milieu de [AB]"
+						},
+						{
+							"answer": "{{xC}}",
+							"message": "$C$ n'est pas sur $(AB)$ : $H$ est le point de $(AB)$ le plus proche de $C$.",
+							"label": "Point C"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:yA+N*Q/S}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(yA+yB)/2}}",
+							"message": "$H$ n'est pas le milieu de $[AB]$ : c'est le pied de la perpendiculaire à $(AB)$ passant par $C$.",
+							"label": "Milieu de [AB]"
+						},
+						{
+							"answer": "{{yC}}",
+							"message": "$C$ n'est pas sur $(AB)$ : $H$ est le point de $(AB)$ le plus proche de $C$.",
+							"label": "Point C"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{S}}",
+							"message": "Tu as donné $AB^2$ : il reste à prendre la racine carrée.",
+							"label": "AB² au lieu de AB"
+						},
+						{
+							"answer": "{{eval:abs(P)+abs(Q)}}",
+							"message": "$AB$ se calcule avec la racine de la somme des carrés des écarts, pas avec la somme des écarts.",
+							"label": "Somme des écarts"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(xA+xB)/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xB-xA)/2}}",
+							"message": "Le milieu a pour coordonnées la demi-somme des coordonnées, pas la demi-différence.",
+							"label": "Demi-différence"
+						},
+						{
+							"answer": "{{eval:xA+xB}}",
+							"message": "N'oublie pas de diviser par $2$ la somme des coordonnées.",
+							"label": "Pas divisé par 2"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(yA+yB)/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(yB-yA)/2}}",
+							"message": "Le milieu a pour coordonnées la demi-somme des coordonnées, pas la demi-différence.",
+							"label": "Demi-différence"
+						},
+						{
+							"answer": "{{eval:yA+yB}}",
+							"message": "N'oublie pas de diviser par $2$ la somme des coordonnées.",
+							"label": "Pas divisé par 2"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "(x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{eval:S/4}}",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "(x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{eval:sqrt(S)/2}}",
+							"message": "Le second membre est le carré du rayon, $r^2$, pas $r$.",
+							"label": "r au lieu de r²"
+						},
+						{
+							"answer": "(x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{S}}",
+							"message": "Le rayon est la moitié de $AB$ : le second membre vaut $\\dfrac{AB^2}{4}$.",
+							"label": "AB² au lieu de r²"
+						},
+						{
+							"answer": "(x{{eval:(xA+xB)/2;+}})^2+(y{{eval:(yA+yB)/2;+}})^2={{eval:S/4}}",
+							"message": "Les signes du centre sont inversés : pour un centre d'abscisse $a$, on écrit $\\left( x - a \\right)^2$.",
+							"label": "Signes du centre inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{P}}\\\\{{Q}}\\end{pmatrix}$ dirige $(AB)$, donc $\\vec n\\begin{pmatrix}{{Q}}\\\\{{mP}}\\end{pmatrix}$ est normal à $(AB)$ : $(AB)$ a une équation de la forme ${{if:Q==1|x}}{{if:Q==-1|-x}}{{if:Q>1|{{eval:Q}}x}}{{if:Q< -1|{{eval:Q}}x}}{{if:mP==1|+y}}{{if:mP==-1|-y}}{{if:mP>1|+{{eval:mP}}y}}{{if:mP< -1|{{eval:mP}}y}}+c=0$. $A$ est sur $(AB)$ : ${{Q}}\\times{{xA;()}}{{mP;+}}\\times{{yA;()}}+c=0$, donc $c={{c1}}$ et $(AB) : \\textcolor{{{color:primary.0}}}{ {{if:Q==1|x}}{{if:Q==-1|-x}}{{if:Q>1|{{eval:Q}}x}}{{if:Q< -1|{{eval:Q}}x}}{{if:mP==1|+y}}{{if:mP==-1|-y}}{{if:mP>1|+{{eval:mP}}y}}{{if:mP< -1|{{eval:mP}}y}}{{if:c1>0|+{{eval:c1}}}}{{if:c1< 0|{{eval:c1}}}}=0 }$.",
+					"$d$ est perpendiculaire à $(AB)$, donc $\\overrightarrow{AB}$ est normal à $d$ : $d$ a une équation de la forme ${{if:P==1|x}}{{if:P==-1|-x}}{{if:P>1|{{eval:P}}x}}{{if:P< -1|{{eval:P}}x}}{{if:Q==1|+y}}{{if:Q==-1|-y}}{{if:Q>1|+{{eval:Q}}y}}{{if:Q< -1|{{eval:Q}}y}}+c=0$. $C$ est sur $d$ : ${{P}}\\times{{xC;()}}{{Q;+}}\\times{{yC;()}}+c=0$, donc $c={{c2}}$ et $d : \\textcolor{{{color:primary.0}}}{ {{if:P==1|x}}{{if:P==-1|-x}}{{if:P>1|{{eval:P}}x}}{{if:P< -1|{{eval:P}}x}}{{if:Q==1|+y}}{{if:Q==-1|-y}}{{if:Q>1|+{{eval:Q}}y}}{{if:Q< -1|{{eval:Q}}y}}{{if:c2>0|+{{eval:c2}}}}{{if:c2< 0|{{eval:c2}}}}=0 }$.",
+					"$H$ est le projeté orthogonal de $C$ sur $(AB)$ : $\\overrightarrow{AH}=\\dfrac{\\overrightarrow{AC}\\cdot\\overrightarrow{AB}}{AB^2}\\,\\overrightarrow{AB}$, avec $\\overrightarrow{AC}\\cdot\\overrightarrow{AB}={{N}}$ et $AB^2={{S}}$. Donc $\\overrightarrow{AH}={{eval:N/S}}\\,\\overrightarrow{AB}$ et $H\\left(\\textcolor{{{color:primary.0}}}{ {{eval:xA+N*P/S}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:yA+N*Q/S}} }\\right)$. (On trouve la même chose en résolvant le système des deux équations.)",
+					"$AB=\\sqrt{ {{P;()}}^2+{{Q;()}}^2 }=\\sqrt{ {{S}} }=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(S)}} }$.",
+					"$\\Omega\\left(\\dfrac{ {{xA}}{{xB;+}} }{2}\\,;\\dfrac{ {{yA}}{{yB;+}} }{2}\\right)$, soit $\\Omega\\left(\\textcolor{{{color:primary.0}}}{ {{eval:(xA+xB)/2}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:(yA+yB)/2}} }\\right)$.",
+					"Le cercle de diamètre $[AB]$ a pour centre $\\Omega$ et pour rayon $r=\\dfrac{AB}{2}$, donc $r^2=\\dfrac{ {{S}} }{4}$. Une équation est $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(xA+xB)/2;+}})^2+(y{{eval:-(yA+yB)/2;+}})^2={{eval:S/4}} }$."
+				]
+			},
+			"hint": "$\\overrightarrow{AB}$ dirige $(AB)$ et il est normal à toute droite perpendiculaire à $(AB)$. Pour $H$, résous le système formé par les deux équations."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "H entier : A(−2 ; 1), B(1 ; 7), C(−3 ; 4)",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y-5=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "Équations écrites avec les coefficients de AB",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"6x-3y+15=0",
+				"3x+6y-15=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "Cercle sous forme développée",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y-5=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"x^2+y^2+x-8y+5=0"
+			]
+		},
+		{
+			"description": "AB normal à (AB)",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\overrightarrow{AB}$ est un vecteur directeur de $\\left( AB \\right)$, pas un vecteur normal : ta droite est perpendiculaire à $\\left( AB \\right)$."
+			},
+			"answers": [
+				"x+2y=0",
+				"x+2y-5=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "Parallèle à (AB) par C",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta droite est parallèle à $\\left( AB \\right)$ : $d$ est perpendiculaire à $\\left( AB \\right)$, donc $\\overrightarrow{AB}$ est un vecteur normal à $d$."
+			},
+			"answers": [
+				"2x-y+5=0",
+				"2x-y+10=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "Perpendiculaire par A",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta droite passe par $A$ : $d$ passe par $C$."
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "H au milieu de [AB]",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$H$ n'est pas le milieu de $\\left[ AB \\right]$ : c'est le pied de la perpendiculaire à $\\left( AB \\right)$ passant par $C$."
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y-5=0",
+				"-\\frac{1}{2}",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "AB² au lieu de AB",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $AB^2$ : il reste à prendre la racine carrée."
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y-5=0",
+				"-1",
+				"3",
+				"45",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "Ω : pas divisé par 2",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas de diviser par $2$ la somme des coordonnées."
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y-5=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-1",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "r au lieu de r²",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le second membre est le carré du rayon, $r^2$, pas $r$."
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y-5=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x+\\frac{1}{2}\\right)^2+(y-4)^2=\\frac{3\\sqrt{5}}{2}"
+			]
+		},
+		{
+			"description": "Signes du centre inversés",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "-2",
+				"yA": "1",
+				"p": "1",
+				"q": "2",
+				"k": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les signes du centre sont inversés : pour un centre d'abscisse $a$, on écrit $\\left( x - a \\right)^2$."
+			},
+			"answers": [
+				"2x-y+5=0",
+				"x+2y-5=0",
+				"-1",
+				"3",
+				"3\\sqrt{5}",
+				"-\\frac{1}{2}",
+				"4",
+				"\\left(x-\\frac{1}{2}\\right)^2+(y+4)^2=\\frac{45}{4}"
+			]
+		},
+		{
+			"description": "H fractionnaire : A(−1 ; 2), B(3 ; −1), C(2 ; 4)",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "-1",
+				"yA": "2",
+				"xB": "3",
+				"yB": "-1",
+				"xC": "2",
+				"yC": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"3x+4y-5=0",
+				"4x-3y+4=0",
+				"-\\frac{1}{25}",
+				"\\frac{32}{25}",
+				"5",
+				"1",
+				"\\frac{1}{2}",
+				"(x-1)^2+\\left(y-\\frac{1}{2}\\right)^2=\\frac{25}{4}"
+			]
+		},
+		{
+			"description": "H en décimaux",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "-1",
+				"yA": "2",
+				"xB": "3",
+				"yB": "-1",
+				"xC": "2",
+				"yC": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"3x+4y-5=0",
+				"4x-3y+4=0",
+				"-0,04",
+				"1,28",
+				"5",
+				"1",
+				"\\frac{1}{2}",
+				"(x-1)^2+\\left(y-\\frac{1}{2}\\right)^2=\\frac{25}{4}"
+			]
+		},
+		{
+			"description": "Ω : demi-différence",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "-1",
+				"yA": "2",
+				"xB": "3",
+				"yB": "-1",
+				"xC": "2",
+				"yC": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le milieu a pour coordonnées la demi-somme des coordonnées, pas la demi-différence."
+			},
+			"answers": [
+				"3x+4y-5=0",
+				"4x-3y+4=0",
+				"-\\frac{1}{25}",
+				"\\frac{32}{25}",
+				"5",
+				"2",
+				"\\frac{1}{2}",
+				"(x-1)^2+\\left(y-\\frac{1}{2}\\right)^2=\\frac{25}{4}"
+			]
+		},
+		{
+			"description": "Cercle : AB² au second membre",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "-1",
+				"yA": "2",
+				"xB": "3",
+				"yB": "-1",
+				"xC": "2",
+				"yC": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le rayon est la moitié de $AB$ : le second membre vaut $\\dfrac{AB^2}{4}$."
+			},
+			"answers": [
+				"3x+4y-5=0",
+				"4x-3y+4=0",
+				"-\\frac{1}{25}",
+				"\\frac{32}{25}",
+				"5",
+				"1",
+				"\\frac{1}{2}",
+				"(x-1)^2+\\left(y-\\frac{1}{2}\\right)^2=25"
+			]
+		}
+	]
+}

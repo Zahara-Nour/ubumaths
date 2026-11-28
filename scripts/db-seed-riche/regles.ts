@@ -29,6 +29,7 @@ export const COPIE: readonly string[] = [
 	'question_template_points',
 	'question_template_reviews',
 	'exercises',
+	'exercise_versions',
 	'exercise_classifications',
 	'exercise_curriculum_points',
 	'exercise_templates',
@@ -185,6 +186,8 @@ export const INVENTE: readonly string[] = [
 	'conversation_participants',
 	'messages',
 	'private_messages',
+	// Boîte de réception : remplie par la fonction d'envoi, pas calculée.
+	'message_inbox',
 	'message_reactions',
 	'message_reports',
 	'message_drafts',
@@ -195,29 +198,19 @@ export const INVENTE: readonly string[] = [
 	'tutor_messages',
 	'user_restrictions',
 	'moderation_logs',
-	'message_moderation_logs',
-	// Modèles de messages et leurs favoris : aucun en prod le 2026-11-21, les copier viderait
-	// ceux de la base locale.
-	'message_templates',
-	'message_template_versions',
-	'user_favorite_templates',
 	// Marché
 	'marketplace_listings',
 	'marketplace_proposals',
 	'marketplace_trades',
-	'marketplace_trade_offers',
 	'marketplace_locked_cards',
 	'marketplace_chat_messages',
-	'marketplace_listing_views',
 	// Famille et inscription
 	'parental_consents',
 	'parent_contacts',
 	'parent_carnet_links',
 	'parent_notifications',
-	'parent_exception_episodes',
 	'student_carnet_opt_outs',
 	'pending_students',
-	'terms_acceptances',
 	// Cahier de texte : jamais copié (2026-10-10), inventé (2026-11-21)
 	'class_journal_entries',
 	'journal_entry_activities',
@@ -226,7 +219,14 @@ export const INVENTE: readonly string[] = [
 	// Liens de partage : de faux liens pour ouvrir les pages publiques
 	'class_course_share_tokens',
 	'class_journal_share_tokens',
-	'exercise_share_tokens'
+	'exercise_share_tokens',
+	// Tableau de tâches du prof et signalements de bug : inventés (tranché le 2026-11-21)
+	'kanban_boards',
+	'kanban_columns',
+	'kanban_cards',
+	'kanban_card_tags',
+	'kanban_tags',
+	'bug_reports'
 ];
 
 /** Tables ni copiées ni inventées : elles restent vides en local. */
@@ -238,19 +238,16 @@ export const JAMAIS: readonly string[] = [
 	'background_job_runs',
 	'rate_limits',
 	'server_cache',
-	'template_audit_log',
 	'account_deletion_audit',
 	'achievement_migrations',
 	'migration_images',
 	'orphaned_documents',
 	'web_vital_samples',
 	'whiteboard_export_counters',
-	'template_usage_stats',
 	'minesweeper_reference_times_history',
 	'welcome_emails_sent',
 	// Calculées ou éphémères
 	'message_search_index',
-	'message_inbox',
 	'user_presence',
 	'minesweeper_multiplayer_queue',
 	'minesweeper_multiplayer_matches',
@@ -281,14 +278,17 @@ export const JAMAIS: readonly string[] = [
 	'shared_coursework_students',
 	'message_attachments',
 	'message_attachments_v2',
-	// Pas encore tranché par David (inventer ou laisser vide) : vides en attendant.
-	'bug_reports',
-	'kanban_boards',
-	'kanban_columns',
-	'kanban_cards',
+	// Échanges et famille (PR 4 du chantier seed-complet, 2026-11-22) : aucune page ne les lit
+	// (acceptation des conditions, vues d'annonces, journal de modération des messages, offres
+	// d'un ancien circuit d'échange : 0 ligne en prod pour 158 échanges), ou l'envoi des courriels
+	// du carnet les tient seul (épisodes d'exception).
+	'terms_acceptances',
+	'marketplace_listing_views',
+	'message_moderation_logs',
+	'marketplace_trade_offers',
+	'parent_exception_episodes',
+	// Tableau de tâches : personne d'autre que le prof n'y est assigné.
 	'kanban_card_assignees',
-	'kanban_card_tags',
-	'kanban_tags',
 	// Jeux et récompenses (PR 3 du chantier seed-complet, 2026-11-22) : aucune page ne les lit
 	// (file d'événements, résumés et récompenses hebdomadaires des tâches planifiées, classements
 	// et succès de Navadra jamais branchés, tentatives de défi écrites seulement), ou la base les
@@ -302,7 +302,10 @@ export const JAMAIS: readonly string[] = [
 	'game_challenge_attempts',
 	// Sans lecteur ni écrivain dans l'appli (ADR 0023 : la copie d'une fiche se recalcule à chaque
 	// ouverture), suppression prévue : rien à inventer.
-	'worksheet_instances'
+	'worksheet_instances',
+	// Invitations de cours particulier (2026-11-24) : adresses de parents réelles et liens ;
+	// pas encore de page qui les lit, à inventer avec la PR 2 si l'essai local en a besoin.
+	'private_lesson_invitations'
 ];
 
 /**
@@ -324,36 +327,39 @@ export interface Schema {
 	vues: Set<string>;
 }
 
-/** Noms et lignes du bloc `    <titre>: { … }` qui suit la ligne `debut`. */
+/**
+ * Lignes du bloc `<titre>: { … }` (deux tabulations) qui suit la ligne `debut`. Le format lu est
+ * celui que `pnpm db:types` écrit : tabulations, points-virgules, guillemets simples.
+ */
 function bloc(lignes: string[], debut: number, titre: string): string[] {
-	const ouverture = lignes.findIndex((l, i) => i > debut && l === `    ${titre}: {`);
-	const fermeture = lignes.findIndex((l, i) => i > ouverture && l === '    }');
+	const ouverture = lignes.findIndex((l, i) => i > debut && l === `\t\t${titre}: {`);
+	const fermeture = lignes.findIndex((l, i) => i > ouverture && l === '\t\t};');
 	return ouverture >= 0 && fermeture >= 0 ? lignes.slice(ouverture + 1, fermeture) : [];
 }
 
 /** Tables, liens et vues du schéma `public`, lus dans le texte de `src/lib/types/database.ts`. */
 export function lireSchema(texte: string): Schema {
 	const lignes = texte.split('\n');
-	const debutPublic = lignes.findIndex((l) => l === '  public: {');
+	const debutPublic = lignes.findIndex((l) => l === '\tpublic: {');
 	const tables = new Map<string, Lien[]>();
 	const vues = new Set<string>();
 	if (debutPublic >= 0) {
 		let liens: Lien[] = [];
 		let colonnes: string[] = [];
 		for (const ligne of bloc(lignes, debutPublic, 'Tables')) {
-			const table = /^ {6}(\w+): \{$/.exec(ligne);
+			const table = /^\t{3}(\w+): \{$/.exec(ligne);
 			if (table) {
 				liens = [];
 				tables.set(table[1], liens);
 				continue;
 			}
-			const cols = /^ {12}columns: \[(.*)\]$/.exec(ligne);
-			if (cols) colonnes = cols[1].split(',').map((c) => c.trim().replace(/"/g, ''));
-			const vers = /^ {12}referencedRelation: "(\w+)"$/.exec(ligne);
+			const cols = /^\t{6}columns: \[(.*)\];$/.exec(ligne);
+			if (cols) colonnes = cols[1].split(',').map((c) => c.trim().replace(/'/g, ''));
+			const vers = /^\t{6}referencedRelation: '(\w+)';$/.exec(ligne);
 			if (vers) liens.push({ colonnes, vers: vers[1] });
 		}
 		for (const ligne of bloc(lignes, debutPublic, 'Views')) {
-			const vue = /^ {6}(\w+): \{$/.exec(ligne);
+			const vue = /^\t{3}(\w+): \{$/.exec(ligne);
 			if (vue) vues.add(vue[1]);
 		}
 	}

@@ -12,7 +12,7 @@ Référence synthétique pour Claude : **workflow migrations**, **règle des typ
 ## Infra (EU / RGPD)
 
 - **Postgres 17** (`supabase/config.toml` → `major_version = 17`), hébergé **EU / eu-west-3** (RGPD : vraies données d'**élèves mineurs**).
-- Project ref prod : **`cnevnzsvixxpnurautls`** (cible de `db:types` et du MCP read-only). ⚠️ `config.toml` porte `project_id = "ubumaths"` — c'est le **nom local** du stack, **pas** le ref prod.
+- Project ref prod : **`cnevnzsvixxpnurautls`** (cible de `db:migrate` et du MCP read-only ; `db:types` ne lit plus la prod). ⚠️ `config.toml` porte `project_id = "ubumaths"` — c'est le **nom local** du stack, **pas** le ref prod.
 - Vercel déploie en `cdg1`. Bascule historique **us-east-2 → eu-west-3** (RGPD mineurs + latence).
 
 ---
@@ -25,7 +25,7 @@ Référence synthétique pour Claude : **workflow migrations**, **règle des typ
 | 2. Schéma **+** RLS | Mettre changement de schéma **ET** policies/triggers RLS associés **dans la même migration**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 3. Tester en local  | `pnpm test:integration [fichier]` (Docker requis ; démarre la pile de test et y joue la migration, cf. §Tests).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 4. Pousser          | **`pnpm db:migrate`** (= `supabase db push`) → applique vers la prod EU ; si `db:migrate` refuse une migration « inserted before the last migration » (plus ancienne que la dernière jouée, normal avec l'heure réelle), lancer `pnpm db:migrate --dry-run --include-all`, vérifier que la liste ne contient que des migrations mergées, puis `pnpm db:migrate --include-all`. **Uniquement depuis la branche mergée**, aux 4 conditions de CLAUDE.md (§Migrations : preuves, pas approbation) ; destructive → arrêt et explication à David.                                                                                                                                                                                                                                                                                                                                                     |
-| 5. Régénérer types  | **`pnpm db:types`** → réécrit `src/lib/types/database.ts`. Commit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 5. Régénérer types  | **`pnpm db:types`**, dans la même PR que la migration, avant d'écrire le code qui l'appelle → réécrit `src/lib/types/database.ts` et la doc des tables depuis les migrations de la branche (§Types générés). Commit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 6. Documenter       | Mettre à jour [docs/systeme/base-de-donnees.md](../systeme/base-de-donnees.md) si cluster de tables feature-level.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 **CLI Supabase** : devDependency du projet, version **exacte** dans `package.json` (2.118.0 depuis #512) — la même sur chaque poste et en CI (`nightly-integration.yml`). Aucune CLI globale (Homebrew désinstallée le 2026-09-29). Les scripts `pnpm db:*` la trouvent via `node_modules/.bin` ; pour une commande à la main : `pnpm exec supabase <commande>`, **sauf `start`, `stop` et `db reset`** : toujours `pnpm db:start`, `db:stop`, `db:reset`, qui cachent à la CLI les versions de la prod écrites dans le dossier `.temp` de `supabase/` (`scripts/pile-de-dev.sh`, cf. [environnement-de-dev.md](environnement-de-dev.md)).
@@ -38,7 +38,7 @@ pnpm db:neuf       # remise à neuf de la base de dev : reset + contenu de la pr
 pnpm db:test:stop  # pile de TEST (celle de test:integration) : l'arrêter ; db:test:reset la reconstruit
 pnpm db:a-jour     # base LOCALE : joue les migrations en attente, sans rien effacer (--essai pour voir)
 pnpm db:migrate    # supabase db push → applique migrations en attente vers EU
-pnpm db:types      # supabase gen types typescript --project-id cnevnzsvixxpnurautls --schema public > database.ts
+pnpm db:types      # database.ts + doc des tables, depuis les migrations de la BRANCHE (pile de test) ; db:types:verifier compare sans écrire
 pnpm db:status     # diagnostic : profiles manquants vs auth.users
 ```
 
@@ -76,6 +76,65 @@ import type { Profile, FriendProfile } from '#lib/types/database-helpers.ts';
 `database-helpers.ts` existe précisément pour survivre aux régénérations : tout type fait-main y vit.
 
 ---
+
+### Types générés : depuis les migrations de la branche
+
+`pnpm db:types` (`scripts/db-types/`) ne lit pas la prod. Il met la **pile de test** d'accord avec
+la branche (elle porte exactement ses migrations, `scripts/pile-de-test.sh`), y lance le générateur
+de la CLI Supabase, met le résultat en forme avec prettier, puis régénère la doc des tables. La base
+de dev ne sert pas de source : partagée par tous les worktrees, elle porte les migrations d'autres
+branches.
+
+- **Une migration et le code qui s'en sert tiennent dans la même PR** : migration, `pnpm db:types`,
+  code. `pnpm db:migrate` reste joué au merge ; `pnpm deploy:prod` refuse de livrer un commit dont
+  une migration manque en prod.
+- **Garde de la CI** (`pnpm db:types:verifier`, job « Garde SECURITY DEFINER » de `quality.yml`) :
+  la base du job est montée depuis les migrations de la PR, le fichier est régénéré et comparé.
+  Rouge = migration ajoutée sans `pnpm db:types`, ou `database.ts` retouché à la main.
+- **Limite connue** : la garde ne tourne que sur les PR. Deux PR de migration vertes chacune de son
+  côté peuvent laisser sur `main` un `database.ts` qui n'est celui d'aucune des deux ; la PR
+  suivante qui touche au schéma rougit alors : `pnpm db:types` et commit.
+- **Le fichier dépend de la version de la CLI Supabase** (son générateur) et de prettier, toutes
+  deux épinglées : une montée de version de la CLI peut le changer, et sa PR le régénère.
+
+### La prod est-elle la base que le dépôt décrit ?
+
+`database.ts` décrit les migrations du dépôt, pas la prod. Les migrations peuvent être toutes
+« jouées » et la prod différer quand même : table retouchée au Dashboard, migration modifiée après
+avoir été jouée. **`pnpm db:types:prod`** (`scripts/db-types/prod.ts`) le vérifie : il demande les
+types de la prod à Supabase (`supabase gen types --linked`, **lecture seule**, rien n'est écrit) et
+les compare au `database.ts` du dossier, ou d'un commit (`--commit <sha>`).
+
+- **Où** : sur le Mac mini, depuis le dépôt principal (le projet lié y est déclaré). GitHub n'a aucun
+  accès à la prod, et n'en aura pas. `pnpm deploy:prod` le joue avant de créer la version, sur le
+  commit à livrer : un écart arrête tout.
+- **Ce qui est comparé** : le schéma `public` — colonnes (type, obligatoire ou non), clés étrangères,
+  vues, fonctions (arguments, retour, surcharges), enums, types composites. Pas les policies, ni les
+  triggers, ni le corps des fonctions : les types ne les décrivent pas.
+- **Deux générateurs, deux écritures** : celui de la prod n'écrit pas comme celui de la CLI locale.
+  On ne compare donc pas deux textes mais deux listes « chemin → type » lues dans l'arbre
+  syntaxique (`scripts/db-types/prod-depot.ts`), une fois effacées les différences de forme connues :
+  `ComputedFields` (local seulement), `NonNullable<Json>` = `Json`, `Record<PropertyKey, never>` =
+  `never`, colonne calculée interdite à l'écriture (`never` en local).
+- **Sortie 1** : écart (les premiers de chaque famille sont nommés), ou types de la prod illisibles.
+  Un fichier où l'on ne retrouve ni table ni fonction n'est jamais pris pour « aucun écart ».
+- **Si le générateur de la prod change de forme** : le contrôle crie à l'écart sur toute la base,
+  ou dit « forme non reconnue ». `pnpm deploy:prod --sans-controle-types` livre quand même ;
+  ajouter ensuite la nouvelle différence de forme dans `prod-depot.ts`, avec son test.
+- **Ce que les types ne disent pas** : l'ordre des valeurs d'un enum, et le caractère calculé
+  (`GENERATED`) d'une colonne — la prod l'écrit comme une colonne ordinaire à valeur par défaut. Une
+  forme que le contrôle ne connaît pas (signature d'index, rubrique nouvelle) est refusée, pas
+  ignorée.
+- **Avec `--migration-apres`, `deploy:prod` ne fait pas ce contrôle** (il le dit) : la prod garde ce
+  que la migration retire. Le rejouer à la main après `pnpm db:migrate`.
+- Sur une branche qui apporte une migration pas encore jouée, l'écart est attendu.
+- **Plus strict que l'ancien fichier (lu en prod jusqu'au 2026-11-22)** : une colonne jsonb
+  `NOT NULL` est typée `NonNullable<Json>` (alias `JsonRequis`, `database-helpers.ts`), et une
+  colonne calculée par la base (`slug`, `search_vector`…) ne s'écrit plus. `toJson(valeur)` rend
+  `JsonRequis` quand `valeur` ne peut être ni `null` ni `undefined`.
+- **Deux scripts lisent `database.ts` par sa mise en forme** : `scripts/generate-db-doc.ts` (doc des
+  tables) et `scripts/db-seed-riche/regles.ts` (`lireSchema`). Leurs tests rougissent si le format
+  change.
 
 ## Lire « toutes » les lignes : le plafond de 1 000
 

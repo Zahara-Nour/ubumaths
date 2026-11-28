@@ -16,6 +16,8 @@
 	  commune (`resolveNumberLineColors`, partagée avec le PDF)
 	- Avertissements d'auteur (couleur inconnue, hex peu lisible en sombre),
 	  visibles du prof seulement (`showErrors`, ou contexte d'édition)
+	- Nombres écrits trop serrés pour la largeur (téléphone) : un sur deux, traits gardés
+	  (`thinLabels`)
 	- Largeur réelle : dessinée en px à la largeur du conteneur (pas de viewBox
 	  réduite) ; chiffres, points, traits à taille fixe, seul l'écart entre
 	  graduations se resserre (droite à placer : avertissement téléphone dans
@@ -23,6 +25,10 @@
 	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose ses points)
 	- Droite à représenter (`representer:`) : `NumberLineRepresenter.svelte` (l'élève
 	  dessine l'intervalle)
+	- Droite à graduer (`graduer:`) : `NumberLineGraduer.svelte` (l'élève partage
+	  chaque unité, puis pose ses points)
+	- Zooms (`zoom:`, outil n° 54) : une droite agrandie par zoom, `ZOOM_ROW_GAP` px sous la
+	  précédente, reliée par deux pointillés ; les points sur toutes les droites où ils tombent
 
 	@module components/markdown/nodes/NumberLine
 -->
@@ -30,6 +36,7 @@
 	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import type {
+		NumberLineConfig,
 		NumberLineNode,
 		NumberLinePoint,
 		NumberLineSegment
@@ -41,24 +48,28 @@
 		valLatex,
 		valueToX,
 		computeGraduations,
+		thinLabels,
 		computeLineExtents,
+		pointsInside,
 		resolveNumberLineColors,
 		bracketDirection,
 		bracketPoints,
-		segmentLevels
+		segmentLevels,
+		type Graduation
 	} from '#lib/ubumark/utils/number-line-render.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { readContentLocale } from '../content-locale';
 	import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
 	import NumberLineRepresenter from './NumberLineRepresenter.svelte';
+	import NumberLineGraduer from './NumberLineGraduer.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
 		node: NumberLineNode;
 		/** Montrer les avertissements d'auteur (par défaut : contexte d'édition) */
 		showErrors?: boolean;
-		/** Droite à placer dans une question : ses cases, une par point */
+		/** Droite à placer dans une question : ses cases, une par point (à graduer : les parts d'abord) */
 		answers?: BuildCase[];
 		/** Points posés SUR la droite, plus gros (droite à placer : le point de l'élève) */
 		pointsOnLine?: boolean;
@@ -90,6 +101,10 @@
 	} = NL_LAYOUT;
 
 	const SVG_HEIGHT = 120;
+	/** Écart vertical (px) entre une droite et son zoom */
+	const ZOOM_ROW_GAP = 110;
+	/** Départ d'un pointillé sous un nombre écrit (px sous le haut de l'étiquette) */
+	const LINK_BELOW_LABEL = 16;
 
 	// =========================================================================
 	// COMPUTED VALUES
@@ -105,8 +120,6 @@
 		containerWidth > 0 ? Math.max(containerWidth, NL_MIN_WIDTH) : NL_LAYOUT.SVG_WIDTH
 	);
 
-	let graduations = $derived(computeGraduations(node.config, width));
-
 	/** Couleurs sûres (variable du thème ou hex validé) et avertissements */
 	let colors = $derived(resolveNumberLineColors(node));
 
@@ -114,26 +127,89 @@
 	// POINTS
 	// =========================================================================
 
-	let renderedPoints = $derived.by(() => {
-		const xs = node.points.map((p: NumberLinePoint) =>
-			valueToX(numVal(p.value), startNum, endNum, scale, width)
+	/** Les points d'une droite (`config`) dont l'axe est à `lineY`, noms côte à côte s'ils se partagent */
+	function placePoints(points: NumberLinePoint[], config: NumberLineConfig, lineY: number) {
+		const rowStart = numVal(config.start);
+		const rowEnd = numVal(config.end);
+		const rowScale = config.scale ?? 'linear';
+		const xs = points.map((p: NumberLinePoint) =>
+			valueToX(numVal(p.value), rowStart, rowEnd, rowScale, width)
 		);
 		/** Points au même endroit : leurs noms côte à côte, centrés sur le point */
 		const sharing = (x: number) => xs.filter((other) => Math.abs(other - x) < 0.5);
-		return node.points.map((p: NumberLinePoint, i: number) => {
+		return points.map((p: NumberLinePoint, i: number) => {
 			const x = xs[i];
 			const rank = xs.slice(0, i).filter((other) => Math.abs(other - x) < 0.5).length;
 			const shift = (rank - (sharing(x).length - 1) / 2) * SHARED_LABEL_GAP;
 			return {
 				x,
 				labelX: x + shift,
-				y: pointsOnLine ? LINE_Y : LINE_Y + POINT_Y_OFFSET,
+				y: pointsOnLine ? lineY : lineY + POINT_Y_OFFSET,
 				label: p.label,
 				latex: valLatex(p.value),
-				color: colors.points[i].screen
+				// Couleur du point écrit (même point sur plusieurs droites : même couleur)
+				color: colors.points[node.points.indexOf(p)].screen
 			};
 		});
-	});
+	}
+
+	/** La graduation de `value` porte-t-elle un nombre écrit à l'écran (étiquettes éclaircies) ? */
+	function isLabeledOnScreen(
+		graduations: Graduation[],
+		config: NumberLineConfig,
+		value: number
+	): boolean {
+		const tolerance = numVal(config.step) * 0.001;
+		return graduations.some((g) => g.label !== null && Math.abs(g.value - value) < tolerance);
+	}
+
+	// =========================================================================
+	// DROITES (la principale, puis un zoom chacune plus bas)
+	// =========================================================================
+
+	let rows = $derived(
+		[node.config, ...(node.zooms ?? [])].map((config, k) => {
+			const lineY = LINE_Y + k * ZOOM_ROW_GAP;
+			const points =
+				k === 0 ? node.points : pointsInside(node.points, numVal(config.start), numVal(config.end));
+			return {
+				config,
+				lineY,
+				// Nombres écrits trop serrés pour la largeur : un sur deux (traits tous gardés)
+				graduations: thinLabels(computeGraduations(config, width)),
+				points: placePoints(points, config, lineY),
+				...computeLineExtents(k === 0 && config.arrows, width)
+			};
+		})
+	);
+
+	/** Deux pointillés par zoom : des bouts agrandis sur la droite du dessus aux bouts du zoom */
+	let zoomLinks = $derived(
+		rows.slice(1).flatMap((row, k) => {
+			const above = rows[k];
+			const aboveStart = numVal(above.config.start);
+			const aboveEnd = numVal(above.config.end);
+			const bottom = row.lineY - MAJOR_TICK_HEIGHT / 2;
+			/** Sous la graduation, ou sous son nombre écrit s'il y en a un */
+			const top = (v: NumberLineConfig['start']) =>
+				isLabeledOnScreen(above.graduations, above.config, numVal(v))
+					? above.lineY + LABEL_Y_OFFSET + LINK_BELOW_LABEL
+					: above.lineY + MAJOR_TICK_HEIGHT / 2;
+			const fromX = (v: NumberLineConfig['start']) =>
+				valueToX(numVal(v), aboveStart, aboveEnd, 'linear', width);
+			return [
+				{
+					x1: fromX(row.config.start),
+					y1: top(row.config.start),
+					x2: row.lineStartX,
+					y2: bottom
+				},
+				{ x1: fromX(row.config.end), y1: top(row.config.end), x2: row.lineEndX, y2: bottom }
+			];
+		})
+	);
+
+	let zoomCount = $derived(node.zooms?.length ?? 0);
 
 	// =========================================================================
 	// SEGMENTS
@@ -178,11 +254,13 @@
 	// HEIGHT
 	// =========================================================================
 
-	/** Les segments sont sur l'axe ou au-dessus : la hauteur ne change pas */
-	const svgHeight = SVG_HEIGHT;
+	/** Les segments sont sur l'axe ou au-dessus : seule une droite de zoom ajoute de la hauteur */
+	let svgHeight = $derived(SVG_HEIGHT + zoomCount * ZOOM_ROW_GAP);
 </script>
 
-{#if node.placer !== undefined}
+{#if node.graduer !== undefined}
+	<NumberLineGraduer {node} {answers} {showErrors} class={className} />
+{:else if node.placer !== undefined}
 	<NumberLinePlacer {node} {answers} {showErrors} class={className} />
 {:else if node.representer !== undefined}
 	<NumberLineRepresenter {node} {answers} {showErrors} class={className} />
@@ -190,19 +268,36 @@
 	<div
 		class="number-line-container {className}"
 		role="img"
-		aria-label="Droite graduée"
+		aria-label={zoomCount === 0
+			? 'Droite graduée'
+			: `Droite graduée, avec ${zoomCount} zoom${zoomCount > 1 ? 's' : ''}`}
 		bind:clientWidth={containerWidth}
 	>
 		<svg viewBox="0 0 {width} {svgHeight}" {width} height={svgHeight} class="number-line-svg">
-			<!-- Main horizontal line -->
-			<line
-				class="nl-axis"
-				x1={lineStartX}
-				y1={LINE_Y}
-				x2={lineEndX}
-				y2={LINE_Y}
-				stroke-width="1.5"
-			/>
+			<!-- Axes : la droite principale, puis ses zooms -->
+			{#each rows as row (row.lineY)}
+				<line
+					class="nl-axis"
+					x1={row.lineStartX}
+					y1={row.lineY}
+					x2={row.lineEndX}
+					y2={row.lineY}
+					stroke-width="1.5"
+				/>
+			{/each}
+
+			<!-- Zooms : deux pointillés depuis le morceau agrandi -->
+			{#each zoomLinks as link, i (i)}
+				<line
+					class="nl-zoom-link"
+					x1={link.x1}
+					y1={link.y1}
+					x2={link.x2}
+					y2={link.y2}
+					stroke-width="1"
+					stroke-dasharray="4 3"
+				/>
+			{/each}
 
 			<!-- Segments : sur l'axe, sous les flèches et les graduations -->
 			{#each renderedSegments as seg, i (i)}
@@ -244,61 +339,68 @@
 				/>
 			{/if}
 
-			<!-- Graduations -->
-			{#each graduations as grad (grad.x)}
-				{@const tickH = grad.isMajor ? MAJOR_TICK_HEIGHT : MINOR_TICK_HEIGHT}
-				<line
-					class="nl-tick"
-					x1={grad.x}
-					y1={LINE_Y - tickH / 2}
-					x2={grad.x}
-					y2={LINE_Y + tickH / 2}
-					stroke-width={grad.isMajor ? 1.5 : 1}
-				/>
+			{#each rows as row (row.lineY)}
+				<!-- Graduations -->
+				{#each row.graduations as grad (grad.x)}
+					{@const tickH = grad.isMajor ? MAJOR_TICK_HEIGHT : MINOR_TICK_HEIGHT}
+					<line
+						class="nl-tick"
+						x1={grad.x}
+						y1={row.lineY - tickH / 2}
+						x2={grad.x}
+						y2={row.lineY + tickH / 2}
+						stroke-width={grad.isMajor ? 1.5 : 1}
+					/>
 
-				<!-- Labels -->
-				{#if grad.label !== null}
-					<!-- 45 px : une fraction (23/10) en math-field en fait 42 ; 100 px de large, centrés :
-					     « 99 000 000 » en fait 64 (le CM2 gradue jusqu'aux millions), le SVG déborde -->
-					<foreignObject x={grad.x - 50} y={LINE_Y + LABEL_Y_OFFSET - 5} width="100" height="45">
-						<div class="number-line-label" class:hidden-label={grad.hidden}>
-							{#if grad.hidden}
-								<span class="hidden-mark">?</span>
-							{:else}
-								<math-field
-									read-only
-									style="font-size: 0.75rem; display: inline-block; border: none; background: transparent; min-width: 0; padding: 0;"
-								>
-									{toLocaleDecimal(grad.label, contentLocale())}
-								</math-field>
-							{/if}
+					<!-- Labels -->
+					{#if grad.label !== null}
+						<!-- 45 px : une fraction (23/10) en math-field en fait 42 ; 100 px de large, centrés :
+						     « 99 000 000 » en fait 64 (le CM2 gradue jusqu'aux millions), le SVG déborde -->
+						<foreignObject
+							x={grad.x - 50}
+							y={row.lineY + LABEL_Y_OFFSET - 5}
+							width="100"
+							height="45"
+						>
+							<div class="number-line-label" class:hidden-label={grad.hidden}>
+								{#if grad.hidden}
+									<span class="hidden-mark">?</span>
+								{:else}
+									<math-field
+										read-only
+										style="font-size: 0.75rem; display: inline-block; border: none; background: transparent; min-width: 0; padding: 0;"
+									>
+										{toLocaleDecimal(grad.label, contentLocale())}
+									</math-field>
+								{/if}
+							</div>
+						</foreignObject>
+					{/if}
+				{/each}
+
+				<!-- Points -->
+				{#each row.points as point (point.label)}
+					<!-- Point circle -->
+					<circle
+						class="nl-point"
+						cx={point.x}
+						cy={point.y}
+						r={pointsOnLine ? ON_LINE_POINT_RADIUS : POINT_RADIUS}
+						style:fill={point.color}
+						stroke-width="1.5"
+					/>
+					<!-- Point label -->
+					<foreignObject
+						x={point.labelX - 25}
+						y={point.y + POINT_LABEL_Y_OFFSET + 5}
+						width="50"
+						height="20"
+					>
+						<div class="point-label" style:color={point.color}>
+							{point.label}
 						</div>
 					</foreignObject>
-				{/if}
-			{/each}
-
-			<!-- Points -->
-			{#each renderedPoints as point (point.label)}
-				<!-- Point circle -->
-				<circle
-					class="nl-point"
-					cx={point.x}
-					cy={point.y}
-					r={pointsOnLine ? ON_LINE_POINT_RADIUS : POINT_RADIUS}
-					style:fill={point.color}
-					stroke-width="1.5"
-				/>
-				<!-- Point label -->
-				<foreignObject
-					x={point.labelX - 25}
-					y={point.y + POINT_LABEL_Y_OFFSET + 5}
-					width="50"
-					height="20"
-				>
-					<div class="point-label" style:color={point.color}>
-						{point.label}
-					</div>
-				</foreignObject>
+				{/each}
 			{/each}
 		</svg>
 	</div>
@@ -328,7 +430,8 @@
 
 	/* Habillage sur les tokens du thème (light-dark() dans app.css) */
 	.nl-axis,
-	.nl-tick {
+	.nl-tick,
+	.nl-zoom-link {
 		stroke: var(--color-foreground);
 	}
 

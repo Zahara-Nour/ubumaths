@@ -11,6 +11,7 @@ import type {
 	NumberLineValue,
 	NumberLineConfig,
 	NumberLineNode,
+	NumberLinePoint,
 	NumberLineSegment
 } from '#lib/ubumark/types/number-line.ts';
 import { resolveAuthorColor, type AuthorColor } from '#lib/theme/author-color.ts';
@@ -194,7 +195,7 @@ export function computeGraduations(
 				hidden = config.hidden.some((h) => compareNumericNodes(h.ast, matchingLabel.ast) === 0);
 				label = hidden ? '?' : valLatex(matchingLabel);
 			}
-		} else if (isMajor) {
+		} else if (isMajor && config.autoLabels !== false) {
 			label = formatAutoLabel(val);
 			const matchingHidden = config.hidden.find((hv) => Math.abs(numVal(hv) - val) < tolerance);
 			if (matchingHidden) {
@@ -208,6 +209,126 @@ export function computeGraduations(
 	}
 
 	return grads;
+}
+
+// =========================================================================
+// ÉTIQUETTES TROP SERRÉES (téléphone, écarts E63 et E82)
+// =========================================================================
+
+/*
+ * Largeurs mesurées à l'écran (encre du `math-field` des étiquettes, Safari, Chrome et Firefox) :
+ * un chiffre 8 px, « −6 » 20,5 px. Le reste est estimé à partir de ces deux mesures.
+ */
+const LABEL_DIGIT_PX = 8;
+const LABEL_MINUS_PX = 12.5;
+const LABEL_SEPARATOR_PX = 4.5;
+const LABEL_THIN_SPACE_PX = 2.7;
+/** Une commande LaTeX (`\pi`, `\sqrt`) ou un autre signe */
+const LABEL_OTHER_PX = 10;
+/** Débord du trait d'une fraction de part et d'autre de son terme le plus large */
+const LABEL_FRACTION_PAD_PX = 3;
+/** Air entre deux étiquettes voisines, en px */
+const LABEL_GAP_PX = 4;
+
+const FRACTION_PATTERN = /\\d?frac\{([^{}]*)\}\{([^{}]*)\}/;
+
+/** Largeur estimée (px) d'une étiquette de graduation écrite en LaTeX, à l'écran */
+export function estimateLabelWidth(latex: string): number {
+	let rest = latex;
+	let width = 0;
+	// Fractions : le plus large du numérateur et du dénominateur
+	for (let match = FRACTION_PATTERN.exec(rest); match; match = FRACTION_PATTERN.exec(rest)) {
+		width +=
+			Math.max(estimateLabelWidth(match[1]), estimateLabelWidth(match[2])) + LABEL_FRACTION_PAD_PX;
+		rest = rest.replace(match[0], '');
+	}
+	const thinSpaces = rest.split('\\,').length - 1;
+	width += thinSpaces * LABEL_THIN_SPACE_PX;
+	rest = rest.replaceAll('\\,', '');
+	const commands = rest.match(/\\[a-zA-Z]+/g) ?? [];
+	width += commands.length * LABEL_OTHER_PX;
+	rest = rest.replace(/\\[a-zA-Z]+/g, '').replace(/[{}\s]/g, '');
+	for (const char of rest) {
+		if (char >= '0' && char <= '9') width += LABEL_DIGIT_PX;
+		else if (char === '-' || char === '−') width += LABEL_MINUS_PX;
+		else if (char === '.' || char === ',') width += LABEL_SEPARATOR_PX;
+		else width += LABEL_OTHER_PX;
+	}
+	return width;
+}
+
+/**
+ * Une étiquette sur combien, pour que deux nombres écrits voisins ne se touchent pas (1 = toutes).
+ * La plus large des étiquettes, plus un peu d'air, doit tenir dans le plus petit écart entre deux
+ * graduations étiquetées.
+ */
+export function labelStride(graduations: readonly Graduation[]): number {
+	const labeled = graduations.filter((g) => g.label !== null);
+	if (labeled.length < 2) return 1;
+	let spacing = Infinity;
+	for (let i = 1; i < labeled.length; i++) {
+		spacing = Math.min(spacing, labeled[i].x - labeled[i - 1].x);
+	}
+	if (!(spacing > 0)) return 1;
+	const needed = Math.max(...labeled.map((g) => estimateLabelWidth(g.label ?? ''))) + LABEL_GAP_PX;
+	return Math.max(1, Math.ceil(needed / spacing - 1e-9));
+}
+
+/**
+ * Écran : les nombres écrits trop serrés pour la largeur ne sont écrits qu'une fois sur deux (ou
+ * sur trois…), tous les traits gardés. Le zéro reste écrit s'il l'était, sinon la première
+ * étiquette : le dernier nombre de la droite peut donc ne plus être écrit (de 0 à 9 : 0, 2, 4, 6, 8).
+ * Un « ? » (nombre caché, la question posée) reste toujours ; un nombre qui le toucherait est retiré.
+ * Le rythme est celui du plus petit écart : des `labels:` irréguliers ou une échelle log sont
+ * éclaircis partout dès qu'un seul écart est trop serré.
+ */
+export function thinLabels(graduations: Graduation[]): Graduation[] {
+	const stride = labelStride(graduations);
+	if (stride === 1) return graduations;
+	const labeled = graduations.filter((g) => g.label !== null);
+	const zero = labeled.findIndex((g) => Math.abs(g.value) < 1e-9);
+	const anchor = zero === -1 ? 0 : zero;
+	const hidden = labeled.filter((g) => g.hidden);
+	/** Un nombre écrit toucherait-il un « ? » voisin (gardé d'office, hors du rythme) ? */
+	const touchesHidden = (g: Graduation) =>
+		hidden.some(
+			(h) =>
+				Math.abs(h.x - g.x) <
+				(estimateLabelWidth(g.label ?? '') + estimateLabelWidth(h.label ?? '')) / 2 + LABEL_GAP_PX
+		);
+	const kept = new Set(
+		labeled.filter((g, i) => g.hidden || ((i - anchor) % stride === 0 && !touchesHidden(g)))
+	);
+	return graduations.map((g) => (g.label === null || kept.has(g) ? g : { ...g, label: null }));
+}
+
+// =========================================================================
+// ZOOMS (outil n° 54)
+// =========================================================================
+
+/** Les points qui tombent sur une droite de `startNum` à `endNum` (un zoom), bouts compris */
+export function pointsInside(
+	points: NumberLinePoint[],
+	startNum: number,
+	endNum: number
+): NumberLinePoint[] {
+	const tolerance = 1e-9 * Math.max(1, Math.abs(endNum - startNum));
+	return points.filter((p) => {
+		const v = numVal(p.value);
+		return v >= startNum - tolerance && v <= endNum + tolerance;
+	});
+}
+
+/**
+ * PDF (l'écran lit ses graduations éclaircies, `thinLabels`) :
+ * la graduation de `value` porte-t-elle un nombre écrit ? (un pointillé de zoom qui en part
+ * commence sous ce nombre, sinon il le barre)
+ */
+export function isLabeledAt(config: NumberLineConfig, value: number): boolean {
+	const tolerance = numVal(config.step) * 0.001;
+	return computeGraduations(config).some(
+		(g) => g.label !== null && Math.abs(g.value - value) < tolerance
+	);
 }
 
 // =========================================================================

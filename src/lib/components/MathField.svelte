@@ -15,9 +15,11 @@
 	const init = (node: MathfieldElement) => {
 		element = node;
 
-		//reacts
+		// Le champ suit la valeur liée, vidée comprise (L116) ; rien à écrire
+		// quand elle revient de la saisie même (le curseur ne bouge pas).
 		$effect(() => {
-			if (value) node.value = value;
+			const next = value ?? '';
+			if (node.value !== next) node.value = next;
 		});
 
 		//reacts to

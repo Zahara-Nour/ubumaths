@@ -13,7 +13,7 @@
 	import ClassificationNodePicker from '#lib/components/questions/ClassificationNodePicker.svelte';
 	import { indexNodes, type TreeNode } from '#lib/questions/classification-tree.ts';
 	import type { WorksheetClassificationView } from '#lib/types/worksheets.ts';
-	import { notionLabel } from '#lib/worksheets/worksheet-title.ts';
+	import { englishName, notionLabel } from '#lib/worksheets/worksheet-title.ts';
 
 	// ============================================================================
 	// Props
@@ -52,7 +52,13 @@
 
 	function viewOf(nodeId: string, position: number): WorksheetClassificationView {
 		const node = nodesById.get(nodeId);
-		return { node_id: nodeId, name: node?.name ?? '', kind: node?.kind, position };
+		return {
+			node_id: nodeId,
+			name: node?.name ?? '',
+			kind: node?.kind,
+			name_en: englishName(node?.translations),
+			position
+		};
 	}
 
 	function add() {

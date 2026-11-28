@@ -16,6 +16,9 @@
  * 5. Génère leur activité (./activite.ts), déclencheurs ACTIFS : l'historique
  *    des récompenses se remplit comme si l'app avait tout fait.
  *
+ * 5 bis. Copie les fichiers des compartiments publics du contenu (./images.ts) dans le
+ *    stockage local, et réécrit dans le contenu copié l'adresse de la prod en adresse locale.
+ *
  * 6. Met d'abord la base à jour de ses migrations (../db-a-jour), puis la marque
  *    « contenu de la prod » : `pnpm db:a-jour` sait alors qu'une migration de
  *    contenu déjà faite en prod n'a rien à faire ici.
@@ -26,8 +29,9 @@
  * sous le verrou Supabase : `pnpm db:seed-riche`.
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { parse } from 'dotenv';
+import { randomInt } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import pg from 'pg';
 import {
@@ -47,6 +51,20 @@ import { ECRITURE_SUIVI, planSuivi, PREFIXE_SUIVI } from './suivi';
 import { creerMoteur } from './moteur';
 import { devinetteInventee, ECRITURE_JEUX, planJeux, PREFIXE_JEUX, type Difficulte } from './jeux';
 import { memoireMathoux, type EtatPoint } from './mathoux';
+import {
+	CARACTERES_LIEN,
+	ECRITURE_ECHANGES,
+	NETTOYAGE_ECHANGES,
+	planEchanges,
+	PREFIXE_ECHANGES
+} from './echanges';
+import {
+	cheminLocal,
+	COMPARTIMENTS_COPIES,
+	fichiersATelecharger,
+	reecrireAdresses,
+	type Fichier
+} from './images';
 import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
 
@@ -221,13 +239,16 @@ async function creerEleves(db: pg.Client): Promise<number> {
 			// status explicite : le trigger crée un compte sans code « en attente » (B7).
 			// Prénom et nom : sans eux, les listes du prof affichent « Élève sans nom ». L'école est
 			// celle de la classe (classements et échanges s'arrêtent à l'école), le niveau aussi : sans
-			// lui, la chatterie et les Mathoux restent vides.
+			// lui, la chatterie et les Mathoux restent vides. Le nom complet est repris aussi : le
+			// profil créé par le déclencheur du compte n'en a pas, et l'index de recherche des messages
+			// privés l'exige de l'expéditeur.
 			`insert into public.profiles (id, email, role, full_name, status, firstname, lastname, school_id, grade)
 			 values ($1, $2, 'student', $3, 'approved', $4, $5, $6, $7)
 			 -- Délai de consentement parental renouvelé à chaque passage : échu (création il y a plus
 			 -- de 30 jours), il mettrait l'élève en lecture seule et les gardes d'écriture refuseraient
 			 -- ses parties inventées.
-			 on conflict (id) do update set status = 'approved', firstname = excluded.firstname,
+			 on conflict (id) do update set status = 'approved', full_name = excluded.full_name,
+			   firstname = excluded.firstname,
 			   lastname = excluded.lastname, school_id = excluded.school_id, grade = excluded.grade,
 			   consent_grace_period_ends = case when profiles.consent_required
 			     and profiles.consent_granted_at is null then now() + interval '30 days'
@@ -774,6 +795,175 @@ async function genererJeux(
 }
 
 /**
+ * Échanges et famille (./echanges.ts), déclencheurs ACTIFS. Puis ce que la base fait elle-même :
+ * l'accord des consentements (`grant_parental_consent`) et les échanges entre amis conclus
+ * (`execute_trade`, qui déplace les cartes). Rien n'est envoyé : aucune fonction de courriel.
+ */
+async function genererEchanges(
+	db: pg.Client,
+	activite: Awaited<ReturnType<typeof genererActivite>>,
+	jeux: Awaited<ReturnType<typeof genererJeux>>,
+	maintenant: Date
+) {
+	const ids = async (sql: string, params: unknown[] = []) =>
+		(await db.query(sql, params)).rows.map((x) => x.id as string);
+	const infos = new Map(
+		(
+			await db.query('select id, school_id, grade from public.classes where id = any($1::uuid[])', [
+				activite.classes.map((k) => k.id)
+			])
+		).rows.map((k) => [k.id as string, k as { school_id: string | null; grade: string | null }])
+	);
+	const points: Record<string, string[]> = {};
+	for (const k of activite.classes) {
+		points[k.id] = await ids(
+			`select id from public.curriculum_points where grade = $1 and archived_at is null
+			  order by id limit 12`,
+			[infos.get(k.id)?.grade ?? null]
+		);
+	}
+	const conversation = activite.plan.conversations[0];
+
+	// --- Un passage précédent est effacé d'abord : relancer ne double rien ------------------------
+	await db.query('begin');
+	const invente = `id::text like '${PREFIXE_ECHANGES}-%'`;
+	// Échanges créés par les fonctions de l'appli (ventes conclues) : sans préfixe, effacés par élève.
+	await db.query(
+		`delete from public.marketplace_trades where initiator_id::text like ${FICTIFS} or partner_id::text like ${FICTIFS}`
+	);
+	// Les tables filles partent avec leurs parents (suppression en cascade).
+	for (const table of NETTOYAGE_ECHANGES) {
+		await db.query(`delete from public."${table}" where ${invente}`);
+	}
+	await db.query(
+		`delete from public.student_carnet_opt_outs where student_id::text like ${FICTIFS}`
+	);
+	// Accords d'un passage précédent défaits : l'élève redevient soumis au consentement, délai
+	// renouvelé (comme `creerEleves`).
+	await db.query(
+		`update public.profiles set consent_granted_at = null, consent_grace_period_ends = now() + interval '30 days'
+		  where id::text like ${FICTIFS} and consent_required and consent_granted_at is not null`
+	);
+
+	const plan = planEchanges({
+		prof: PROF_LOCAL,
+		admin: ADMIN_LOCAL,
+		// Les classes sans élève fictif n'ont rien à montrer : ni annonce, ni cahier, ni marché.
+		classes: activite.classes
+			.filter((k) => k.eleves.length > 0)
+			.map((k) => ({
+				...k,
+				ecole: infos.get(k.id)?.school_id ?? null,
+				niveau: infos.get(k.id)?.grade ?? null
+			})),
+		horsClasse: `5eed0000-0000-4000-8000-0000000000${String(NB_ELEVES + 1).padStart(2, '0')}`,
+		maintenant,
+		graine: 20261124,
+		discussion: conversation
+			? {
+					conversation: conversation.id,
+					messages: activite.plan.messages
+						.filter((m) => m.conversation_id === conversation.id)
+						.map((m) => ({ id: m.id, auteur: m.sender_id, date: m.created_at }))
+				}
+			: null,
+		mains: jeux.plan.cartesProfils.map(({ student_id, vip_cards }) => ({
+			eleve: student_id,
+			cartes: Object.entries(vip_cards)
+				.filter(([, k]) => !k.usedAt && !k.activationRequestedAt)
+				.map(([instance, k]) => ({ instance, modele: String(k.cardId) }))
+		})),
+		amis: activite.plan.amities
+			.filter((a) => a.status === 'accepted')
+			.map((a) => [a.requester_id, a.addressee_id] as [string, string]),
+		soumisAuConsentement: await ids(
+			`select id from public.profiles where id::text like ${FICTIFS} and consent_required order by id`
+		),
+		points,
+		exercices: await ids('select id from public.exercises order by id limit 4'),
+		// Jetons des liens de partage au hasard cryptographique (jamais recalculables du dépôt).
+		jetonDePartage: () =>
+			Array.from({ length: 32 }, () => CARACTERES_LIEN[randomInt(CARACTERES_LIEN.length)]).join('')
+	});
+
+	// --- Écriture, dans l'ordre des liens ---------------------------------------------------------
+	// Réglages ajoutés à ceux copiés de la prod (qui n'en a pour aucune classe active).
+	for (const m of plan.marcheReglages) {
+		await db.query(
+			`insert into public.marketplace_config (id, class_id, enabled_globally, enabled_for_class,
+			   max_listings_per_student, max_trades_per_day, listing_duration_days, updated_by)
+			 values ($1, $2, $3, $4, $5, $6, $7, $8)
+			 on conflict (class_id) do update set enabled_for_class = true`,
+			[
+				m.id,
+				m.class_id,
+				m.enabled_globally,
+				m.enabled_for_class,
+				m.max_listings_per_student,
+				m.max_trades_per_day,
+				m.listing_duration_days,
+				m.updated_by
+			]
+		);
+	}
+	for (const k of plan.carnetReglages) {
+		await db.query(
+			`insert into public.class_carnet_settings (class_id, enabled, evaluation_missed_alert,
+			   overdue_reviews_days, inactivity_days, quarterly_message, updated_by)
+			 values ($1, $2, $3, $4, $5, $6, $7)
+			 on conflict (class_id) do update set enabled = true`,
+			[
+				k.class_id,
+				k.enabled,
+				k.evaluation_missed_alert,
+				k.overdue_reviews_days,
+				k.inactivity_days,
+				k.quarterly_message,
+				k.updated_by
+			]
+		);
+	}
+	for (const { partie, table, tableaux } of ECRITURE_ECHANGES) {
+		await ajouter(db, table, plan[partie], tableaux);
+	}
+
+	// Accords des parents : la fonction du lien envoyé au parent (preuve fictive).
+	for (const { jeton, ip } of plan.consentementsAccordes) {
+		const res = (
+			await db.query('select public.grant_parental_consent($1, $2::inet, $3) r', [
+				jeton,
+				ip,
+				'Navigateur fictif (base locale)'
+			])
+		).rows[0].r as { success: boolean; message?: string };
+		if (!res.success) throw new Error(`consentement refusé : ${res.message}`);
+	}
+	// Échanges entre amis conclus par la fonction de l'appli, au nom de l'initiateur.
+	for (const { echange, initiateur } of plan.echangesAConclure) {
+		await db.query(`select set_config('request.jwt.claims', $1, true)`, [
+			JSON.stringify({ sub: initiateur, role: 'authenticated' })
+		]);
+		const res = (await db.query('select public.execute_trade($1) r', [echange])).rows[0].r as {
+			success: boolean;
+			error?: string;
+		};
+		if (!res.success) throw new Error(`échange refusé : ${res.error}`);
+	}
+	// Ventes conclues : la fonction d'acceptation de l'appli (rôle service, au nom du vendeur), qui
+	// crée l'échange, le conclut et déplace carte et Gidouilles.
+	await db.query(`select set_config('request.jwt.claims', '{"role":"service_role"}', true)`);
+	for (const { proposition, vendeur } of plan.propositionsAAccepter) {
+		const res = (
+			await db.query('select public.accept_proposal_atomic($1, $2) r', [proposition, vendeur])
+		).rows[0].r as { success: boolean; error?: string };
+		if (!res.success) throw new Error(`vente refusée : ${res.error}`);
+	}
+	await db.query(`select set_config('request.jwt.claims', '', true)`);
+	await db.query('commit');
+	return { plan };
+}
+
+/**
  * Mémoire des Mathoux de chaque élève fictif qui a un niveau, chargée comme
  * `#lib/server/mathoux/collection.ts` : parcours (le niveau et ses niveaux antérieurs), points
  * tagués par un modèle publié, arbre des notions, états des points. Rend le nombre de lignes.
@@ -848,16 +1038,120 @@ async function ecrireMathoux(db: pg.Client, maintenant: Date): Promise<number> {
 	return total;
 }
 
+/** Fichiers d'un compartiment de la prod, dossiers parcourus (la liste ne descend pas seule). */
+async function fichiersDeProd(prod: SupabaseClient, compartiment: string): Promise<Fichier[]> {
+	const fichiers: Fichier[] = [];
+	const dossiers = [''];
+	while (dossiers.length > 0) {
+		const dossier = dossiers.shift() as string;
+		for (let debut = 0; ; debut += PAGE) {
+			const { data, error } = await prod.storage
+				.from(compartiment)
+				.list(dossier, { limit: PAGE, offset: debut, sortBy: { column: 'name', order: 'asc' } });
+			// Compartiment seul dans le message : un dossier peut porter l'identifiant d'un utilisateur
+			if (error) throw new Error(`liste du compartiment ${compartiment} : ${error.message}`);
+			for (const entree of data ?? []) {
+				const chemin = dossier ? `${dossier}/${entree.name}` : entree.name;
+				// Un dossier n'a ni identifiant ni métadonnées
+				if (entree.id === null) dossiers.push(chemin);
+				else if (entree.name !== '.emptyFolderPlaceholder') {
+					fichiers.push({ chemin, taille: Number(entree.metadata?.size ?? -1) });
+				}
+			}
+			if (!data || data.length < PAGE) break;
+		}
+	}
+	return fichiers;
+}
+
+/**
+ * Copie les fichiers des compartiments publics du contenu dans le stockage local. Un
+ * fichier déjà là, de même taille, n'est pas retéléchargé ; un fichier que la prod ne
+ * rend pas, ou que le stockage local refuse, est sauté et compté avec sa raison : une
+ * image ne fait jamais échouer le seed.
+ */
+async function copierImages(
+	prod: SupabaseClient,
+	local: SupabaseClient,
+	db: pg.Client,
+	correspondance: ReadonlyMap<string, string>,
+	interdits: { ids: readonly string[]; noms: readonly string[] }
+): Promise<{
+	copies: number;
+	deja: number;
+	ecartes: number;
+	sautes: { chemin: string; raison: string }[];
+}> {
+	const bilan = {
+		copies: 0,
+		deja: 0,
+		ecartes: 0,
+		sautes: [] as { chemin: string; raison: string }[]
+	};
+	for (const compartiment of COMPARTIMENTS_COPIES) {
+		const enProd: (Fichier & { source: string })[] = [];
+		for (const f of await fichiersDeProd(prod, compartiment)) {
+			const chemin = cheminLocal(f.chemin, correspondance, interdits);
+			if (chemin === null) bilan.ecartes++;
+			else enProd.push({ chemin, taille: f.taille, source: f.chemin });
+		}
+		const presents = await db.query(
+			`select name, coalesce((metadata->>'size')::bigint, -1) taille
+			   from storage.objects where bucket_id = $1`,
+			[compartiment]
+		);
+		const aCopier = fichiersATelecharger(
+			enProd,
+			presents.rows.map((r) => ({ chemin: r.name as string, taille: Number(r.taille) }))
+		);
+		bilan.deja += enProd.length - aCopier.length;
+		for (const f of aCopier) {
+			const { data, error } = await prod.storage.from(compartiment).download(f.source);
+			if (error || !data) {
+				// Chemin LOCAL dans le message : jamais d'identifiant de la prod à l'écran
+				bilan.sautes.push({
+					chemin: `${compartiment}/${f.chemin}`,
+					raison: `prod : ${error?.message ?? 'réponse vide'}`
+				});
+				continue;
+			}
+			const envoi = await local.storage
+				.from(compartiment)
+				.upload(f.chemin, data, { upsert: true, contentType: data.type || undefined });
+			if (envoi.error) {
+				bilan.sautes.push({
+					chemin: `${compartiment}/${f.chemin}`,
+					raison: `local : ${envoi.error.message}`
+				});
+				continue;
+			}
+			bilan.copies++;
+		}
+		console.log(
+			`  ${compartiment.padEnd(38)} ${String(enProd.length).padStart(5)} fichier(s), ${aCopier.length} téléchargé(s)`
+		);
+	}
+	return bilan;
+}
+
 async function main() {
 	const envProd = parse(readFileSync('.env'));
 	const envLocal = parse(readFileSync('.env.local'));
 	const source = envProd.PUBLIC_SUPABASE_URL;
 	const cle = envProd.SUPABASE_SERVICE_ROLE_KEY;
-	const cible = envLocal.PUBLIC_SUPABASE_URL;
+	// Copie isolée de la pile (ports 544xx) : son adresse, comme SEED_RICHE_PG_URL pour Postgres
+	const cible = process.env.SEED_RICHE_API_URL ?? envLocal.PUBLIC_SUPABASE_URL;
+	const cleLocale = envLocal.SUPABASE_SERVICE_ROLE_KEY;
 	const pgUrl =
 		process.env.SEED_RICHE_PG_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres';
 	verifierCibles({ source, cible, pg: pgUrl });
 	if (!cle) throw new Error('SUPABASE_SERVICE_ROLE_KEY absente de .env');
+	if (!cleLocale) throw new Error('SUPABASE_SERVICE_ROLE_KEY absente de .env.local');
+	// La clé locale ouvre le stockage où l'on écrit : celle de la prod ici serait une erreur de
+	// configuration qui permettrait d'écrire en prod par un tunnel
+	if (cleLocale === cle) {
+		throw new Error('.env.local porte la clé de service de la prod : refus d’écrire.');
+	}
 
 	const prod = createClient(source, cle, { auth: { persistSession: false } });
 
@@ -952,7 +1246,10 @@ async function main() {
 				await colonnesUtilisateur(db, table),
 				correspondance
 			);
-			const lignes = gardees.map((l, i) => neutraliser(table, remplacerIds(l, correspondance), i));
+			// Images : l'adresse de la prod devient celle du stockage local (copié plus bas)
+			const lignes = gardees.map((l, i) =>
+				neutraliser(table, reecrireAdresses(remplacerIds(l, correspondance), source, cible), i)
+			);
 			for (const ligne of lignes) {
 				const fuite = detecterFuite(ligne, interdits);
 				if (fuite) throw new Error(`${table} : une ligne contient ${fuite}. Rien n’est écrit.`);
@@ -1000,7 +1297,33 @@ async function main() {
 				`Contenu, élèves, activité et suivi sont écrits, mais les jeux sont annulés (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
 			);
 		});
+		const echanges = await genererEchanges(db, activite, jeux, new Date()).catch(
+			async (e: unknown) => {
+				await db.query('rollback').catch(() => {});
+				throw new Error(
+					`Contenu, élèves, activité, suivi et jeux sont écrits, mais les échanges sont annulés (${e instanceof Error ? e.message : String(e)}). Une ligne faite à la main en local peut bloquer : un lien de partage actif d'une classe, une séance du cahier de texte à la même date, un élève en attente à la même adresse. Relancer \`pnpm db:seed-riche\` après correction.`
+				);
+			}
+		);
+		// Fichiers des images, en dernier : contenu, élèves et activité sont déjà écrits, une
+		// image manquante ne casse qu'une image.
+		const local = createClient(cible, cleLocale, { auth: { persistSession: false } });
+		const images = await copierImages(prod, local, db, correspondance, interdits).catch(
+			(e: unknown) => {
+				throw new Error(
+					`Contenu, élèves et activité sont écrits, mais la copie des images s’est arrêtée (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` : les fichiers déjà copiés ne sont pas retéléchargés.`
+				);
+			}
+		);
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
+		console.log(
+			`✅ Images : ${images.copies} fichier(s) copié(s), ${images.deja} déjà là${images.ecartes ? `, ${images.ecartes} écarté(s) (chemin avec un identifiant de la prod)` : ''}.`
+		);
+		if (images.sautes.length > 0) {
+			// Une coupure réseau saute tout ce qui reste : on le dit, sans dérouler des centaines de lignes
+			console.log(`⚠️  ${images.sautes.length} image(s) non copiée(s), par exemple :`);
+			for (const x of images.sautes.slice(0, 5)) console.log(`     ${x.chemin} — ${x.raison}`);
+		}
 		console.log(
 			`✅ ${NB_ELEVES} élèves fictifs répartis dans ${nbClasses} classe(s), plus un hors classe : eleve01…eleve${NB_ELEVES + 1}@local.test / local-eleve`
 		);
@@ -1023,6 +1346,13 @@ async function main() {
 		const j = jeux.plan;
 		console.log(
 			`✅ Jeux : ${j.parties.length} parties de démineur (${j.succesDemineur.length} succès), ${j.partiesTournoi.length} parties de tournoi, ${j.scores2048.length} scores de 2048, ${j.scoresMathemo.length} de Mathémo, ${j.succes.length} succès, ${j.palotins.length} Palotins, ${j.cartesActivite.length} mouvements de cartes VIP, ${jeux.mathoux} Mathoux, ${jeux.decorations} décoration(s) achetée(s).`
+		);
+		const x = echanges.plan;
+		console.log(
+			`✅ Échanges : ${x.messagesPrives.length} messages privés, ${x.reactions.length} réactions, ${x.signalementsMessages.length} signalement(s) de message, ${x.restrictions.length} restriction(s), ${x.tuteurConversations.length} conversations avec le tuteur, ${x.notifications.length} annonces, ${x.annonces.length} annonces du marché, ${x.echanges.length} échanges entre amis (${x.echangesAConclure.length} conclu(s)), ${x.propositionsAAccepter.length} vente(s) conclue(s).`
+		);
+		console.log(
+			`✅ Famille et classe : ${x.consentements.length} demande(s) de consentement (${x.consentementsAccordes.length} accordée(s)), ${x.parents.length} parent(s) au carnet, ${x.enAttente.length} élève(s) en attente, ${x.seances.length} séances au cahier de texte, ${x.liensCours.length + x.liensCahier.length + x.liensExercice.length} liens de partage, ${x.cartesTaches.length} tâches, ${x.bugs.length} signalements de bug.`
 		);
 		const etat = await db.query(
 			`select (select count(*)::int from supabase_migrations.schema_migrations) migrations,

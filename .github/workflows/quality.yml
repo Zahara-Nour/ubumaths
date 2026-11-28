@@ -30,8 +30,12 @@ on:
 # chaque commit de main garde son verdict, pour qu'un rouge se rattache au bon
 # merge (5 runs de main annulés du 8 au 9/10) et que `pnpm deploy:prod` trouve le
 # dernier commit vert.
+# Un commit de version (`chore(release): …`, poussé par `pnpm deploy:prod`) a son
+# PROPRE groupe : sa CI complète tourne à côté de la CI allégée du merge qui le
+# précède, au lieu d'attendre derrière elle (~6 min). deploy:prod n'attend plus
+# cette CI allégée : celle de la version la couvre (2026-11-23).
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: "ci-${{ github.workflow }}-${{ github.ref }}${{ startsWith(github.event.head_commit.message, 'chore(release): ') && format('-version-{0}', github.sha) || '' }}"
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
@@ -125,14 +129,23 @@ jobs:
 
       # Cache prettier, stratégie `content` (un checkout réécrit les dates) : seuls
       # les fichiers modifiés sont revérifiés. Sans cache : 162 s sur les 220 s du
-      # job (run du 2026-10-09). Même schéma de clés que le cache ESLint plus bas.
+      # job (run du 2026-10-09). La clé porte les versions de Prettier, de ses
+      # plugins et de Tailwind (scripts/ci-cle-prettier.sh), pas l'empreinte du
+      # lockfile entier : toute mise à jour de dépendance la changeait, et la
+      # première CI de chaque PR repartait à froid (~270 s, 2026-11-23). Une PR
+      # ne restaure que son propre cache ou celui de main : lint-nocturne.yml
+      # l'enregistre sur main chaque nuit, sous la même clé.
+      - name: Clé du cache Prettier
+        id: prettier-cle
+        run: echo "versions=$(bash scripts/ci-cle-prettier.sh)" >> "$GITHUB_OUTPUT"
+
       - name: Restore Prettier cache
         uses: actions/cache@v6
         with:
           path: .prettier-cache
-          key: prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-${{ github.sha }}
+          key: prettier-${{ runner.os }}-${{ steps.prettier-cle.outputs.versions }}-${{ hashFiles('.prettierrc', '.prettierignore') }}-${{ github.sha }}
           restore-keys: |
-            prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-
+            prettier-${{ runner.os }}-${{ steps.prettier-cle.outputs.versions }}-${{ hashFiles('.prettierrc', '.prettierignore') }}-
 
       - name: Run Prettier check
         run: pnpm prettier --check . --cache --cache-strategy content --cache-location .prettier-cache
@@ -369,6 +382,38 @@ jobs:
           fi
           echo "::notice::light-dark() intact dans le CSS construit"
 
+      # Le bouton « signaler » et sa route n'existent que sur le serveur de dev
+      # (docs/pratiques/signaler-depuis-la-page.md) : ni le composant ni l'adresse de la
+      # route ne doivent se retrouver dans le build, client comme serveur.
+      - name: Bouton signaler absent du build
+        run: |
+          if [ ! -d .svelte-kit/output/client ] || [ ! -d .svelte-kit/output/server ]; then
+            echo "::error::Sortie du build introuvable (.svelte-kit/output) : la garde ne vérifie rien."
+            exit 1
+          fi
+          bad=$(grep -rlE -- '__dev/retours|signaler-dev|__devFeedbackBuffer' .svelte-kit/output || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Le bouton « signaler » du serveur de dev est dans le build : $bad"
+            exit 1
+          fi
+          echo "::notice::Bouton « signaler » absent du build"
+
+      # Les boutons de connexion aux comptes fictifs et la liste de ces comptes
+      # (src/lib/dev/local-accounts.ts) ne vivent que sur le serveur de dev
+      # (docs/pratiques/tester-sur-un-autre-appareil.md).
+      - name: Comptes fictifs absents du build
+        run: |
+          if [ ! -d .svelte-kit/output/client ] || [ ! -d .svelte-kit/output/server ]; then
+            echo "::error::Sortie du build introuvable (.svelte-kit/output) : la garde ne vérifie rien."
+            exit 1
+          fi
+          bad=$(grep -rlE -- 'comptes-fictifs-dev|local-teacher|local-eleve|local-admin|local-student' .svelte-kit/output || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Les comptes fictifs du serveur de dev sont dans le build : $bad"
+            exit 1
+          fi
+          echo "::notice::Comptes fictifs absents du build"
+
   # Server tests (node env): the real regression gate — fast, deterministic,
   # no browser. Sharded for parallelism.
   # PR de contenu : les 4 jobs restent (checks exigés par la protection de main),
@@ -558,6 +603,8 @@ jobs:
   # d'intégration complète (qui reste dans nightly-integration.yml).
   # Pas de filtre de chemins : un check obligatoire qui ne tourne pas bloque la PR.
   # Local : `pnpm test:definer-guard` (démarre la pile de test, scripts/pile-de-test.sh).
+  # Le même job vérifie que `database.ts` est celui que les migrations produisent
+  # (`pnpm db:types:verifier`) : la base est déjà là, migrations appliquées.
   definer-guard:
     name: Garde SECURITY DEFINER
     needs: version
@@ -598,7 +645,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: /tmp/supabase-db-images.tar.zst
-          key: supabase-db-images-v1-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
+          key: supabase-db-images-v2-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
 
       - name: Load Supabase DB images
         if: steps.supabase-images.outputs.cache-hit == 'true'
@@ -606,6 +653,15 @@ jobs:
 
       - name: Start Postgres only (applies migrations)
         run: pnpm exec supabase db start
+
+      # `src/lib/types/database.ts` est généré depuis les migrations du dépôt
+      # (`pnpm db:types`), plus depuis la prod. La base de ce job porte exactement
+      # les migrations de la PR : on régénère et on compare. Rouge = migration
+      # ajoutée sans `pnpm db:types`, ou fichier retouché à la main.
+      # Avant la sauvegarde des images : le générateur (postgres-meta) est tiré
+      # ici, et doit entrer dans le cache comme les autres (quota de public.ecr.aws).
+      - name: Types de la base à jour (database.ts = migrations)
+        run: pnpm db:types:verifier
 
       - name: Save Supabase DB images
         if: steps.supabase-images.outputs.cache-hit != 'true'
@@ -624,7 +680,10 @@ jobs:
           path: /tmp/supabase-db-images.tar.zst
           key: ${{ steps.supabase-images.outputs.cache-primary-key }}
 
+      # `!cancelled()` : des types périmés (étape plus haut) ne doivent pas cacher
+      # un défaut de la garde dans le même tour de CI.
       - name: Run the SECURITY DEFINER guard
+        if: ${{ !cancelled() }}
         run: pnpm test:definer-guard
 
       - name: Stop Supabase

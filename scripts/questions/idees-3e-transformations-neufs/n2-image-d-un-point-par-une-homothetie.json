@@ -1,0 +1,446 @@
+{
+	"id": "a5e70b85-33a5-4499-989d-2d1bf674cd4f",
+	"rangement": {
+		"noeud": "Géométrie > Homothéties",
+		"point": null
+	},
+	"title": "L'image d'un point par une homothétie",
+	"description": "Sur quadrillage, placer l'image d'un point par une homothétie de rapport 2 ou 3, 1/2, −1 ou −2, puis l'image d'un segment ; dans un repère, l'image d'un point donné par ses coordonnées.",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le point $A'$, image du point $A$ par l'homothétie de centre $O$ et de rapport ${{k}}$.\n\n```figure-a-completer\nfenetre: 0 ; 16 ; 0 ; 16\ngrille: 1\noutils: point\nverifier: point A' = homothetie(A, centre=O, rapport={{k}})\n---\nO = point(8, 8, etiquette=\"bas-gauche\")\nA = point(8+{{dx}}, 8+{{dy}}, etiquette=\"droite\")\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3"
+				},
+				{
+					"name": "dx",
+					"expression": "-3..3"
+				},
+				{
+					"name": "dy",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": ["dx*dx + dy*dy > 1", "abs(k*dx) <= 7", "abs(k*dy) <= 7"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, on se déplace de ${{dx}}$ carreaux à l'horizontale et de ${{dy}}$ à la verticale (positif : vers la droite ou vers le haut).",
+					"Une homothétie de centre $O$ et de rapport ${{k}}$ multiplie ce déplacement par ${{k}}$ : de $O$ à $A'$, ${{eval:(k)*dx;d}}$ à l'horizontale et ${{eval:(k)*dy;d}}$ à la verticale. $A'$ est sur la droite $(OA)$, du même côté de $O$ que $A$ : c'est le point $\\textcolor{{{color:primary.0}}}{A'}$."
+				]
+			},
+			"hint": "A' est sur la demi-droite [OA), et OA' = {{k}} × OA : compte les carreaux de O à A, puis {{k}} fois plus depuis O."
+		},
+		{
+			"statement": "Place le point $A'$, image du point $A$ par l'homothétie de centre $O$ et de rapport $\\dfrac{1}{2}$.\n\n```figure-a-completer\nfenetre: 0 ; 16 ; 0 ; 16\ngrille: 1\noutils: point\nverifier: point A' = homothetie(A, centre=O, rapport=0.5)\n---\nO = point(8, 8, etiquette=\"bas-gauche\")\nA = point(8+{{dx}}, 8+{{dy}}, etiquette=\"droite\")\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "dx",
+					"expression": "eval:2*a"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:2*b"
+				}
+			],
+			"conditions": ["a*a + b*b > 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, on se déplace de ${{dx}}$ carreaux à l'horizontale et de ${{dy}}$ à la verticale (positif : vers la droite ou vers le haut).",
+					"Une homothétie de rapport $\\dfrac{1}{2}$ divise ce déplacement par $2$ : de $O$ à $A'$, ${{a}}$ à l'horizontale et ${{b}}$ à la verticale. $A'$ est le **milieu** de $[OA]$ : c'est une réduction. C'est le point $\\textcolor{{{color:primary.0}}}{A'}$."
+				]
+			},
+			"hint": "Le rapport est inférieur à 1 : A' est entre O et A, et OA' = OA ÷ 2."
+		},
+		{
+			"statement": "Place le point $A'$, image du point $A$ par l'homothétie de centre $O$ et de rapport ${{k}}$.\n\n```figure-a-completer\nfenetre: 0 ; 16 ; 0 ; 16\ngrille: 1\noutils: point\nverifier: point A' = homothetie(A, centre=O, rapport={{k}})\n---\nO = point(8, 8, etiquette=\"bas-gauche\")\nA = point(8+{{dx}}, 8+{{dy}}, etiquette=\"droite\")\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-1|-2"
+				},
+				{
+					"name": "dx",
+					"expression": "-3..3"
+				},
+				{
+					"name": "dy",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": ["dx*dx + dy*dy > 1", "abs(k*dx) <= 7", "abs(k*dy) <= 7"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, on se déplace de ${{dx}}$ carreaux à l'horizontale et de ${{dy}}$ à la verticale (positif : vers la droite ou vers le haut).",
+					"Une homothétie de centre $O$ et de rapport ${{k}}$ multiplie ce déplacement par ${{k}}$ : de $O$ à $A'$, ${{eval:(k)*dx;d}}$ à l'horizontale et ${{eval:(k)*dy;d}}$ à la verticale. $A'$ est sur la droite $(OA)$, de l'autre côté de $O$ (le rapport est négatif) : c'est le point $\\textcolor{{{color:primary.0}}}{A'}$."
+				]
+			},
+			"hint": "Le rapport est négatif : A' est sur la droite (OA), mais de l'autre côté de O. Ensuite, OA' = {{eval:-k}} × OA."
+		},
+		{
+			"statement": "Place les points $A'$ et $B'$, images des extrémités du segment $[AB]$ par l'homothétie de centre $O$ et de rapport ${{k}}$.\n\n```figure-a-completer\nfenetre: 0 ; 16 ; 0 ; 16\ngrille: 1\noutils: point\nverifier: point A' = homothetie(A, centre=O, rapport={{k}})\nverifier: point B' = homothetie(B, centre=O, rapport={{k}})\n---\nO = point(8, 8, etiquette=\"bas-gauche\")\nA = point(8+{{dx}}, 8+{{dy}}, etiquette=\"bas\")\nB = point(8+{{ex}}, 8+{{ey}}, etiquette=\"haut\")\nsegment(A, B)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|-2"
+				},
+				{
+					"name": "dx",
+					"expression": "-3..3"
+				},
+				{
+					"name": "dy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ex",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ey",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": [
+				"dx*dx + dy*dy > 1",
+				"ex*ex + ey*ey > 1",
+				"(ex-dx)*(ex-dx) + (ey-dy)*(ey-dy) > 1",
+				"dx*ey != dy*ex"
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On construit l'image de chaque extrémité : de $O$ à $A$, $({{dx}} ; {{dy}})$ carreaux, donc de $O$ à $A'$, $({{eval:k*dx}} ; {{eval:k*dy}})$ ; de $O$ à $B$, $({{ex}} ; {{ey}})$, donc de $O$ à $B'$, $({{eval:k*ex}} ; {{eval:k*ey}})$.",
+					"L'image du segment $[AB]$ est le segment $\\textcolor{{{color:primary.0}}}{[A'B']}$, parallèle à $[AB]$ et ${{eval:abs(k)}}$ fois plus long."
+				]
+			},
+			"hint": "Construis séparément l'image de A, puis celle de B : chacune est sur la droite qui la relie à O."
+		},
+		{
+			"statement": "Dans le repère, on donne les points $O({{xo}} ; {{yo}})$ et $A({{xa}} ; {{ya}})$. Place le point $B$, image de $A$ par l'homothétie de centre $O$ et de rapport ${{if:2*k==1|\\dfrac{1}{2}|{{eval:k;d}}}}$.\n\n```courbe\nx: -8 ; 8\ny: -8 ; 8\ngrille: 1 ; 1\nplacer: B=({{eval:xo+k*(xa-xo)}} ; {{eval:yo+k*(ya-yo)}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −8 à 8 sur chaque axe.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|-2|0.5|1.5"
+				},
+				{
+					"name": "xo",
+					"expression": "-3..3"
+				},
+				{
+					"name": "yo",
+					"expression": "-3..3"
+				},
+				{
+					"name": "m",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n",
+					"expression": "-2..2"
+				},
+				{
+					"name": "xa",
+					"expression": "eval:xo+2*m"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:yo+2*n"
+				}
+			],
+			"conditions": [
+				"m*m + n*n > 0",
+				"abs(xo+k*(xa-xo)) <= 8",
+				"abs(yo+k*(ya-yo)) <= 8",
+				"abs(xa) <= 8",
+				"abs(ya) <= 8",
+				"xo != 0"
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"De $O$ à $A$, l'abscisse change de ${{eval:xa-xo}}$ et l'ordonnée de ${{eval:ya-yo}}$.",
+					"L'homothétie de rapport ${{if:2*k==1|\\dfrac{1}{2}|{{eval:k;d}}}}$ multiplie ce déplacement par ${{if:2*k==1|\\dfrac{1}{2}|{{eval:k;d}}}}$ : de $O$ à $B$, $({{eval:k*(xa-xo);d}} ; {{eval:k*(ya-yo);d}})$. Donc $\\textcolor{{{color:primary.0}}}{B({{eval:xo+k*(xa-xo)}} ; {{eval:yo+k*(ya-yo)}})}$."
+				]
+			},
+			"hint": "Compte le déplacement de O à A, multiplie-le par le rapport, et pars de O (pas de A)."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 k=2, A(10;9) : A'(12;10)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"dx": "2",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(12;10)"]
+		},
+		{
+			"description": "v0 k=3, A(9;7) : A'(11;5)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"dx": "1",
+				"dy": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(11;5)"]
+		},
+		{
+			"description": "v0 : k fois OA compté depuis A (14;11)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"dx": "2",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(14;11)"]
+		},
+		{
+			"description": "v0 : mauvais côté de O (4;6)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"dx": "2",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(4;6)"]
+		},
+		{
+			"description": "v1 A(12;6) : A'(10;7)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"dx": "4",
+				"dy": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(10;7)"]
+		},
+		{
+			"description": "v1 : rapport 2 au lieu de 1/2 (16;4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"dx": "4",
+				"dy": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(16;4)"]
+		},
+		{
+			"description": "v1 : mauvais côté de O (6;9)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"dx": "4",
+				"dy": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(6;9)"]
+		},
+		{
+			"description": "v2 k=-2, A(10;9) : A'(4;6)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"dx": "2",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(4;6)"]
+		},
+		{
+			"description": "v2 k=-1, A(10;9) : A'(6;7)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-1",
+				"dx": "2",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(6;7)"]
+		},
+		{
+			"description": "v2 : signe oublié (12;10)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"dx": "2",
+				"dy": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(12;10)"]
+		},
+		{
+			"description": "v2 : rapport -1/2 (7;7)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"dx": "2",
+				"dy": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(7;7)"]
+		},
+		{
+			"description": "v3 k=2 : A'(12;10), B'(6;14)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"dx": "2",
+				"dy": "1",
+				"ex": "-1",
+				"ey": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["point(12;10)|point(6;14)"]
+		},
+		{
+			"description": "v3 : k=2 au lieu de -2",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-2",
+				"dx": "2",
+				"dy": "1",
+				"ex": "-1",
+				"ey": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(12;10)|point(6;14)"]
+		},
+		{
+			"description": "v3 : segment glissé (translation de A vers A')",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"dx": "2",
+				"dy": "1",
+				"ex": "-1",
+				"ey": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["point(12;10)|point(9;12)"]
+		},
+		{
+			"description": "v4 k=2, O(1;-1), A(3;1) : A'(5;3)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"xo": "1",
+				"yo": "-1",
+				"m": "1",
+				"n": "1",
+				"xa": "3",
+				"ya": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5;3"]
+		},
+		{
+			"description": "v4 : centre pris à l'origine (6;2)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"xo": "1",
+				"yo": "-1",
+				"m": "1",
+				"n": "1",
+				"xa": "3",
+				"ya": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6;2"]
+		},
+		{
+			"description": "v4 : k fois OA compté depuis A (7;5)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"xo": "1",
+				"yo": "-1",
+				"m": "1",
+				"n": "1",
+				"xa": "3",
+				"ya": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7;5"]
+		},
+		{
+			"description": "v4 k=1,5, O(1;-1), A(5;3) : A'(7;5)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1.5",
+				"xo": "1",
+				"yo": "-1",
+				"m": "2",
+				"n": "2",
+				"xa": "5",
+				"ya": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7;5"]
+		}
+	]
+}

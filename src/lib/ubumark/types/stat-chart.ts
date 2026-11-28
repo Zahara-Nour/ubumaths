@@ -447,6 +447,13 @@ export interface StatChartSpec {
 	 * (`axis` reste null : l'axe a 10 graduations sans nombres)
 	 */
 	chooseScale?: boolean;
+	/**
+	 * Barres : `solution: oui` (avec `placer:`, sans `case:`) : les rangs des barres
+	 * à construire, dessinées en vert à l'écran comme au PDF ; `toPlace` est alors
+	 * null (rien à faire), l'axe à choisir remplacé par le juste (corrigé imprimé
+	 * d'une série d'automatismes, V109). Absent ailleurs.
+	 */
+	solvedBars?: number[];
 }
 
 /** Axe vertical d'un diagramme en barres, de 0 à `max`, gradué de `step` en `step` */

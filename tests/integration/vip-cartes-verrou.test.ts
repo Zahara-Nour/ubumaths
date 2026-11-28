@@ -165,7 +165,7 @@ function instance(cardId: string, extra: Partial<Instance> = {}): Instance {
 async function poserInventaire(id: string, cartes: Inventaire): Promise<void> {
 	const { error } = await service
 		.from('profiles')
-		.update({ vip_cards: cartes as unknown as Json, vip_cards_history: {} })
+		.update({ vip_cards: cartes as unknown as NonNullable<Json>, vip_cards_history: {} })
 		.eq('id', id);
 	if (error) throw new Error(error.message);
 }
@@ -581,7 +581,7 @@ describe('(b) vip_cards et vip_cards_history non modifiables directement', () =>
 		const forge = { [crypto.randomUUID()]: instance(T_CIBLE) };
 		const { error } = await acteur()
 			.from('profiles')
-			.update({ vip_cards: forge as unknown as Json })
+			.update({ vip_cards: forge as unknown as NonNullable<Json> })
 			.eq('id', eleveId);
 		expect(error?.code).toBe('42501');
 		expect(Object.keys((await lireProfil(eleveId)).cartes)).toEqual([inst]);

@@ -323,7 +323,7 @@ export interface ResolvedExercise {
 	/** Hints from the selected variation */
 	hints?: ExerciseHint[];
 	/**
-	 * Lettres que l'exercice déclare comme fonctions (`exercises.generic_functions`).
+	 * Lettres que l'exercice déclare comme fonctions (`generic_functions` de sa version, `exercise_versions`).
 	 * Absent : défauts du parseur. Sans elles, `C'(x)` s'imprime en erreur dans le PDF.
 	 * Les instances stockées avant l'ajout du champ ne l'ont pas.
 	 */
@@ -385,6 +385,10 @@ export interface WorksheetClassificationView {
 	kind?: string;
 	/** Nom de la branche de la notion, pour le titre (ADR 0041) ; absent : non lu */
 	branch?: string | null;
+	/** Nom anglais de la notion (ADR 0043) ; `null` : pas traduite ; absent : non lu */
+	name_en?: string | null;
+	/** Nom anglais de sa branche (ADR 0043) ; `null` : pas traduite ; absent : non lu */
+	branch_en?: string | null;
 	position: number;
 }
 

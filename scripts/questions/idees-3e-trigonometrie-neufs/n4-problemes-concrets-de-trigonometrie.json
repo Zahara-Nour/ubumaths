@@ -1,0 +1,859 @@
+{
+	"id": "2fd12448-b61c-4345-86f1-3df7a8222464",
+	"rangement": {
+		"noeud": "Géométrie > Trigonométrie du triangle rectangle",
+		"point": "3-061"
+	},
+	"title": "Problèmes concrets de trigonométrie",
+	"description": "Largeur d'une rivière vue sous deux angles, rayon et longueur d'un parallèle terrestre, hauteur d'un arbre (avec la hauteur de l'œil), falaise vue de deux points, triangle rectangle inscrit dans un autre, terrain en pente et surcoût",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pour mesurer la largeur d'une rivière, Inès se place en $A$, à {{d}} m du point $B$ de la rive. Les points $B$, $C$ et $S$ sont alignés, perpendiculairement aux rives : $C$ est au bord de la rive proche, $S$ est un arbre sur la rive d'en face, et $(AB) \\perp (BS)$. Elle mesure $\\widehat{BAC} = {{a}}^{\\circ}$ et $\\widehat{BAS} = {{b}}^{\\circ}$. Garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.\n\n```figure\nfenetre: 0 ; 7 ; 0 ; {{eval:round(10*(1.7+4*tan(b*\\pi/180)))/10;d}}\ndescription: Vue de dessus : la rivière entre deux rives parallèles ; B, C, S alignés perpendiculairement aux rives ; A sur la rive, (AB) perpendiculaire à (BS).\n---\nB = point(1.5, 1, etiquette=\"bas-gauche\")\nA = point(5.5, 1, etiquette=\"bas-droite\")\nC = point(1.5, 1+4*tan({{a}}), etiquette=\"gauche\")\nS = point(1.5, 1+4*tan({{b}}), etiquette=\"haut-gauche\")\nR1 = point(0, 1+4*tan({{a}}), visible=faux)\nR2 = point(7, 1+4*tan({{a}}), visible=faux)\nR3 = point(0, 1+4*tan({{b}}), visible=faux)\nR4 = point(7, 1+4*tan({{b}}), visible=faux)\nsegment(R1, R2, couleur=\"bleu\")\nsegment(R3, R4, couleur=\"bleu\")\ntexte(5, 1+2*tan({{a}})+2*tan({{b}}), \"rivière\")\nsegment(A, B)\nsegment(B, S)\nsegment(A, C)\nsegment(A, S)\nangle(A, B, S, marque=\"carre\")\nangle(C, A, B)\nangle(S, A, B)\n```\n\nLa distance $BC$, arrondie au mètre : $BC \\approx ?~\\unit{m}$\n\nLa largeur $CS$ de la rivière, arrondie au mètre : $CS \\approx ?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "20..60"
+				},
+				{
+					"name": "a",
+					"expression": "20..40"
+				},
+				{
+					"name": "ec",
+					"expression": "10..25"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+ec"
+				}
+			],
+			"conditions": [
+				"b <= 60",
+				"abs(1*(d*tan(a*\\pi/180)) - round(1*(d*tan(a*\\pi/180)))) < 0.4",
+				"abs(1*(d*tan(b*\\pi/180) - d*tan(a*\\pi/180)) - round(1*(d*tan(b*\\pi/180) - d*tan(a*\\pi/180)))) < 0.4",
+				"round(d*tan(a*\\pi/180)) != round(d*sin(a*\\pi/180))",
+				"round(d*tan(a*\\pi/180)) != round(d/tan(a*\\pi/180))",
+				"round(d*sin(a*\\pi/180)) != round(d/tan(a*\\pi/180))",
+				"round(d*tan(b*\\pi/180) - d*tan(a*\\pi/180)) != round(d*tan(b*\\pi/180) + d*tan(a*\\pi/180))",
+				"round(d*tan(b*\\pi/180) - d*tan(a*\\pi/180)) != round(d*tan(b*\\pi/180))",
+				"round(d*tan(b*\\pi/180) + d*tan(a*\\pi/180)) != round(d*tan(b*\\pi/180))",
+				"round(d*tan(b*\\pi/180)) - round(d*tan(a*\\pi/180)) != round(d*tan(b*\\pi/180))",
+				"round(d*tan(b*\\pi/180)) - round(d*tan(a*\\pi/180)) != round(d*tan(b*\\pi/180) + d*tan(a*\\pi/180))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(d*tan(a*\\pi/180))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(d*sin(a*\\pi/180))}}",
+							"message": "Dans le triangle rectangle, les deux côtés de l'angle droit sont reliés par la **tangente** : le sinus fait intervenir l'hypoténuse.",
+							"label": "Sinus au lieu de la tangente"
+						},
+						{
+							"answer": "{{eval:round(d/tan(a*\\pi/180))}}",
+							"message": "La longueur cherchée est le côté **opposé** à l'angle, au numérateur de la tangente : on multiplie, on ne divise pas.",
+							"label": "Division au lieu de multiplication"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(d*tan(b*\\pi/180) - d*tan(a*\\pi/180))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(d*tan(b*\\pi/180) + d*tan(a*\\pi/180))}}",
+							"message": "BS et BC partent tous les deux de B : la largeur CS est leur **différence**, pas leur somme.",
+							"label": "Somme au lieu de différence"
+						},
+						{
+							"answer": "{{eval:round(d*tan(b*\\pi/180))}}",
+							"message": "Tu as calculé BS, de B jusqu'à l'arbre : la largeur de la rivière est CS = BS − BC.",
+							"label": "BS au lieu de CS"
+						},
+						{
+							"answer": "{{eval:round(d*tan(b*\\pi/180)) - round(d*tan(a*\\pi/180))}}",
+							"message": "Tu as arrondi un résultat intermédiaire : garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.",
+							"label": "Arrondi trop tôt"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $ABC$ rectangle en $B$ : $$\\tan\\widehat{BAC} = \\dfrac{BC}{AB} \\quad\\text{donc}\\quad BC = {{d}} \\times \\tan({{a}}^{\\circ}) \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(d*tan(a*\\pi/180))}}~\\unit{m}}$$",
+					"De même, dans le triangle $ABS$ rectangle en $B$ : $$BS = {{d}} \\times \\tan({{b}}^{\\circ})$$",
+					"La largeur de la rivière : $$CS = BS - BC = {{d}} \\times \\tan({{b}}^{\\circ}) - {{d}} \\times \\tan({{a}}^{\\circ}) \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(d*tan(b*\\pi/180) - d*tan(a*\\pi/180))}}~\\unit{m}}$$"
+				]
+			},
+			"hint": "Les triangles $ABC$ et $ABS$ sont rectangles en $B$ et ont le côté $[AB]$ en commun : la tangente de chaque angle en $A$ donne $BC$ et $BS$."
+		},
+		{
+			"statement": "On représente la Terre par une sphère de centre $O$ et de rayon $6\\,371~\\unit{km}$. Ci-dessous, sa coupe par le plan qui contient l'axe des pôles $[NS]$ et une ville $P$. La latitude de $P$ est $\\widehat{EOP} = {{l}}^{\\circ}$. $H$ est le centre du parallèle de $P$ : $(HP)$ est perpendiculaire à l'axe des pôles, donc parallèle à $(OE)$, et $\\widehat{OPH} = \\widehat{EOP}$. Garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 8\ndescription: Coupe de la Terre : cercle de centre O, axe des pôles [NS], équateur, point P du cercle, H sur l'axe des pôles avec (HP) perpendiculaire à l'axe.\n---\nO = point(4, 4, etiquette=\"bas-gauche\")\ncercle(O, rayon=3.2)\nN = point(O, longueur=3.2, angle=90, etiquette=\"haut\")\nS = point(O, longueur=3.2, angle=-90, etiquette=\"bas\")\nE = point(O, longueur=3.2, angle=0, etiquette=\"droite\")\nW = point(O, longueur=3.2, angle=180, visible=faux)\nP = point(O, longueur=3.2, angle={{l}}, etiquette=\"haut-droite\")\nH = point(O, longueur=3.2*sin({{l}}), angle=90, etiquette=\"gauche\")\nsegment(N, S)\nsegment(W, E, trait=\"tirets\")\nsegment(O, P)\nsegment(H, P)\nangle(O, H, P, marque=\"carre\")\nangle(E, O, P)\nangle(H, P, O)\n```\n\nLe rayon $HP$ du parallèle, arrondi au kilomètre : $HP \\approx ?~\\unit{km}$\n\nLa longueur du parallèle de $P$, arrondie au kilomètre : $\\approx ?~\\unit{km}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "20..70"
+				}
+			],
+			"conditions": [
+				"abs(1*(6371*cos(l*\\pi/180)) - round(1*(6371*cos(l*\\pi/180)))) < 0.4",
+				"abs(1*(2*\\pi*6371*cos(l*\\pi/180)) - round(1*(2*\\pi*6371*cos(l*\\pi/180)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(6371*cos(l*\\pi/180))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(6371*sin(l*\\pi/180))}}",
+							"message": "Dans le triangle OHP rectangle en H, [HP] est le côté **adjacent** à l'angle OPH : c'est le cosinus, pas le sinus.",
+							"label": "Sinus au lieu du cosinus"
+						},
+						{
+							"answer": "{{eval:round(6371/cos(l*\\pi/180))}}",
+							"message": "HP est au **numérateur** du cosinus (HP ÷ OP) : on multiplie le rayon par le cosinus, on ne divise pas.",
+							"label": "Division au lieu de multiplication"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(2*\\pi*6371*cos(l*\\pi/180))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(2*\\pi*6371)}}",
+							"message": "Le parallèle de P est un cercle de rayon **HP**, pas de rayon 6 371 km : ce serait la longueur de l'équateur.",
+							"label": "Rayon de la Terre"
+						},
+						{
+							"answer": "{{eval:round(\\pi*6371*cos(l*\\pi/180))}}",
+							"message": "La longueur d'un cercle de rayon r est 2 × π × r : tu as oublié le facteur 2.",
+							"label": "Facteur 2 oublié"
+						},
+						{
+							"answer": "{{eval:round(2*\\pi*round(6371*cos(l*\\pi/180)))}}",
+							"message": "Tu as arrondi un résultat intermédiaire : garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.",
+							"label": "Arrondi trop tôt"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $OHP$ rectangle en $H$, l'hypoténuse est $[OP]$ (un rayon de la Terre) : $$\\cos\\widehat{OPH} = \\dfrac{HP}{OP} \\quad\\text{donc}\\quad HP = 6\\,371 \\times \\cos({{l}}^{\\circ}) \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(6371*cos(l*\\pi/180))}}~\\unit{km}}$$",
+					"Le parallèle est un cercle de rayon $HP$ : $$2 \\times \\pi \\times HP \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(2*\\pi*6371*cos(l*\\pi/180))}}~\\unit{km}}$$"
+				]
+			},
+			"hint": "Repère le triangle rectangle $OHP$ : son hypoténuse est un rayon de la Terre, et $[HP]$ est le côté adjacent à l'angle $\\widehat{OPH}$."
+		},
+		{
+			"statement": "Pour estimer la hauteur d'un arbre, Malo se place à {{d}} m de son pied. Ses yeux sont à ${{eval:oe;d}}~\\unit{m}$ du sol, et il voit le sommet $S$ de l'arbre sous un angle de ${{a}}^{\\circ}$ au-dessus de l'horizontale. Garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.\n\n```figure\nfenetre: 0 ; 7 ; 0 ; {{eval:round(10*(2.7+4.5*tan(a*\\pi/180)))/10;d}}\ndescription: Vue de côté : une personne debout (pieds F, œil O) face à un arbre [TS] ; K sur l'arbre à la hauteur de l'œil, angle KOS marqué.\n---\nG1 = point(0, 1, visible=faux)\nG2 = point(7, 1, visible=faux)\nsegment(G1, G2)\nF = point(1, 1, etiquette=\"bas\")\nO = point(1, 2, etiquette=\"gauche\")\nT = point(5.5, 1, etiquette=\"bas\")\nK = point(5.5, 2, etiquette=\"droite\")\nS = point(5.5, 2+4.5*tan({{a}}), etiquette=\"haut\")\nsegment(F, O, epaisseur=3)\nsegment(T, S, couleur=\"vert\", epaisseur=3)\nsegment(O, K, trait=\"tirets\")\nsegment(O, S, trait=\"tirets\")\nangle(S, K, O, marque=\"carre\")\nangle(K, O, S)\n```\n\nLa hauteur $KS$, au-dessus de l'œil, arrondie au dixième : $KS \\approx ?~\\unit{m}$\n\nLa hauteur $TS$ de l'arbre, arrondie au dixième : $TS \\approx ?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "10..80"
+				},
+				{
+					"name": "ee",
+					"expression": "150..190"
+				},
+				{
+					"name": "oe",
+					"expression": "eval:ee/100"
+				},
+				{
+					"name": "a",
+					"expression": "20..60"
+				}
+			],
+			"conditions": [
+				"abs(10*(d*tan(a*\\pi/180)) - round(10*(d*tan(a*\\pi/180)))) < 0.4",
+				"abs(10*(oe + d*tan(a*\\pi/180)) - round(10*(oe + d*tan(a*\\pi/180)))) < 0.4",
+				"round(10*(d*tan(a*\\pi/180))) != round(10*(d*sin(a*\\pi/180)))",
+				"round(10*(d*tan(a*\\pi/180))) != round(10*(d/tan(a*\\pi/180)))",
+				"round(10*(d*sin(a*\\pi/180))) != round(10*(d/tan(a*\\pi/180)))",
+				"round(10*(oe + d*tan(a*\\pi/180))) != round(10*(d*tan(a*\\pi/180)))",
+				"round(10*(oe + round(10*(d*tan(a*\\pi/180)))/10)) != round(10*(d*tan(a*\\pi/180)))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(d*tan(a*\\pi/180)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(d*sin(a*\\pi/180)))/10;d}}",
+							"message": "Les côtés [OK] et [KS] sont les deux côtés de l'angle droit : c'est la **tangente** qui les relie.",
+							"label": "Sinus au lieu de la tangente"
+						},
+						{
+							"answer": "{{eval:round(10*(d/tan(a*\\pi/180)))/10;d}}",
+							"message": "KS est le côté **opposé** à l'angle, au numérateur de la tangente : on multiplie, on ne divise pas.",
+							"label": "Division au lieu de multiplication"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(10*(oe + d*tan(a*\\pi/180)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(d*tan(a*\\pi/180)))/10;d}}",
+							"message": "C'est la hauteur au-dessus de l'œil : ajoute la hauteur de l'œil pour avoir la hauteur de l'arbre.",
+							"label": "Hauteur de l'œil oubliée"
+						},
+						{
+							"answer": "{{eval:round(10*(oe + round(10*(d*tan(a*\\pi/180)))/10))/10;d}}",
+							"message": "Tu as arrondi un résultat intermédiaire : garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.",
+							"label": "Arrondi trop tôt"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $OKS$ rectangle en $K$ : $$\\tan\\widehat{KOS} = \\dfrac{KS}{OK} \\quad\\text{donc}\\quad KS = {{d}} \\times \\tan({{a}}^{\\circ}) \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(d*tan(a*\\pi/180)))/10;d}}~\\unit{m}}$$",
+					"On ajoute la hauteur de l'œil : $$TS = {{eval:oe;d}} + {{d}} \\times \\tan({{a}}^{\\circ}) \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(oe + d*tan(a*\\pi/180)))/10;d}}~\\unit{m}}$$"
+				]
+			},
+			"hint": "Le triangle rectangle part de l'œil, pas du sol : calcule d'abord la partie de l'arbre au-dessus de l'œil, puis ajoute la hauteur de l'œil."
+		},
+		{
+			"statement": "Pour mesurer la hauteur d'une falaise $[HS]$, on vise son sommet $S$ depuis deux points $A$ et $B$ alignés avec son pied $H$, avec $AB = {{d}}~\\unit{m}$. On mesure $\\widehat{HAS} = {{a}}^{\\circ}$ et $\\widehat{HBS} = {{b}}^{\\circ}$. On note $x = BH$ : la hauteur $HS$ vaut à la fois $x \\times \\tan({{b}}^{\\circ})$ et $(x + {{d}}) \\times \\tan({{a}}^{\\circ})$. Garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.\n\n```figure\nfenetre: 0 ; 9 ; 0 ; {{eval:round(10*(1.7+7*tan(a*\\pi/180)))/10;d}}\ndescription: Vue de côté : une falaise [HS] verticale ; A et B au sol, alignés avec H ; angles HAS et HBS marqués.\n---\nA = point(1, 1, etiquette=\"bas\")\nB = point(1+7*(1-tan({{a}})/tan({{b}})), 1, etiquette=\"bas\")\nH = point(8, 1, etiquette=\"bas\")\nS = point(8, 1+7*tan({{a}}), etiquette=\"haut\")\nsegment(A, H)\nsegment(H, S, epaisseur=3)\nsegment(A, S)\nsegment(B, S)\nangle(S, H, A, marque=\"carre\")\nangle(H, A, S)\nangle(H, B, S)\n```\n\nLa distance $BH$, arrondie au mètre : $BH \\approx ?~\\unit{m}$\n\nLa hauteur $HS$ de la falaise, arrondie au mètre : $HS \\approx ?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "20..80"
+				},
+				{
+					"name": "a",
+					"expression": "20..40"
+				},
+				{
+					"name": "ec",
+					"expression": "10..25"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+ec"
+				}
+			],
+			"conditions": [
+				"b <= 65",
+				"abs(1*(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))) - round(1*(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))))) < 0.4",
+				"abs(1*(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(b*\\pi/180)) - round(1*(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(b*\\pi/180)))) < 0.4",
+				"round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(a*\\pi/180)) != round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(b*\\pi/180))",
+				"round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(a*\\pi/180)) != round(round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180)))*tan(b*\\pi/180))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180)))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180)) + d)}}",
+							"message": "Tu as calculé AH, depuis le point A : on demande BH, la distance depuis le point le plus proche.",
+							"label": "AH au lieu de BH"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(b*\\pi/180))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(a*\\pi/180))}}",
+							"message": "Depuis B, on voit le sommet sous l'angle HBS = β : avec BH, c'est tan β qu'il faut utiliser.",
+							"label": "Mauvais angle"
+						},
+						{
+							"answer": "{{eval:round(round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180)))*tan(b*\\pi/180))}}",
+							"message": "Tu as arrondi un résultat intermédiaire : garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.",
+							"label": "Arrondi trop tôt"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit la hauteur de deux façons, dans les triangles $BHS$ et $AHS$ rectangles en $H$ : $$x \\times \\tan({{b}}^{\\circ}) = (x + {{d}}) \\times \\tan({{a}}^{\\circ})$$",
+					"On regroupe les $x$ : $$x \\times \\big(\\tan({{b}}^{\\circ}) - \\tan({{a}}^{\\circ})\\big) = {{d}} \\times \\tan({{a}}^{\\circ}) \\quad\\text{donc}\\quad x = \\dfrac{ {{d}} \\times \\tan({{a}}^{\\circ})}{\\tan({{b}}^{\\circ}) - \\tan({{a}}^{\\circ})} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180)))}}~\\unit{m}}$$",
+					"Avec la valeur exacte de $x$ : $$HS = x \\times \\tan({{b}}^{\\circ}) \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(d*tan(a*\\pi/180)/(tan(b*\\pi/180) - tan(a*\\pi/180))*tan(b*\\pi/180))}}~\\unit{m}}$$"
+				]
+			},
+			"hint": "L'égalité de l'énoncé est une équation d'inconnue $x$ : développe, regroupe les termes en $x$ d'un côté, puis divise."
+		},
+		{
+			"statement": "Sur la figure, les points $A$, $B$, $D$ sont alignés, ainsi que les points $A$, $C$, $E$. Le triangle $ADE$ est rectangle en $D$ et le triangle $ABC$ est rectangle en $B$. On donne $AD = {{ad}}~\\unit{cm}$, $AE = {{ae}}~\\unit{cm}$ et $AC = {{ac}}~\\unit{cm}$.\n\n```figure\nfenetre: 0 ; 9.5 ; 0 ; {{eval:round(10*(1.7+8*sin(an*\\pi/180)))/10;d}}\ndescription: Triangle ADE rectangle en D ; B sur [AD] et C sur [AE], triangle ABC rectangle en B ; angle en A marqué.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nE = point(A, longueur=8, angle={{eval:round(100*an)/100;d}}, etiquette=\"haut\")\nD = point(1+8*{{ad}}/{{ae}}, 1, etiquette=\"bas-droite\")\nC = point(A, longueur=8*{{ac}}/{{ae}}, angle={{eval:round(100*an)/100;d}}, etiquette=\"haut-gauche\")\nB = point(1+8*{{ac}}*{{ad}}/({{ae}}*{{ae}}), 1, etiquette=\"bas\")\nsegment(A, D)\nsegment(D, E)\nsegment(E, A)\nsegment(B, C)\nangle(E, D, A, marque=\"carre\")\nangle(C, B, A, marque=\"carre\")\nangle(D, A, E)\n```\n\nL'angle $\\widehat{DAE}$, arrondi au dixième de degré : $\\widehat{DAE} \\approx ?^{\\circ}$\n\nLa longueur $AB$, arrondie au millimètre : $AB \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "ae",
+					"expression": "6..12"
+				},
+				{
+					"name": "ad",
+					"expression": "3..11"
+				},
+				{
+					"name": "ac",
+					"expression": "3..11"
+				},
+				{
+					"name": "an",
+					"expression": "eval:acos(ad/ae)*180/\\pi"
+				}
+			],
+			"conditions": [
+				"ad < ae",
+				"ac < ae",
+				"ac != ad",
+				"an >= 25",
+				"an <= 65",
+				"abs(10*(an) - round(10*(an))) < 0.4",
+				"abs(10*(ac*ad/ae) - round(10*(ac*ad/ae))) < 0.4",
+				"round(10*ac*cos((round(10*an)/10)*\\pi/180)) == round(10*ac*ad/ae)",
+				"round(10*(ac*ad/ae)) != round(10*(ac*ae/ad))",
+				"round(10*(ac*ad/ae)) != round(10*(ac*sqrt(1-(ad/ae)^2)))",
+				"round(10*(ac*ae/ad)) != round(10*(ac*sqrt(1-(ad/ae)^2)))",
+				"round(10*an) != round(10*(90-an))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(an))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(90-an))/10;d}}",
+							"message": "[AD] est le côté **adjacent** à l'angle en A : c'est la touche cos⁻¹, pas sin⁻¹.",
+							"label": "sin⁻¹ au lieu de cos⁻¹"
+						},
+						{
+							"answer": "{{eval:round(100*ad/ae)/100;d}}",
+							"message": "Tu as donné la valeur du cosinus, pas l'angle : il faut encore la touche cos⁻¹ de la calculatrice.",
+							"label": "Quotient pris pour l'angle"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(10*(ac*ad/ae))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(ac*ae/ad))/10;d}}",
+							"message": "AB est le côté **adjacent**, au numérateur du cosinus (AB ÷ AC) : on multiplie, on ne divise pas.",
+							"label": "Division au lieu de multiplication"
+						},
+						{
+							"answer": "{{eval:round(10*(ac*sqrt(1-(ad/ae)^2)))/10;d}}",
+							"message": "[AB] est le côté **adjacent** à l'angle en A : c'est le cosinus qui le relie à l'hypoténuse [AC], pas le sinus.",
+							"label": "Sinus au lieu du cosinus"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $ADE$ rectangle en $D$ : $$\\cos\\widehat{DAE} = \\dfrac{AD}{AE} = \\dfrac{ {{ad}} }{ {{ae}} } \\quad\\text{donc}\\quad \\widehat{DAE} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(an))/10;d}}^{\\circ}}$$",
+					"Les angles $\\widehat{BAC}$ et $\\widehat{DAE}$ sont le même angle. Dans le triangle $ABC$ rectangle en $B$ : $$\\cos\\widehat{BAC} = \\dfrac{AB}{AC} \\quad\\text{donc}\\quad AB = {{ac}} \\times \\cos\\widehat{DAE} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(ac*ad/ae))/10;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Le même angle en $A$ appartient aux deux triangles rectangles : calcule-le dans $ADE$, puis sers-t'en dans $ABC$."
+		},
+		{
+			"statement": "Un terrain en pente mesure $AB = {{L}}~\\unit{m}$ le long de la pente, pour un dénivelé $BC = {{eval:h;d}}~\\unit{m}$. Le terrassement coûte plus cher (surcoût) si l'angle $\\widehat{BAC}$ de la pente dépasse $8{,}5^{\\circ}$.\n\n```figure\nfenetre: 0 ; 8.6 ; 0 ; 3.4\ndescription: Vue de côté d'un terrain en pente : triangle ABC rectangle en C, [AB] le long de la pente, [BC] le dénivelé.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(A, longueur=7, angle={{eval:round(100*ang)/100;d}}, etiquette=\"haut\")\nC = point(1+7*cos({{eval:round(100*ang)/100;d}}), 1, etiquette=\"bas-droite\")\nsegment(A, B, epaisseur=3)\nsegment(B, C)\nsegment(A, C, trait=\"tirets\")\nangle(B, C, A, marque=\"carre\")\nangle(C, A, B)\n```\n\nL'angle $\\widehat{BAC}$, arrondi au dixième de degré : $\\widehat{BAC} \\approx ?^{\\circ}$\n\nY a-t-il un surcoût ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "20..60"
+				},
+				{
+					"name": "hh",
+					"expression": "15..150"
+				},
+				{
+					"name": "h",
+					"expression": "eval:hh/10"
+				},
+				{
+					"name": "ang",
+					"expression": "eval:asin(h/L)*180/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "eval:1-floor(ang/8.5)"
+				}
+			],
+			"conditions": [
+				"ang >= 3",
+				"ang <= 14",
+				"abs(ang - 8.5) >= 1.5",
+				"abs(10*(ang) - round(10*(ang))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(ang))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(90-ang))/10;d}}",
+							"message": "[BC] est le côté **opposé** à l'angle en A : c'est la touche sin⁻¹, pas cos⁻¹.",
+							"label": "cos⁻¹ au lieu de sin⁻¹"
+						},
+						{
+							"answer": "{{eval:round(10*(atan(h/L)*180/\\pi))/10;d}}",
+							"message": "[AB] est mesuré le long de la pente : c'est l'**hypoténuse**, donc le sinus, pas la tangente.",
+							"label": "Tangente au lieu du sinus"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:1-floor(ang/8.5)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $ABC$ rectangle en $C$, l'hypoténuse est $[AB]$ : $$\\sin\\widehat{BAC} = \\dfrac{BC}{AB} = \\dfrac{{{eval:h;d}}}{ {{L}} } \\quad\\text{donc}\\quad \\widehat{BAC} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(ang))/10;d}}^{\\circ}}$$",
+					"On compare à $8{,}5^{\\circ}$ : {{if:k==0|la pente dépasse $8{,}5^{\\circ}$, **il y a un surcoût**.|la pente ne dépasse pas $8{,}5^{\\circ}$, **il n'y a pas de surcoût**.}}"
+				]
+			},
+			"hint": "La longueur mesurée le long de la pente est l'hypoténuse : quel rapport relie le côté opposé à l'angle et l'hypoténuse ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : BC ≈ 23, CS ≈ 25",
+			"variationIndex": 0,
+			"variables": {
+				"d": "40",
+				"a": "30",
+				"ec": "20",
+				"b": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["23", "25"]
+		},
+		{
+			"description": "v0 : sinus",
+			"variationIndex": 0,
+			"variables": {
+				"d": "40",
+				"a": "30",
+				"ec": "20",
+				"b": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le triangle rectangle, les deux côtés de l'angle droit sont reliés par la **tangente** : le sinus fait intervenir l'hypoténuse."
+			},
+			"answers": ["20", "25"]
+		},
+		{
+			"description": "v0 : division",
+			"variationIndex": 0,
+			"variables": {
+				"d": "40",
+				"a": "30",
+				"ec": "20",
+				"b": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur cherchée est le côté **opposé** à l'angle, au numérateur de la tangente : on multiplie, on ne divise pas."
+			},
+			"answers": ["69", "25"]
+		},
+		{
+			"description": "v0 : somme",
+			"variationIndex": 0,
+			"variables": {
+				"d": "40",
+				"a": "30",
+				"ec": "20",
+				"b": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "BS et BC partent tous les deux de B : la largeur CS est leur **différence**, pas leur somme."
+			},
+			"answers": ["23", "71"]
+		},
+		{
+			"description": "v0 : BS",
+			"variationIndex": 0,
+			"variables": {
+				"d": "40",
+				"a": "30",
+				"ec": "20",
+				"b": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé BS, de B jusqu'à l'arbre : la largeur de la rivière est CS = BS − BC."
+			},
+			"answers": ["23", "48"]
+		},
+		{
+			"description": "v1 : λ = 49°, HP ≈ 4180",
+			"variationIndex": 1,
+			"variables": {
+				"l": "49"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4\\,180", "26\\,262"]
+		},
+		{
+			"description": "v1 : sinus",
+			"variationIndex": 1,
+			"variables": {
+				"l": "49"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le triangle OHP rectangle en H, [HP] est le côté **adjacent** à l'angle OPH : c'est le cosinus, pas le sinus."
+			},
+			"answers": ["4\\,808", "26\\,262"]
+		},
+		{
+			"description": "v1 : division",
+			"variationIndex": 1,
+			"variables": {
+				"l": "49"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "HP est au **numérateur** du cosinus (HP ÷ OP) : on multiplie le rayon par le cosinus, on ne divise pas."
+			},
+			"answers": ["9\\,711", "26\\,262"]
+		},
+		{
+			"description": "v1 : rayon de la Terre",
+			"variationIndex": 1,
+			"variables": {
+				"l": "49"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le parallèle de P est un cercle de rayon **HP**, pas de rayon 6 371 km : ce serait la longueur de l'équateur."
+			},
+			"answers": ["4\\,180", "40\\,030"]
+		},
+		{
+			"description": "v1 : facteur 2 oublié",
+			"variationIndex": 1,
+			"variables": {
+				"l": "49"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur d'un cercle de rayon r est 2 × π × r : tu as oublié le facteur 2."
+			},
+			"answers": ["4\\,180", "13\\,131"]
+		},
+		{
+			"description": "v1 : arrondi trop tôt",
+			"variationIndex": 1,
+			"variables": {
+				"l": "49"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi un résultat intermédiaire : garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul."
+			},
+			"answers": ["4\\,180", "26\\,264"]
+		},
+		{
+			"description": "v2 : KS ≈ 17,5, TS ≈ 19,2",
+			"variationIndex": 2,
+			"variables": {
+				"d": "25",
+				"ee": "170",
+				"a": "35",
+				"oe": "1.7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17{,}5", "19{,}2"]
+		},
+		{
+			"description": "v2 : sinus",
+			"variationIndex": 2,
+			"variables": {
+				"d": "25",
+				"ee": "170",
+				"a": "35",
+				"oe": "1.7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les côtés [OK] et [KS] sont les deux côtés de l'angle droit : c'est la **tangente** qui les relie."
+			},
+			"answers": ["14{,}3", "19{,}2"]
+		},
+		{
+			"description": "v2 : division",
+			"variationIndex": 2,
+			"variables": {
+				"d": "25",
+				"ee": "170",
+				"a": "35",
+				"oe": "1.7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "KS est le côté **opposé** à l'angle, au numérateur de la tangente : on multiplie, on ne divise pas."
+			},
+			"answers": ["35{,}7", "19{,}2"]
+		},
+		{
+			"description": "v2 : œil oublié",
+			"variationIndex": 2,
+			"variables": {
+				"d": "25",
+				"ee": "170",
+				"a": "35",
+				"oe": "1.7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la hauteur au-dessus de l'œil : ajoute la hauteur de l'œil pour avoir la hauteur de l'arbre."
+			},
+			"answers": ["17{,}5", "17{,}5"]
+		},
+		{
+			"description": "v3 : BH ≈ 68, HS ≈ 68",
+			"variationIndex": 3,
+			"variables": {
+				"d": "50",
+				"a": "30",
+				"ec": "15",
+				"b": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["68", "68"]
+		},
+		{
+			"description": "v3 : AH",
+			"variationIndex": 3,
+			"variables": {
+				"d": "50",
+				"a": "30",
+				"ec": "15",
+				"b": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé AH, depuis le point A : on demande BH, la distance depuis le point le plus proche."
+			},
+			"answers": ["118", "68"]
+		},
+		{
+			"description": "v3 : mauvais angle",
+			"variationIndex": 3,
+			"variables": {
+				"d": "50",
+				"a": "30",
+				"ec": "15",
+				"b": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Depuis B, on voit le sommet sous l'angle HBS = β : avec BH, c'est tan β qu'il faut utiliser."
+			},
+			"answers": ["68", "39"]
+		},
+		{
+			"description": "v3 : BH ≈ 22, HS ≈ 27",
+			"variationIndex": 3,
+			"variables": {
+				"d": "35",
+				"a": "25",
+				"ec": "25",
+				"b": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["22", "27"]
+		},
+		{
+			"description": "v3 : arrondi trop tôt",
+			"variationIndex": 3,
+			"variables": {
+				"d": "35",
+				"a": "25",
+				"ec": "25",
+				"b": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi un résultat intermédiaire : garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul."
+			},
+			"answers": ["22", "26"]
+		},
+		{
+			"description": "v4 : angle ≈ 48,2°, AB ≈ 4,7",
+			"variationIndex": 4,
+			"variables": {
+				"ae": "9",
+				"ad": "6",
+				"ac": "7",
+				"an": "48.189685104221404"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["48{,}2", "4{,}7"]
+		},
+		{
+			"description": "v4 : AB non arrondi",
+			"variationIndex": 4,
+			"variables": {
+				"ae": "9",
+				"ad": "6",
+				"ac": "7",
+				"an": "48.189685104221404"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["48{,}2", "4{,}667"]
+		},
+		{
+			"description": "v4 : sin⁻¹",
+			"variationIndex": 4,
+			"variables": {
+				"ae": "9",
+				"ad": "6",
+				"ac": "7",
+				"an": "48.189685104221404"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "[AD] est le côté **adjacent** à l'angle en A : c'est la touche cos⁻¹, pas sin⁻¹."
+			},
+			"answers": ["41{,}8", "4{,}7"]
+		},
+		{
+			"description": "v4 : quotient",
+			"variationIndex": 4,
+			"variables": {
+				"ae": "9",
+				"ad": "6",
+				"ac": "7",
+				"an": "48.189685104221404"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la valeur du cosinus, pas l'angle : il faut encore la touche cos⁻¹ de la calculatrice."
+			},
+			"answers": ["0{,}67", "4{,}7"]
+		},
+		{
+			"description": "v4 : division",
+			"variationIndex": 4,
+			"variables": {
+				"ae": "9",
+				"ad": "6",
+				"ac": "7",
+				"an": "48.189685104221404"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "AB est le côté **adjacent**, au numérateur du cosinus (AB ÷ AC) : on multiplie, on ne divise pas."
+			},
+			"answers": ["48{,}2", "10{,}5"]
+		},
+		{
+			"description": "v4 : sinus",
+			"variationIndex": 4,
+			"variables": {
+				"ae": "9",
+				"ad": "6",
+				"ac": "7",
+				"an": "48.189685104221404"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "[AB] est le côté **adjacent** à l'angle en A : c'est le cosinus qui le relie à l'hypoténuse [AC], pas le sinus."
+			},
+			"answers": ["48{,}2", "5{,}2"]
+		},
+		{
+			"description": "v5 : 13,0°, surcoût",
+			"variationIndex": 5,
+			"variables": {
+				"L": "20",
+				"hh": "45",
+				"h": "4.5",
+				"ang": "13.002878162913944",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["13", "0"]
+		},
+		{
+			"description": "v5 : bon angle, mauvaise décision",
+			"variationIndex": 5,
+			"variables": {
+				"L": "20",
+				"hh": "45",
+				"h": "4.5",
+				"ang": "13.002878162913944",
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["13", "1"]
+		},
+		{
+			"description": "v5 : cos⁻¹",
+			"variationIndex": 5,
+			"variables": {
+				"L": "20",
+				"hh": "45",
+				"h": "4.5",
+				"ang": "13.002878162913944",
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "[BC] est le côté **opposé** à l'angle en A : c'est la touche sin⁻¹, pas cos⁻¹."
+			},
+			"answers": ["77", "0"]
+		},
+		{
+			"description": "v5 : tangente",
+			"variationIndex": 5,
+			"variables": {
+				"L": "20",
+				"hh": "45",
+				"h": "4.5",
+				"ang": "13.002878162913944",
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "[AB] est mesuré le long de la pente : c'est l'**hypoténuse**, donc le sinus, pas la tangente."
+			},
+			"answers": ["12{,}7", "0"]
+		},
+		{
+			"description": "v5 : 6,0°, pas de surcoût",
+			"variationIndex": 5,
+			"variables": {
+				"L": "40",
+				"hh": "42",
+				"h": "4.2",
+				"ang": "6.027166560131101",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "1"]
+		}
+	]
+}

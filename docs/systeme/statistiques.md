@@ -11,7 +11,7 @@ couvre:
 
 # Statistiques et probabilités (`src/lib/statistics/`)
 
-> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01, à construire le 2026-11-01. Usage dans l'atelier : [atelier.md](atelier.md)
+> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01, à construire le 2026-11-01 ; barres dessinées au corrigé (`solution: oui`) le 2026-11-28. Usage dans l'atelier : [atelier.md](atelier.md)
 > (§ « Liens avec `mathAST` et `statistics` ») ; syntaxe des blocs statistiques :
 > [ubumark.md](ubumark.md) (genres de `stat-chart`). Cette doc ne décrit que le **calcul**.
 
@@ -147,7 +147,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
 ### Lecture et mise en forme (`read-value.ts`, `fraction.ts`, `format.ts`)
 
 - `readNumber` : virgule décimale ; `readListValue` : en plus fractions d'entiers, `−`, et la
-  virgule MathLive `{,}`. `Fraction.parse` : `1/6`, `0,25`, `25 %` ; `Fraction.fromNumber` :
+  virgule MathLive `{,}` (elle lit aussi les fractions des cinq valeurs d'une boîte à moustaches,
+  comme celles de `données:`, écart L90). `Fraction.parse` : `1/6`, `0,25`, `25 %` ; `Fraction.fromNumber` :
   fractions continues, dénominateur ⩽ 10 000, à 10⁻⁹ près (null pour π).
 - `formatSummary` (13 lignes, ordre du programme), `formatApproxValue`, `formatLawApproxValue`
   (deux chiffres significatifs sous 0,01), `formatStatNumber`, `formatFraction`,
@@ -216,6 +217,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `src/lib/ubumark/utils/stat-chart-scene.ts` (presque tout : lois, seuils, simulations,
   classes), `src/lib/ubumark/utils/scatter-lines.ts` (lignes du ` ```nuage `),
   `src/lib/ubumark/utils/comparison-scene.ts`, `src/lib/ubumark/types/stat-chart.ts`.
+  À l'écran, barres et boîtes à moustaches sont redessinées à la largeur disponible
+  (`src/lib/ubumark/utils/stat-chart-fit.ts`, option `plotWidth` de la scène).
   Détails : [ubumark.md](ubumark.md).
 - **Questions** : aucun import direct (`git grep` sur `src/lib/questions`, `src/lib/exercises`).
   Une question qui affiche un bloc statistique passe par ubumark ; un diagramme en barres à
@@ -229,6 +232,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   invariant 12). Une boîte à moustaches à construire (` ```boite-a-moustaches ` + `placer:`) de même :
   cinq cases par boîte, valeurs lues par `parseStatChartContent`, `findBoxPlotsToPlace`, énoncé
   masqué `Notes = ? ; ? ; ? ; ? ; ?`.
+  Corrigé imprimé d'une série d'automatismes (V109) : le même bloc avec `solution: oui`, barres à
+  construire dessinées en vert (`spec.solvedBars`, plus de `toPlace` : `findBarsToPlace` le saute),
+  échelle à choisir remplacée par la juste (`adaptedScale`) — [ubumark.md](ubumark.md).
 
 ## Invariants
 
@@ -295,14 +301,19 @@ exacts, jamais les arrondis affichés). Variance de population : 2026-09-16.
 
 ## Écarts connus
 
-- **Trois ajustements affines** (`fitAffine`, `bivariateFit`, `decimalFit`) : la formule des
-  moindres carrés est écrite trois fois ; `fitAffine` rend R², `bivariateFit` rend r.
-- Graduations et fréquences (`formatRounded`, `formatTick`, pourcentages) arrondissent encore
-  en flottant : valeurs positives ou de grille, sans demi négatif à départager.
-- `exponentialProbability` et `normalProbability` prennent des `number`, leurs moments des
-  `Fraction` : l'appelant convertit.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
 - La binomiale n'a pas d'échantillonneur propre : la scène la tire comme loi finie, avec les
   probabilités exactes de `binomialDistribution`.
+
+### Points non vérifiés
+
+- **Trois ajustements affines** (`fitAffine`, `bivariateFit`, `decimalFit`) : la formule des
+  moindres carrés est écrite trois fois ; `fitAffine` rend R², `bivariateFit` rend r.
+- `exponentialProbability` et `normalProbability` prennent des `number`, leurs moments des
+  `Fraction` : l'appelant convertit.
 - `atMost` et `findThreshold` ne servent qu'à l'intérieur du module (`binomial.ts`, `geometric.ts`),
   bien qu'exportés ; `MAX_COMPUTED_VALUE` n'est plus exporté.
 

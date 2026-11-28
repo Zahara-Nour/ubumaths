@@ -9,13 +9,21 @@
  * Phase 0 validée par David le 2026-11-20 (journal docs/wip/ensembles-2de-progress.md).
  *
  * Règles :
- *  - champs écrits : `variations`, `test_specs`, `description` ; jamais titre, nœud, points, tags,
- *    niveaux, statut. Un autre champ du fichier différent de la prod → refus ;
+ *  - champs écrits : `variations`, `test_specs`, `description`, et `options` quand le fichier les
+ *    change (réglages de jugement : ⚠️ ils valent pour TOUTES les variations, anciennes comprises ;
+ *    le script rejoue `checkTemplate`, donc les specs d'origine, sur le modèle tel qu'il sera) ;
+ *    jamais titre, nœud, points, tags, niveaux, statut. Un autre champ du fichier différent de la
+ *    prod → refus. `options` n'était pas écrit avant le 2026-11-23 : aucune raison écrite à cette
+ *    exclusion (journal docs/wip/idees-6e-entiers-decimaux-progress.md), levée par David ;
  *  - variation ajoutée à la fin → acceptée ; variation existante corrigée → acceptée, signalée en
  *    en-tête ; variation retirée ou déplacée → refusée (les réponses des élèves gardent l'indice
  *    de leur variation) ;
  *  - garde : le modèle doit porter EXACTEMENT le contenu relevé, sinon la migration échoue (jamais
- *    un passage muet) ; modèle absent (base locale) → rien ;
+ *    un passage muet) ; modèle absent → sauté, nommé par un `raise notice` (sortie de
+ *    `db:migrate`). Pas de garde « tous ou aucun » : la base locale n'a qu'une partie des publiés
+ *    (le 2026-11-26, 26 sur 28 pour `20261126095610`), elle ferait échouer `db:a-jour`. En prod,
+ *    les identifiants viennent du relevé : un absent est un modèle supprimé depuis, le notice le
+ *    montre (accentuation évitée, comme les `raise exception`) ;
  *  - un seul bloc `do` pour tous les modèles : tout ou rien ;
  *  - rollback en commentaire (`ROLLBACK:BEGIN` / `ROLLBACK:END`), gardé de même.
  * Limite : la comparaison se fait indice par indice, à l'identique. Une variation REMPLACÉE par une
@@ -48,11 +56,14 @@ export interface LigneProd {
 	test_specs: unknown;
 }
 
-/** Les trois champs qu'écrit la migration, tels qu'en base (`null` = SQL NULL) */
+/** Les champs qu'écrit la migration, tels qu'en base (`null` = SQL NULL) */
 export interface Contenu {
 	variations: unknown[];
 	testSpecs: unknown;
 	description: string | null;
+	/** Présent seulement quand le fichier change les options : sinon la migration n'y touche pas
+	 *  (ni écriture ni garde), comme les migrations générées avant le 2026-11-23 */
+	options?: unknown;
 }
 
 export interface Changements {
@@ -62,6 +73,7 @@ export interface Changements {
 	corrigees: number[];
 	specs: boolean;
 	description: boolean;
+	options: boolean;
 }
 
 export interface ModeleMigre {
@@ -106,7 +118,6 @@ const CHAMPS_FIGES: readonly [cle: string, colonne: keyof LigneProd][] = [
 	['grades', 'grades'],
 	['level', 'level'],
 	['delay', 'delay'],
-	['options', 'options'],
 	['shared', 'shared'],
 	['defaultDisplayOptions', 'default_display_options'],
 	['exerciseInstruction', 'exercise_instruction']
@@ -187,7 +198,8 @@ export function examinerModele(fichier: string, modele: ModeleFichier, ligne: Li
 	// Clé absente du fichier = « garder » (sémantique de l'éditeur), jamais « effacer » : refus
 	const effaces = [
 		['testSpecs', ligne.test_specs],
-		['description', ligne.description]
+		['description', ligne.description],
+		['options', ligne.options]
 	]
 		.filter(
 			([cle, prod]) => brut[cle as string] === undefined && prod !== null && prod !== undefined
@@ -212,19 +224,25 @@ export function examinerModele(fichier: string, modele: ModeleFichier, ligne: Li
 		testSpecs: modele.testSpecs ?? null,
 		description: modele.description ?? null
 	};
+	if (!egaux(brut.options, ligne.options)) {
+		avant.options = ligne.options ?? null;
+		apres.options = brut.options ?? null;
+	}
 	const analyse = analyserVariations(avant.variations, apres.variations);
 	if (!analyse.ok) return { sorte: 'refuse', erreur: `${fichier} : ${analyse.erreur}` };
 	const changements: Changements = {
 		ajoutees: analyse.ajoutees,
 		corrigees: analyse.corrigees,
 		specs: !egaux(avant.testSpecs, apres.testSpecs),
-		description: avant.description !== apres.description
+		description: avant.description !== apres.description,
+		options: 'options' in apres
 	};
 	const rien =
 		changements.ajoutees.length === 0 &&
 		changements.corrigees.length === 0 &&
 		!changements.specs &&
-		!changements.description;
+		!changements.description &&
+		!changements.options;
 	if (rien) return { sorte: 'inchange' };
 	return {
 		sorte: 'migre',
@@ -248,24 +266,34 @@ function suffixeLibre(textes: readonly string[]): string {
 }
 
 /** Littéraux SQL d'un contenu (jsonb ; la description passe par une chaîne JSON : une seule ligne) */
+function jsonb(valeur: unknown, q: string): string {
+	return valeur === null || valeur === undefined
+		? 'null::jsonb'
+		: `${q}${JSON.stringify(valeur)}${q}::jsonb`;
+}
+
 function litteraux(
 	c: Contenu,
 	q: string
-): { variations: string; specs: string; description: string } {
+): { variations: string; specs: string; description: string; options: string | null } {
 	return {
 		variations: `${q}${JSON.stringify(c.variations)}${q}::jsonb`,
-		specs: c.testSpecs === null ? 'null::jsonb' : `${q}${JSON.stringify(c.testSpecs)}${q}::jsonb`,
+		specs: jsonb(c.testSpecs, q),
 		description:
 			c.description === null
 				? 'null::text'
-				: `(${q}${JSON.stringify(c.description)}${q}::jsonb #>> '{}')`
+				: `(${q}${JSON.stringify(c.description)}${q}::jsonb #>> '{}')`,
+		// null : options non touchées par ce modèle (ni garde ni écriture)
+		options: 'options' in c ? jsonb(c.options, q) : null
 	};
 }
 
 function condition(alias: string, l: ReturnType<typeof litteraux>): string {
+	const options =
+		l.options === null ? '' : `\n\t\t   and ${alias}options is not distinct from ${l.options}`;
 	return `${alias}variations = ${l.variations}
 		   and ${alias}test_specs is not distinct from ${l.specs}
-		   and ${alias}description is not distinct from ${l.description}`;
+		   and ${alias}description is not distinct from ${l.description}${options}`;
 }
 
 /** Le bloc `do` qui fait passer chaque modèle de `depuis` à `vers` */
@@ -291,13 +319,15 @@ function bloc(
 		update public.question_templates
 		   set variations = ${b.variations},
 		       test_specs = ${b.specs},
-		       description = ${b.description}
+		       description = ${b.description}${b.options === null ? '' : `,\n\t\t       options = ${b.options}`}
 		 where id = '${m.id}';
 		if not exists (select 1 from public.question_templates
 		                where id = '${m.id}'
 		                  and ${condition('', b)}) then
 			raise exception '${id8} : contenu final inattendu';
 		end if;
+	else
+		raise notice '${id8} absent, saute';
 	end if;`;
 	});
 	return `set local lock_timeout = '5s';
@@ -314,7 +344,8 @@ function ligneDeModele(m: ModeleMigre): string {
 		c.ajoutees.length > 0 ? `variation(s) ajoutée(s) : ${c.ajoutees.join(', ')}` : '',
 		c.corrigees.length > 0 ? `⚠️ variation(s) corrigée(s) : ${c.corrigees.join(', ')}` : '',
 		c.specs ? 'specs modifiées' : '',
-		c.description ? 'description modifiée' : ''
+		c.description ? 'description modifiée' : '',
+		c.options ? '⚠️ options modifiées (elles jugent toutes les variations)' : ''
 	].filter(Boolean);
 	return `--   ${m.id.slice(0, 8)} « ${m.title.replace(/[\r\n]+/g, ' ')} » (${m.fichier.replace(/[\r\n]+/g, ' ')}) : ${parties.join(' ; ')}`;
 }
@@ -329,7 +360,8 @@ export function genererMigration(entete: EnteteMigration, modeles: readonly Mode
 				m.fichier,
 				JSON.stringify(c.variations),
 				JSON.stringify(c.testSpecs),
-				JSON.stringify(c.description)
+				JSON.stringify(c.description),
+				JSON.stringify(c.options ?? null)
 			])
 		)
 	);
@@ -355,14 +387,15 @@ export function genererMigration(entete: EnteteMigration, modeles: readonly Mode
 -- Lot ${entete.lot} : contenu de ${modeles.length} modèle(s) PUBLIÉ(S)
 -- ============================================================================
 ${modeles.map(ligneDeModele).join('\n')}
---   Champs écrits : variations, specs, description. Titre, nœud, points, tags, niveaux,
---   statut : inchangés. Aucune variation retirée ni déplacée (indices des réponses d'élèves).
+--   Champs écrits : variations, specs, description, et options là où l'en-tête le dit. Titre,
+--   nœud, points, tags, niveaux, statut : inchangés. Aucune variation retirée ni déplacée (indices des réponses d'élèves).
 -- ============================================================================
 -- Fichier GÉNÉRÉ par scripts/questions/migration-contenu.ts — ne pas éditer à la main.
 -- Source : ${entete.source}. Contenu relevé en prod le ${entete.date}.
 --
 -- Garde : chaque modèle doit porter EXACTEMENT le contenu relevé, sinon la migration échoue et
--- rien n'est modifié (un seul bloc : tout ou rien). Modèle absent (base locale) : rien.
+-- rien n'est modifié (un seul bloc : tout ou rien). Modèle absent (base locale) : sauté, nommé
+-- par un notice « <id> absent, saute » ; en prod, il ne devrait jamais paraître.
 -- Prouvée par tests/integration/migrations-contenu-publie.test.ts, qui rejoue CE fichier sur des
 -- copies portant les vrais identifiants et le contenu de la prod (fixture contenu-publie/).
 --

@@ -23,6 +23,17 @@ couvre:
 > fixe 2026-06-30 a disparu) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
 > [`README.md`](README.md) §4.
 
+> **Invitation de cours particulier (2026-11-25)** : le consentement d'un élève invité par l'admin
+> est recueilli sur la page du lien d'invitation (`/auth/register/invitation/[token]`), dans le même
+> formulaire que la création du compte : case explicite, toujours exigée (décision 6). Le serveur
+> crée une demande `parental_consents` à l'adresse de l'invitation (`createParentRequest`) et
+> l'accorde aussitôt par `grant_parental_consent`, avec l'IP et le navigateur de la requête : la
+> preuve a la même forme qu'un clic sur `/consent/[token]`, et l'adresse est confirmée (lien reçu à
+> cette adresse), donc « Mot de passe oublié » y part. Le courriel final
+> (`sendPrivateLessonWelcomeEmail`, `src/lib/email-templates/private-lesson-welcome.ts`) redit
+> l'identifiant ; il ne porte aucun lien de consentement.
+> [comptes-classes-ecoles.md § Admin : cours particuliers](../comptes-classes-ecoles.md#admin--cours-particuliers).
+
 > **Adresse du parent et lien (2026-10-21, PR 3 de l'inscription par le parent)** : l'adresse
 > d'une demande `granted` est celle où part le lien « Mot de passe oublié » d'un enfant à
 > identifiant. Elle est donc **figée** : `updateParentEmail` répond 409. Une demande `pending`
@@ -341,6 +352,7 @@ Migration `20261014110000_lecture_seule_garde_base` :
    - Consent-aware button wrapper
    - Automatically disables when `consent.isReadOnly` is true
    - Shows tooltip explaining why action is disabled
+   - Porte son propre `Tooltip.Provider` : aucune page n'a à en fournir un (E66, 2026-11-25 : sans lui, le Marché d'un élève sans consentement rendait une erreur 500)
 
 ### Files Modified
 
@@ -348,6 +360,8 @@ Migration `20261014110000_lecture_seule_garde_base` :
 
    - Added ConsentBanner integration
    - Hydrates consent store on mount
+
+   Depuis le 2026-11-25 (E67), le magasin est rempli par `src/routes/(protected)/+layout.svelte`, pour **toutes** les pages protégées et à chaque rechargement des données : « Mon profil » (`/dashboard/profile`, hors de l'espace élève) grise donc aussi « Acheter » un avatar. Le bandeau reste dans le layout de l'espace élève.
 
 2. `src/routes/(protected)/dashboard/student/exercises/[id]/+page.svelte`
 

@@ -161,6 +161,8 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		const exerciseInserts = exercises.map((ex) => ({
 			worksheet_id: duplicate.id,
 			exercise_id: ex.exercise_id,
+			// La copie garde la version de chaque exercice (ADR 0044) : même contenu que l'original
+			exercise_version_id: ex.exercise_version_id,
 			section_id: ex.section_id ? (sectionMapping[ex.section_id] ?? null) : null,
 			position: ex.position,
 			points: ex.points,

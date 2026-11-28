@@ -1,0 +1,635 @@
+{
+	"id": "1584c3b5-40fd-4bd4-abe3-53cfe0ed8bb8",
+	"rangement": {
+		"noeud": "Géométrie > Agrandissement et réduction",
+		"point": null
+	},
+	"title": "Agrandissement et réduction : aires et volumes",
+	"description": "Rapport k d'un agrandissement ou d'une réduction : aire de l'image (k²), volume de l'image (k³), k depuis deux longueurs, aire de départ (hors programme de cycle 4)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une figure a une aire de ${{a}}~\\unit{cm^2}$. On en fait {{if:g==0|un agrandissement|une réduction}} de rapport $k = {{eval:k;d}}$. Quelle est l'aire de la figure obtenue ?\n\n$\\mathcal{A} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "na",
+					"expression": "11..30"
+				},
+				{
+					"name": "nr",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-g)*na+g*nr"
+				},
+				{
+					"name": "k",
+					"expression": "eval:n/10"
+				},
+				{
+					"name": "a",
+					"expression": "5..60"
+				}
+			],
+			"conditions": [
+				"n != 20",
+				"k*k*a < 1000",
+				"k*k*k*a < 1000",
+				"round(100*(k*k*a)) != round(100*(k*a))",
+				"round(100*(k*k*a)) != round(100*(2*k*a))",
+				"round(100*(k*k*a)) != round(100*(k*k*k*a))",
+				"round(100*(k*a)) != round(100*(2*k*a))",
+				"round(100*(k*a)) != round(100*(k*k*k*a))",
+				"round(100*(2*k*a)) != round(100*(k*k*k*a))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*k*a;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(k*a))/100;d}}",
+							"message": "Les longueurs sont multipliées par k, mais les aires sont multipliées par k² (k × k).",
+							"label": "k au lieu de k²"
+						},
+						{
+							"answer": "{{eval:round(100*(2*k*a))/100;d}}",
+							"message": "k² veut dire k × k, pas 2 × k.",
+							"label": "2k au lieu de k²"
+						},
+						{
+							"answer": "{{eval:round(100*(k*k*k*a))/100;d}}",
+							"message": "Pour une aire, c'est k² ; k³ sert pour les volumes.",
+							"label": "k³ au lieu de k²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans {{if:g==0|l'agrandissement|la réduction}} de rapport $k$, les longueurs sont multipliées par $k$ et les **aires** par $k^2$.",
+					"$$\\mathcal{A} = {{eval:k;d}}^2 \\times {{a}} = {{eval:k*k;d}} \\times {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:k*k*a;d}}~\\unit{cm^2}}$$"
+				]
+			},
+			"hint": "Quand les longueurs sont multipliées par $k$, par quoi les aires sont-elles multipliées ?"
+		},
+		{
+			"statement": "Un solide a un volume de ${{v}}~\\unit{cm^3}$. On en fait {{if:g==0|un agrandissement|une réduction}} de rapport $k = {{eval:k;d}}$. Quel est le volume du solide obtenu ?\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "na",
+					"expression": "11..30"
+				},
+				{
+					"name": "nr",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-g)*na+g*nr"
+				},
+				{
+					"name": "k",
+					"expression": "eval:n/10"
+				},
+				{
+					"name": "v",
+					"expression": "2..400"
+				}
+			],
+			"conditions": [
+				"n != 20",
+				"round(100*(k*k*k*v)) == 100*(k*k*k*v)",
+				"k*k*k*v < 1000",
+				"k*v < 1000",
+				"3*k*v < 1000",
+				"round(100*(k*k*k*v)) != round(100*(k*v))",
+				"round(100*(k*k*k*v)) != round(100*(k*k*v))",
+				"round(100*(k*k*k*v)) != round(100*(3*k*v))",
+				"round(100*(k*v)) != round(100*(k*k*v))",
+				"round(100*(k*v)) != round(100*(3*k*v))",
+				"round(100*(k*k*v)) != round(100*(3*k*v))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*k*k*v;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(k*v))/100;d}}",
+							"message": "Les longueurs sont multipliées par k, mais les volumes sont multipliés par k³ (k × k × k).",
+							"label": "k au lieu de k³"
+						},
+						{
+							"answer": "{{eval:round(100*(k*k*v))/100;d}}",
+							"message": "Pour un volume, c'est k³ ; k² sert pour les aires.",
+							"label": "k² au lieu de k³"
+						},
+						{
+							"answer": "{{eval:round(100*(3*k*v))/100;d}}",
+							"message": "k³ veut dire k × k × k, pas 3 × k.",
+							"label": "3k au lieu de k³"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans {{if:g==0|l'agrandissement|la réduction}} de rapport $k$, les longueurs sont multipliées par $k$ et les **volumes** par $k^3$.",
+					"$$\\mathcal{V} = {{eval:k;d}}^3 \\times {{v}} = {{eval:k*k*k;d}} \\times {{v}} = \\textcolor{{{color:primary.0}}}{{{eval:k*k*k*v;d}}~\\unit{cm^3}}$$"
+				]
+			},
+			"hint": "Quand les longueurs sont multipliées par $k$, par quoi les volumes sont-ils multipliés ?"
+		},
+		{
+			"statement": "Un côté d'une figure mesure ${{l}}~\\unit{cm}$. Après {{if:g==0|l'agrandissement|la réduction}} de la figure, ce côté mesure ${{eval:k*l;d}}~\\unit{cm}$. Quel est le rapport $k$ de {{if:g==0|l'agrandissement|la réduction}} ?\n\n$k = ?$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "na",
+					"expression": "11..30"
+				},
+				{
+					"name": "nr",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-g)*na+g*nr"
+				},
+				{
+					"name": "k",
+					"expression": "eval:n/10"
+				},
+				{
+					"name": "l",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [
+				"n != 20",
+				"round(100*(k)) != round(100*(1/k))",
+				"round(100*(k)) != round(100*(abs(k*l-l)))",
+				"round(100*(1/k)) != round(100*(abs(k*l-l)))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(1/k))/100;d}}",
+							"message": "Tu as divisé la longueur de départ par la longueur d'arrivée : k = longueur d'arrivée ÷ longueur de départ.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{eval:round(100*(abs(k*l-l)))/100;d}}",
+							"message": "Le rapport k est un quotient, pas une différence : on divise la longueur d'arrivée par la longueur de départ.",
+							"label": "Différence au lieu du quotient"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rapport $k$ est le nombre par lequel on multiplie les longueurs de départ : $$k = \\dfrac{\\text{longueur d'arrivée}}{\\text{longueur de départ}} = \\dfrac{{{eval:k*l;d}}}{ {{l}} } = \\textcolor{{{color:primary.0}}}{{{eval:k;d}}}$$",
+					"{{if:g==0|$k > 1$ : c'est bien un agrandissement.|$k < 1$ : c'est bien une réduction.}}"
+				]
+			},
+			"hint": "Par quel nombre faut-il multiplier la longueur de départ pour obtenir la longueur d'arrivée ?"
+		},
+		{
+			"statement": "Après {{if:g==0|un agrandissement|une réduction}} de rapport $k = {{eval:k;d}}$, une figure a une aire de ${{eval:k*k*a;d}}~\\unit{cm^2}$. Quelle était l'aire de la figure de départ ?\n\n$\\mathcal{A} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "na",
+					"expression": "11..30"
+				},
+				{
+					"name": "nr",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-g)*na+g*nr"
+				},
+				{
+					"name": "k",
+					"expression": "eval:n/10"
+				},
+				{
+					"name": "a",
+					"expression": "5..60"
+				}
+			],
+			"conditions": [
+				"n != 20",
+				"k*k*a < 1000",
+				"k*k*k*k*a < 1000",
+				"round(100*(a)) != round(100*(k*k*k*k*a))",
+				"round(100*(a)) != round(100*(k*a))",
+				"round(100*(a)) != round(100*(k*k*a/(2*k)))",
+				"round(100*(k*k*k*k*a)) != round(100*(k*a))",
+				"round(100*(k*k*k*k*a)) != round(100*(k*k*a/(2*k)))",
+				"round(100*(k*a)) != round(100*(k*k*a/(2*k)))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(k*k*k*k*a))/100;d}}",
+							"message": "Tu as multiplié par k² : pour revenir à l'aire de départ, on divise par k².",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "{{eval:round(100*(k*a))/100;d}}",
+							"message": "Les aires sont multipliées par k², pas par k : on divise donc par k².",
+							"label": "Division par k au lieu de k²"
+						},
+						{
+							"answer": "{{eval:round(100*(k*k*a/(2*k)))/100;d}}",
+							"message": "k² veut dire k × k, pas 2 × k : on divise par k × k.",
+							"label": "Division par 2k"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans {{if:g==0|l'agrandissement|la réduction}}, l'aire de départ est multipliée par $k^2 = {{eval:k*k;d}}$ : $$\\mathcal{A} \\times {{eval:k*k;d}} = {{eval:k*k*a;d}}$$",
+					"On divise donc par $k^2$ : $$\\mathcal{A} = \\dfrac{{{eval:k*k*a;d}}}{{{eval:k*k;d}}} = \\textcolor{{{color:primary.0}}}{{{a}}~\\unit{cm^2}}$$"
+				]
+			},
+			"hint": "L'aire d'arrivée est l'aire de départ multipliée par $k^2$ : quelle opération fait le chemin inverse ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 k = 1,5, A = 20 : 45",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["45"]
+		},
+		{
+			"description": "v0 : k au lieu de k² (30)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les longueurs sont multipliées par k, mais les aires sont multipliées par k² (k × k)."
+			},
+			"answers": ["30"]
+		},
+		{
+			"description": "v0 : 2k au lieu de k² (60)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "k² veut dire k × k, pas 2 × k."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "v0 : k³ au lieu de k² (67,5)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une aire, c'est k² ; k³ sert pour les volumes."
+			},
+			"answers": ["67{,}5"]
+		},
+		{
+			"description": "v0 réduction k = 0,5, A = 36 : 9",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "5",
+				"n": "5",
+				"k": "0.5",
+				"a": "36"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "v0 : k au lieu de k² (18)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "5",
+				"n": "5",
+				"k": "0.5",
+				"a": "36"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les longueurs sont multipliées par k, mais les aires sont multipliées par k² (k × k)."
+			},
+			"answers": ["18"]
+		},
+		{
+			"description": "v1 réduction k = 0,5, V = 200 : 25",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "5",
+				"n": "5",
+				"k": "0.5",
+				"v": "200"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "v1 : k au lieu de k³ (100)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "5",
+				"n": "5",
+				"k": "0.5",
+				"v": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les longueurs sont multipliées par k, mais les volumes sont multipliés par k³ (k × k × k)."
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "v1 : k² au lieu de k³ (50)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "5",
+				"n": "5",
+				"k": "0.5",
+				"v": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un volume, c'est k³ ; k² sert pour les aires."
+			},
+			"answers": ["50"]
+		},
+		{
+			"description": "v1 : 3k au lieu de k³ (300)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "5",
+				"n": "5",
+				"k": "0.5",
+				"v": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "k³ veut dire k × k × k, pas 3 × k."
+			},
+			"answers": ["300"]
+		},
+		{
+			"description": "v1 k = 1,2, V = 50 : 86,4",
+			"variationIndex": 1,
+			"variables": {
+				"g": "0",
+				"na": "12",
+				"nr": "5",
+				"n": "12",
+				"k": "1.2",
+				"v": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["86{,}4"]
+		},
+		{
+			"description": "v2 L = 4, L' = 10 : 2,5",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"na": "25",
+				"nr": "5",
+				"n": "25",
+				"k": "2.5",
+				"l": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}5"]
+		},
+		{
+			"description": "v2 : Rapport renversé (0,4)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"na": "25",
+				"nr": "5",
+				"n": "25",
+				"k": "2.5",
+				"l": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé la longueur de départ par la longueur d'arrivée : k = longueur d'arrivée ÷ longueur de départ."
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "v2 : Différence au lieu du quotient (6)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"na": "25",
+				"nr": "5",
+				"n": "25",
+				"k": "2.5",
+				"l": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le rapport k est un quotient, pas une différence : on divise la longueur d'arrivée par la longueur de départ."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v2 réduction L = 15, L' = 6 : 0,4",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "4",
+				"n": "4",
+				"k": "0.4",
+				"l": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "v2 : Rapport renversé (2,5)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "4",
+				"n": "4",
+				"k": "0.4",
+				"l": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé la longueur de départ par la longueur d'arrivée : k = longueur d'arrivée ÷ longueur de départ."
+			},
+			"answers": ["2{,}5"]
+		},
+		{
+			"description": "v2 : Différence au lieu du quotient (9)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"na": "15",
+				"nr": "4",
+				"n": "4",
+				"k": "0.4",
+				"l": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le rapport k est un quotient, pas une différence : on divise la longueur d'arrivée par la longueur de départ."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "v3 k = 1,5, A' = 36 : 16",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "16"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["16"]
+		},
+		{
+			"description": "v3 : Multiplication au lieu de division (81)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "16"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par k² : pour revenir à l'aire de départ, on divise par k²."
+			},
+			"answers": ["81"]
+		},
+		{
+			"description": "v3 : Division par k au lieu de k² (24)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "16"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les aires sont multipliées par k², pas par k : on divise donc par k²."
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "v3 : Division par 2k (12)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"na": "15",
+				"nr": "5",
+				"n": "15",
+				"k": "1.5",
+				"a": "16"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "k² veut dire k × k, pas 2 × k : on divise par k × k."
+			},
+			"answers": ["12"]
+		}
+	]
+}

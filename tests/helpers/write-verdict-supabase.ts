@@ -37,6 +37,7 @@ const CHAIN_METHODS = [
 	'update',
 	'delete',
 	'eq',
+	'or',
 	'in',
 	'gte',
 	'lte',

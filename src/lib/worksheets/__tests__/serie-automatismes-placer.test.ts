@@ -59,6 +59,10 @@ const droiteEnRetrait = modele(
 	'droite-en-retrait',
 	`Place le point.\n\n> ${droite('placer: 13/10').split('\n').join('\n> ')}`
 );
+const droiteAGraduer = modele(
+	'droite-a-graduer',
+	`Place $A$.\n\n${['```line', 'start: 0', 'end: 2', 'step: 1', 'graduer: 3', 'placer: A=5/3', '```'].join('\n')}`
+);
 const reperePoint = modele(
 	'repere-point',
 	`Place le point $A({{a}} ; {{b}})$.\n\n${repere('placer: A=({{a}} ; {{b}})')}`
@@ -82,6 +86,7 @@ const modeles = new Map(
 		droiteDeuxPoints,
 		droiteAvecCase,
 		droiteEnRetrait,
+		droiteAGraduer,
 		reperePoint,
 		repereAvecPoints,
 		repereSansNom,
@@ -150,6 +155,12 @@ describe('buildSerie — droite graduée à placer', () => {
 	it('droite en retrait ou citée : refusée, message à l’appui', () => {
 		expect(() => buildSerie(modeles, [{ templateId: 'droite-en-retrait', seed: 1 }])).toThrow(
 			/droite à placer en retrait ou citée|premier niveau/
+		);
+	});
+
+	it('droite à graduer (outil n° 61) : refusée, non prise en charge', () => {
+		expect(() => buildSerie(modeles, [{ templateId: 'droite-a-graduer', seed: 1 }])).toThrow(
+			/droite à graduer non prise en charge/
 		);
 	});
 });

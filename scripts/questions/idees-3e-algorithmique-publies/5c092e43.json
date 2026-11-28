@@ -1,0 +1,451 @@
+{
+	"id": "5c092e43-3bb3-4f5d-8eaf-5f9da9a70039",
+	"title": "Formules du tableur",
+	"description": "Utiliser le tableur pour calculer une moyenne, une médiane et une étendue : =MOYENNE(B2:B8), =MEDIANE(B2:B8), =MAX(B2:B8)-MIN(B2:B8)",
+	"grades": ["4", "3"],
+	"level": 1,
+	"delay": 45,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Voici une feuille de calcul : les notes de sept élèves sont dans les cellules B2 à B8.\n\n|   | A | B |\n|---|---|---|\n| 1 | Élève | Note |\n| 2 | Ana | {{n1}} |\n| 3 | Bilal | {{n2}} |\n| 4 | Chloé | {{n3}} |\n| 5 | Dylan | {{n4}} |\n| 6 | Emma | {{n5}} |\n| 7 | Farid | {{n6}} |\n| 8 | Gaëlle | {{n7}} |\n| 9 | Moyenne |  |\n\nQuelle formule écrire dans la cellule B9 pour calculer la moyenne des notes ?\n\n```choix\n- =MOYENNE(B2:B8)\n- =SOMME(B2:B8)\n- =MOYENNE(B2;B8)\n- =B2+B8/7\n```",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "5..19"
+				},
+				{
+					"name": "n2",
+					"expression": "5..19"
+				},
+				{
+					"name": "n3",
+					"expression": "5..19"
+				},
+				{
+					"name": "n4",
+					"expression": "5..19"
+				},
+				{
+					"name": "n5",
+					"expression": "5..19"
+				},
+				{
+					"name": "n6",
+					"expression": "5..19"
+				},
+				{
+					"name": "n7",
+					"expression": "5..19"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableur.** Une plage de cellules s'écrit avec deux-points : « B2:B8 » va de B2 à B8. Le point-virgule sépare des cellules isolées : « B2;B8 » ne prend que B2 et B8.",
+					"« =MOYENNE(B2:B8) » calcule la moyenne des sept notes : $\\textcolor{{{color:primary.0}}}{\\text{c'est la bonne formule}}$.",
+					"« =SOMME(B2:B8) » donne la somme ; « =MOYENNE(B2;B8) » la moyenne de deux notes seulement ; « =B2+B8/7 » divise B8 seul par 7."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Voici une feuille de calcul : les notes de sept élèves sont dans les cellules B2 à B8.\n\n|   | A | B |\n|---|---|---|\n| 1 | Élève | Note |\n| 2 | Ana | {{n1}} |\n| 3 | Bilal | {{n2}} |\n| 4 | Chloé | {{n3}} |\n| 5 | Dylan | {{n4}} |\n| 6 | Emma | {{n5}} |\n| 7 | Farid | {{n6}} |\n| 8 | Gaëlle | {{n7}} |\n| 9 | Médiane |  |\n\nQuelle formule écrire dans la cellule B9 pour calculer la médiane des notes ?\n\n```choix\n- =MEDIANE(B2:B8)\n- =MOYENNE(B2:B8)\n- =MEDIANE(B2;B8)\n- =B5\n```",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "5..19"
+				},
+				{
+					"name": "n2",
+					"expression": "5..19"
+				},
+				{
+					"name": "n3",
+					"expression": "5..19"
+				},
+				{
+					"name": "n4",
+					"expression": "5..19"
+				},
+				{
+					"name": "n5",
+					"expression": "5..19"
+				},
+				{
+					"name": "n6",
+					"expression": "5..19"
+				},
+				{
+					"name": "n7",
+					"expression": "5..19"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableur.** Une plage de cellules s'écrit avec deux-points : « B2:B8 » va de B2 à B8. Le point-virgule sépare des cellules isolées : « B2;B8 » ne prend que B2 et B8.",
+					"« =MEDIANE(B2:B8) » range les sept notes et donne celle du milieu : $\\textcolor{{{color:primary.0}}}{\\text{c'est la bonne formule}}$.",
+					"« =B5 » est la cellule du milieu, mais les notes ne sont pas rangées ; « =MEDIANE(B2;B8) » ne prend que deux notes."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Voici une feuille de calcul : les notes de sept élèves sont dans les cellules B2 à B8.\n\n|   | A | B |\n|---|---|---|\n| 1 | Élève | Note |\n| 2 | Ana | {{n1}} |\n| 3 | Bilal | {{n2}} |\n| 4 | Chloé | {{n3}} |\n| 5 | Dylan | {{n4}} |\n| 6 | Emma | {{n5}} |\n| 7 | Farid | {{n6}} |\n| 8 | Gaëlle | {{n7}} |\n| 9 | Étendue |  |\n\nQuelle formule écrire dans la cellule B9 pour calculer l'étendue des notes ?\n\n```choix\n- =MAX(B2:B8)-MIN(B2:B8)\n- =MAX(B2:B8)\n- =B8-B2\n- =MIN(B2:B8)-MAX(B2:B8)\n```",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "5..19"
+				},
+				{
+					"name": "n2",
+					"expression": "5..19"
+				},
+				{
+					"name": "n3",
+					"expression": "5..19"
+				},
+				{
+					"name": "n4",
+					"expression": "5..19"
+				},
+				{
+					"name": "n5",
+					"expression": "5..19"
+				},
+				{
+					"name": "n6",
+					"expression": "5..19"
+				},
+				{
+					"name": "n7",
+					"expression": "5..19"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableur.** Une plage de cellules s'écrit avec deux-points : « B2:B8 » va de B2 à B8. Le point-virgule sépare des cellules isolées : « B2;B8 » ne prend que B2 et B8.",
+					"L'étendue est la plus grande note moins la plus petite : $\\textcolor{{{color:primary.0}}}{\\text{=MAX(B2:B8)-MIN(B2:B8)}}$.",
+					"« =B8-B2 » soustrait la dernière note de la première, pas la plus grande de la plus petite ; « =MIN(B2:B8)-MAX(B2:B8) » donne un nombre négatif."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n1+n2+n3+n4+n5+n6+n7)/7;d}}"
+				}
+			],
+			"statement": "Voici une feuille de calcul : les notes de sept élèves sont dans les cellules B2 à B8.\n\n|   | A | B |\n|---|---|---|\n| 1 | Élève | Note |\n| 2 | Ana | {{n1}} |\n| 3 | Bilal | {{n2}} |\n| 4 | Chloé | {{n3}} |\n| 5 | Dylan | {{n4}} |\n| 6 | Emma | {{n5}} |\n| 7 | Farid | {{n6}} |\n| 8 | Gaëlle | {{n7}} |\n| 9 | Moyenne |  |\n\nOn écrit « =MOYENNE(B2:B8) » dans la cellule B9. Quel nombre s'affiche ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "5..19"
+				},
+				{
+					"name": "n2",
+					"expression": "5..19"
+				},
+				{
+					"name": "n3",
+					"expression": "5..19"
+				},
+				{
+					"name": "n4",
+					"expression": "5..19"
+				},
+				{
+					"name": "n5",
+					"expression": "5..19"
+				},
+				{
+					"name": "n6",
+					"expression": "5..19"
+				},
+				{
+					"name": "n7",
+					"expression": "5..19"
+				}
+			],
+			"conditions": ["mod(n1+n2+n3+n4+n5+n6+n7,7)==0"],
+			"correction": {
+				"steps": [
+					"**Tableur.** Une plage de cellules s'écrit avec deux-points : « B2:B8 » va de B2 à B8. Le point-virgule sépare des cellules isolées : « B2;B8 » ne prend que B2 et B8.",
+					"Somme des notes : ${{n1}} + {{n2}} + {{n3}} + {{n4}} + {{n5}} + {{n6}} + {{n7}} = {{eval:n1+n2+n3+n4+n5+n6+n7}}$.",
+					"$$\\frac{{{eval:n1+n2+n3+n4+n5+n6+n7}}}{7} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici une feuille de calcul : les températures relevées à 8 h, du lundi au vendredi, en °C, sont dans les cellules B2 à B6.\n\n|   | A | B |\n|---|---|---|\n| 1 | Jour | °C |\n| 2 | Lundi | {{t1}} |\n| 3 | Mardi | {{t2}} |\n| 4 | Mercredi | {{t3}} |\n| 5 | Jeudi | {{t4}} |\n| 6 | Vendredi | {{t5}} |\n| 7 | Moyenne |  |\n\nQuelle formule écrire dans la cellule B7 pour calculer la température moyenne ?\n\n```choix\n- =MOYENNE(B2:B6)\n- =MOYENNE(B2;B6)\n- =(B2+B6)/2\n- =MOYENNE(A2:A6)\n```",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "0..18"
+				},
+				{
+					"name": "u2",
+					"expression": "0..18"
+				},
+				{
+					"name": "u3",
+					"expression": "0..18"
+				},
+				{
+					"name": "u4",
+					"expression": "0..18"
+				},
+				{
+					"name": "u5",
+					"expression": "0..18"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:u1-6"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:u2-6"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:u3-6"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:u4-6"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:u5-6"
+				}
+			],
+			"conditions": ["t1<0 or t2<0 or t3<0 or t4<0 or t5<0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableur.** Une plage de cellules s'écrit avec deux-points : « B2:B6 » va de B2 à B6. Le point-virgule sépare des cellules isolées : « B2;B6 » ne prend que B2 et B6.",
+					"« =MOYENNE(B2:B6) » calcule la moyenne des cinq températures, négatives comprises : $\\textcolor{{{color:primary.0}}}{\\text{c'est la bonne formule}}$.",
+					"« =MOYENNE(B2;B6) » et « =(B2+B6)/2 » ne prennent que lundi et vendredi ; « =MOYENNE(A2:A6) » vise la colonne des jours, pas celle des températures."
+				]
+			},
+			"hint": "Les deux-points désignent toutes les cellules entre les deux ; vérifie aussi dans quelle colonne sont les températures."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n1": "10",
+				"n2": "10",
+				"n3": "10",
+				"n4": "10",
+				"n5": "10",
+				"n6": "10",
+				"n7": "10"
+			},
+			"description": "=MOYENNE(B2:B8)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n1": "10",
+				"n2": "10",
+				"n3": "10",
+				"n4": "10",
+				"n5": "10",
+				"n6": "10",
+				"n7": "10"
+			},
+			"description": "Erreur : =SOMME(B2:B8)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n1": "10",
+				"n2": "10",
+				"n3": "10",
+				"n4": "10",
+				"n5": "10",
+				"n6": "10",
+				"n7": "10"
+			},
+			"description": "Erreur : =MOYENNE(B2;B8)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n1": "10",
+				"n2": "10",
+				"n3": "10",
+				"n4": "10",
+				"n5": "10",
+				"n6": "10",
+				"n7": "10"
+			},
+			"description": "=MEDIANE(B2:B8)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n1": "10",
+				"n2": "10",
+				"n3": "10",
+				"n4": "10",
+				"n5": "10",
+				"n6": "10",
+				"n7": "10"
+			},
+			"description": "Erreur : =B5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n1": "10",
+				"n2": "10",
+				"n3": "10",
+				"n4": "10",
+				"n5": "10",
+				"n6": "10",
+				"n7": "10"
+			},
+			"description": "=MAX(B2:B8)-MIN(B2:B8)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n1": "10",
+				"n2": "10",
+				"n3": "10",
+				"n4": "10",
+				"n5": "10",
+				"n6": "10",
+				"n7": "10"
+			},
+			"description": "Erreur : =B8-B2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n1": "12",
+				"n2": "8",
+				"n3": "15",
+				"n4": "11",
+				"n5": "14",
+				"n6": "9",
+				"n7": "15"
+			},
+			"description": "Notes de somme 84 : 12",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["84"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n1": "12",
+				"n2": "8",
+				"n3": "15",
+				"n4": "11",
+				"n5": "14",
+				"n6": "9",
+				"n7": "15"
+			},
+			"description": "Erreur : somme 84",
+			"variationIndex": 3
+		},
+		{
+			"description": "G : bonne formule",
+			"variationIndex": 4,
+			"variables": {
+				"u1": "4",
+				"u2": "9",
+				"u3": "12",
+				"u4": "15",
+				"u5": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "G : point-virgule",
+			"variationIndex": 4,
+			"variables": {
+				"u1": "4",
+				"u2": "9",
+				"u3": "12",
+				"u4": "15",
+				"u5": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "G : ligne des jours",
+			"variationIndex": 4,
+			"variables": {
+				"u1": "4",
+				"u2": "9",
+				"u3": "12",
+				"u4": "15",
+				"u5": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

@@ -65,6 +65,26 @@ describe('logError — journal des erreurs', () => {
 		expect(serialized).toContain('[email]@[domain]');
 	});
 
+	it('masque le jeton d’un lien personnel dans les valeurs du contexte (url d’un gel)', async () => {
+		const jeton = 'AbCdEfGhJkMnPqRsTuVwXyZ0123456789_-abcdefg';
+		await logError(unusedClient, {
+			error_type: 'client_js',
+			severity: 'warning',
+			message: 'Gel de la page',
+			url: '/auth/register/invitation/[token]',
+			context: {
+				drift: 1200,
+				url: `https://chiph.re/auth/register/invitation/${jeton}`,
+				pages: [`https://chiph.re/carnet/${jeton}`]
+			}
+		});
+
+		const serialized = JSON.stringify(insertedRow().context);
+		expect(serialized).not.toContain(jeton);
+		expect(serialized).toContain('/auth/register/invitation/[token]');
+		expect(serialized).toContain('/carnet/[token]');
+	});
+
 	it('masque le jeton du carnet de liaison dans l’URL et le message (ADR 0040)', async () => {
 		const jeton = 'AbCdEfGhJkMnPqRsTuVwXyZ0123456789_-abcdefg';
 		await logError(unusedClient, {

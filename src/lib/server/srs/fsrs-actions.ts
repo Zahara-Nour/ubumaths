@@ -142,7 +142,7 @@ export async function upsertCardStats(
 		next_review: stats.nextReview,
 		total_reviews: stats.totalReviews,
 		// ReviewHistoryEntry[] (interface) → JSONB column: bridge to Json
-		review_history: stats.reviewHistory as unknown as Json
+		review_history: stats.reviewHistory as unknown as NonNullable<Json>
 	};
 
 	if (options.verifyWrite) {

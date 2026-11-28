@@ -30,7 +30,10 @@ describe('valeur absolue écrite par MathLive', () => {
 		['|x|', '\\left\\vert x\\right\\vert'],
 		['3|2x+1|', '3\\left\\vert2x+1\\right\\vert'],
 		['3|2x+1|', '3\\vert 2x+1\\vert'],
-		['-2|x-1|', '-2\\left\\lvert x-1\\right\\rvert']
+		['-2|x-1|', '-2\\left\\lvert x-1\\right\\rvert'],
+		// #1262 : une primitive en ln|x|, touche du clavier virtuel
+		['\\ln|x|', '\\ln\\left\\vert x\\right\\vert'],
+		['2|x|', '2\\vert x\\vert']
 	])('attendu %s, réponse %s : juste', (expected, answer) => {
 		expect(status(expected, answer)).toBe('correct');
 	});

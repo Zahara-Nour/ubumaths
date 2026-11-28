@@ -1,0 +1,42 @@
+{
+	"migration": "supabase/migrations/20261124213904_questions_idees_3e_fonctions_affines_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "9414e0a3-073c-4cd2-89c4-0d769fe60825",
+			"title": "Lire les coefficients d'une fonction affine sur son expression",
+			"fichier": "n1-coefficients-sur-l-expression.json",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sousNotion": "coefficient directeur et ordonnée à l'origine",
+			"point": "3-044"
+		},
+		{
+			"id": "8725107f-da05-4044-a574-0fa76af92500",
+			"title": "Déterminer une fonction affine par deux images",
+			"fichier": "n2-affine-par-deux-images.json",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sousNotion": "équations de droites",
+			"point": "2-322"
+		},
+		{
+			"id": "51a8db37-292e-4e12-8688-a71cddecc576",
+			"title": "Lire l'expression d'une fonction affine sur sa droite",
+			"fichier": "n3-expression-lue-sur-la-droite.json",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sousNotion": "coefficient directeur et ordonnée à l'origine",
+			"point": "3-067"
+		},
+		{
+			"id": "b213f446-242b-4177-851a-2c50978a9f5f",
+			"title": "Représenter graphiquement une fonction affine",
+			"fichier": "n4-representer-une-fonction-affine.json",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sousNotion": null,
+			"point": "3-039"
+		}
+	],
+	"niveaux": []
+}

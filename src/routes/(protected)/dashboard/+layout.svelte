@@ -49,6 +49,7 @@
 	import { notificationStore } from '#lib/stores/notifications.svelte.ts';
 	import { notificationsRealtimeManager } from '#lib/stores/notificationsRealtime.svelte.ts';
 	import { activityStore } from '#lib/stores/activity.svelte.ts';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
 	import gidouille from '#lib/assets/images/gidouille.png';
 	import AlmanachHeaderDate from '#lib/components/almanach/AlmanachHeaderDate.svelte';
 	import NotificationBanner from '#lib/components/notifications/NotificationBanner.svelte';
@@ -107,7 +108,12 @@
 
 	// Navigation links — extracted to #lib/config/dashboard-nav.ts for testability
 	let allLinks = $derived(
-		getNavLinks(navRole, data.pendingVipRequestsCount, data.marketplaceEnabled)
+		getNavLinks(
+			navRole,
+			data.pendingVipRequestsCount,
+			data.marketplaceEnabled,
+			privateMessages.unreadCount
+		)
 	);
 	let mainLinks = $derived(allLinks.filter((l) => !l.footer));
 	let footerLinks = $derived(allLinks.filter((l) => l.footer));
@@ -323,7 +329,7 @@
 			<!-- Test Mode Toggle (teachers only) - hidden on mobile -->
 			{#if data.profile.role === 'teacher'}
 				<div class="hidden md:block">
-					<TestModeToggle currentUserIsTest={data.profile.is_test} />
+					<TestModeToggle currentUserIsTest={data.profile.is_test} enabled={data.teacherTestMode} />
 				</div>
 			{/if}
 
@@ -419,10 +425,10 @@
 				<span class="text-center text-xs leading-tight font-medium">{link.label}</span>
 				{#if link.badge && link.badge > 0}
 					<span
-						class="absolute top-1 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
-						aria-label="{link.badge} demandes en attente"
+						class="absolute top-1 right-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
 					>
-						{link.badge}
+						<span aria-hidden="true">{link.badge > 99 ? '99+' : link.badge}</span>
+						<span class="sr-only">{link.badgeLabel}</span>
 					</span>
 				{/if}
 			{/snippet}

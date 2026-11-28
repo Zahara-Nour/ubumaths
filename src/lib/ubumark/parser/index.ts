@@ -164,6 +164,22 @@ export {
 // Bloc ```robot
 export { parseRobot, parseRobotContent, findRobotBlocks, isRobotBlockStart } from './robot-parser';
 
+// Bloc ```labyrinthe
+export {
+	parseLabyrinthe,
+	parseLabyrintheContent,
+	findLabyrintheBlocks,
+	isLabyrintheBlockStart
+} from './labyrinthe-parser';
+
+// Bloc ```yohaku
+export {
+	parseYohaku,
+	parseYohakuContent,
+	findYohakuBlocks,
+	isYohakuBlockStart
+} from './yohaku-parser';
+
 // Bloc ```partage
 export {
 	parsePartage,

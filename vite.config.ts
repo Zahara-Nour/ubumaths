@@ -9,6 +9,8 @@ import { Features } from 'lightningcss';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { baseTestConfig } from './vitest.base.config';
 import { moduleSideEffects } from './scripts/side-effect-modules';
+import { retoursDev } from './scripts/retours/plugin.ts';
+import { supabaseRelay } from './scripts/relais/plugin.ts';
 
 // Read version from package.json at build time
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
@@ -69,6 +71,10 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 	return {
 		plugins: [
 			mathliveFontDisplay(),
+			// Route du bouton « signaler » : serveur de dev seulement (jamais dans le build)
+			retoursDev(),
+			// Supabase local relayé sous /__dev/supabase : serveur de dev et base locale seulement
+			supabaseRelay(),
 			tailwindcss(),
 			sveltekit({
 				// Consult https://svelte.dev/docs/kit/integrations
@@ -276,7 +282,23 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 						// globs above; it runs via vitest.integration.config.ts (Supabase local).
 						setupFiles: ['./vitest-setup-server.ts']
 					}
-				}
+				},
+				// Tests de preuve du registre des écarts (docs/ecarts/registre.md) : rouges
+				// tant que l'écart est vrai, donc hors de la CI et de `test:changed`. Le
+				// projet n'existe que pour `pnpm ecarts rejouer`, qui pose ECARTS_PREUVES.
+				...(process.env.ECARTS_PREUVES === '1'
+					? [
+							{
+								extends: './vite.config.ts',
+								test: {
+									name: 'ecarts',
+									environment: 'node',
+									include: ['tests/ecarts/**/*.test.ts'],
+									setupFiles: ['./vitest-setup-server.ts']
+								}
+							}
+						]
+					: [])
 			]
 		}
 	};

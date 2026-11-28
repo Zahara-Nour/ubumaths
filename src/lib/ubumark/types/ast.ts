@@ -575,6 +575,8 @@ export type { HorlogeNode } from './horloge';
 export type { TortueNode } from './tortue';
 export type { CalculNode } from './calcul';
 export type { RobotNode } from './robot';
+export type { LabyrintheNode } from './labyrinthe';
+export type { YohakuNode } from './yohaku';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
@@ -600,6 +602,8 @@ import type { HorlogeNode } from './horloge';
 import type { TortueNode } from './tortue';
 import type { CalculNode } from './calcul';
 import type { RobotNode } from './robot';
+import type { LabyrintheNode } from './labyrinthe';
+import type { YohakuNode } from './yohaku';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
@@ -638,6 +642,8 @@ export type BlockNode =
 	| TortueNode
 	| CalculNode
 	| RobotNode
+	| LabyrintheNode
+	| YohakuNode
 	| PartageNode
 	| EspaceNode
 	| OperationNode

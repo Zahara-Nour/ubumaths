@@ -41,9 +41,12 @@
 	import favicon from '#lib/assets/images/favicon.png';
 	import Header from '#lib/components/Header.svelte';
 	import Sidebar from '#lib/components/Sidebar.svelte';
-	import { theme } from '#lib/stores/theme.svelte.ts';
-	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
-	import { easyReading } from '#lib/stores/easyReading.svelte.ts';
+	// Chargés pour leur effet : à leur création, ces réglages s'appliquent à la page
+	// (thème, taille du texte, lecture facilitée lus dans le navigateur), sur toutes les pages.
+	// Déclarés dans `scripts/side-effect-modules.ts`, sinon le build les élague.
+	import '#lib/stores/theme.svelte.ts';
+	import '#lib/stores/fontSize.svelte.ts';
+	import '#lib/stores/easyReading.svelte.ts';
 	import { initializeTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import { page, updated } from '$app/state';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
@@ -53,7 +56,7 @@
 	import InfoPanel from '#lib/components/InfoPanel.svelte';
 	import { navigating } from '$app/state';
 	import type { LayoutData } from './$types';
-	import { Toaster } from 'svelte-sonner';
+	import AppToaster from '#lib/components/AppToaster.svelte';
 	import { ModeWatcher } from 'mode-watcher';
 	import SkeletonPage from '#lib/components/skeleton/SkeletonPage.svelte';
 	import SkeletonDashboard from '#lib/components/skeleton/SkeletonDashboard.svelte';
@@ -62,7 +65,7 @@
 	import { getSkeletonType } from '#lib/utils/skeleton-detector.ts';
 	import ModalStackRenderer from '#lib/components/modals/ModalStackRenderer.svelte';
 	import MathKeyboardClose from '#lib/components/MathKeyboardClose.svelte';
-	import { provideReaderGrade } from '#lib/lexicon/reader-grade.ts';
+	import { provideReaderGrade } from '#lib/dictionary/reader-grade.ts';
 	import type { Component } from 'svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
@@ -106,14 +109,6 @@
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
-	// Initialize theme, fontSize and easyReading stores (ensures DOM updates on mode/size changes)
-	$effect(() => {
-		// Access to ensure reactivity
-		void theme.dark;
-		void fontSize.size;
-		void easyReading.enabled;
-	});
-
 	// Palotin de l'élève connecté (maison, écusson, passages : chantier `palotins`).
 	// Chargé à la demande : ni le visiteur ni le professeur ne téléchargent son code,
 	// et le module d'entrée reste léger (Safari TDZ, cf. +layout.ts).
@@ -124,6 +119,26 @@
 		import('#lib/components/buddy/PalotinPresence.svelte')
 			.then((module) => (PalotinPresence = module.default))
 			.catch((e) => console.debug('[Palotin] Chargement impossible :', e));
+	});
+
+	// Bouton « signaler » : serveur de dev seulement. `import.meta.env.DEV` est remplacé par
+	// `false` au build, qui n'embarque donc ni le bouton ni l'adresse de sa route
+	// (garde : étape « Bouton signaler absent du build » de la CI).
+	let SignalerButton = $state<Component<{
+		account: { email: string; role: string } | null;
+	}> | null>(null);
+	const feedbackAccount = $derived(
+		data.user?.email && data.profile?.role
+			? { email: data.user.email, role: data.profile.role }
+			: null
+	);
+	$effect(() => {
+		if (!browser || SignalerButton) return;
+		if (import.meta.env.DEV) {
+			import('#lib/components/dev/SignalerButton.svelte')
+				.then((module) => (SignalerButton = module.default))
+				.catch((e) => console.debug('[Signaler] Chargement impossible :', e));
+		}
 	});
 
 	// Initialize VIP card templates store from server data
@@ -164,9 +179,7 @@
 {/if}
 
 <!-- Toast notifications -->
-<!-- gap={12} adds spacing between toasts to prevent overlap -->
-<!-- offset="16px" adds padding from screen edge -->
-<Toaster richColors position="top-right" expand={true} visibleToasts={5} gap={12} offset="16px" />
+<AppToaster />
 
 <!-- Modal Stack Renderer - renders modal stack from modalStack store -->
 <ModalStackRenderer />
@@ -177,6 +190,11 @@
 <!-- Palotin de l'élève : il décide lui-même des pages où il apparaît -->
 {#if PalotinPresence && isStudent}
 	<PalotinPresence />
+{/if}
+
+<!-- Bouton « signaler » : serveur de dev seulement -->
+{#if SignalerButton}
+	<SignalerButton account={feedbackAccount} />
 {/if}
 
 <div class="flex h-screen flex-col">

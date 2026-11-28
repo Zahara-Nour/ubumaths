@@ -16,6 +16,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
+import { classSchoolYearExpiry } from '#lib/server/school-year.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 import { withBranches } from '#lib/server/worksheets/worksheet-classification.ts';
 
@@ -73,6 +74,11 @@ export interface PublicWorksheet {
 		name: string;
 		kind?: string;
 		branch?: string | null;
+		/** Traductions du nœud, rendues par la base (ADR 0043) */
+		translations?: unknown;
+		/** Noms anglais de la notion et de sa branche, ajoutés par `withBranches` */
+		name_en?: string | null;
+		branch_en?: string | null;
 		position: number;
 	}>;
 	translations: unknown;
@@ -106,23 +112,10 @@ export interface JournalShareToken {
 }
 
 /**
- * Fin de l'année scolaire suivante : le 31 août à venir.
- *
- * Un lien d'année scolaire doit mourir de lui-même à la rentrée plutôt que de
- * survivre indéfiniment chez d'anciennes familles.
- */
-export function endOfSchoolYear(now: Date = new Date()): Date {
-	// Septembre (mois 8) et après → 31 août de l'année suivante ; sinon celui de
-	// l'année en cours.
-	const year = now.getMonth() >= 8 ? now.getFullYear() + 1 : now.getFullYear();
-	return new Date(Date.UTC(year, 7, 31, 23, 59, 59));
-}
-
-/**
  * Le jeton actif ET NON EXPIRÉ d'une classe, s'il en existe un.
  *
  * Filtrer l'expiration ici n'est pas cosmétique : sans ça, la page prof
- * afficherait après le 31 août un lien que la RPC refuse déjà, et les familles
+ * afficherait après la fin de l'année scolaire un lien que la RPC refuse déjà, et les familles
  * recevraient un 404 sans explication. Un lien qui « ne marche plus sans raison
  * visible » pousse au contournement — rediffuser le code d'inscription, envoyer
  * le contenu par un autre canal.
@@ -161,6 +154,15 @@ export async function rotateShareToken(
 	classId: string,
 	userId: string
 ): Promise<{ token: JournalShareToken | null; error: string | null }> {
+	// Avant la révocation : une fin d'année illisible ne doit pas laisser la
+	// classe sans lien.
+	let expiresAt: Date;
+	try {
+		expiresAt = await classSchoolYearExpiry(supabase, classId);
+	} catch {
+		return { token: null, error: 'Impossible de créer le lien de partage' };
+	}
+
 	const { error: revokeError } = await revokeShareToken(supabase, classId);
 	if (revokeError) return { token: null, error: revokeError };
 
@@ -172,7 +174,7 @@ export async function rotateShareToken(
 			// suffisent à retrouver l'état du générateur (finding H8, audit d'août).
 			token: generateShareTokenString(),
 			created_by: userId,
-			expires_at: endOfSchoolYear().toISOString()
+			expires_at: expiresAt.toISOString()
 		})
 		.select(
 			'id, class_id, token, is_active, expires_at, access_count, last_accessed_at, created_at'

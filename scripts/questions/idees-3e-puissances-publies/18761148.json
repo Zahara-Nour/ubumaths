@@ -1,0 +1,233 @@
+{
+	"id": "18761148-ca6b-4c7f-ae72-506819de30bb",
+	"title": "Diviser $2$ puissances d'un même nombre.",
+	"description": "Exposants relatifs",
+	"grades": ["3"],
+	"level": 4,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"brackets": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-(c)}}"
+				}
+			],
+			"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "expression1",
+					"expression": "{a^{b}}/{a^{c}}"
+				}
+			],
+			"conditions": ["abs(b-(c))>1"],
+			"correction": {
+				"steps": [
+					"$$\\begin{align} \\frac{{{a}}^{{{b}}}}{{{a}}^{{{c}}}} &= {{a}}^{{{b}}{{eval:-(c);+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+				]
+			},
+			"answerFormats": {
+				"expression1": "{{a}}^?"
+			}
+		},
+		{
+			"statement": "Calcule en écrivant le résultat sous la forme d’une puissance de $(-{{a}})$.\n\n$$\\dfrac{(-{{a}})^{ {{b}} }}{(-{{a}})^{ {{c}} }} = (-{{a}})^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..6;±"
+				}
+			],
+			"conditions": ["abs(b-(c))>1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-(c)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b+(c)}}",
+							"message": "Tu as additionné les exposants : pour un quotient, on retranche l’exposant du dénominateur.",
+							"label": "Exposants additionnés"
+						},
+						{
+							"answer": "{{eval:c-(b)}}",
+							"message": "Tu as soustrait dans le mauvais sens : exposant du numérateur moins exposant du dénominateur.",
+							"label": "Soustraction à l’envers"
+						},
+						{
+							"answer": "{{eval:abs(b)-abs(c)}}",
+							"message": "Attention aux exposants négatifs : garde leur signe dans le calcul.",
+							"label": "Signes des exposants oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Quotient de puissances d’un même nombre.** $\\dfrac{a^m}{a^n} = a^{m-n}$, même quand la base est négative.",
+					"$$\\dfrac{(-{{a}})^{ \\textcolor{{{color:primary.0}}}{{{b}}} }}{(-{{a}})^{ \\textcolor{{{color:primary.1}}}{{{c}}} }} = (-{{a}})^{ {{b}} {{eval:-(c);+}} } = \\textcolor{{{color:primary.0}}}{(-{{a}})^{ {{eval:b-(c)}} }}$$"
+				]
+			},
+			"hint": "La base est la même en haut et en bas, $(-{{a}})$ : les facteurs du dénominateur se simplifient avec ceux du numérateur."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "c|c",
+				"b": "-4",
+				"c": "2"
+			},
+			"description": "c^-4/c^2 : -6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "-3"
+			},
+			"description": "3^5/3^-3 : 8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "c|c",
+				"b": "-4",
+				"c": "2"
+			},
+			"description": "exposants additionnés refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "-3"
+			},
+			"description": "signe refusé",
+			"variationIndex": 0
+		},
+		{
+			"description": "F3 : (-2)^3 / (-2)^-4 → 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "F3 : (-5)^2 / (-5)^6 → -4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4"]
+		},
+		{
+			"description": "F3 : exposants additionnés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les exposants : pour un quotient, on retranche l’exposant du dénominateur."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "F3 : à l’envers",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait dans le mauvais sens : exposant du numérateur moins exposant du dénominateur."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "F3 : (-2)^-3 / (-2)^4 → -7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-7"]
+		},
+		{
+			"description": "F3 : signes oubliés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention aux exposants négatifs : garde leur signe dans le calcul."
+			},
+			"answers": ["-1"]
+		}
+	]
+}

@@ -1,0 +1,62 @@
+{
+	"id": "1bfc8da3-4992-4f74-9804-62e64b5952dc",
+	"title": "Relecture — second degré de Première, 9 modèles publiés complétés",
+	"grade": "1_SPE",
+	"description": "Relecture dans /dev/modeles des 9 modèles publiés de 1re spé auxquels le chantier idees-1re-second-degre a ajouté 13 variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Factoriser un trinôme à l'aide de ses racines",
+			"templateId": "604f83b7-4ed3-4b0f-b393-85e60ac353b4",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer le discriminant",
+			"templateId": "b09c430a-8ed5-44f1-a431-7b108299982b",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Résoudre une inéquation du second degré",
+			"templateId": "9e1d084e-ff83-4852-ad51-fe79c3328ae0",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Signe d'un trinôme sous forme factorisée",
+			"templateId": "afe51ac4-8552-454e-b45e-46f0edbd9416",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Polynôme s'annulant en deux réels donnés",
+			"templateId": "aab8e41c-4539-4c90-9c1d-6ee41dc7a1cb",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Déterminer la forme canonique.",
+			"templateId": "87140df3-ed7a-4afc-98d9-dcd4d43e65bb",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Déterminer les racines d'un polynôme du second degré",
+			"templateId": "18e26873-dca0-4c73-bc23-f181e0164a66",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Déterminer les coordonnées du sommet",
+			"templateId": "56b1803f-f707-49a9-a0b7-3e6b8220f2d7",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer la forme canonique",
+			"templateId": "a9aece33-74e0-4120-817d-5bdf6b9414f3",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

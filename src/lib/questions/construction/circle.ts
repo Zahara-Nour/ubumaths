@@ -23,7 +23,8 @@
  * validée par David le 2026-11-08) : `cercle(O, passant=A)` (compas piqué en O,
  * ouvert jusqu'à A ; papier uni ou quadrillage) et `cercle(O, rayon=distance(D, E))`
  * (Report de [DE] piqué en O ; papier uni). Messages, dans l'ordre : il manque le
- * cercle, compas ouvert à l'œil (bon cercle, point de passage non construit), mauvais
+ * cercle, compas ouvert à l'œil (bon cercle, point de passage non construit ; pour
+ * `rayon=`, le message du mauvais rayon, E62), mauvais
  * centre, bon centre mais mauvais rayon. L'essai : le dernier cercle centré en O.
  * Sur quadrillage, les nœuds suffisent (tout cercle tracé est aimanté aux nœuds).
  *
@@ -84,8 +85,6 @@ export const goodCenterRadiusFeedback = (radius: string) =>
 	`Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur ${radius}.`;
 export const centeredThroughEyeballedFeedback = (through: string) =>
 	`Ton compas est ouvert à l’œil : ouvre-le jusqu’à ${through}.`;
-export const centeredRadiusEyeballedFeedback = (radius: string) =>
-	`Ton compas est ouvert à l’œil : prends l’écartement ${radius} avec le Report.`;
 export const centeredRulerEyeballedFeedback = () =>
 	'Ton compas est ouvert à l’œil : ouvre-le sur une graduation de la règle.';
 export const severalCirclesFeedback = (center: string, expected = 1) =>
@@ -547,13 +546,15 @@ function judgeCentered(
 	const good = covering.find(built);
 	if (good !== undefined) return good;
 	if (covering.length > 0) {
-		// Le centre est un point de la figure : seul le rayon a pu être pris à l'œil
+		// Le centre est un point de la figure : seul le rayon a pu être pris à l'œil.
+		// Rayon donné par un segment : un seul message, celui du mauvais rayon (E62 :
+		// au toucher, un rayon pris à l'œil ne tombe jamais pile, l'élève ne lisait que lui)
 		return {
 			status: 'incorrect',
 			feedback:
 				centered.kind === 'passant'
 					? centeredThroughEyeballedFeedback(radiusWord)
-					: centeredRadiusEyeballedFeedback(radiusWord)
+					: goodCenterRadiusFeedback(radiusWord)
 		};
 	}
 	const attempts = free.filter((i) => {

@@ -39,7 +39,8 @@ let _loaded = $state(false);
 
 /**
  * Load configuration from API
- * Only admins can load the config; non-admins will use defaults
+ * Tout compte connecté lit la configuration ; en cas d'échec, les valeurs
+ * par défaut restent.
  */
 async function load(): Promise<void> {
 	if (!browser) return;

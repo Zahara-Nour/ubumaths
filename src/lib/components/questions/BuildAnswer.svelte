@@ -10,7 +10,9 @@
 	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
 	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
 	point, quand il y en a plusieurs), ou les points justes. Droite à représenter
-	(```line, `representer:`) : l'intervalle de l'élève, ou l'intervalle juste. Horloge à placer
+	(```line, `representer:`) : l'intervalle de l'élève, ou l'intervalle juste. Droite à
+	graduer (```line, `graduer:`) : les parts et les points de l'élève (cases dans l'ordre),
+	ou la droite juste partagée. Horloge à placer
 	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
 	ou le cadran à l'heure juste. Figure à colorier (```partage, `colorier:`) : la
 	figure verrouillée avec les parts de l'élève, ou la figure juste. Diagramme en barres à construire (```barres,
@@ -38,6 +40,8 @@
 	import NumberLine from '#lib/components/markdown/nodes/NumberLine.svelte';
 	import NumberLinePlacer from '#lib/components/markdown/nodes/NumberLinePlacer.svelte';
 	import NumberLineRepresenter from '#lib/components/markdown/nodes/NumberLineRepresenter.svelte';
+	import NumberLineGraduer from '#lib/components/markdown/nodes/NumberLineGraduer.svelte';
+	import { graduerSolutionNode } from '#lib/ubumark/utils/number-line-graduer.ts';
 	import Courbe from '#lib/components/markdown/nodes/Courbe.svelte';
 	import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
 	import { solutionLine } from '#lib/ubumark/utils/courbe-tracer.ts';
@@ -57,6 +61,10 @@
 	import { parseTortueContent } from '#lib/ubumark/parser/tortue-parser.ts';
 	import RobotCorrige from '#lib/components/markdown/nodes/RobotCorrige.svelte';
 	import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
+	import LabyrintheCorrige from '#lib/components/markdown/nodes/LabyrintheCorrige.svelte';
+	import { parseLabyrintheContent } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+	import YohakuCorrige from '#lib/components/markdown/nodes/YohakuCorrige.svelte';
+	import { parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
 	import CalculCorrige from '#lib/components/markdown/nodes/CalculCorrige.svelte';
 	import { parseCalculContent } from '#lib/ubumark/parser/calcul-parser.ts';
 	import Partage from '#lib/components/markdown/nodes/Partage.svelte';
@@ -134,6 +142,8 @@
 	let tortue = $derived(kind === 'tortue' ? parseTortueContent(source) : null);
 	let calcul = $derived(kind === 'calcul' ? parseCalculContent(source) : null);
 	let robot = $derived(kind === 'robot' ? parseRobotContent(source) : null);
+	let labyrinthe = $derived(kind === 'labyrinthe' ? parseLabyrintheContent(source) : null);
+	let yohaku = $derived(kind === 'yohaku' ? parseYohakuContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
@@ -151,6 +161,16 @@
 				spec: { ...spec, build: undefined, sets: [collectionSolution(spec.build!)] }
 			}}
 		/>
+	{/if}
+{:else if line?.graduer !== undefined}
+	{#if lineCases}
+		<NumberLineGraduer node={line} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- La droite juste : d parts, les points en vert, sans `graduer:` : dessinée seule -->
+		{@const solution = graduerSolutionNode(line)}
+		{#if solution}
+			<NumberLine node={solution} pointsOnLine />
+		{/if}
 	{/if}
 {:else if line?.representer !== undefined}
 	{#if lineCases}
@@ -291,6 +311,17 @@
 {:else if robot}
 	<!-- Robot à produire : le trajet de l'élève, un code juste et son trajet en pointillés -->
 	<RobotCorrige node={robot} {answer} correct={accepted(status)} expected={expected?.[0]} />
+{:else if labyrinthe}
+	<!-- Labyrinthe à parcourir : le chemin de l'élève, le bon chemin en pointillés et sa sortie -->
+	<LabyrintheCorrige
+		node={labyrinthe}
+		{answer}
+		correct={accepted(status)}
+		expected={expected?.[0]}
+	/>
+{:else if yohaku}
+	<!-- Grille yohaku : la grille de l'élève (lignes et colonnes fausses en rouge) ou une grille juste -->
+	<YohakuCorrige node={yohaku} {answer} correct={accepted(status)} expected={expected?.[0]} />
 {:else if calcul}
 	<!-- Programme de calcul : les programmes en texte, le tableau nombre → résultat -->
 	<CalculCorrige node={calcul} {answer} correct={accepted(status)} expected={expected?.[0]} />

@@ -50,11 +50,13 @@ s'élève quand il a besoin de l'admin ; l'élévation laisse le rôle de sessio
 Onglet 📘 Connaissances :
 
 - **A — Grille élève × point** (`ClassCurriculumPointGrid.svelte`) : une colonne par point **non
-  archivé** tagué sur un modèle que la classe a tenté (via `question_template_points`, sans `!inner` ;
+  archivé** tagué sur un modèle que la classe a tenté (essais `skill_attempts` lus par pages de 1000,
+  `readAllRows` : plafond `max_rows`, V123 ; via `question_template_points`, sans `!inner` ;
   points sans niveau et archivés écartés en mémoire par `isLivePoint`). Carte tagguée dans plusieurs
   programmes : seuls ses points du **niveau de la classe** comptent, s'il en a (`keepLinksOfGrade`,
   niveau lu sur le point). Colonnes dans l'**ordre de l'arbre** (branche, notion, puis ordre du BO,
-  `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris), la **notion** du
+  `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris ; l'infobulle de la
+  colonne et des cases le donne en texte simple, `toPlainText`, V122), la **notion** du
   point ; un point qu'on ne sait pas placer garde sa colonne, en dernier, sans notion. Cellule = badge
   FSRS agrégé 🆘 / 🔁 / ⏳ / ✅ / ◯ (`templateToBadge` + `BADGE_PRIORITY`,
   `src/lib/server/srs/curriculum-point-badge.ts`). Bascule « Tout le niveau » : ajoute les points non
@@ -245,12 +247,10 @@ admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page
 
 ## Écarts connus
 
-- **Grille A : traces lues sans pagination** (`getClassCurriculumPointGrid`) : au-delà du plafond de
-  lignes de PostgREST, des modèles tentés peuvent manquer en silence. La page de suivi d'un élève, elle,
-  pagine. Vu le 2026-11-14, non corrigé.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Nom d'un point en LaTeX brut** dans les infobulles (`title`) de la grille : un attribut ne rend pas
-  les formules. (La fenêtre du widget E rend son titre par `InlineMarkdown` depuis le 2026-11-14.)
+### Points non vérifiés
+
 - **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;
   elle ne lit pas `student_point_state` (régime d'acquisition `fluence` / `diversite`). Un point
   peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second. Tranché le

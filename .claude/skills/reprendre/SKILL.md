@@ -19,13 +19,14 @@ Le nom du chantier = le `<sujet>` de `docs/wip/<sujet>-progress.md` = celui du w
    git worktree list --porcelain | sed -n 's/^worktree //p' | while read -r d; do ls "$d/docs/wip" 2>/dev/null | grep -- '-progress\.md$' | while read -r n; do echo "$(git -C "$d" log -1 --format=%cs -- "docs/wip/$n") ${n%-progress.md}"; done; done | sort -r | awk '!vu[$2]++' | head -15
    ```
 
-**Quel exemplaire du journal lire.** Les sessions partent du dépôt principal, mais le journal d'un chantier en cours vit sur **sa branche**, dans `../ubumaths-wt-<sujet>` : l'exemplaire de `main` n'est à jour qu'après le merge. Donc :
+**Quel exemplaire du journal lire : le plus récent, jamais le premier trouvé.** Un chantier a souvent **plusieurs worktrees** (une PR = un worktree : `ubumaths-wt-<sujet>`, `ubumaths-wt-<sujet>-<suite>`…) et chacun a sa copie du journal, plus celle de `main`. Elles divergent : le bloc écrit avant un `/clear` vit dans le worktree où la session travaillait, pas forcément celui qui porte le nom exact (2026-11-22 : bloc lu dans `ubumaths-wt-idees-format`, après #2987, alors que le bon était dans `ubumaths-wt-idees-format-revue-2de` — déploiement demandé par David oublié). Donc lister **toutes** les copies, la plus récente en tête :
 
 ```bash
-wt=$(git worktree list | awk -v s="ubumaths-wt-<sujet>" '$1 ~ s"$" {print $1}')
-f=${wt:-.}/docs/wip/<sujet>-progress.md                 # worktree s'il existe, sinon main
-[ -f "$f" ] || f=docs/wip/<sujet>-progress.md           # worktree sans journal : celui de main (le dire)
+s=<sujet>; for d in "$PWD" $(git worktree list --porcelain | sed -n 's/^worktree //p' | grep -E "/ubumaths-wt-$s(-[^/]*)?$"); do f="$d/docs/wip/$s-progress.md"; [ -f "$f" ] || continue; t=$(git -C "$d" log -1 --format=%ct -- "docs/wip/$s-progress.md"); [ -n "$(git -C "$d" status --porcelain -- "docs/wip/$s-progress.md")" ] && t=$(stat -f %m "$f"); echo "$t $(date -r "${t:-0}" '+%F %R') $f | $(grep -m1 '^_Mis à jour' "$f")"; done | sort -rn | cut -d' ' -f2-
 ```
+
+- `f` = la **première ligne** (copie modifiée non commitée : sa date de fichier compte) ; `wt` = son worktree (vide si c'est le dépôt principal).
+- Plusieurs copies → **dire à David laquelle est lue**, et si une autre a un « Mis à jour » plus récent ou différent, le signaler au lieu de choisir en silence.
 
 ## 2. Lire le bloc, et seulement lui
 
@@ -49,9 +50,11 @@ gh pr list --search "head:<branche>" --state all -L 3 --json number,state,title
 
 Une PR que le bloc dit ouverte est `MERGED` → le bloc est en retard : le signaler et le mettre à jour.
 
+⛔ **Bloc contredit par l'état réel = mauvais exemplaire probable, s'arrêter.** Il annonce « aucun worktree » alors qu'il y en a, nomme un worktree absent, ou s'arrête avant une PR du chantier déjà mergée (`git log origin/main`) → refaire la liste des copies ci-dessus et chercher le bloc plus récent ; à défaut, le dire à David. **Ne jamais reconstruire soi-même la prochaine action** : un bloc écrit avant un `/clear` porte souvent une consigne de David (déploiement, explication) qu'aucune déduction ne retrouve.
+
 ## 4. Rendre compte à David, en 5 lignes
 
-- **Chantier** `<sujet>` · worktree · branche (le travail se fait dans le worktree, par chemins absolus : le shell revient au dépôt principal après chaque commande)
+- **Chantier** `<sujet>` · worktree · branche · **exemplaire du journal lu** (le travail se fait dans le worktree, par chemins absolus : le shell revient au dépôt principal après chaque commande)
 - **État**
 - **Prochaine action** (celle du bloc)
 - **En attente de David** (s'il y a lieu : le reposer tel quel)

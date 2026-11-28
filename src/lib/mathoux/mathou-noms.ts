@@ -1,5 +1,5 @@
 /**
- * Noms propres des Mathoux : un par notion de l'arbre des notions (134).
+ * Noms propres des Mathoux : un par notion de l'arbre des notions (135).
  *
  * Clé = nom de la notion (`classification_nodes.name`), comme dans la migration de seed :
  * les identifiants diffèrent entre la base locale et la prod. Une notion absente (renommée,
@@ -113,6 +113,7 @@ export const MATHOU_NAMES: Readonly<Record<string, string>> = {
 	Rotations: 'Toupie',
 	Homothéties: 'Loupe',
 	'Triangles semblables': 'Sosie',
+	'Agrandissement et réduction': 'Maquette',
 	"Repérage dans l'espace": 'Altitude',
 	Vecteurs: 'Chasles',
 	'Géométrie repérée': 'Abscisse',

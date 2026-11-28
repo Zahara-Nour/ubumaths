@@ -1,0 +1,311 @@
+{
+	"migration": "supabase/migrations/20261127115608_questions_idees_6e_durees_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "311bf024-36c9-4256-9c5a-9444d20086e5",
+			"title": "Convertir des durées",
+			"fichier": "311bf024.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							},
+							{
+								"expectedAnswer": "{{k}}"
+							}
+						],
+						"statement": "Convertis en heures et minutes.\n\n${{eval:a+k/60;d}}~\\unit{h} = ?~\\unit{h}~?~\\unit{min}$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5"
+							},
+							{
+								"name": "k",
+								"expression": "6|30|15"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:a+k/60;d}}~\\unit{h} = {{a}}~\\unit{h} + {{eval:k/60;d}}~\\unit{h} = {{a}}~\\unit{h} + {{eval:k/60;d}} \\times 60~\\unit{min} = {{a}}~\\unit{h}~{{k}}~\\unit{min}$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2", "15"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "15"
+						},
+						"description": "2,25 h = 2 h 15 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2", "25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "15"
+						},
+						"description": "2,25 h lu 2 h 25 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3", "6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"k": "6"
+						},
+						"description": "3,1 h = 3 h 6 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3", "10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"k": "6"
+						},
+						"description": "3,1 h lu 3 h 10 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5", "30"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"k": "30"
+						},
+						"description": "5,5 h = 5 h 30 min",
+						"variationIndex": 0
+					}
+				],
+				"description": "heures en HMS, heures décimales"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							},
+							{
+								"expectedAnswer": "{{k}}"
+							}
+						],
+						"statement": "Convertis en heures et minutes.\n\n${{eval:a+k/60;d}}~\\unit{h} = ?~\\unit{h}~?~\\unit{min}$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5"
+							},
+							{
+								"name": "k",
+								"expression": "6|30|15"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:a+k/60;d}}~\\unit{h} = {{a}}~\\unit{h} + {{eval:k/60;d}}~\\unit{h} = {{a}}~\\unit{h} + {{eval:k/60;d}} \\times 60~\\unit{min} = {{a}}~\\unit{h}~{{k}}~\\unit{min}$"
+							]
+						}
+					},
+					{
+						"statement": "Convertis en heures et minutes.\n\n${{eval:a+0.75;d}}~\\unit{h} = ?~\\unit{h}~?~\\unit{min}$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a+1}}",
+										"message": "$0{,}75~\\unit{h}$ ne font pas $75$ min : une heure fait $60$ min, pas $100$.",
+										"label": "0,75 h lu 75 min (1 h 15 min)"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "45",
+								"expectedErrors": [
+									{
+										"answer": "75",
+										"message": "$0{,}75~\\unit{h}$ ne font pas $75$ min : une heure fait $60$ min, pas $100$.",
+										"label": "0,75 h lu 75 min"
+									},
+									{
+										"answer": "15",
+										"message": "$0{,}75~\\unit{h}$ ne font pas $75$ min : une heure fait $60$ min, pas $100$.",
+										"label": "0,75 h lu 75 min (1 h 15 min)"
+									},
+									{
+										"answer": "7",
+										"message": "Les chiffres après la virgule ne sont pas des minutes : $0{,}75~\\unit{h}$, ce sont les trois quarts d'une heure.",
+										"label": "Chiffre des dixièmes pris pour des minutes"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:a+0.75;d}}~\\unit{h} = {{a}}~\\unit{h} + 0{,}75~\\unit{h}$.",
+								"$0{,}75~\\unit{h}$, ce sont les trois quarts d'une heure : $0{,}75 \\times 60~\\unit{min} = 45~\\unit{min}$.",
+								"${{eval:a+0.75;d}}~\\unit{h} = \\textcolor{{{color:primary.0}}}{{{a}}~\\unit{h}~45~\\unit{min}}$."
+							]
+						},
+						"hint": "$0{,}75$, c'est trois quarts. Combien de minutes font les trois quarts d'une heure ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2", "15"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "15"
+						},
+						"description": "2,25 h = 2 h 15 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2", "25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "15"
+						},
+						"description": "2,25 h lu 2 h 25 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3", "6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"k": "6"
+						},
+						"description": "3,1 h = 3 h 6 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3", "10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"k": "6"
+						},
+						"description": "3,1 h lu 3 h 10 min",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5", "30"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"k": "30"
+						},
+						"description": "5,5 h = 5 h 30 min",
+						"variationIndex": 0
+					},
+					{
+						"description": "2,75 h = 2 h 45 min",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2", "45"]
+					},
+					{
+						"description": "2,75 h lu 2 h 75 min",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$0{,}75~\\unit{h}$ ne font pas $75$ min : une heure fait $60$ min, pas $100$."
+						},
+						"answers": ["2", "75"]
+					},
+					{
+						"description": "2,75 h lu 3 h 15 min",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$0{,}75~\\unit{h}$ ne font pas $75$ min : une heure fait $60$ min, pas $100$."
+						},
+						"answers": ["3", "15"]
+					},
+					{
+						"description": "2,75 h lu 2 h 7 min",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Les chiffres après la virgule ne sont pas des minutes : $0{,}75~\\unit{h}$, ce sont les trois quarts d'une heure."
+						},
+						"answers": ["2", "7"]
+					},
+					{
+						"description": "8,75 h = 8 h 45 min",
+						"variationIndex": 1,
+						"variables": {
+							"a": "8"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["8", "45"]
+					}
+				],
+				"description": "heures en HMS, heures décimales"
+			},
+			"changements": {
+				"ajoutees": [2],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

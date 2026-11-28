@@ -2,6 +2,7 @@
 	import {
 		localeFileNameSuffix,
 		sanitizeForFileName,
+		uniqueFileName,
 		worksheetPdfFileName,
 		type WorksheetPdfKind
 	} from '#lib/worksheets/pdf-file-name.ts';
@@ -520,13 +521,15 @@
 	async function generateBatchPdfs() {
 		if (!typst || isBatchGenerating || isZipGenerating || isGenerating || students.length === 0)
 			return;
+		// Figés au départ, comme la langue et le niveau : la liste peut être relue pendant le lot
+		const batch = students;
 		// Figés au départ : contenu et noms de fichier dans la même langue, même niveau
 		const locale = printLocale;
 		const level = printLevel;
 
 		isBatchGenerating = true;
 		batchProgress = 0;
-		batchTotal = students.length;
+		batchTotal = batch.length;
 		batchCurrentStudent = '';
 
 		try {
@@ -552,7 +555,7 @@
 				config: ws.config || {},
 				mode: generatorMode,
 				inlineCorrections,
-				studentName: formatStudentName(students[0]),
+				studentName: formatStudentName(batch[0]),
 				className: classId ? 'Classe' : undefined,
 				template: worksheet.template
 			});
@@ -570,9 +573,12 @@
 				return compiled.data.pdf;
 			};
 
+			// Deux élèves homonymes : chacun son fichier, le second ne remplace pas le premier
+			const usedFileNames = new Set<string>();
+
 			// Generate PDFs for each student
-			for (let i = 0; i < students.length; i++) {
-				const student = students[i];
+			for (let i = 0; i < batch.length; i++) {
+				const student = batch[i];
 				const studentName = formatStudentName(student);
 				batchCurrentStudent = studentName;
 				batchProgress = i;
@@ -596,7 +602,13 @@
 				});
 
 				const pdfData = await compileForBatch(typstContent);
-				folder.file(worksheetPdfFileName(worksheet.title, mode, studentName, locale), pdfData);
+				folder.file(
+					uniqueFileName(
+						worksheetPdfFileName(worksheet.title, mode, studentName, locale),
+						usedFileNames
+					),
+					pdfData
+				);
 			}
 
 			// Corrigés : un exemplaire général, sans nom d'élève (et sans énoncé)

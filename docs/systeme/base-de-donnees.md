@@ -2,6 +2,7 @@
 couvre:
   - 'supabase/migrations/**'
   - src/lib/types/database-helpers.ts
+  - src/lib/server/exercise-versions.ts
 ---
 
 # Base de données — ce que la liste des tables ne dit pas
@@ -136,6 +137,21 @@ de là (`where student_id in (select student_id from public.active_student_ids()
 `profiles` entier : il mêle les comptes des années passées (adhésions archivées au passage
 d'année), les élèves hors-classe et les élèves de test. `security invoker`, exécution réservée à `service_role` (scripts serveur) et à `supabase_read_only_user` (l'outil Supabase en lecture seule, qui lit déjà toutes les tables ; migration `20261112154105`) — 42501 pour `anon` et `authenticated`. Test : `tests/integration/eleves-actifs.test.ts`.
 
+**Cours particuliers** (migration `20261124224822`, chantier `invitation-cours-particulier`) :
+`schools.is_private_lessons` marque l'école des cours particuliers (Akadada), une seule au plus
+(index unique partiel). `private_lesson_invitations` : invitation d'un élève par un lien envoyé au
+parent (prénom, adresse du parent, niveau — même liste que `classes_grade_check` —, échéance de
+7 jours, envoi du lien actuel, au plus 5 envois, annulation, réservation `claimed_at` pendant la
+création du compte, utilisation, compte et classe créés, posés seulement une fois utilisée). Compte
+de l'élève effacé : l'invitation part avec lui (`on delete cascade`). Lue par le prof et l'admin (`is_teacher_or_admin`), jamais l'empreinte du
+lien (droits par colonne) ; **aucune écriture par un compte connecté** : le serveur l'écrit en
+`service_role`. Le lien est stocké **haché** (sha256). `get_private_lesson_invitation(p_token)`,
+`service_role` seul, rend prénom, niveau, école et échéance d'une invitation encore valable, `null`
+dans tous les autres cas. Test : `tests/integration/invitations-cours-particuliers.test.ts`.
+Une invitation finie (utilisée, annulée, expirée) est **effacée 30 jours après sa fin** par le
+cron Vercel quotidien `api/cron/invitations-cours-particulier` (décision 8) ; écrans et écritures du
+serveur : [comptes-classes-ecoles.md § Admin : cours particuliers](comptes-classes-ecoles.md#admin--cours-particuliers).
+
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer
 directement dans `class_members`.
@@ -167,15 +183,31 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   L'ancienne génération (thème → objectif → point, `curriculum_themes`, `curriculum_objectives`,
   `objective_id`) est supprimée par `20261022080000_suppression_ancien_programme` (C5, étape 4) ; copie
   figée dans [docs/archive/arbre-notions/ancien-programme/](../archive/arbre-notions/ancien-programme/README.md).
+  Noms anglais des nœuds ([ADR 0043](../adr/0043-noms-anglais-des-noeuds-de-l-arbre.md)) :
+  `classification_nodes.translations` (`{"en": {"name": "…"}}`, `{}` par défaut, nom non vide de 200 caractères au plus, forme vérifiée par
+  `classification_nodes_translations_shape`), écrits par l'admin, lus par tous ; les deux fonctions
+  des liens de partage rendent `classifications[].translations`. Les 637 nœuds actifs ont leur nom
+  anglais depuis `20261124204132` (migration de données, nœuds retrouvés par leur chemin
+  « Branche > Notion > Sous-notion », les identifiants différant d'une base à l'autre) ; les
+  nœuds archivés n'en ont pas. Un nœud créé ensuite naît sans nom anglais.
 - **Régime d'acquisition** (`regime_acquisition`) : `fluence` = ≥ 5 réussites et ≥ 3 sur les 5
   dernières ; `diversite` = ≥ 2 modèles distincts réussis et aucun échec sur les 3 dernières. Les cartes
   de cours ne comptent pas (`20260928160000`).
 - **`curriculum_point_automatismes`** : un point « automatisme » l'est **pour un niveau** (liste
   publiée par un programme), pas dans l'absolu.
-- **`skill_attempts` est la source unique des faits**, immuable (aucune policy UPDATE/DELETE hors
-  admin). Un CHECK impose le XOR entre les deux régimes. Le trigger `trg_skill_attempts_after_insert`
-  recalcule les caches (`update_student_point_state`, `update_student_observable_state` →
-  `update_student_competence_level`) ; les caches ne s'écrivent que par lui.
+- **`skill_attempts` est la source unique des faits**, immuable (aucune policy UPDATE hors admin ;
+  DELETE : l'admin, et le prof pour les seules observations `teacher` d'une tâche,
+  `skill_attempts_delete_teacher_task`, L39). Un CHECK impose le XOR entre les deux régimes. Le
+  trigger `trg_skill_attempts_after_insert` recalcule les caches (`update_student_point_state`,
+  `update_student_observable_state` → `update_student_competence_level`) ;
+  `trg_skill_attempts_after_delete` (par requête) recalcule ceux des observations effacées. Les
+  caches ne s'écrivent que par ces triggers.
+- **Saisie d'une tâche** (`20261128135334`) : `save_evaluation_task_grid(p_task_id, p_rows)`,
+  `security invoker`, efface puis réécrit en une transaction la grille de la tâche des seuls élèves
+  de `p_rows` (un élève archivé depuis garde ses observations), 5 000 lignes au plus, codes `plus` /
+  `minus` ; elle lève si une de ces lignes n'a pas pu être effacée (refus RLS), au lieu de doubler
+  la grille. Seul chemin d'écriture de la page de saisie. Le trigger de suppression ne recalcule
+  pas le cache d'un élève supprimé (cascade d'un compte : ses caches partent avec lui).
 - **Contenu d'une trace** ([ADR 0038](../adr/0038-contenu-d-une-trace.md), `20261111092522`) :
   colonnes facultatives `place` (lieu : `flash_cards`, `typing`, `mock_test`, `number_race`, `review`,
   `evaluation`), `response_ms`, `allotted_ms`, `end_reason` (`validated` / `timeout`), `seed`,
@@ -252,11 +284,42 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
     et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
     pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
     colonne suit les droits de la ligne (aucune policy ni GRANT propre).
+  - `exercises.translations` (titre en anglais, depuis `20261125055853`) : `{"en": {"title": …}}`,
+    NULL = français seulement ; même forme que `worksheets.translations`. Suit les droits de la
+    ligne (personne ne gagne d'accès, David, 2026-11-25) ; aucun CHECK, la lecture
+    (`asRowTranslations`) écarte une forme inattendue.
+- `exercise_versions` (ADR 0044, `20261125163605`) : les versions successives d'un exercice
+  (`number` ≥ 1, unique par exercice ; `note` facultative, 1 à 500 caractères). Elles portent le
+  **contenu** (`variations`, `shared`, `generic_functions`, mêmes CHECK que sur `exercises`) ; la
+  ligne d'`exercises` garde la fiche d'identité. Hors fiche, on lit la dernière (plus grand
+  numéro) ; dans une fiche, celle de `worksheet_exercises.exercise_version_id`. Toute lecture et
+  écriture du contenu passe par `src/lib/server/exercise-versions.ts`. Reprise : chaque exercice
+  existant est devenu sa v1. Les anciennes colonnes de contenu d'`exercises` sont supprimées
+  (`20261126221127`, PR 4, destructive : réconciliées avant, 428 exercices sur 428 identiques à
+  leur v1), avec cinq fonctions mortes qui les lisaient (`get_my|teacher|all_exercise_assignments`,
+  `exercise_has_multiple_variations`, `exercise_variation_count`). `get_exercise_by_share_token`
+  rend une table explicite : la fiche d'identité et le contenu de la dernière version.
+  Accès : une version se lit exactement quand son exercice se lit (la policy délègue à la RLS
+  d'`exercises`) ; elle s'écrit par le prof auteur de l'exercice. Personne ne gagne d'accès (David,
+  2026-11-25). Fonctions (`20261125183550`, PR 2, toutes avec les droits de l'appelant) :
+  `latest_exercise_versions(ids)` rend la dernière version de chaque exercice (une ligne par
+  exercice, jamais tronquée par la limite de lignes de PostgREST) ; `create_exercise_version`
+  (« Nouvelle version ») recopie la dernière au numéro suivant (`created_by` = l'appelant, ou, sans
+  compte connecté, l'auteur de la version recopiée) ; `save_exercise_with_version` écrit ensemble la
+  fiche d'identité (clés = colonnes d'`exercises`, inconnue ou interdite → 22023) et le contenu
+  d'une version, tout ou rien. Déclencheur `exercise_versions_touch_exercise` : toute écriture
+  d'une version remet à jour `exercises.updated_at` (y compris une restauration ou un script).
+  Tests : `tests/integration/versions-exercices.test.ts`,
+  `tests/integration/versions-exercices-lectures.test.ts`,
+  `tests/integration/versions-exercices-editeur.test.ts`,
+  `tests/integration/versions-exercices-sauvegarde.test.ts`.
 - `migration_images` : reste de l'import des questions TinyMath, terminé ; aucun code ne la lit. `migration_tracking`, `migration_edits` et la vue `migration_review_tree` ont été supprimées le 2026-10-29 (migration `20261029203000`) ; leur contenu est exporté dans `data/import-tinymath/`.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
 professeur ; l'écriture des modèles est admin. Un exercice est lu par son auteur, par un élève qui y a
-accès (`student_has_exercise_access`) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
+accès (`student_has_exercise_access` : par une fiche qui lui est distribuée ou, depuis `20261126091954`,
+par une affectation hors fiche active posée par l'auteur, à lui ou à une classe dont il est membre
+actif ; détail dans [exercices.md](exercices.md#accès-rls-et-gardes)) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
 complétions et sa maîtrise ; depuis `20261012120000`, le professeur lit la maîtrise des élèves inscrits
 dans une classe (`is_teacher_of_student`). Un exercice privé partagé par lien se lit par la RPC
 `SECURITY DEFINER` `get_exercise_by_share_token` (jeton exact, actif, non expiré), qui incrémente
@@ -372,6 +435,12 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   rempli ; `worksheets.custom_title` (vrai par défaut) dit s'il est libre (imprimé tel quel) ou
   composé par l'éditeur (« Suites · Entraînement technique », recomposé par le PDF) ; les liens de
   partage le rendent. Tests : `tests/integration/categorie-notions-fiche.test.ts`.
+  **Écriture en une transaction** (`20261128003004`, écart L86) : `save_worksheet_classification(p_worksheet_id,
+p_fields, p_notions)`, `security invoker` (droits et RLS de l'appelant, accès inchangé ; `authenticated`
+  seulement) : notions retirées, colonnes `type` / `category` / `custom_title` / `title` de la fiche (autre
+  clé → 22023), notions écrites avec leur position ; un refus RLS, même silencieux, lève 42501 et annule
+  tout ; rend la fiche. Seul appelant : `applyClassification` (route `PUT /api/worksheets/[id]`). Tests :
+  `tests/integration/enregistrer-notions-fiche-d-un-coup.test.ts`.
 - `worksheet_assignments` (distribution) → `worksheet_assignment_classes`,
   `worksheet_assignment_students`, `worksheet_assignment_exercise_settings`.
   `worksheet_assignments.guidance_level` : **niveau de guidage** des exercices pour cette
@@ -382,6 +451,17 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   attente et n'en change que la description (pas d'affectation, d'exercice ni d'auteur) ; `status`, `reviewed_by`, `reviewed_at` et `response` sont
   au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
   `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
+- `worksheet_exercises.exercise_version_id` (ADR 0044, `20261125163605`) : la version de
+  l'exercice que la fiche utilise, obligatoire. Clé composée `(exercise_id, exercise_version_id)`
+  vers `exercise_versions (exercise_id, id)`, en NO ACTION : une ligne ne pointe pas la version d'un
+  autre exercice, une version utilisée par une fiche ne se supprime pas, supprimer l'exercice emporte
+  ses versions et ses lignes. Une ligne neuve prend la dernière version ; dupliquer la fiche garde
+  les versions. L'auteur de la fiche change la version d'une ligne (brouillon ou publiée, jamais
+  archivée) par `PUT /api/worksheets/[id]/exercises/[ligne]/version` (`setLineVersion`) : aucune
+  migration, la policy « Teachers can manage own worksheet exercises » le permettait déjà ; test
+  `tests/integration/versions-exercices-fiche.test.ts`. Les liens de partage d'une fiche (`get_worksheet_by_share_token`,
+  `get_course_worksheet_by_share_token`) rendent le contenu de cette version ;
+  `get_exercise_by_share_token` et `get_student_exercises` (hors fiche) celui de la dernière.
 - `worksheet_exercises.answer_frame_lines` (ADR 0030 lot 4, `20261016103900`) : nombre de lignes
   des cadres de réponse choisi par le prof pour cet exercice dans cette fiche,
   `{ "questions": [int|null, …], "exercise": int|null }` ; `null` (colonne ou case) = estimation
@@ -392,7 +472,8 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   fiche par lien de partage (`get_worksheet_by_share_token`, `get_course_worksheet_by_share_token`)
   la rendent pour chaque exercice, pour que le PDF du visiteur ait les cadres du prof (tests
   `tests/integration/cadres-lignes-par-question.test.ts`, `cadres-lignes-partage.test.ts`).
-- `worksheet_instances` : exercices générés par élève (graine déterministe).
+- `worksheet_instances` : vide, plus lue ni écrite par aucun code (la copie est recalculée,
+  ADR 0023) ; suppression prévue.
 - `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
   vide = fourni par Chiphre (Typst dans le code ; 13 styles, le 13ᵉ « 2 colonnes - paysage » ajouté par
   `20261016104100`, avec sa ligne dans `worksheet_templates`). La fiche désigne son style par
@@ -461,7 +542,7 @@ Code : `src/lib/server/` (`evaluations.ts`, `evaluation-attempts.ts`, `test-mode
 Les mots mathématiques et leurs définitions par niveau (ADR 0022) : `dictionary_entries`, et
 `dictionary_entry_versions` pour l'historique des modifications de l'admin. Code : `src/lib/dictionary/`,
 chargement serveur `src/lib/server/dictionary/load.ts` ; affichage : glossaire public et mots
-cliquables (`src/lib/lexicon/`). Chaque entrée a une adresse fixe `slug` (`/glossaire/<slug>`),
+cliquables (`src/lib/dictionary/`). Chaque entrée a une adresse fixe `slug` (`/glossaire/<slug>`),
 posée à la création et figée par le trigger `dictionary_entries_slug` (droits de l'appelant) :
 détail dans [dictionnaire.md](dictionnaire.md).
 
@@ -516,7 +597,7 @@ Deux systèmes distincts, à ne pas confondre :
   amitié acceptée (une amitié ne se demande plus que dans son école). Canal temps réel **privé** `chat-<conversation_id>`, réservé
   aux participants (policies sur `realtime.messages`, [realtime.md](realtime.md)).
 - **Messagerie** (style courriel) : `private_messages` → `message_inbox` (un destinataire, un dossier
-  `user_folders`), `message_drafts`, `message_attachments_v2`, `message_templates`.
+  `user_folders`), `message_drafts`, `message_attachments_v2`.
 - `notifications` (+ `notification_reads`), `moderation_logs`, `user_restrictions`.
 
 Accès : on lit les messages des conversations dont on est participant, et ceux qu'on a envoyés ou
@@ -710,6 +791,19 @@ celles de tous les élèves. `rag_documents` → `rag_chunks` : documents du pro
 `error_occurrences` (`src/lib/server/errorMonitoring.ts`), `bug_reports`, `background_job_runs`
 (tâches planifiées, lues par l'admin), `rate_limits` (`service_role` seul, via la RPC
 `check_and_increment_rate_limit` de `src/lib/server/rateLimiter.ts`), `server_cache`.
+`bug_reports` (`20261126060048`) : l'auteur d'un rapport n'écrit que ce que l'écran lui propose.
+À la création par un compte connecté, le rapport naît « en attente », daté de maintenant, sans
+capture, sans note, signature ni date de résolution : toute autre valeur est refusée par une
+erreur (`guard_bug_report_creation_trg`). Tant que le rapport est en attente, son auteur ne
+change que le titre, la description et la capture, dont le chemin doit être rangé
+`<auteur>/<rapport>/<fichier>` ; `screenshot_url` ne peut qu'être vidée ; toute autre colonne
+changée, d'aujourd'hui ou ajoutée plus tard, est refusée (`guard_bug_report_reecriture_trg`, liste
+blanche). Une fois le rapport pris en charge, la RLS refuse tout à l'auteur, en silence. L'admin
+garde tous ses droits de traitement ; le serveur (`service_role`) garde la main. Les règles du
+stockage des captures (bucket `bug-report-screenshots`, `20261126060050`) sont celles de la prod :
+l'auteur lit, dépose, remplace et efface dans son dossier `<son id>/…`, l'admin gère tout,
+personne d'autre n'y accède ; le bucket lui-même est créé par `supabase/seed.sql`.
+Preuve : `tests/integration/rapports-de-bug-non-reecrits.test.ts`.
 `web_vital_samples` (`20261121205833`) : mesures de performance des visiteurs (LCP, FCP, TTFB, INP,
 CLS), **anonymes** : heure arrondie à l'heure, identifiant de ligne tiré au hasard (pas de
 compteur, qui garderait l'ordre des envois), page sous la forme de son identifiant de route
@@ -773,8 +867,8 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   `!inner` qui efface la ligne parente ; policies permissives combinées en OU). Tout est dans
   [rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md) : à lire avant d'écrire **ou de
   retirer** une policy.
-- **`pnpm db:types` génère depuis la PRODUCTION.** Une fonction pas encore en prod n'existe pas dans
-  `database.ts` : migration d'abord (PR, `db:migrate`, `db:types`), code qui l'appelle ensuite. Ne
+- **`pnpm db:types` génère depuis les migrations du dépôt**, jamais depuis la prod : migration,
+  `pnpm db:types` et code qui l'appelle dans la même PR ; la CI régénère et compare. Ne
   jamais éditer `database.ts` ; les alias vont dans `src/lib/types/database-helpers.ts`.
 - **Le baseline local ≠ la prod pour le schéma `auth`.** `20260616220000_baseline_schema.sql` crée
   le trigger `on_auth_user_created` sur `auth.users`, mais le baseline n'est jamais appliqué à la prod :
@@ -792,12 +886,13 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   table reçoit `42501` sur un `select('*')`, ce qui casse PostgREST. Pour cacher des données à l'élève,
   une table annexe sans policy élève (c'était le choix de `python_submission_server_verdicts`, supprimée
   depuis).
-- **`curriculum_points` : cinq des six clés étrangères qui le visent sont en CASCADE** ; supprimer un
-  point effacerait sans un mot la couverture du cahier de texte et l'acquisition des élèves. On
-  archive.
-- **`journal_entry_activities.exercise_id` est en `SET NULL`** alors qu'un CHECK de forme exige la
-  colonne pour `kind = 'exercise'` : supprimer un exercice cité dans une séance échoue sur la
-  contrainte.
+- **Supprimer un point de `curriculum_points` qu'un élève a travaillé ou qu'une séance couvre est
+  REFUSÉ** (`student_point_state` et `journal_entry_points` en NO ACTION, migration
+  `20261128072151`, L112) : rattacher d'abord ce travail à un autre point, ou archiver. Les autres
+  clés qui visent un point (modèles, exercices, automatismes) restent en CASCADE.
+- **Supprimer un exercice cité par une séance du cahier de texte est REFUSÉ**
+  (`journal_entry_activities.exercise_id` en NO ACTION, code `23503`, L113) : `deleteExercise` rend
+  `ExerciseCitedError`, et la page dit au prof combien de séances le citent.
 - **Deux générations de seeds du programme.** Les anciens (`20260621160000_seed_curriculum_6e`,
   `20260830090000_seed_curriculum_1re_spe`) amorcent un niveau vide, une fois (garde
   `IF EXISTS … THEN RETURN`) ; ensuite la page `/dashboard/teacher/programme` faisait foi, jusqu'à la

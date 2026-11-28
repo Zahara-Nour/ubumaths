@@ -4,8 +4,8 @@
  * `toLatex` écrivait (ln 5)² `\ln\left( 5 \right)^2`, qu'un élève peut lire ln(5²) : le
  * discriminant de `x^2+x\ln 2-1=0` s'affichait `\sqrt{\ln\left( 2 \right)^2 + 4}`.
  *
- * ⚠️ Seule l'ÉCRITURE change. La LECTURE de `\ln 5^2` par le parseur (aujourd'hui (ln 5)²)
- * attend une décision de David : ces tests la constatent sans la figer ailleurs.
+ * La LECTURE de `\ln 5^2` sans parenthèses, elle, est ln(5²) depuis le 2026-11-27 :
+ * `parser/latex/__tests__/puissance-sous-fonction.test.ts`.
  */
 
 import { describe, it, expect } from 'vitest';

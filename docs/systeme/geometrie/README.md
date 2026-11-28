@@ -95,9 +95,8 @@ Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
 `src/routes/(protected)/constructions/` (liste, `[id]`, `[id]/edit`, `new`, `conversion`, `essais`) et
 la vitrine `src/routes/(public)/demo/constructions/`.
 
-⚠️ L'ancien module `src/lib/constructions/` (XML, avant le DSL) vit encore : utilisé par
-`whiteboard/components/InstrumentLayer.svelte`, `QuestionTemplateForm.svelte` et
-`routes/api/constructions/convert`. Il ne fait pas partie de ce système.
+L'ancien module src/lib/constructions (sans « -v2 ») (JSON, avant le DSL) est retiré depuis le 2026-11-28
+(M38) ; ses instruments vivent dans `src/lib/whiteboard/components/instruments/`.
 
 ### Composants et consommateurs
 
@@ -275,6 +274,13 @@ possible.
   masqué (`etiquette="aucune"`, `labelHidden`, `Figure.setLabelHidden`) est respecté pour les
   POINTS sur les quatre surfaces (écran, SVG, TikZ, Typst — croix comprise, depuis le
   2026-10-19) ; droites, segments et cercles l'ignorent encore à l'écran.
+- **Noms sans chevauchement (écran, constructions seulement)** : `rendering/label-avoidance.ts`
+  `placeLabels(figure, transformer, dims)` choisit pour chaque nom de point, segment, demi-droite et
+  droite la première place libre parmi quelques candidates (la place habituelle d'abord) : pas sur
+  un autre nom, un point, un codage d'angle ou de longueur, un arc, ni hors du cadre. Points
+  d'abord, puis segments et demi-droites, puis droites ; un `labelOffset` ne bouge pas. Activé par
+  la prop `avoidLabelOverlap` de `GeometryCanvas` (défaut false), que seule `ConstructionCanvas`
+  passe ; les exports SVG/TikZ/Typst gardent les places habituelles (E4, 2026-11-24).
 
 ### Thème clair / sombre
 
@@ -482,14 +488,6 @@ ailleurs, sans `checks.ts` : case « figure » des questions, `src/lib/questions
   table.
 - La CSP autorise `unsafe-eval` pour Typst (`src/hooks.server.ts`).
 - `figure.ts` (~5 000 lignes) et `builtins.ts` (~7 400 lignes) sont les deux plus gros fichiers.
-- Trois interfaces de configuration Newton divergentes : `NewtonConfig`, `IntersectionConfig`,
-  `IntersectionConfig1D`.
-- `courbe("x^2 + y^2 = a^2")` avec `a = slider(…)` rend une conique **dégénérée** : les
-  coefficients sont évalués sans le curseur (`a` y vaut 0) et ne le suivent pas (constaté le
-  2026-10-18). La vue Figure de l'atelier contourne par `parameterRecipe` ; le DSL ne s'en sert
-  pas encore.
-- `courbe("x^2 = 4")` est refusée (« la variable y est absente ») au lieu de deux droites ;
-  l'atelier, lui, la dessine (marching squares).
 - `GeometryCanvas` écrit l'étiquette d'une courbe implicite avec `svg.label`, que
   `implicitCurveToSVG` ne rend pas : le nom ne s'affiche pas (et le `<text>` n'a pas de `y`).
 

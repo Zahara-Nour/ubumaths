@@ -1,0 +1,484 @@
+{
+	"id": "5042401b-ceb0-4dc2-aa48-b83e90ee4bf2",
+	"title": "Sens de variation d'une suite géométrique de raison positive",
+	"description": "Le signe de u₀ et la position de q par rapport à 1 donnent le sens de variation (suite donnée par u₀ et q, par u(n) = a × qⁿ ou par u(n+1) = q u(n))",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1.5|2|3|4|1.2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est positif et $q-1={{eval:q-1}}$ est positif : $u_{n+1}-u_n$ est **positif**, la suite est **croissante**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "q",
+					"expression": "1.5|2|3|4|1.2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est négatif et $q-1={{eval:q-1}}$ est positif : $u_{n+1}-u_n$ est **négatif**, la suite est **décroissante**.",
+					"Attention : multiplier un nombre négatif par $q>1$ le rend **plus petit** (par exemple ${{a}}\\times{{q}}={{eval:a*q}}$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.2|0.1|0.8|0.9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est positif et $q-1={{eval:q-1}}$ est négatif : $u_{n+1}-u_n$ est **négatif**, la suite est **décroissante**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.2|0.1|0.8|0.9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est négatif et $q-1={{eval:q-1}}$ est négatif : $u_{n+1}-u_n$ est **positif**, la suite est **croissante**.",
+					"Attention : multiplier un nombre négatif par $0<q<1$ le rend **plus grand** (par exemple ${{a}}\\times{{q}}={{eval:a*q}}$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q=1$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $q=1$, on multiplie toujours par $1$ : tous les termes valent $u_0={{a}}$.",
+					"La suite est **constante**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{ans}}"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}\\times{{q}}^n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "kq",
+					"expression": "2|3|4|5|6|8|9|12|15|20|25|30|40"
+				},
+				{
+					"name": "q",
+					"expression": "eval:kq/10;d"
+				},
+				{
+					"name": "ans",
+					"expression": "eval:min(max(-(a)*((kq)-10),0),1)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n={{a}}\\times{{q}}^n$ est de la forme $u_0\\times q^n$ : $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison $q={{q}}>0$.",
+					"$u_{n+1}-u_n=u_0\\times q^n\\times(q-1)$ et $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ et $q-1={{eval:q-1;d}}$ : $u_{n+1}-u_n$ est {{if:ans==0|positif|négatif}}, la suite est **{{if:ans==0|croissante|décroissante}}**."
+				]
+			},
+			"hint": "Reconnais la forme $u_0\\times q^n$ : le sens de variation dépend du signe de $u_0$ et de la position de $q$ par rapport à $1$."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{ans}}"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}={{q}}\\,u_n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "kq",
+					"expression": "2|3|4|5|6|8|9|12|15|20|25|30|40"
+				},
+				{
+					"name": "q",
+					"expression": "eval:kq/10;d"
+				},
+				{
+					"name": "ans",
+					"expression": "eval:min(max(-(a)*((kq)-10),0),1)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie toujours par ${{q}}$ : $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison $q={{q}}>0$.",
+					"$u_{n+1}-u_n=u_0\\times q^n\\times(q-1)$ et $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ et $q-1={{eval:q-1;d}}$ : $u_{n+1}-u_n$ est {{if:ans==0|positif|négatif}}, la suite est **{{if:ans==0|croissante|décroissante}}**."
+				]
+			},
+			"hint": "Quelle est la nature de la suite ? Son sens de variation dépend alors du signe de $u_0$ et de la position de $q$ par rapport à $1$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "variation 0 (u0 > 0, q > 1) : « croissante » accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "variation 0 (u0 > 0, q > 1) : « décroissante » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "variation 0 (u0 > 0, q > 1) : « constante » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-5",
+				"q": "1.5"
+			},
+			"description": "variation 1 (u0 < 0, q > 1) : « croissante » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-5",
+				"q": "1.5"
+			},
+			"description": "variation 1 (u0 < 0, q > 1) : « décroissante » accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-5",
+				"q": "1.5"
+			},
+			"description": "variation 1 (u0 < 0, q > 1) : « constante » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"q": "0.5"
+			},
+			"description": "variation 2 (u0 > 0, 0 < q < 1) : « croissante » refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"q": "0.5"
+			},
+			"description": "variation 2 (u0 > 0, 0 < q < 1) : « décroissante » accepté",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"q": "0.5"
+			},
+			"description": "variation 2 (u0 > 0, 0 < q < 1) : « constante » refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"q": "0.8"
+			},
+			"description": "variation 3 (u0 < 0, 0 < q < 1) : « croissante » accepté",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"q": "0.8"
+			},
+			"description": "variation 3 (u0 < 0, 0 < q < 1) : « décroissante » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"q": "0.8"
+			},
+			"description": "variation 3 (u0 < 0, 0 < q < 1) : « constante » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-6"
+			},
+			"description": "variation 4 (q = 1) : « croissante » refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-6"
+			},
+			"description": "variation 4 (q = 1) : « décroissante » refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-6"
+			},
+			"description": "variation 4 (q = 1) : « constante » accepté",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"kq": "4"
+			},
+			"description": "−3 × 0,4ⁿ : croissante",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"kq": "4"
+			},
+			"description": "−3 × 0,4ⁿ : « décroissante » refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"kq": "15"
+			},
+			"description": "2 × 1,5ⁿ : croissante",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"kq": "5"
+			},
+			"description": "2 × 0,5ⁿ : décroissante",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"kq": "5"
+			},
+			"description": "« constante » refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"kq": "30"
+			},
+			"description": "u0 = −4, q = 3 : décroissante",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"kq": "30"
+			},
+			"description": "« croissante » refusé",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"kq": "8"
+			},
+			"description": "u0 = 5, q = 0,8 : décroissante",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-5",
+				"kq": "8"
+			},
+			"description": "u0 = −5, q = 0,8 : croissante",
+			"variationIndex": 6
+		}
+	]
+}

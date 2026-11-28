@@ -176,6 +176,16 @@ const MARKED_FACE_LUMA = 215;
 /** Section (`section:`) : l'orange des figures, clair (lisible en noir et blanc) */
 const SECTION_FILL = 'rgb(248, 200, 150)';
 
+/** Droite, segment, angle droit donnés : le bleu des figures (`--color-fig-bleu` à l'écran) */
+const DROITE_STROKE = 'rgb(37, 99, 235)';
+
+/**
+ * Plans donnés (`plans:`) : le vert puis le violet des figures (`--color-fig-vert`,
+ * `--color-fig-violet` à l'écran), le bord franc et l'intérieur clair
+ */
+const PLAN_STROKES = ['rgb(1, 134, 57)', 'rgb(147, 51, 234)'];
+const PLAN_FILLS = ['rgb(179, 219, 196)', 'rgb(223, 194, 249)'];
+
 /** Un solide en perspective cavalière */
 function solideTypst(spec: SolideSpec): string {
 	const scene = buildSolideScene(spec);
@@ -192,12 +202,37 @@ function solideTypst(spec: SolideSpec): string {
 			`  #place(top + left, polygon(fill: ${SECTION_FILL}, stroke: none, ${scene.section.map(at).join(', ')}))`
 		);
 	}
+	// Plans donnés : teintés sous les arêtes
+	(scene.plans ?? []).forEach((plan, k) => {
+		content.push(
+			`  #place(top + left, polygon(fill: ${PLAN_FILLS[k % PLAN_FILLS.length]}, stroke: none, ${plan.fill.map(at).join(', ')}))`
+		);
+	});
 	for (const line of scene.lines) {
 		const dash = line.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
 		const thickness = cm(solideLineStroke(line));
 		const [first, ...rest] = line.points;
 		content.push(
 			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round", join: "round"${dash}), curve.move(${at(first)}), ${rest.map((p) => `curve.line(${at(p)})`).join(', ')}))`
+		);
+	}
+	// Bord des plans donnés : en couleur après les arêtes, un trait par morceau (caché ou non)
+	(scene.plans ?? []).forEach((plan, k) => {
+		for (const piece of plan.border) {
+			const dash = piece.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
+			const [from, to] = piece.points;
+			content.push(
+				`  #place(top + left, curve(stroke: (paint: ${PLAN_STROKES[k % PLAN_STROKES.length]}, thickness: ${cm(solideLineStroke(piece))}, cap: "round"${dash}), curve.move(${at(from)}), curve.line(${at(to)})))`
+			);
+		}
+	});
+	// Droites données : en couleur après les arêtes, un trait par morceau (caché ou non) ;
+	// segments et carrés d'angles droits donnés : du même bleu
+	for (const piece of [...(scene.droites ?? []).flat(), ...(scene.segments ?? [])]) {
+		const dash = piece.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
+		const [from, to] = piece.points;
+		content.push(
+			`  #place(top + left, curve(stroke: (paint: ${DROITE_STROKE}, thickness: ${cm(solideLineStroke(piece))}, cap: "round"${dash}), curve.move(${at(from)}), curve.line(${at(to)})))`
 		);
 	}
 	// Flèches (vecteurs donnés, petites flèches des noms) : le trait, puis la pointe noire

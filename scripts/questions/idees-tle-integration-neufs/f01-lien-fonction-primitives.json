@@ -1,0 +1,254 @@
+{
+	"id": "e6f2aed3-617a-445f-9ce0-9aa2690f236f",
+	"rangement": {
+		"noeud": "Équations différentielles > y′ = f > primitives : notion",
+		"point": "TSPE-462"
+	},
+	"title": "Lien entre une fonction et ses primitives",
+	"description": "Lire sur la courbe de f les variations ou la convexité d'une primitive F : F′ = f (signe de f → variations de F), F″ = f′ (variations de f → convexité de F) (pièges : variations de f lues à la place de son signe, et l'inverse)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ définie et continue sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:p-2}} ; {{eval:p+2*d+2}}\ny: {{eval:-d*d-2}} ; {{eval:d*d+2}}\ngrille: 1 ; 1\nf(x) = {{k}}*(x-({{p}}))*(x-({{eval:p+2*d}}))   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole {{if:k<0|tournée vers le bas|tournée vers le haut}}, qui coupe l'axe des abscisses en x = {{p}} et en x = {{eval:p+2*d}}.\n```\n\n$F$ est une primitive de $f$ sur $\\mathbb{R}$. Sur quel intervalle $F$ est-elle {{if:k<0|croissante|décroissante}} ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-1|1"
+				},
+				{
+					"name": "p",
+					"expression": "-4..1"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{p}};{{eval:p+2*d}}]",
+					"answerKind": "intervalles",
+					"openableBounds": true,
+					"expectedErrors": [
+						{
+							"answer": "]-\\infty;{{p}}]\\cup[{{eval:p+2*d}};+\\infty[",
+							"message": "$F' = f$ : $F$ est {{if:k<0|croissante|décroissante}} là où $f$ est {{if:k<0|positive|négative}}. Regarde où la courbe est {{if:k<0|au-dessus|en dessous}} de l'axe des abscisses.",
+							"label": "Complémentaire"
+						},
+						{
+							"answer": "]-\\infty;{{eval:p+d}}]",
+							"message": "Tu as lu les variations de $f$. Or $F'=f$ : ce sont les **signes** de $f$ qui donnent les variations de $F$.",
+							"label": "Variations de f"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F$ est une primitive de $f$, donc $F'=f$ : $F$ est {{if:k<0|croissante|décroissante}} là où $f$ est {{if:k<0|positive|négative}}.",
+					"La courbe de $f$ est {{if:k<0|au-dessus|en dessous}} de l'axe des abscisses entre ses deux points d'intersection avec lui, d'abscisses ${{p}}$ et ${{eval:p+2*d}}$.",
+					"$F$ est {{if:k<0|croissante|décroissante}} sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{eval:p+2*d}}\\right]}$."
+				]
+			},
+			"hint": "Que vaut $F'$ ? Relie le sens de variation de $F$ au signe de $f$, que tu lis sur la courbe."
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:a-4}} ; {{eval:a+4}}\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = {{s}}*((x-({{a}}))^2-{{r}}^2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole {{if:s>0|tournée vers le haut|tournée vers le bas}}, de sommet d'abscisse x = {{a}}, qui coupe l'axe des abscisses en x = {{eval:a-r}} et en x = {{eval:a+r}}.\n```\n\n$F$ est une primitive de $f$ sur $\\mathbb{R}$. Sur quel intervalle $F$ est-elle convexe ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "r",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s>0|[{{a}};+\\infty[|]-\\infty;{{a}}]}}",
+					"answerKind": "intervalles",
+					"openableBounds": true,
+					"expectedErrors": [
+						{
+							"answer": "{{if:s>0|]-\\infty;{{a}}]|[{{a}};+\\infty[}}",
+							"message": "$F$ est convexe là où $F''$ est positive. Or $F''=f'$ : cherche où $f$ est **croissante**.",
+							"label": "Sens inversé"
+						},
+						{
+							"answer": "{{if:s>0|]-\\infty;{{eval:a-r}}]\\cup[{{eval:a+r}};+\\infty[|[{{eval:a-r}};{{eval:a+r}}]}}",
+							"message": "Tu as lu le signe de $f$ : il donne les variations de $F$, pas sa convexité. La convexité de $F$ dépend du signe de $F''=f'$, donc des variations de $f$.",
+							"label": "Signe de f"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F'=f$, donc $F''=f'$ : $F$ est convexe là où $f'\\geqslant 0$, c'est-à-dire là où $f$ est croissante.",
+					"La parabole est {{if:s>0|tournée vers le haut|tournée vers le bas}} et son sommet a pour abscisse ${{a}}$ : $f$ est croissante sur {{if:s>0|$\\left[{{a}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{a}}\\right]$}}.",
+					"$F$ est convexe sur $\\textcolor{{{color:primary.0}}}{ {{if:s>0|\\left[{{a}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{a}}\\right]}} }$."
+				]
+			},
+			"hint": "La convexité de $F$ se lit sur le signe de $F''$. Exprime $F''$ à l'aide de $f$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : k = −1 → [−1 ; 3]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-1",
+				"p": "-1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[-1;3]"]
+		},
+		{
+			"description": "a : crochets ouverts acceptés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-1",
+				"p": "-1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-1;3["]
+		},
+		{
+			"description": "a : complémentaire",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-1",
+				"p": "-1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$F' = f$ : $F$ est croissante là où $f$ est positive. Regarde où la courbe est au-dessus de l'axe des abscisses."
+			},
+			"answers": ["]-\\infty;-1]\\cup[3;+\\infty["]
+		},
+		{
+			"description": "a : variations de f",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-1",
+				"p": "-1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;1]"]
+		},
+		{
+			"description": "a : k = 1, décroissante → [0 ; 2]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"p": "0",
+				"d": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[0;2]"]
+		},
+		{
+			"description": "a : k = 1, complémentaire",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"p": "0",
+				"d": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;0]\\cup[2;+\\infty["]
+		},
+		{
+			"description": "b : s = 1 → [1 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[1;+\\infty["]
+		},
+		{
+			"description": "b : sens inversé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;1]"]
+		},
+		{
+			"description": "b : signe de f",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "1",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;-1]\\cup[3;+\\infty["]
+		},
+		{
+			"description": "b : s = −1 → ]−∞ ; −1]",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"a": "-1",
+				"r": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;-1]"]
+		},
+		{
+			"description": "b : s = −1, signe de f",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"a": "-1",
+				"r": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["[-2;0]"]
+		}
+	]
+}

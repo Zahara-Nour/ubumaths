@@ -1,0 +1,322 @@
+{
+	"id": "60ad8893-00b7-4f6e-aee9-fc255709c509",
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : calculs",
+		"point": "5-001"
+	},
+	"title": "Quelles informations servent ?",
+	"description": "Dans un énoncé à cinq informations chiffrées (classe, marché, vélo, livreur), cocher celles qui servent à répondre, puis celles qui ne servent pas ; question à laquelle on ne peut pas répondre (« Aucune »)",
+	"grades": ["6", "5"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:t==0|Dans la classe de 6e B, il y a ${{E}}$ élèves de $11$ ans. Chaque élève a ${{L}}$ livres dans son sac, et un livre pèse ${{G}}~\\unit{g}$. La récréation dure $15$ minutes.|{{if:t==1|Au marché, Inès arrive à $9$ h. Elle achète ${{K}}~\\unit{kg}$ de pommes à ${{eval:((P)/100)[€]}}$ le kilogramme. Le marché compte ${{E}}$ étals et ferme à $13$ h.|{{if:t==2|Léo part à vélo à $14$ h. Il roule pendant ${{H}}$ heures et parcourt ${{V}}~\\unit{km}$ chaque heure. Son vélo pèse ${{L}}~\\unit{kg}$, et Léo a $3$ frères.|Un livreur part à $8$ h avec ${{E}}$ colis. Il en dépose ${{L}}$ au premier arrêt, puis roule ${{V}}~\\unit{km}$ jusqu'au second arrêt, où il dépose tous les autres. Son camion a $5$ ans.}}}}}}\n\n**Question :** {{if:t==0|Quelle masse de livres chaque élève porte-t-il ?|{{if:t==1|Combien Inès paie-t-elle ses pommes ?|{{if:t==2|Quelle distance Léo parcourt-il ?|Combien de colis dépose-t-il au second arrêt ?}}}}}}\n\nQuelles informations servent à répondre à cette question ? Coche-les toutes (sans faire le calcul).\n\n```choix\nplusieurs: oui\nmelanger: non\n- {{if:t==0|${{E}}$ élèves|{{if:t==1|l'arrivée à $9$ h|{{if:t==2|le départ à $14$ h|le départ à $8$ h}}}}}}\n- {{if:t==0|$11$ ans|{{if:t==1|${{K}}~\\unit{kg}$ de pommes|{{if:t==2|${{H}}$ heures de route|${{E}}$ colis au départ}}}}}}\n- {{if:t==0|${{L}}$ livres par élève|{{if:t==1|${{eval:((P)/100)[€]}}$ le kilogramme|{{if:t==2|${{V}}~\\unit{km}$ chaque heure|${{L}}$ colis au premier arrêt}}}}}}\n- {{if:t==0|${{G}}~\\unit{g}$ par livre|{{if:t==1|${{E}}$ étals|{{if:t==2|un vélo de ${{W}}~\\unit{kg}$|${{V}}~\\unit{km}$ de route}}}}}}\n- {{if:t==0|$15$ minutes de récréation|{{if:t==1|la fermeture à $13$ h|{{if:t==2|$3$ frères|un camion de $5$ ans}}}}}}\n- Aucune : on ne peut pas répondre à cette question avec ces informations\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "E",
+					"expression": "21..32"
+				},
+				{
+					"name": "L",
+					"expression": "3..9"
+				},
+				{
+					"name": "G",
+					"expression": "200|250|300|350|400"
+				},
+				{
+					"name": "K",
+					"expression": "2..5"
+				},
+				{
+					"name": "P",
+					"expression": "120..390"
+				},
+				{
+					"name": "H",
+					"expression": "2..4"
+				},
+				{
+					"name": "V",
+					"expression": "12..18"
+				},
+				{
+					"name": "W",
+					"expression": "9..15"
+				}
+			],
+			"conditions": ["mod(P,10)==0", "mod(P,100)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|2;3|{{if:t==1|1;2|{{if:t==2|1;2|1;2}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trier les informations.** On cherche ce que demande la question, puis le calcul qui y répond : seules les informations de ce calcul servent.",
+					"{{if:t==0|Chaque élève porte ${{L}}$ livres de ${{G}}~\\unit{g}$ : ${{L}} \\times {{G}}$.|{{if:t==1|Inès paie ${{K}}$ kilogrammes au prix d'un kilogramme : ${{K}} \\times {{if:mod(P,100)==0|{{eval:(P)/100;d}}|{{eval:(P)/100;d2}}}}$.|{{if:t==2|Léo roule ${{H}}$ heures et parcourt ${{V}}~\\unit{km}$ chaque heure : ${{H}} \\times {{V}}$.|Il reste les colis qu'il n'a pas déposés au premier arrêt : ${{E}} - {{L}}$.}}}}}} Les informations utiles sont {{if:t==0|$\\textcolor{{{color:primary.0}}}{\\text{le nombre de livres et la masse d'un livre}}$|{{if:t==1|$\\textcolor{{{color:primary.0}}}{\\text{la masse de pommes et le prix d'un kilogramme}}$|{{if:t==2|$\\textcolor{{{color:primary.0}}}{\\text{la durée et la distance parcourue chaque heure}}$|$\\textcolor{{{color:primary.0}}}{\\text{les colis au départ et ceux du premier arrêt}}$}}}}}} ; les autres ne servent pas."
+				]
+			},
+			"hint": "Quel calcul répond à la question ? Les informations qui n'y entrent pas ne servent pas."
+		},
+		{
+			"statement": "{{if:t==0|Dans la classe de 6e B, il y a ${{E}}$ élèves de $11$ ans. Chaque élève a ${{L}}$ livres dans son sac, et un livre pèse ${{G}}~\\unit{g}$. La récréation dure $15$ minutes.|{{if:t==1|Au marché, Inès arrive à $9$ h. Elle achète ${{K}}~\\unit{kg}$ de pommes à ${{eval:((P)/100)[€]}}$ le kilogramme. Le marché compte ${{E}}$ étals et ferme à $13$ h.|{{if:t==2|Léo part à vélo à $14$ h. Il roule pendant ${{H}}$ heures et parcourt ${{V}}~\\unit{km}$ chaque heure. Son vélo pèse ${{L}}~\\unit{kg}$, et Léo a $3$ frères.|Un livreur part à $8$ h avec ${{E}}$ colis. Il en dépose ${{L}}$ au premier arrêt, puis roule ${{V}}~\\unit{km}$ jusqu'au second arrêt, où il dépose tous les autres. Son camion a $5$ ans.}}}}}}\n\n**Question :** {{if:t==0|Quelle masse de livres chaque élève porte-t-il ?|{{if:t==1|Combien Inès paie-t-elle ses pommes ?|{{if:t==2|Quelle distance Léo parcourt-il ?|Combien de colis dépose-t-il au second arrêt ?}}}}}}\n\nQuelles informations ne servent PAS à répondre à cette question ? Coche-les toutes.\n\n```choix\nplusieurs: oui\nmelanger: non\n- {{if:t==0|${{E}}$ élèves|{{if:t==1|l'arrivée à $9$ h|{{if:t==2|le départ à $14$ h|le départ à $8$ h}}}}}}\n- {{if:t==0|$11$ ans|{{if:t==1|${{K}}~\\unit{kg}$ de pommes|{{if:t==2|${{H}}$ heures de route|${{E}}$ colis au départ}}}}}}\n- {{if:t==0|${{L}}$ livres par élève|{{if:t==1|${{eval:((P)/100)[€]}}$ le kilogramme|{{if:t==2|${{V}}~\\unit{km}$ chaque heure|${{L}}$ colis au premier arrêt}}}}}}\n- {{if:t==0|${{G}}~\\unit{g}$ par livre|{{if:t==1|${{E}}$ étals|{{if:t==2|un vélo de ${{W}}~\\unit{kg}$|${{V}}~\\unit{km}$ de route}}}}}}\n- {{if:t==0|$15$ minutes de récréation|{{if:t==1|la fermeture à $13$ h|{{if:t==2|$3$ frères|un camion de $5$ ans}}}}}}\n- Aucune : elles servent toutes\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "E",
+					"expression": "21..32"
+				},
+				{
+					"name": "L",
+					"expression": "3..9"
+				},
+				{
+					"name": "G",
+					"expression": "200|250|300|350|400"
+				},
+				{
+					"name": "K",
+					"expression": "2..5"
+				},
+				{
+					"name": "P",
+					"expression": "120..390"
+				},
+				{
+					"name": "H",
+					"expression": "2..4"
+				},
+				{
+					"name": "V",
+					"expression": "12..18"
+				},
+				{
+					"name": "W",
+					"expression": "9..15"
+				}
+			],
+			"conditions": ["mod(P,10)==0", "mod(P,100)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|0;1;4|{{if:t==1|0;3;4|{{if:t==2|0;3;4|0;3;4}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trier les informations.** On cherche le calcul qui répond à la question : les informations qui n'y entrent pas ne servent pas.",
+					"{{if:t==0|Chaque élève porte ${{L}}$ livres de ${{G}}~\\unit{g}$ : ${{L}} \\times {{G}}$.|{{if:t==1|Inès paie ${{K}}$ kilogrammes au prix d'un kilogramme : ${{K}} \\times {{if:mod(P,100)==0|{{eval:(P)/100;d}}|{{eval:(P)/100;d2}}}}$.|{{if:t==2|Léo roule ${{H}}$ heures et parcourt ${{V}}~\\unit{km}$ chaque heure : ${{H}} \\times {{V}}$.|Il reste les colis qu'il n'a pas déposés au premier arrêt : ${{E}} - {{L}}$.}}}}}} Tout le reste est $\\textcolor{{{color:primary.0}}}{\\text{inutile}}$ : {{if:t==0|le nombre d'élèves, leur âge et la durée de la récréation.|{{if:t==1|l'heure d'arrivée, le nombre d'étals et l'heure de fermeture.|{{if:t==2|l'heure de départ, la masse du vélo et le nombre de frères.|l'heure de départ, la distance entre les arrêts et l'âge du camion.}}}}}}"
+				]
+			},
+			"hint": "Quel calcul répond à la question ? Coche les informations qui n'y entrent pas."
+		},
+		{
+			"statement": "{{if:t==0|Dans la classe de 6e B, il y a ${{E}}$ élèves de $11$ ans. Chaque élève a ${{L}}$ livres dans son sac, et un livre pèse ${{G}}~\\unit{g}$. La récréation dure $15$ minutes.|{{if:t==1|Au marché, Inès arrive à $9$ h. Elle achète ${{K}}~\\unit{kg}$ de pommes à ${{eval:((P)/100)[€]}}$ le kilogramme. Le marché compte ${{E}}$ étals et ferme à $13$ h.|{{if:t==2|Léo part à vélo à $14$ h. Il roule pendant ${{H}}$ heures et parcourt ${{V}}~\\unit{km}$ chaque heure. Son vélo pèse ${{L}}~\\unit{kg}$, et Léo a $3$ frères.|Un livreur part à $8$ h avec ${{E}}$ colis. Il en dépose ${{L}}$ au premier arrêt, puis roule ${{V}}~\\unit{km}$ jusqu'au second arrêt, où il dépose tous les autres. Son camion a $5$ ans.}}}}}}\n\n**Question :** {{if:t==0|Combien pèse un sac vide ?|{{if:t==1|Combien de pommes Inès a-t-elle achetées ?|{{if:t==2|Combien pèse Léo ?|Combien pèse le colis le plus lourd ?}}}}}}\n\nQuelles informations servent à répondre à cette question ? Coche-les toutes.\n\n```choix\nplusieurs: oui\nmelanger: non\n- {{if:t==0|${{E}}$ élèves|{{if:t==1|l'arrivée à $9$ h|{{if:t==2|le départ à $14$ h|le départ à $8$ h}}}}}}\n- {{if:t==0|$11$ ans|{{if:t==1|${{K}}~\\unit{kg}$ de pommes|{{if:t==2|${{H}}$ heures de route|${{E}}$ colis au départ}}}}}}\n- {{if:t==0|${{L}}$ livres par élève|{{if:t==1|${{eval:((P)/100)[€]}}$ le kilogramme|{{if:t==2|${{V}}~\\unit{km}$ chaque heure|${{L}}$ colis au premier arrêt}}}}}}\n- {{if:t==0|${{G}}~\\unit{g}$ par livre|{{if:t==1|${{E}}$ étals|{{if:t==2|un vélo de ${{W}}~\\unit{kg}$|${{V}}~\\unit{km}$ de route}}}}}}\n- {{if:t==0|$15$ minutes de récréation|{{if:t==1|la fermeture à $13$ h|{{if:t==2|$3$ frères|un camion de $5$ ans}}}}}}\n- Aucune : on ne peut pas répondre à cette question avec ces informations\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "E",
+					"expression": "21..32"
+				},
+				{
+					"name": "L",
+					"expression": "3..9"
+				},
+				{
+					"name": "G",
+					"expression": "200|250|300|350|400"
+				},
+				{
+					"name": "K",
+					"expression": "2..5"
+				},
+				{
+					"name": "P",
+					"expression": "120..390"
+				},
+				{
+					"name": "H",
+					"expression": "2..4"
+				},
+				{
+					"name": "V",
+					"expression": "12..18"
+				},
+				{
+					"name": "W",
+					"expression": "9..15"
+				}
+			],
+			"conditions": ["mod(P,10)==0", "mod(P,100)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trier les informations.** On cherche le calcul qui répond à la question.",
+					"{{if:t==0|L'énoncé donne la masse des livres, jamais celle du sac.|{{if:t==1|L'énoncé donne la masse des pommes, pas leur nombre : il faudrait connaître la masse d'une pomme.|{{if:t==2|L'énoncé donne la masse du vélo, jamais celle de Léo.|L'énoncé donne le nombre de colis, jamais leur masse.}}}}}} Aucune information ne permet de répondre : $\\textcolor{{{color:primary.0}}}{\\text{on ne peut pas répondre}}$."
+				]
+			},
+			"hint": "Cherche dans l'énoncé une information qui parle de ce que demande la question."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Utiles : livres, nombre et masse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2;3"]
+		},
+		{
+			"description": "Utiles : le nombre d'élèves coché en plus",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2;3"]
+		},
+		{
+			"description": "Utiles : une seule (partiel)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Utiles : « Aucune » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Utiles : marché, masse et prix",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1;2"]
+		},
+		{
+			"description": "Utiles : livreur",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1;2"]
+		},
+		{
+			"description": "Inutiles : vélo, les trois autres",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;3;4"]
+		},
+		{
+			"description": "Inutiles : une utile cochée",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;3;4"]
+		},
+		{
+			"description": "Inutiles : classe",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1;4"]
+		},
+		{
+			"description": "Inutiles : « Aucune » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Impossible : « Aucune »",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Impossible : masse et prix cochés",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1;2"]
+		},
+		{
+			"description": "Impossible : vélo, la masse du vélo cochée",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

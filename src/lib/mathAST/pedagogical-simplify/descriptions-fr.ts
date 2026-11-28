@@ -537,7 +537,7 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'expand-identity': () =>
 		'Une identité remarquable donne le développement d’un coup : on remplace a et b dans le membre de droite.',
 	'expand-compute': () =>
-		'On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes : 2x × 3 = 6x, x × x = x².',
+		'On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes, par exemple 2x × 3 = 6x et x × x = x².',
 	'expand-reduce-inside': () =>
 		'On regroupe les termes semblables de la parenthèse avant de distribuer : il y aura moins de produits.',
 	'expand-distribute': () =>

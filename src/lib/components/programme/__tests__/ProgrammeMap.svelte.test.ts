@@ -32,7 +32,8 @@ function node(
 		position,
 		archived_at: null,
 		created_at: STAMP,
-		updated_at: STAMP
+		updated_at: STAMP,
+		translations: {}
 	};
 }
 

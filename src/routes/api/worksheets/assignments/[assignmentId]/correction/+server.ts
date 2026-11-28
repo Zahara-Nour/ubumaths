@@ -19,6 +19,7 @@
  *   corrigé qui ne vaudrait pour personne. `per_student_copies` le dit.
  */
 
+import { WORKSHEET_LINE_VERSION, withLineVersion } from '#lib/server/exercise-versions.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -93,12 +94,11 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 						exercise:exercises(
 							id,
 							title,
+							translations,
 							variables,
-							shared,
-							variations,
-							generic_functions,
 							topic
-						)
+						),
+						${WORKSHEET_LINE_VERSION}
 					)
 				)
 			`
@@ -171,7 +171,13 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Aucune correction disponible');
 		}
 
-		const worksheet = assignment.worksheet as unknown as WorksheetForCopy;
+		// Contenu : la version choisie par la fiche pour chaque exercice (ADR 0044), pas la dernière
+		const worksheetRow = assignment.worksheet;
+		if (!worksheetRow) throw error(404, 'Fiche introuvable');
+		const worksheet = {
+			...worksheetRow,
+			worksheet_exercises: worksheetRow.worksheet_exercises.map((line) => withLineVersion(line))
+		} as unknown as WorksheetForCopy;
 
 		// La copie de la classe, recalculée (ADR 0023) : la même que l'aperçu
 		// d'affectation sans élève

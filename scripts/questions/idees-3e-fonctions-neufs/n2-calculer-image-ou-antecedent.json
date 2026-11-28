@@ -1,0 +1,641 @@
+{
+	"id": "7c7b7593-a9c3-409f-bb1d-eaa9d6dacd84",
+	"rangement": {
+		"noeud": "Fonctions > Généralités sur les fonctions > images et antécédents",
+		"point": "3-040"
+	},
+	"title": "Calculer une image ou un antécédent avec une formule",
+	"description": "Image par une formule (2x² − 3x + 1, (2x + 1)(3x − 4), −x² + 4 en un nombre négatif) et antécédent par le calcul (−4x, 3x − 5) (pièges : (−3)² = −9, −x² pris pour (−x)², image calculée au lieu de l'antécédent, division oubliée)",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:a*x^2+b*x+c}}$.\n\nCalcule l'image de ${{n}}$ par $f$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["b!=a*n", "2*b!=a*n*(1-a)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*n^2+b*n+c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*n^2+b*n+c-2*a*n^2*min(max(-n,0),1)}}",
+							"message": "Le carré d'un nombre négatif est positif : $({{n}})^2={{eval:n^2}}$.",
+							"label": "Carré d'un négatif pris négatif"
+						},
+						{
+							"answer": "{{eval:a*n^2-b*n+c}}",
+							"message": "Regarde le signe de chaque produit : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif.",
+							"label": "Signe du produit bx"
+						},
+						{
+							"answer": "{{eval:(a*n)^2+b*n+c}}",
+							"message": "Seul $x$ est au carré : $ax^2$, c'est $a\\times x^2$, pas $(ax)^2$.",
+							"label": "Coefficient mis au carré"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{n}}$, entre parenthèses :",
+					"$$f({{n}})={{a}}\\times({{n}})^2{{b;+}}\\times({{n}}){{c;+}}={{a}}\\times{{eval:n^2}}{{eval:b*n;+}}{{c;+}}={{eval:a*n^2}}{{eval:b*n;+}}{{c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a*n^2+b*n+c}}}$$"
+				]
+			},
+			"hint": "Remplace $x$ par ${{n}}$ dans la formule, en l'écrivant entre parenthèses, puis respecte les priorités : le carré d'abord, puis les produits, puis les sommes."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=({{a}}x{{b;+}})({{c}}x{{d;+}})$.\n\nCalcule l'image de ${{n}}$ par $f$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": [
+				"a*n+b!=0",
+				"c*n+d!=0",
+				"a*d+b*c!=0",
+				"(a*n+b)*(c*n+d)!=(a*n+b)+(c*n+d)",
+				"(a*n+b)+(c*n+d)!=a*c*n^2+b*d"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*n+b)*(c*n+d)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*n+b)+(c*n+d)}}",
+							"message": "Les deux parenthèses se multiplient : calcule la valeur de chacune, puis fais leur produit.",
+							"label": "Somme au lieu du produit"
+						},
+						{
+							"answer": "{{eval:a*c*n^2+b*d}}",
+							"message": "Tu as oublié des produits en développant : chaque terme de la première parenthèse multiplie chaque terme de la seconde. Plus simple : calcule chaque parenthèse, puis multiplie.",
+							"label": "Produits croisés oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{n}}$ dans chaque parenthèse, puis on multiplie :",
+					"$$f({{n}})=({{a}}\\times({{n}}){{b;+}})({{c}}\\times({{n}}){{d;+}})=({{eval:a*n+b}})\\times({{eval:c*n+d}})=\\textcolor{{{color:primary.0}}}{{{eval:(a*n+b)*(c*n+d)}}}$$"
+				]
+			},
+			"hint": "Remplace $x$ par ${{n}}$ dans la formule, en l'écrivant entre parenthèses, puis respecte les priorités : le carré d'abord, puis les produits, puis les sommes."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=-x^2{{c;+}}$.\n\nCalcule l'image de ${{n}}$ par $f$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "-5..-1"
+				}
+			],
+			"conditions": ["n!=-2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-n^2+c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n^2+c}}",
+							"message": "Dans $-x^2$, seul $x$ est au carré : on calcule le carré, puis on prend son opposé. $-x^2$, c'est $-(x^2)$, pas $(-x)^2$.",
+							"label": "−x² pris pour (−x)²"
+						},
+						{
+							"answer": "{{eval:-2*n+c}}",
+							"message": "Le carré d'un nombre, c'est ce nombre multiplié par lui-même, pas par $2$.",
+							"label": "Carré pris pour le double"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans $-x^2$, on calcule d'abord le carré, puis on prend l'opposé : $-x^2=-(x^2)$.",
+					"$$f({{n}})=-({{n}})^2{{c;+}}=-{{eval:n^2}}{{c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:-n^2+c}}}$$"
+				]
+			},
+			"hint": "Remplace $x$ par $({{n}})$. Attention : dans $-x^2$, seul $x$ est au carré."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:a*x}}$.\n\nCalcule l'antécédent de ${{k}}$ par $f$.\n\nL'antécédent de ${{k}}$ est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*s"
+				}
+			],
+			"conditions": ["a*k!=k-a", "k-a!=-s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*k}}",
+							"message": "Tu as calculé l'image de ${{k}}$ : on cherche l'antécédent, le nombre $x$ tel que $f(x)={{k}}$.",
+							"label": "Image au lieu de l'antécédent"
+						},
+						{
+							"answer": "{{eval:k-a}}",
+							"message": "${{a}}x$, c'est ${{a}}\\times x$ : pour retrouver $x$, on divise par ${{a}}$, on ne soustrait pas.",
+							"label": "Soustraction au lieu de la division"
+						},
+						{
+							"answer": "{{eval:-s}}",
+							"message": "Vérifie le signe : le quotient de deux nombres de même signe est positif, de signes contraires négatif.",
+							"label": "Signe du quotient"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le nombre $x$ tel que $f(x)={{k}}$ :",
+					"$$\\begin{align}{{eval:a*x}}&={{k}}\\\\x&=\\frac{ {{k}} }{ {{a}} }\\\\x&=\\textcolor{{{color:primary.0}}}{{{s}}}\\end{align}$$",
+					"Vérification : $f({{s}})={{a}}\\times({{s}})={{k}}$."
+				]
+			},
+			"hint": "L'antécédent est le nombre $x$ tel que $f(x)={{k}}$ : écris l'équation, puis résous-la."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:a*x+b}}$.\n\nCalcule l'antécédent de ${{k}}$ par $f$.\n\nL'antécédent de ${{k}}$ est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*s+b"
+				}
+			],
+			"conditions": ["k!=0", "k!=s", "a*k+b!=k-b", "k+b!=a*(k-b)", "a*(a*k+b)!=k+b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*k+b}}",
+							"message": "Tu as calculé l'image de ${{k}}$ : on cherche l'antécédent, le nombre $x$ tel que $f(x)={{k}}$.",
+							"label": "Image au lieu de l'antécédent"
+						},
+						{
+							"answer": "{{eval:(k+b)/a}}",
+							"message": "Attention au terme constant : pour isoler le terme en $x$, on fait l'opération inverse sur les deux membres de l'équation.",
+							"label": "Terme constant du mauvais côté"
+						},
+						{
+							"answer": "{{eval:k-b}}",
+							"message": "Tu as trouvé la valeur de ${{a}}x$ : il reste à diviser par ${{a}}$.",
+							"label": "Division oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le nombre $x$ tel que $f(x)={{k}}$ :",
+					"$$\\begin{align}{{eval:a*x+b}}&={{k}}\\\\{{eval:a*x}}&={{k}}{{eval:-b;+}}\\\\{{eval:a*x}}&={{eval:k-b}}\\\\x&=\\frac{ {{eval:k-b}} }{ {{a}} }\\\\x&=\\textcolor{{{color:primary.0}}}{{{s}}}\\end{align}$$",
+					"Vérification : $f({{s}})={{a}}\\times({{s}}){{b;+}}={{k}}$."
+				]
+			},
+			"hint": "L'antécédent est le nombre $x$ tel que $f(x)={{k}}$ : écris l'équation, puis résous-la."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : f(−3) = 28",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "v0 : calcul laissé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["18+9+1"]
+		},
+		{
+			"description": "v0 : carré négatif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre négatif est positif : $\\left( -3 \\right)^2 = 9$."
+			},
+			"answers": ["-8"]
+		},
+		{
+			"description": "v0 : signe du produit",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe de chaque produit : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "v0 : coefficient au carré",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Seul $x$ est au carré : $a x^2$, c'est $a\\times x^2$, pas $\\left( a x \\right)^2$."
+			},
+			"answers": ["46"]
+		},
+		{
+			"description": "v0 : f(x) = −3x² + 2x − 5, f(2) = −13",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "-5",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-13"]
+		},
+		{
+			"description": "v1 : f(−2) = 30",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "-4",
+				"n": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30"]
+		},
+		{
+			"description": "v1 : produit laissé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "-4",
+				"n": "-2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3\\times10"]
+		},
+		{
+			"description": "v1 : somme",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "-4",
+				"n": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux parenthèses se multiplient : calcule la valeur de chacune, puis fais leur produit."
+			},
+			"answers": ["-13"]
+		},
+		{
+			"description": "v1 : produits croisés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "-4",
+				"n": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié des produits en développant : chaque terme de la première parenthèse multiplie chaque terme de la seconde. Plus simple : calcule chaque parenthèse, puis multiplie."
+			},
+			"answers": ["20"]
+		},
+		{
+			"description": "v1 : f(x) = (−2x + 3)(2x + 5), f(3) = −33",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "2",
+				"d": "5",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-33"]
+		},
+		{
+			"description": "v2 : f(−3) = −5",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5"]
+		},
+		{
+			"description": "v2 : (−x)²",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans $-x^2$, seul $x$ est au carré : on calcule le carré, puis on prend son opposé. $-x^2$, c'est $-\\left( x^2 \\right)$, pas $\\left( -x \\right)^2$."
+			},
+			"answers": ["13"]
+		},
+		{
+			"description": "v2 : double",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"n": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre, c'est ce nombre multiplié par lui-même, pas par $2$."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "v2 : f(x) = −x² − 7, f(−1) = −8",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-7",
+				"n": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-8"]
+		},
+		{
+			"description": "v3 : antécédent de −12 par −4x",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-4",
+				"s": "3",
+				"k": "-12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v3 : image",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-4",
+				"s": "3",
+				"k": "-12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé l'image de $-12$ : on cherche l'antécédent, le nombre $x$ tel que $f\\left( x \\right) = -12$."
+			},
+			"answers": ["48"]
+		},
+		{
+			"description": "v3 : soustraction",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-4",
+				"s": "3",
+				"k": "-12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-4 x$, c'est $-4\\times x$ : pour retrouver $x$, on divise par $-4$, on ne soustrait pas."
+			},
+			"answers": ["-8"]
+		},
+		{
+			"description": "v3 : signe",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-4",
+				"s": "3",
+				"k": "-12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe : le quotient de deux nombres de même signe est positif, de signes contraires négatif."
+			},
+			"answers": ["-3"]
+		},
+		{
+			"description": "v4 : antécédent de 7 par 3x − 5",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"s": "4",
+				"k": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "v4 : quotient non simplifié (½)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"s": "4",
+				"k": "7"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{12}{3}"]
+		},
+		{
+			"description": "v4 : image",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"s": "4",
+				"k": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé l'image de $7$ : on cherche l'antécédent, le nombre $x$ tel que $f\\left( x \\right) = 7$."
+			},
+			"answers": ["16"]
+		},
+		{
+			"description": "v4 : constante",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"s": "4",
+				"k": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au terme constant : pour isoler le terme en $x$, on fait l'opération inverse sur les deux membres de l'équation."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "v4 : division oubliée",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"s": "4",
+				"k": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé la valeur de $3 x$ : il reste à diviser par $3$."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "v4 : antécédent de 13 par −2x + 3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"s": "-5",
+				"k": "13"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5"]
+		}
+	]
+}

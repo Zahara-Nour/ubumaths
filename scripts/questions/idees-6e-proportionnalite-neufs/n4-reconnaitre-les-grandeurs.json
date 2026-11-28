@@ -1,0 +1,211 @@
+{
+	"id": "376e7768-db5f-4631-9824-2769b6dec423",
+	"rangement": {
+		"noeud": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"point": "6-189"
+	},
+	"title": "Reconnaître les grandeurs d'une situation",
+	"description": "Dans une situation (achat, recette, trajet, robinet), cocher les deux grandeurs parmi des unités et des objets ; puis relier chaque grandeur (masse, durée, prix, longueur, contenance, aire) à son unité, avec une unité en trop (une série parmi cinq)",
+	"grades": ["6"],
+	"level": 8,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:s==0|Inès achète $3~\\unit{kg}$ de pommes pour $5{,}40~\\unit{€}$.|{{if:s==1|Pour $6$ personnes, Hugo utilise $300~\\unit{g}$ de farine.|{{if:s==2|Un cycliste parcourt $45~\\unit{km}$ en $3~\\unit{h}$.|Un robinet ouvert remplit un seau de $10~\\unit{L}$ en $2~\\unit{min}$.}}}}}}\n\nQuelles sont les deux grandeurs de cette situation ? Coche-les.\n\n```choix\nplusieurs: oui\n- {{if:s==0|la masse de pommes achetée|{{if:s==1|le nombre de personnes|{{if:s==2|la distance parcourue|le volume d'eau versé}}}}}}\n- {{if:s==0|le kilogramme|{{if:s==1|le gramme|{{if:s==2|le kilomètre|le litre}}}}}}\n- {{if:s==0|les pommes|{{if:s==1|la farine|{{if:s==2|le vélo|le robinet}}}}}}\n- {{if:s==0|le prix payé|{{if:s==1|la masse de farine|{{if:s==2|la durée du trajet|la durée de remplissage}}}}}}\n- {{if:s==0|l'euro|{{if:s==1|la recette|{{if:s==2|l'heure|la minute}}}}}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Grandeur ou unité ?** Une grandeur est ce qu'on mesure (une masse, un prix, une durée…) ; l'unité est ce avec quoi on la mesure (le kilogramme, l'euro, l'heure…).",
+					"Ici, les deux grandeurs sont $\\textcolor{{{color:primary.0}}}{\\text{{{if:s==0|la masse de pommes (en kilogrammes) et le prix payé (en euros)|{{if:s==1|le nombre de personnes et la masse de farine (en grammes)|{{if:s==2|la distance parcourue (en kilomètres) et la durée du trajet (en heures)|le volume d'eau versé (en litres) et la durée de remplissage (en minutes)}}}}}}}}$.",
+					"{{if:s==0|« Le kilogramme » et « l'euro » sont des unités ; « les pommes » sont ce qu'on achète, pas une mesure.|{{if:s==1|« Le gramme » est une unité ; « la farine » et « la recette » ne sont pas des mesures.|{{if:s==2|« Le kilomètre » et « l'heure » sont des unités ; « le vélo » est un objet.|« Le litre » et « la minute » sont des unités ; « le robinet » est un objet.}}}}}}"
+				]
+			},
+			"hint": "Une grandeur se mesure ; l'unité dit avec quoi on la mesure."
+		},
+		{
+			"statement": "Relie chaque grandeur à l'unité qui sert à la mesurer. Une unité ne sert pas.\n\n```associer\n- {{if:s==0|la masse d'une pastèque|{{if:s==1|la masse d'un stylo|{{if:s==2|la masse d'un éléphant|{{if:s==3|la masse d'une lettre|la masse d'un camion}}}}}}}} -> {{if:s==0|le kilogramme|{{if:s==1|le gramme|{{if:s==2|la tonne|{{if:s==3|le gramme|la tonne}}}}}}}}\n- {{if:s==0|la durée d'un film|{{if:s==1|la durée d'une course de $100~\\unit{m}$|{{if:s==2|la durée d'une récréation|{{if:s==3|la durée des vacances d'été|la durée d'un vol de Paris à New York}}}}}}}} -> {{if:s==0|l'heure|{{if:s==1|la seconde|{{if:s==2|la minute|{{if:s==3|le jour|l'heure}}}}}}}}\n- {{if:s==0|le prix d'un livre|{{if:s==1|la distance entre deux villes|{{if:s==2|le prix d'une voiture|{{if:s==3|la longueur d'un marathon|le prix d'un vélo}}}}}}}} -> {{if:s==0|l'euro|{{if:s==1|le kilomètre|{{if:s==2|l'euro|{{if:s==3|le kilomètre|l'euro}}}}}}}}\n- {{if:s==0|la longueur d'une piscine|{{if:s==1|l'aire d'une chambre|{{if:s==2|la longueur d'un crayon|{{if:s==3|l'aire d'un terrain de football|l'épaisseur d'un cahier}}}}}}}} -> {{if:s==0|le mètre|{{if:s==1|le mètre carré|{{if:s==2|le centimètre|{{if:s==3|le mètre carré|le millimètre}}}}}}}}\n- {{if:s==0|la contenance d'une bouteille d'eau|{{if:s==1|la contenance d'un verre|{{if:s==2|la contenance d'une baignoire|{{if:s==3|la contenance d'une cuillère|la contenance d'un seau}}}}}}}} -> {{if:s==0|le litre|{{if:s==1|le centilitre|{{if:s==2|le litre|{{if:s==3|le millilitre|le litre}}}}}}}}\n- -> {{if:s==0|le mètre carré|{{if:s==1|l'euro|{{if:s==2|le mètre carré|{{if:s==3|l'euro|le mètre carré}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..4"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Grandeur et unité.** Une grandeur se mesure ; son unité dit avec quoi on la mesure : une masse en grammes, en kilogrammes ou en tonnes, une durée en secondes, en minutes, en heures ou en jours, une longueur en mètres, une aire en mètres carrés, une contenance en litres.",
+					"{{if:s==0|La masse d'une pastèque : $\\textcolor{{{color:primary.0}}}{\\text{le kilogramme}}$ ; La durée d'un film : $\\textcolor{{{color:primary.0}}}{\\text{l'heure}}$ ; Le prix d'un livre : $\\textcolor{{{color:primary.0}}}{\\text{l'euro}}$ ; La longueur d'une piscine : $\\textcolor{{{color:primary.0}}}{\\text{le mètre}}$ ; La contenance d'une bouteille d'eau : $\\textcolor{{{color:primary.0}}}{\\text{le litre}}$. Le mètre carré mesure une aire : il ne sert pas.|{{if:s==1|La masse d'un stylo : $\\textcolor{{{color:primary.0}}}{\\text{le gramme}}$ ; La durée d'une course de $100~\\unit{m}$ : $\\textcolor{{{color:primary.0}}}{\\text{la seconde}}$ ; La distance entre deux villes : $\\textcolor{{{color:primary.0}}}{\\text{le kilomètre}}$ ; L'aire d'une chambre : $\\textcolor{{{color:primary.0}}}{\\text{le mètre carré}}$ ; La contenance d'un verre : $\\textcolor{{{color:primary.0}}}{\\text{le centilitre}}$. L'euro mesure un prix : il ne sert pas.|{{if:s==2|La masse d'un éléphant : $\\textcolor{{{color:primary.0}}}{\\text{la tonne}}$ ; La durée d'une récréation : $\\textcolor{{{color:primary.0}}}{\\text{la minute}}$ ; Le prix d'une voiture : $\\textcolor{{{color:primary.0}}}{\\text{l'euro}}$ ; La longueur d'un crayon : $\\textcolor{{{color:primary.0}}}{\\text{le centimètre}}$ ; La contenance d'une baignoire : $\\textcolor{{{color:primary.0}}}{\\text{le litre}}$. Le mètre carré mesure une aire : il ne sert pas.|{{if:s==3|La masse d'une lettre : $\\textcolor{{{color:primary.0}}}{\\text{le gramme}}$ ; La durée des vacances d'été : $\\textcolor{{{color:primary.0}}}{\\text{le jour}}$ ; La longueur d'un marathon : $\\textcolor{{{color:primary.0}}}{\\text{le kilomètre}}$ ; L'aire d'un terrain de football : $\\textcolor{{{color:primary.0}}}{\\text{le mètre carré}}$ ; La contenance d'une cuillère : $\\textcolor{{{color:primary.0}}}{\\text{le millilitre}}$. L'euro mesure un prix : il ne sert pas.|La masse d'un camion : $\\textcolor{{{color:primary.0}}}{\\text{la tonne}}$ ; La durée d'un vol de Paris à New York : $\\textcolor{{{color:primary.0}}}{\\text{l'heure}}$ ; Le prix d'un vélo : $\\textcolor{{{color:primary.0}}}{\\text{l'euro}}$ ; L'épaisseur d'un cahier : $\\textcolor{{{color:primary.0}}}{\\text{le millimètre}}$ ; La contenance d'un seau : $\\textcolor{{{color:primary.0}}}{\\text{le litre}}$. Le mètre carré mesure une aire : il ne sert pas.}}}}}}}}"
+				]
+			},
+			"hint": "Une grandeur se mesure ; l'unité dit avec quoi on la mesure."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cocher : achat, masse et prix",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;3"]
+		},
+		{
+			"description": "Cocher : achat, une unité cochée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "Cocher : achat, l'objet coché",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2;3"]
+		},
+		{
+			"description": "Cocher : achat, une seule grandeur (partiel)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Cocher : trajet, unités seulement",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1;4"]
+		},
+		{
+			"description": "Cocher : robinet, distance et durée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;3"]
+		},
+		{
+			"description": "Relier : série 1, le bon classement",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1", "0", "2"]
+		},
+		{
+			"description": "Relier : série 1, kilogramme et heure échangés",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4", "5", "1", "0", "2"]
+		},
+		{
+			"description": "Relier : série 1, le mètre carré (intrus) pour la piscine",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5", "4", "1", "3", "2"]
+		},
+		{
+			"description": "Relier : série 2, le bon classement",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1", "0", "2"]
+		},
+		{
+			"description": "Relier : série 3, le bon classement",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1", "0", "2"]
+		},
+		{
+			"description": "Relier : série 3, le mètre carré (intrus) pour le crayon",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5", "4", "1", "3", "2"]
+		},
+		{
+			"description": "Relier : série 4, le bon classement",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1", "0", "2"]
+		},
+		{
+			"description": "Relier : série 5, le bon classement",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1", "0", "2"]
+		}
+	]
+}

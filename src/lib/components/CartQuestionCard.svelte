@@ -13,25 +13,30 @@
 	 * puis la durée observée chez ses élèves, à appliquer (chantier `durees-ajustees`).
 	 * Plus de répétitions que de questions différentes (chantier `idees-format`) :
 	 * la tuile le dit et propose d'abaisser (une série ne répète jamais une question).
-	 * Prof seulement : le choix des variations de la ligne (idée 2), sous les réglages.
+	 * Prof seulement : le choix des variations de la ligne (idée 2), sur la carte.
+	 * Chantier `automaths` (2026-11-26) : niveaux et flèches des variations au-dessus
+	 * de la carte (`TileCard`, variations choisies seulement) ; corbeille « Retirer
+	 * de ma série » entre la durée et les répétitions, sans confirmation.
+	 * PR A2 : le prof choisit les variations (et le QCM) sur la carte même, plus de
+	 * fenêtre de `VariationPicker` ici.
 	 */
 	import { Button } from '#lib/components/ui/button/index.ts';
-	import FlashCard from '#lib/components/questions/FlashCard.svelte';
-	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
-	import { Clock, CopyX, Minus, Plus, Repeat } from '@lucide/svelte';
+	import TileCard from '#lib/components/questions/TileCard.svelte';
+	import { CATALOGUE_TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
+	import { Clock, CopyX, Minus, Plus, Repeat, Trash2 } from '@lucide/svelte';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
-	import type { SeriesItem } from '#lib/validation/series.ts';
+	import { MAX_QUESTION_DELAY_SECONDS, type SeriesItem } from '#lib/validation/series.ts';
 	import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 	import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
 	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
-	import VariationPicker from '#lib/components/series/VariationPicker.svelte';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
 	const DELAY_MIN = 5;
-	const DELAY_MAX = 300;
+	// Celle de la série enregistrée (écart L92)
+	const DELAY_MAX = MAX_QUESTION_DELAY_SECONDS;
 	const QUANTITY_MAX = 99;
 
 	// Boutons révélés au survol, au focus clavier, et toujours sur écran tactile
@@ -74,6 +79,8 @@
 		distinctMax?: number | null;
 	} = $props();
 
+	const titleId = $props.id();
+
 	function handleIncrementDelay() {
 		const newDelay = item.delay + DELAY_STEP;
 		if (newDelay <= DELAY_MAX) onUpdateDelay(item.templateId, newDelay);
@@ -85,12 +92,21 @@
 	}
 </script>
 
-<div class="group flex flex-col gap-3">
-	<!-- Intitulé : titre et niveau du modèle -->
+<!-- Groupe nommé par le titre : les boutons de toutes les tuiles portent le même nom -->
+<div
+	class="group flex flex-col gap-3"
+	role="group"
+	aria-labelledby={template ? titleId : undefined}
+	aria-label={template ? undefined : 'Modèle retiré'}
+>
+	<!-- Intitulé : titre et difficulté du modèle -->
 	{#if template}
 		<div class="flex items-start justify-between gap-2 text-sm font-medium">
-			<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
-			<span class="shrink-0 text-xs text-muted-foreground" title="Niveau">{template.level}</span>
+			<div id={titleId}>
+				<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
+			</div>
+			<span class="shrink-0 text-xs text-muted-foreground" title="Difficulté">{template.level}</span
+			>
 		</div>
 	{:else}
 		<p class="text-sm font-medium text-muted-foreground">Modèle retiré</p>
@@ -109,7 +125,19 @@
 			</Button>
 		</div>
 	{:else if instance}
-		<FlashCard {instance} interactive={false} size="sm" height={TILE_CARD_HEIGHT} />
+		<TileCard
+			{template}
+			preview={instance}
+			variations={item.variations}
+			height={CATALOGUE_TILE_CARD_HEIGHT}
+			onvariationschange={onUpdateVariations
+				? (variations) => onUpdateVariations(item.templateId, variations)
+				: undefined}
+			choiceVariations={item.choiceVariations}
+			onchoicechange={onUpdateChoiceVariations
+				? (choiceVariations) => onUpdateChoiceVariations(item.templateId, choiceVariations)
+				: undefined}
+		/>
 	{:else}
 		<div
 			class="rounded-xl border p-6 text-center text-sm text-muted-foreground italic"
@@ -149,6 +177,21 @@
 			</Button>
 		</div>
 
+		<!-- Retrait de la ligne, sans confirmation (modèle retiré : le bouton de l'encadré) -->
+		{#if template}
+			<Button
+				size="icon"
+				variant="ghost"
+				class="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+				onclick={() => onRemove(item.templateId)}
+				aria-label="Retirer de ma série"
+				title="Retirer de ma série"
+				data-retirer
+			>
+				<Trash2 class="h-4 w-4" aria-hidden="true" />
+			</Button>
+		{/if}
+
 		<!-- Répétitions -->
 		<div class="flex items-center gap-1 rounded-full bg-primary px-2 py-1 shadow-md">
 			<Button
@@ -179,18 +222,6 @@
 			</Button>
 		</div>
 	</div>
-
-	{#if template && onUpdateVariations}
-		<VariationPicker
-			{template}
-			selected={item.variations}
-			onchange={(variations) => onUpdateVariations(item.templateId, variations)}
-			choiceSelected={item.choiceVariations}
-			onchoicechange={onUpdateChoiceVariations
-				? (choiceVariations) => onUpdateChoiceVariations(item.templateId, choiceVariations)
-				: undefined}
-		/>
-	{/if}
 
 	{#if distinctMax !== null}
 		<!-- Couleur d'accent sur l'icône seule : le texte garde son contraste -->

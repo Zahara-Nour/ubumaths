@@ -81,10 +81,10 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/to-python.ts`              | « Ouvrir dans Python » : `pythonOf` traduit un objet (et ce qu'il cite) en code Python, `pythonPageOf` en fait l'adresse `/python?code=`                                                                              |
 | `src/lib/atelier/from-python.ts`            | « Ouvrir dans l'atelier » depuis `/python` : `offerOf` dit ce que le menu propose pour une liste rapportée par le worker (liste, ses effectifs, ou refus nommé)                                                       |
 | `src/lib/atelier/python-mailbox.ts`         | La boîte aux lettres à usage unique de ce pont : `postToAtelier` dépose dans `localStorage`, `takeFromPython` relit (Zod) et efface                                                                                   |
-| `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)                                                                                                                    |
+| `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`) ; `splitDisplayExponent` sépare l'exposant `⁻¹` du nom affiché                                                     |
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`) ; une définition illisible dit l'aide précise du parseur, comme la ligne de calcul (`invalidExpressionMessage`) |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                          |
-| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                                                      |
+| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[`, `f(x) = x pour x > 2` : coupe au mot « sur » ou « pour », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                   |
 | `src/lib/atelier/draft-hint.ts`             | Le « Modèle : » d'une définition de fonction sous le champ de la console : `g(t) = t² sur [0;3]`, puis, « sur » tapé, `[a;b], ]a;b[, [0;+∞[`                                                                          |
 | `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                                                                                 |
 | `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                                                                                      |
@@ -196,7 +196,7 @@ Ceux du code et de l'interface :
 | `ListCard.svelte`            | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »                                                                                                                                                                                                               |
 | `CardActionItems.svelte`     | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`                                                                                                                                                                                                                  |
 | `UnavailableItem.svelte`     | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)                                                                                                                                                                                                                 |
-| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »                                                                                                                                                                                                      |
+| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]` (l'exposant de `f⁻¹` dans sa propre étiquette : le `⁻` manque à la police, WebKit le décollait), œil, menu Affichage / Actions ; fenêtre de « Tabuler » ; en champ de saisie, l'ensemble hérité des fonctions citées s'écrit « sur … » à côté du champ       |
 | `CurveStylePopover.svelte`   | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)                                                                                                                                                                                                       |
 | `CurveStyleSettings.svelte`  | Ses réglages, repris dans le panneau « Propriétés »                                                                                                                                                                                                                                                                           |
 | `DefinitionField.svelte`     | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)                                                                                                                                                                                                               |
@@ -207,7 +207,7 @@ Ceux du code et de l'interface :
 | `StepsOnDemand.svelte`       | Les étapes d'une ligne dépliée : « Chargement des étapes… » au premier dépliage, puis le rendu ; échec → message et « Réessayer »                                                                                                                                                                                             |
 | `NaturalField.svelte`        | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                                                                                                                                                                                             |
 | `AtelierSettings.svelte`     | Le bouton « Réglages » (icône seule) et sa fenêtre : saisie dans Calcul, angles, déplacement des points                                                                                                                                                                                                                       |
-| `FormulaText.svelte`         | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)                                                                                                                                                                                                       |
+| `FormulaText.svelte`         | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`) ; texte lu par un lecteur d'écran en français (`speakLatexInFrench`, comme les cartes de fonction et la valeur exacte de Données, E32)                                                                |
 | `FigureView.svelte`          | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, barre d'outils, case « Repère », glisser des points, flèches, message d'un atelier sans figure                                                                                                                                                                |
 | `DataView.svelte`            | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                                                                                                                                                                                                                   |
 | `ShareBar.svelte`            | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier »                                                                                                                                                                                                    |
@@ -399,6 +399,33 @@ la valeur remarquable (« On utilise une valeur remarquable : cos(60°) = 1/2 »
 table reste en degrés (`.simplifier cos(20°)x`, `.développer x(cos(20°)+1)`, et `.résoudre
 cos(20°)x=1` → `S = {1/cos(20°)}` depuis la PR 2c de registre-reference, 2026-11-09 : ses étapes
 calculent en radians exacts, `radiansInTrigonometry`, puis `anglesAsTyped` remet l'angle tapé).
+**Une famille périodique s'écrit en degrés** quand la ligne tapée mesure un angle en degrés dans
+un sin, cos, tan et rien en radians (E54, 2026-11-25 ; `familyInDegrees`, `angle-radians.ts`) :
+`.résoudre cos(x) = cos(20°)` → `S = {−20° + k·360° ; 20° + k·360°, k ∈ ℤ}`, `sin(x) = sin(20°)` →
+20° et 160°, `tan(x) = tan(20°)` → `20° + k·180°`, `cos(2x) = cos(20°)` → ±10° + k·180°, angle
+remarquable compris (`cos(x) = cos(60°)` → ±60°). Le solveur calcule toujours en radians : c'est
+l'écriture (`degreeMembers`, `solve-latex.ts`) qui relit en degrés la valeur de chaque solution et
+de la période, quand la mesure est un rationnel simple, ou un décimal si la ligne en porte un (`cos(12,34°)` →
+±12,34°) ;
+sinon l'écriture en radians reste (`cos(x) = cos(20°)/2` garde son arccos). Un cas mêlé
+(`cos(x + π/3) = cos(20°)`) reste en radians (−4π/9 et −2π/9, à 2kπ près), une inconnue déjà en
+degrés (`cos(x°) = cos(20°)`) répond des nombres.
+**Le solveur reçoit l'équation en radians** (V127, 2026-11-26 : `radiansInTrigonometry` avant
+`solveRead`, `solve.command.ts`) : il lisait la valeur de `cos(20°)` comme le cosinus de 20 radians
+(`cos(x) = 2cos(20°)` avait une famille de solutions, `sin(x) = 2sin(10°)` aucune).
+**sin, cos, tan d'un angle connu au second membre** (V128, 2026-11-26 ; `inverseOfKnownAngle`,
+`solve/solvers/transcendental.ts`) : `.résoudre cos(x) = cos(π/5)` → `±π/5 + 2kπ`, sans
+`arccos(cos(π/5))`. L'angle est ramené dans l'intervalle de l'arc (`cos(11π/5)` → π/5,
+`sin(3π/5)` → 2π/5 et 3π/5), signe et fonction croisée lus (`−cos(π/5)` → ±4π/5, `sin(x) =
+cos(π/5)` → 3π/10 et 7π/10), angle sans π compris (`cos(0,4)` → ±0,4 + 2kπ ; `cos(7)` → ±(7 − 2π)).
+Tout autre second membre garde son arc (`2cos(π/5) − 1`, `1/3`).
+**`dans [0 ; 360]` se lit en degrés** quand la réponse s'écrit en degrés (même condition,
+`familyInDegrees`) et que l'inconnue est un angle (elle figure dans un sin, cos, tan) — V129,
+2026-11-26 ; `domainOfDegrees`, `solve.command.ts`, `degreeValues`, `solve-latex.ts` :
+`.résoudre cos(x) = cos(20°) dans [0;360]` → `S = {20° ; 340°}`. Les bornes sont converties en
+radians pour le calcul, les solutions relues en degrés (tout ou rien : `sin(x) = 2sin(10°) dans
+[0;360]` garde ses deux arcsin). Une borne avec π (`dans [0 ; 2π]`) garde la lecture en
+radians (π/9 et 17π/9), comme `x^2 = cos(20°) dans [0;5]`, où x n'est pas un angle.
 Le moteur de `.résoudre` reçoit les degrés tels quels : le registre les lit lui-même. **Une variable en degrés** (choix prudent, à trancher par David) :
 `f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
 angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur
@@ -636,7 +663,11 @@ fonction (I3, `computeDomain` puis `difference` : « ln(x) n'est pas défini sur
 en −1). » ; pas jugé quand la définition cite d'autres objets) → refusé, rien ne change. Une
 définition retapée sans « sur » (Calcul ou carte) retire l'intervalle (I6). `f(5)` hors de
 l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans variable ou fait de valeurs de l'atelier — `f(b)` avec b = 5 —, et aussi dans une définition, `a = f(5)`) et par l'image
-de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
+de la carte (I4). Quand l'ensemble change APRÈS (`j = f(3)`, puis le curseur de k pousse f sur
+[4 ; 5], ou f réécrite), `#recomputeOnce` refait le même contrôle sur chaque définition (texte,
+ou LaTeX débarrassé de `\left(` `\right)`) : j passe en erreur avec le message de Calcul, ce qui
+le cite aussi, et j redevient juste quand 3 revient dans l'ensemble. `f(x)` dans une autre
+fonction n'est pas une image (héritage, d) : jamais jugé ainsi. Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
 intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
 `beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
 `\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Dans la console, une
@@ -644,6 +675,22 @@ définition de fonction en cours (`f(x) =`, dans les deux champs) montre sous le
 f(x) = x² sur [0;3] — pour choisir l'ensemble », nom et variable tapés ; « sur » tapé, le modèle
 devient celui d'un intervalle (`definitionHint`, `draft-hint.ts`). Une indication seulement :
 Entrée calcule la ligne telle quelle.
+
+**Ou par une condition** (chantier `fonctions-domaines`, phase 0 validée par David le
+2026-11-28) : `f(x) = x pour x > 2`, `pour 2 < x < 4`, `pour x ≠ 0`, `pour x < 0 ou x ≥ 1` valent
+« sur » suivi de l'ensemble. « pour » ne coupe que devant une comparaison (`<`, `≤`, `≠`, `\lt`,
+`\le`, `\ne`… ; `a = 3 pour 4`, `pourcentage` restent entiers) ; la condition porte sur la lettre
+de la fonction, comparée à des nombres (`f(x) = x pour t > 2`, et `pour x > k` — un paramètre, que `sur [k;5]` accepte — : « Je n'ai pas su lire la condition… »), elle est rangée
+TELLE QU'ÉCRITE dans `interval` et lue par le même `parseStudentDomain` ; mêmes refus que « sur »
+(vide, un point, hors du domaine). C'est l'écriture qui dit le mot (`isConditionWritten` : pas un
+début d'ensemble, une comparaison) : la carte réaffiche `x\text{ pour }x>2`, ce qui a été tapé
+(une condition tapée en texte y est réécrite en LaTeX, `≤` → `\le`, « ou » → `\text{ ou }`) ; les
+propriétés et la liste disent l'ensemble (« ]2 ; +∞[ »). Une seconde formule
+(`x pour x > 2, x^2 pour x ≤ 2`) est refusée (« Une seule formule par fonction… ») : la place reste
+libre pour les fonctions par morceaux. Dans le champ « Écriture mathématique » de la console,
+« pour » devient un mot comme « sur » (le « Modèle : » sous le champ devient alors `x > 2, 2 < x < 4, x ≠ 0`, dans la lettre de la définition), et « ou », « et » seulement après lui (`f(t) = et` reste
+e·t) ; dans la carte, MathLive les colle (`x<0oux>1`), relus seulement derrière un chiffre, une
+accolade ou une espace (`\theta` n'est pas coupé).
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
@@ -678,7 +725,9 @@ de la carte garde ce que l'élève a écrit. `.résoudre g(x)=5` et `.résoudre 
 tous deux 2. `g(x) = f(2x)` hérite de {x : 2x ∈ I} (`citedIntervals` rend aussi les **conditions**, rangées dans `FunctionObject.inheritedConditions`, jamais sauvegardées) : `.domaine g` dit « (ensemble hérité : 2x doit être dans [0 ; +∞[) » (Q2 du chantier composees). `g(x) = f(x^2)` (u non affine) ou un héritage vide passent g en **erreur**, en français.
 **e)** `.variations … dans [a;b]` inchangé. **f)** Dans « Sur le graphique » (`CurveSettings`),
 une tangente hors de l'ensemble (une borne fermée est dedans) et une aire dont [a ; b] sort
-sont refusées, le refus écrit sous le réglage (`tangentRefusal`, `areaRefusal`) ; `plot-sync`
+sont refusées, le refus écrit sous le réglage (`tangentRefusal`, `areaRefusal`) ; une aire que le
+calcul refuse (un pôle entre les bornes) dit pourquoi sous « aire = — » (`integralRefusal` de
+`grapheur/analysis.ts`, le refus d'`integrateDefinite` : « … singularité en x ≈ 1,26 », E2, 2026-11-23) ; `plot-sync`
 ne les dessine pas (`allowedDisplay`). **g)** Le lien `?f=x^2 sur [0;+∞[` lit « sur »
 (`atelierFromCurves`, `splitInterval`).
 
@@ -689,6 +738,21 @@ ou ensemble par conditions → courbe entière) ; `syncPlots` le pose sur la cou
 que sur l'ensemble : point plein à une borne fermée, creux à une borne ouverte, rien à l'infini ni
 là où f n'est pas définie (détail : [grapheur.md](grapheur.md)). `f′`, qui hérite, se trace
 restreinte aussi.
+
+**L'intervalle à paramètre** (chantier fonctions-morceaux, phase 0 validée le 2026-11-28) : une
+borne peut citer des valeurs de l'atelier (`f(x) = x sur [k;5]`, `[-a;a]`, `[k+1;5[`,
+`\frac{k}{2}`). `intervalNamesOf` (`interval.ts`) lit les noms des bornes : ce sont des
+références de f (`#readRefsOf`) — k absent, f l'attend avec l'offre de curseur ; k en erreur, f
+aussi. Le champ garde l'écriture (`interval`, sauvegardée telle quelle) ; à chaque recalcul,
+`#parameterIntervalsNow` relit l'ensemble avec les valeurs (`parseStudentDomain`, option `bound`)
+et le range dans `FunctionObject.parameterInterval`, jamais sauvegardé, que `intervalDomainOf`
+préfère à la lecture de l'écriture : tracé, calculs, refus de `f(1)`, héritage suivent le curseur.
+Lu avec les valeurs du passage d'avant, il fait repasser `recomputeAll` une fois s'il change.
+Un ensemble que le curseur rend impossible met la carte en **erreur** (courbe effacée, retour seul
+quand le curseur revient), le refus de `checkInterval` suffixé des valeurs : « L'intervalle est
+vide (k = 6). », « réduit à un point (k = 5) », « √x n'est pas défini sur tout [−1 ; 5] (k = −1) ».
+À la création, la même valeur impossible refuse la saisie. Renommer k réécrit les bornes
+(`renamedInInterval`). Tests : `atelier/__tests__/intervalle-parametre.test.ts`.
 
 **La réciproque** (lot 3 de [atelier-reciproque-phase0.md](../archive/wip/atelier-reciproque-phase0.md),
 R1-R4) : le bouton « Réciproque » de la carte d'une fonction et `.réciproque f [sur I]` donnent la
@@ -801,7 +865,12 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). Ces
   phrases et l'aide d'une fonction tiennent sur une place réservée (`.sous-barre`, une seule à la fois ; une ligne, deux quand la
   vue est étroite, container query sous 40rem) : la grille ne saute pas d'une case à l'autre — elle sautait d'une rangée, et pendant un clic
-  la case sous le pointeur enfoncé changeait, la zone s'étendait (2026-10-26). La carte d'une liste à formules montre ses valeurs et « calculée
+  la case sous le pointeur enfoncé changeait, la zone s'étendait (2026-10-26). **Au téléphone** (une colonne, ≤ 720 px), la
+  vue est plus haute que sa place : la barre de formule reste en haut et le reste (`.corps` : mise en forme, grille, outils,
+  diagrammes) défile dessous ; l'aide d'une fonction s'y colle en haut le temps de l'écrire, par-dessus la grille. Écrire dans
+  la barre ne déplace donc plus la grille (écart E41, 2026-11-24 : il fallait remonter jusqu'à la barre, la grille descendait
+  d'environ 300 px ; une barre `sticky` dans la vue qui défile ne tient pas, WebKit ramène la vue à sa place d'origine à la
+  frappe). Ailleurs, `.corps` est en `display: contents` : rien ne change. La carte d'une liste à formules montre ses valeurs et « calculée
   dans la grille » (`studentDefinitionOf`). Supprimer une liste dont des cellules d'autres colonnes
   se videront (`citingCells` : en chaîne, sans celles déjà vides) demande confirmation : « 3 cellules de la grille la citent : elles
   deviendront vides. » (`citingCellsNote`). La copie vers un autre logiciel et le CSV
@@ -1366,7 +1435,8 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   bougent pas (Q8), chacune se bascule à la main.
 - **Note** (mode « garder ») : « On peut simplifier davantage pour x ≠ 0 : ajoute « avec x ≠ 0 »
   (ou « dans ℝ \ {0} »). » — `dans` seulement si une seule lettre ; l'une et l'autre se recopient
-  telles quelles.
+  telles quelles. Elle part quand la ligne montre la simplification (« Simplifier pour x ≠ 0 ») et
+  revient avec « Sans simplifier » (`Alternative.outdatedNote`, `shownNote` de `CalculView`, E9).
 - **`avec CONDITION` / `dans ENSEMBLE`**, sur une expression tapée et sur `.simplifier`,
   `.factoriser`, `.développer` (pas `.résoudre`, qui garde son `dans` ; pas une définition ni une
   équation) : coupés avant le calcul, puis lus. `avec` : les conditions de `parseStudentDomain`
@@ -2040,7 +2110,8 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   domaine, aide… ; accents facultatifs ; formes conjuguées « résous », « dérive ») est une commande ;
   sinon un calcul ou une définition. Aucun point à taper ; un point tapé reste accepté sans bruit.
 - **Les petits mots** (de, à, en, sur, pour, dans, et, ordre, par) ne sont des mots **que** dans une
-  commande (et « sur » après le `=` d'une définition), jamais dans un calcul.
+  commande (et « sur », « pour » après le `=` d'une définition, « ou », « et » après ce « pour »),
+  jamais dans un calcul.
 - **Un mot devient texte quand il est fini** (espace, caractère mathématique, ou choix dans la
   liste), pas dès que ses lettres correspondent (sinon « de » dans « deriver ») ; retour aux maths
   automatique.
@@ -2054,6 +2125,11 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   (clavier virtuel compris). Liste ouverte : **Entrée calcule, Tab choisit**.
 - Une fraction ne se quitte pas toute seule quand on tape un opérateur : on en sort par → ou Tab,
   comme partout dans MathLive (2026-10-14).
+- **Au téléphone** (écarts E23, E24, 2026-11-24) : la consigne du champ vide est courte
+  (« f(x) = x² − 3x + 1, ou un calcul », en texte comme en écriture mathématique : la longue était
+  coupée) ; quand le clavier virtuel de MathLive couvrirait le bas de la console, la saisie
+  (aide de la commande comprise) est épinglée juste au-dessus du clavier et de son bouton « Fermer
+  le clavier » (`keyboardLift`, suivi de `geometrychange`), le temps que son champ a le focus.
 
 - **Les mêmes réponses** : le champ mathématique envoie au moteur le texte que lit `runInput`
   (`calcTextOf`) ; une case vide d'un modèle est refusée avant (la ligne reste, la raison s'affiche).
@@ -2325,7 +2401,8 @@ Lot 1 de la refonte de l'interface (`docs/archive/wip/atelier-refonte-interface-
 David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
 (`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
 l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
-droite **Console**, **Partager**, **Réglages** et **Plein écran**.
+droite **Console**, **Partager**, **Réglages** et **Plein écran**. Sous 480 px, les marges se
+resserrent (boutons de 40 px gardés) : les neuf tiennent à 375 px (E7, 2026-11-23).
 
 **Plein écran** (chantier `atelier-plein-ecran`, 2026-11-15) : tout l'atelier recouvre la fenêtre
 (classe `plein-ecran` : `position: fixed`, `inset: 0`, comme le graphe agrandi), sans l'en-tête
@@ -2931,7 +3008,13 @@ infini hors de l'ensemble est refusé ; une composée affine d'une fonction à e
 (une réponse, pas un refus, comme `.factoriser`) ; avec une lettre autre que la variable
 (`unknownLimit`) : « … : elle peut dépendre du signe de k. » (λ écrit λ) — le moteur ne devine
 plus le signe d'un paramètre (`.limite e^(-kx) en x=+∞` rendait +∞, chantier
-limites-parametres) ; une limite où il ne décide pas reste calculée (`(kx+1)/(x+2)` → k). Sans côté tapé, une fonction définie d'un seul
+limites-parametres) ; une limite où il ne décide pas reste calculée (`(kx+1)/(x+2)` → k).
+Une limite finie à paramètre dit sa condition (V103, `limitParameterCondition` de
+`mathAST/limits/parametric.ts`) : `\lim\limits_{x\to 0} \dfrac{1}{x^2 + k} = \dfrac{1}{k}\text{,}\quad\text{pour }k \neq 0`
+(texte « … = 1/k, pour k ≠ 0 ») ; une condition qui ne s'écrit pas (plusieurs lettres) ou que
+contredit un essai du moteur (k remplacé par −2, …, 3) → `unknownLimit`. Un refus du moteur qui
+vaut la même chose pour tout k est rattrapé terme à terme (`limitForEveryParameter` :
+`x^2+kx` en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞ ; jamais sur un « pas de limite »). Sans côté tapé, une fonction définie d'un seul
 côté du point (`definedSide` du moteur) l'écrit : `.limite ln(x) en 0` →
 `\lim\limits_{x\to 0^+} \ln(x) = -\infty` (aussi `sqrt(x)` en 0, `sqrt(-x)` en `0^-`, `ln(x-1)`
 en 1 ; `f(x)` garde son nom). `does-not-exist` sans côté TAPÉ par l'élève (un côté imposé par l'ensemble choisi, I4, garde la
@@ -3217,8 +3300,9 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
-- dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
-  sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
+- anciennes dettes, closes : « Renommer » est actif (`actions.ts`) ; pas de palette d'unités, les
+  unités se tapent à la main (décision du 2026-10-11, [grandeurs.md](grandeurs.md)).
+  `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).
   `.relever` sur une figure chargée (intersections, perpendiculaire, périmètre, angle, deux
   mesures composées) : 19 à 23 s pour le balayage, ~8 ms puis ~95 ms de recalcul par pas — le

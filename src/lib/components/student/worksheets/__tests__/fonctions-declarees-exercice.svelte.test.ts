@@ -1,5 +1,5 @@
 /**
- * Fonctions déclarées par un EXERCICE (`exercises.generic_functions`) à l'écran
+ * Fonctions déclarées par un EXERCICE (`exercise_versions.generic_functions`) à l'écran
  * ============================================================================
  *
  * Fiche de l'élève : l'énoncé et la correction sont relus au rendu. Sans la

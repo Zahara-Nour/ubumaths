@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2951, #2952, #2953 et la comparaison des formats d'exercice._
+_Mis à jour le 2026-11-23 : idées 1 à 5 d'`idees-format` mergées et en prod (0.102.0)._
 
-- **État** : gros lot « nombres et calculs » publié (36 neufs + 21 variations de 16 publiés), en relecture par David dans `/dev/modeles` (séries `54d77552` et `d580e46d`). Skill `idees-rubrique` prêt, rubriques suivantes **en pause**. Comparatif des formats : [idees-format-exercices.md](idees-format-exercices.md) (5 idées retenues).
-- **Ordre décidé par David (2026-11-21)** : (1) chantier `idees-format` dans une nouvelle session, idée 1 d'abord (répartition des variations dans une série) ; (2) **revoir les 52 modèles du lot** avec les critères d'aujourd'hui (meilleure case réponse de notre format, `testSpecs` justes + erreurs typiques, tags et bornes du niveau) — « il y a sûrement beaucoup de modifications » ; (3) les autres rubriques de Seconde, puis les autres niveaux.
-- **Prochaine action ici** : la revue des 52 modèles (étape 2), quand `idees-format` sera avancé ; lire aussi les verdicts « À revoir » de David (`question_template_reviews`).
-- **En attente de David** : ses verdicts dans `/dev/modeles`, dont les 6 choix (rationaliser, décomposition, entier + fraction, téra, arrondi, puissances).
-- **Pièges** : aucune trace du nom de la plateforme (racines hors du dépôt, cf. `git-workflow.md` § Noms interdits) ; exercices lus dans `extern/banque-exercices/` ; corriger une variation d'un publié change ce que voient les élèves qui y ont répondu.
-- **Worktree** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main`.
+- **État** : lot « nombres et calculs » publié. Sa revue (étape 2) est **reprise par `idees-format`** (worktree `ubumaths-wt-idees-format-revue-2de`, pas de PR) : passe 1 commitée (erreurs prévues, coups de pouce, specs), passe 2 (forme) sur une page à cocher, les 6 choix du 2026-11-20 compris. Pause des rubriques levée le 2026-11-22.
+- **Reste ici** : (1) quand la revue est mergée et jouée en prod, lever les 16 réservations de modèles publiés (`idees-ailleurs-repartition.md`) ; (2) fiches en attente 16, 17, 34, 52 ; (3) versement du chantier (journal archivé, relevé gardé).
+- **En attente de David** : la page à cocher de la revue (session `idees-format`) ; ses verdicts dans `/dev/modeles` (un seul en base, « Arrondir »).
+- **Pièges** : aucune trace du nom de la plateforme ; exercices lus dans `extern/banque-exercices/` ; ne pas toucher aux fichiers du lot pendant la revue de l'autre session.
+- **Worktree** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main`, à retirer.
 
 ## Parallélisation, gardes du nom, idées de format (2026-11-21)
 

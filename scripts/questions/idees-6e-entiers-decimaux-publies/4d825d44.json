@@ -1,0 +1,562 @@
+{
+	"id": "4d825d44-928a-4461-9df0-3b3c3fdc74fc",
+	"title": "Le chiffre d'un rang",
+	"description": "Donner le chiffre d'un rang d'un grand entier (jusqu'aux centaines de milliards) ou d'un décimal (des centaines aux millièmes)",
+	"grades": ["6"],
+	"level": 5,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{ch}}"
+				}
+			],
+			"statement": "Dans le nombre ${{n}}$, quel est le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|unités de millions|{{if:r==7|dizaines de millions|{{if:r==8|centaines de millions|{{if:r==9|unités de milliards|{{if:r==10|dizaines de milliards|centaines de milliards}}}}}}}}}}}}}}}}}}}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "6..12"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:c-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{cm}}"
+				},
+				{
+					"name": "k",
+					"expression": "eval:floor(r/3)"
+				},
+				{
+					"name": "ch",
+					"expression": "eval:mod(floor(n/10^r),10)"
+				}
+			],
+			"conditions": ["mod(floor(n/10^(r+1)),10)!=ch", "mod(floor(n/10^(r-1)),10)!=ch"],
+			"correction": {
+				"steps": [
+					"**Les rangs.** On découpe le nombre en classes de trois chiffres à partir de la droite : classe des unités, des mille, des millions, des milliards. Dans chaque classe, de droite à gauche : unités, dizaines, centaines.",
+					"Le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|unités de millions|{{if:r==7|dizaines de millions|{{if:r==8|centaines de millions|{{if:r==9|unités de milliards|{{if:r==10|dizaines de milliards|centaines de milliards}}}}}}}}}}}}}}}}}}}}}} est dans la classe des {{if:k==0|unités|{{if:k==1|mille|{{if:k==2|millions|milliards}}}}}}. Dans ${{n}}$, c'est $\\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{ch}}"
+				}
+			],
+			"statement": "Dans le nombre ${{x}}$, quel est le chiffre des {{if:t==0|millièmes|{{if:t==1|centièmes|{{if:t==2|dixièmes|{{if:t==3|unités|{{if:t==4|dizaines|centaines}}}}}}}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..999"
+				},
+				{
+					"name": "q",
+					"expression": "1..999"
+				},
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*p+q"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N/1000;d"
+				},
+				{
+					"name": "ch",
+					"expression": "eval:mod(floor(N/10^t),10)"
+				}
+			],
+			"conditions": [
+				"mod(q,10)!=0",
+				"p>=10^(t-3)",
+				"mod(floor(N/10^(t+1)),10)!=ch",
+				"mod(floor(N/10^(t-1)),10)!=ch"
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs.** Avant la virgule : unités, dizaines, centaines (de droite à gauche). Après la virgule : dixièmes, centièmes, millièmes (de gauche à droite). Les dixièmes sont juste après la virgule ; les dizaines, juste avant les unités.",
+					"Dans ${{x}}$, le chiffre des {{if:t==0|millièmes|{{if:t==1|centièmes|{{if:t==2|dixièmes|{{if:t==3|unités|{{if:t==4|dizaines|centaines}}}}}}}}}} est $\\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Coche tous les nombres dont le chiffre des centièmes est ${{g}}$.\n\n```choix\nplusieurs: oui\n- ${{X0}}$\n- ${{X1}}$\n- ${{X2}}$\n- ${{X3}}$\n- ${{X4}}$\n- ${{X5}}$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "t2",
+					"expression": "0..1"
+				},
+				{
+					"name": "t3",
+					"expression": "0..1"
+				},
+				{
+					"name": "u0",
+					"expression": "1..99"
+				},
+				{
+					"name": "a0",
+					"expression": "0..9"
+				},
+				{
+					"name": "b0",
+					"expression": "0..9"
+				},
+				{
+					"name": "u1",
+					"expression": "1..99"
+				},
+				{
+					"name": "a1",
+					"expression": "0..9"
+				},
+				{
+					"name": "b1",
+					"expression": "0..9"
+				},
+				{
+					"name": "u2",
+					"expression": "1..99"
+				},
+				{
+					"name": "a2",
+					"expression": "0..9"
+				},
+				{
+					"name": "b2",
+					"expression": "0..9"
+				},
+				{
+					"name": "u3",
+					"expression": "1..99"
+				},
+				{
+					"name": "a3",
+					"expression": "0..9"
+				},
+				{
+					"name": "b3",
+					"expression": "0..9"
+				},
+				{
+					"name": "u4",
+					"expression": "1..99"
+				},
+				{
+					"name": "a4",
+					"expression": "0..9"
+				},
+				{
+					"name": "b4",
+					"expression": "0..9"
+				},
+				{
+					"name": "u5",
+					"expression": "1..99"
+				},
+				{
+					"name": "a5",
+					"expression": "0..9"
+				},
+				{
+					"name": "b5",
+					"expression": "0..9"
+				},
+				{
+					"name": "c2",
+					"expression": "0..9"
+				},
+				{
+					"name": "c3",
+					"expression": "0..9"
+				},
+				{
+					"name": "c4",
+					"expression": "0..9"
+				},
+				{
+					"name": "c5",
+					"expression": "0..9"
+				},
+				{
+					"name": "W0",
+					"expression": "eval:1000*u0+100*a0+10*g+b0"
+				},
+				{
+					"name": "W1",
+					"expression": "eval:1000*u1+100*a1+10*g+b1"
+				},
+				{
+					"name": "W2",
+					"expression": "eval:t2*(1000*u2+100*a2+10*g+b2)+(1-t2)*(1000*(10*floor(u2/10)+g)+100*a2+10*c2+b2)"
+				},
+				{
+					"name": "W3",
+					"expression": "eval:t3*(1000*u3+100*a3+10*g+b3)+(1-t3)*(1000*u3+100*g+10*c3+b3)"
+				},
+				{
+					"name": "W4",
+					"expression": "eval:1000*u4+100*g+10*c4+b4"
+				},
+				{
+					"name": "W5",
+					"expression": "eval:1000*u5+100*a5+10*c5+g"
+				},
+				{
+					"name": "X0",
+					"expression": "eval:W0/1000;d"
+				},
+				{
+					"name": "X1",
+					"expression": "eval:W1/1000;d"
+				},
+				{
+					"name": "X2",
+					"expression": "eval:W2/1000;d"
+				},
+				{
+					"name": "X3",
+					"expression": "eval:W3/1000;d"
+				},
+				{
+					"name": "X4",
+					"expression": "eval:W4/1000;d"
+				},
+				{
+					"name": "X5",
+					"expression": "eval:W5/1000;d"
+				}
+			],
+			"conditions": ["c2!=g", "c3!=g", "c4!=g", "c5!=g"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;{{eval:2*t2}};{{eval:3*t3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le rang des centièmes.** Le chiffre des centièmes est le deuxième chiffre après la virgule ; le premier est celui des dixièmes. Attention à ne pas le confondre avec le chiffre des centaines.",
+					"À cocher : ${{X0}}$, ${{X1}}${{if:t2==1|, ${{X2}}$|}}{{if:t3==1|, ${{X3}}$|}} : leur chiffre des centièmes est $\\textcolor{{{color:primary.0}}}{{{g}}}$.",
+					"Pas les autres : dans {{if:t2==0|${{X2}}$ (chiffre des unités), |}}{{if:t3==0|${{X3}}$ (chiffre des dixièmes), |}}${{X4}}$ (chiffre des dixièmes) et ${{X5}}$ (chiffre des millièmes), le ${{g}}$ n'est pas au rang des centièmes."
+				]
+			},
+			"hint": "Le chiffre des centièmes est le deuxième chiffre après la virgule. Ne le confonds pas avec celui des centaines !"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "8",
+				"k": "1",
+				"n": "45273018",
+				"r": "4",
+				"ch": "4",
+				"cm": "7"
+			},
+			"description": "45 273 018, dizaines de mille : 4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "8",
+				"k": "1",
+				"n": "45273018",
+				"r": "4",
+				"ch": "4",
+				"cm": "7"
+			},
+			"description": "Erreur : rang voisin (5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"N": "347258",
+				"p": "347",
+				"q": "258",
+				"t": "2",
+				"x": "347.258",
+				"ch": "2"
+			},
+			"description": "347,258, dixièmes : 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"N": "347258",
+				"p": "347",
+				"q": "258",
+				"t": "2",
+				"x": "347.258",
+				"ch": "2"
+			},
+			"description": "Erreur : dizaines au lieu de dixièmes (4)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"N": "347258",
+				"p": "347",
+				"q": "258",
+				"t": "0",
+				"x": "347.258",
+				"ch": "8"
+			},
+			"description": "347,258, millièmes : 8",
+			"variationIndex": 1
+		},
+		{
+			"description": "F2 : trois justes (12,47 ; 3,075 ; 45,172)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"t2": "1",
+				"t3": "0",
+				"u0": "12",
+				"a0": "4",
+				"b0": "0",
+				"u1": "3",
+				"a1": "0",
+				"b1": "5",
+				"u2": "45",
+				"a2": "1",
+				"b2": "2",
+				"u3": "8",
+				"a3": "6",
+				"b3": "3",
+				"u4": "21",
+				"a4": "0",
+				"b4": "0",
+				"u5": "6",
+				"a5": "3",
+				"b5": "0",
+				"c2": "0",
+				"c3": "1",
+				"c4": "5",
+				"c5": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1;2"]
+		},
+		{
+			"description": "F2 : un juste oublié : moitié des points",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"t2": "1",
+				"t3": "0",
+				"u0": "12",
+				"a0": "4",
+				"b0": "0",
+				"u1": "3",
+				"a1": "0",
+				"b1": "5",
+				"u2": "45",
+				"a2": "1",
+				"b2": "2",
+				"u3": "8",
+				"a3": "6",
+				"b3": "3",
+				"u4": "21",
+				"a4": "0",
+				"b4": "0",
+				"u5": "6",
+				"a5": "3",
+				"b5": "0",
+				"c2": "0",
+				"c3": "1",
+				"c4": "5",
+				"c5": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "F2 : 7 aux dixièmes coché (21,75)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"t2": "1",
+				"t3": "0",
+				"u0": "12",
+				"a0": "4",
+				"b0": "0",
+				"u1": "3",
+				"a1": "0",
+				"b1": "5",
+				"u2": "45",
+				"a2": "1",
+				"b2": "2",
+				"u3": "8",
+				"a3": "6",
+				"b3": "3",
+				"u4": "21",
+				"a4": "0",
+				"b4": "0",
+				"u5": "6",
+				"a5": "3",
+				"b5": "0",
+				"c2": "0",
+				"c3": "1",
+				"c4": "5",
+				"c5": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;2;4"]
+		},
+		{
+			"description": "F2 : 7 aux millièmes coché (6,327)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"t2": "1",
+				"t3": "0",
+				"u0": "12",
+				"a0": "4",
+				"b0": "0",
+				"u1": "3",
+				"a1": "0",
+				"b1": "5",
+				"u2": "45",
+				"a2": "1",
+				"b2": "2",
+				"u3": "8",
+				"a3": "6",
+				"b3": "3",
+				"u4": "21",
+				"a4": "0",
+				"b4": "0",
+				"u5": "6",
+				"a5": "3",
+				"b5": "0",
+				"c2": "0",
+				"c3": "1",
+				"c4": "5",
+				"c5": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;2;5"]
+		},
+		{
+			"description": "F2 : 7 aux unités coché (87,213)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"t2": "1",
+				"t3": "0",
+				"u0": "12",
+				"a0": "4",
+				"b0": "0",
+				"u1": "3",
+				"a1": "0",
+				"b1": "5",
+				"u2": "45",
+				"a2": "1",
+				"b2": "2",
+				"u3": "8",
+				"a3": "6",
+				"b3": "3",
+				"u4": "21",
+				"a4": "0",
+				"b4": "0",
+				"u5": "6",
+				"a5": "3",
+				"b5": "0",
+				"c2": "0",
+				"c3": "1",
+				"c4": "5",
+				"c5": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;2;3"]
+		},
+		{
+			"description": "F2 : quatre justes",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"t2": "1",
+				"t3": "1",
+				"u0": "12",
+				"a0": "4",
+				"b0": "0",
+				"u1": "3",
+				"a1": "0",
+				"b1": "5",
+				"u2": "45",
+				"a2": "1",
+				"b2": "2",
+				"u3": "8",
+				"a3": "6",
+				"b3": "3",
+				"u4": "21",
+				"a4": "0",
+				"b4": "0",
+				"u5": "6",
+				"a5": "3",
+				"b5": "0",
+				"c2": "0",
+				"c3": "1",
+				"c4": "5",
+				"c5": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1;2;3"]
+		}
+	]
+}

@@ -14,7 +14,7 @@
 # celles de la CI (même CLI, version exacte dans package.json). Le nom du projet et les ports
 # viennent de `config.toml` : c'est bien la même pile, les mêmes volumes.
 #
-# `supabase/.temp/` n'est jamais touché : `pnpm db:migrate`, `db:link` et `db:types` (la prod)
+# `supabase/.temp/` n'est jamais touché : `pnpm db:migrate` et `db:link` (la prod)
 # y lisent `project-ref`, et ne passent PAS par ce script. Un nouveau `pnpm db:link` peut donc
 # réécrire les versions de la prod sans rien changer à la pile de dev.
 #

@@ -18,7 +18,8 @@ couvre:
 
 > Synthèse des journaux archivés `docs/archive/wip/grapheur-*`, `suites-grapheur-progress.md`,
 > `dissoudre-doublons-grapheur-progress.md` et des chantiers couleurs. Vérifié contre le code le
-> 2026-10-15 (ordonnée exacte d'un extremum, 2026-10-24 ; étiquettes d'asymptotes, 2026-10-26).
+> 2026-10-15 (ordonnée exacte d'un extremum, 2026-10-24 ; étiquettes d'asymptotes, 2026-10-26 ;
+> étiquette de x sous l'axe dans la lecture graphique, 2026-11-24).
 
 ## À quoi ça sert
 
@@ -143,7 +144,10 @@ pointillés de la couleur de la courbe le trait de `(a ; 0)` au point puis du po
 — un axe hors de la fenêtre se lit sur le bord —, le point, et `a` / `f(a)` dans deux
 `GraphLabel` (exact s'il tient en deux décimales, sinon `≈` arrondi au centième ; à partir de
 10¹⁵, toujours `≈` en écriture scientifique, `1 × 10²¹`, les centièmes n'y étant plus sûrs). Rien hors de
-l'ensemble de définition ni hors de la restriction (`readingAt`).
+l'ensemble de définition ni hors de la restriction (`readingAt`). Quand f(a) est proche de 0, la
+boîte de `f(a)` recouvre celle de `a` : `a` passe **sous** l'axe (`GraphLabel` `below`,
+`labelBoxCenterYBelow`), si dessous ne la recouvre pas aussi ; les deux boîtes se comparent par
+`labelBoxRect` / `labelRectsOverlap` (`label-box.ts`, E28).
 
 Le point glissant (`ReadingSliders`) est un `role="slider"` en **HTML, à côté du SVG** : le SVG est
 `aria-hidden` et enveloppé dans `role="img"`, dont les enfants ne sont pas atteignables. `GraphSVG`
@@ -179,7 +183,7 @@ Lecture d'un terme : le survol montre la **valeur exacte** (`exact.ts`, plafonds
 
 Le moteur de suites sert aussi le bloc ubumark ` ```courbe ` (`src/lib/ubumark/parser/courbe-parser.ts`,
 `src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc. Ce bloc a aussi son
-geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`, combinaison `u + v` comprise), ses vecteurs donnés (`vecteurs:`, flèches de la scène, `scene.vectors`), sa courbe de données (`données:`, ligne brisée de la scène, `scene.data`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
+geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`, combinaison `u + v` comprise), ses vecteurs donnés (`vecteurs:`, flèches de la scène, `scene.vectors`), sa courbe de données (`données:`, ligne brisée de la scène, `scene.data`), son corrigé dessiné (`solution: oui`, réponse du geste en vert, `solvedOverlay`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
 le pas de grille automatique (`courbeGridSteps`) y est partagé par la scène, le parseur et l'écran.
 En évaluation notée, `placer: A=? ; B=?` (coordonnées masquées) se lit aussi : point de remplacement,
 ni nœud ni fenêtre vérifiés ([ubumark](ubumark.md), invariant 12).
@@ -243,6 +247,10 @@ la main (2026-10-15). Une limite ou un coefficient plus petit que son incertitud
 dernières sondes, dispersion des extrapolations) vaut **0** (`snapToZero`) : ln(x)/x recevait
 `y = 0,0000862`. Les abscisses de sondage (`LARGE_X_VALUES`) ne sont volontairement **pas** des
 puissances de 10 (elles tombaient sur la période de `cos(πx/50)`).
+Quand ni ces sondes ni la limite symbolique ne concluent, des sondes **très lointaines**
+(`HUGE_X_VALUES`, 1e3 à 1e96) passent par le même critère de convergence : (ln x)²/√x vaut encore
+0,38 en x ≈ 137 000 et n'avait pas son asymptote y = 0 (L61, 2026-11-28). ln x seul ne converge
+pas ainsi : ses écarts entre sondes ne rétrécissent pas.
 
 Asymptotes **verticales** (`findVerticalAsymptotes`) : les singularités de l'expression
 (`singularities`, via `getAllDiscontinuities` de mathAST, en cache par AST) passent d'abord. Un
@@ -265,6 +273,10 @@ Les **étiquettes** (`asymptote-labels.ts`) : une horizontale, oblique ou polyno
 verticale, `valueLatex` écrit l'abscisse ou l'ordonnée calculée comme en classe — `e`, un
 multiple simple de π (`x = \frac{\pi}{2}`, dénominateurs 1, 2, 3, 4, 6), un entier, sinon
 4 chiffres significatifs avec la **virgule** décimale (`2{,}5`). Avant le 2026-10-26 : `x=2.718`.
+L'anti-chevauchement compare les boîtes **affichées** (`label-box.ts`, partagé avec
+`GraphLabel.svelte`) : largeur, hauteur d'une fraction, bascule à gauche près du bord droit et
+passage sous le point près du bord haut. Avant E6 (2026-11-23), il supposait la boîte à droite
+du point : `x = 5π/2` retournée se posait sur `x = 3π/2`.
 
 ### Styles et couleurs du thème
 
@@ -388,16 +400,18 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse (cache par expression et
+  valeurs) : mesuré le 2026-10-15 avec des valeurs arrondies au pas, 0,4 à 2,5 ms par cran sur
+  les fonctions courantes, 22 ms sur une fraction de degré 3 multipliée par e⁻ˣ et ln x.
+
+### Points non vérifiés
+
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
-- Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne
-  rend que la famille de tan, le pôle 3 vient du seul balayage — perdu au dézoom.
-- Une limite lente que le moteur symbolique ne sait pas calculer reste invisible : le numérique
-  seul exige une convergence en moins de 137 299.
-- Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse : mesuré le 2026-10-15 avec
-  des valeurs arrondies au pas, 0,4 à 2,5 ms par cran sur les fonctions courantes, 22 ms sur une
-  fraction de degré 3 multipliée par e⁻ˣ et ln x.
-- Nuages de points : pas de forme de point distincte par place (décision Q1a, reportée).
 
 ---
 

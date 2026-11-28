@@ -1,0 +1,462 @@
+{
+	"id": "b2aead94-d41d-4f82-bf62-2620a590d403",
+	"title": "Placer les premiers termes d'une suite",
+	"description": "Placer u₀ à u₃ dans un repère : explicite an + b ou ±n² + c, récurrente au + b, u² − c, u + an (pièges : n² et −n², u₁ = u₀ quand on ajoute a × 0)",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}n{{b;+}}$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -10 ; 10\ngrille: 1 ; 1\nplacer: A=(0 ; {{t0}}) ; B=(1 ; {{t1}}) ; C=(2 ; {{t2}}) ; D=(3 ; {{t3}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : n de −1 à 4 en abscisse, de −10 à 10 en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3|-2|-1|1|2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:b"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a+b"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:2*a+b"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:3*a+b"
+				}
+			],
+			"conditions": [
+				"abs(t0) <= 9",
+				"abs(t1) <= 9",
+				"abs(t2) <= 9",
+				"abs(t3) <= 9",
+				"abs(t1-t0)+abs(t2-t1)+abs(t3-t2) > 0"
+			],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $0$, $1$, $2$ et $3$ dans $u_n={{a}}n{{b;+}}$ : $u_0={{t0}}$, $u_1={{t1}}$, $u_2={{t2}}$, $u_3={{t3}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{t0}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{t1}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{t2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{t3}})}$. Les points sont alignés."
+				]
+			},
+			"hint": "Calcule $u_0$, $u_1$, $u_2$ et $u_3$ en remplaçant $n$ par $0$, $1$, $2$ et $3$ dans l'expression de $u_n$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{sg}}n^2{{c;+}}$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -10 ; 10\ngrille: 1 ; 1\nplacer: A=(0 ; {{t0}}) ; B=(1 ; {{t1}}) ; C=(2 ; {{t2}}) ; D=(3 ; {{t3}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : n de −1 à 4 en abscisse, de −10 à 10 en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "sg",
+					"expression": "-1|1"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:c"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:sg+c"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:4*sg+c"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:9*sg+c"
+				}
+			],
+			"conditions": ["abs(t0) <= 9", "abs(t1) <= 9", "abs(t2) <= 9", "abs(t3) <= 9"],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $0$, $1$, $2$ et $3$ (attention, on élève $n$ au carré avant de multiplier par le signe) : $u_0={{t0}}$, $u_1={{t1}}$, $u_2={{t2}}$, $u_3={{t3}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{t0}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{t1}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{t2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{t3}})}$. Les points ne sont pas alignés."
+				]
+			},
+			"hint": "Remplace $n$ par $0$, $1$, $2$ et $3$ : $n^2$ vaut alors $0$, $1$, $4$ et $9$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{t0}}$ et, pour tout entier naturel $n$, $u_{n+1}={{a}}u_n{{b;+}}$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -10 ; 10\ngrille: 1 ; 1\nplacer: A=(0 ; {{t0}}) ; B=(1 ; {{t1}}) ; C=(2 ; {{t2}}) ; D=(3 ; {{t3}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : n de −1 à 4 en abscisse, de −10 à 10 en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2|2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "t0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a*t0+b"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:a*t1+b"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:a*t2+b"
+				}
+			],
+			"conditions": ["abs(t0) <= 9", "abs(t1) <= 9", "abs(t2) <= 9", "abs(t3) <= 9", "t1 != t0"],
+			"correction": {
+				"steps": [
+					"Chaque terme se calcule à partir du précédent : $u_1={{a}}\\times{{t0;()}}{{b;+}}={{t1}}$, $u_2={{a}}\\times{{t1;()}}{{b;+}}={{t2}}$, $u_3={{a}}\\times{{t2;()}}{{b;+}}={{t3}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{t0}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{t1}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{t2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{t3}})}$."
+				]
+			},
+			"hint": "Pars de $u_0$ : la relation donne $u_1$ quand on prend $n=0$, puis $u_2$ à partir de $u_1$, et ainsi de suite."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{t0}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n^2-{{c}}$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -10 ; 10\ngrille: 1 ; 1\nplacer: A=(0 ; {{t0}}) ; B=(1 ; {{t1}}) ; C=(2 ; {{t2}}) ; D=(3 ; {{t3}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : n de −1 à 4 en abscisse, de −10 à 10 en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1|2"
+				},
+				{
+					"name": "t0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0^2-c"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1^2-c"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2^2-c"
+				}
+			],
+			"conditions": [
+				"abs(t0) <= 9",
+				"abs(t1) <= 9",
+				"abs(t2) <= 9",
+				"abs(t3) <= 9",
+				"abs(t1-t0)+abs(t2-t1)+abs(t3-t2) > 0"
+			],
+			"correction": {
+				"steps": [
+					"Chaque terme se calcule à partir du précédent : $u_1={{t0;()}}^2-{{c}}={{t1}}$, $u_2={{t1;()}}^2-{{c}}={{t2}}$, $u_3={{t2;()}}^2-{{c}}={{t3}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{t0}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{t1}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{t2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{t3}})}$."
+				]
+			},
+			"hint": "Pars de $u_0$ : élève-le au carré puis retranche ${{c}}$ pour obtenir $u_1$, et recommence à partir de $u_1$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{t0}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n{{a;+}}n$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -10 ; 10\ngrille: 1 ; 1\nplacer: A=(0 ; {{t0}}) ; B=(1 ; {{t1}}) ; C=(2 ; {{t2}}) ; D=(3 ; {{t3}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : n de −1 à 4 en abscisse, de −10 à 10 en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "t0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t0+a"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t0+3*a"
+				}
+			],
+			"conditions": ["abs(t0) <= 9", "abs(t1) <= 9", "abs(t2) <= 9", "abs(t3) <= 9"],
+			"correction": {
+				"steps": [
+					"Pour $n=0$ : $u_1=u_0{{a;+}}\\times0={{t1}}$ (on ajoute $0$, donc $u_1=u_0$).",
+					"Pour $n=1$ : $u_2=u_1{{a;+}}\\times1={{t2}}$ ; pour $n=2$ : $u_3=u_2{{a;+}}\\times2={{t3}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{t0}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{t1}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{t2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{t3}})}$."
+				]
+			},
+			"hint": "Pour calculer $u_1$, prends $n=0$ dans la relation ; pour $u_2$, prends $n=1$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_n = 2n − 3 : −3, −1, 1, 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;-3", "1;-1", "2;1", "3;3"]
+		},
+		{
+			"description": "Erreur : abscisse et ordonnée échangées pour B",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;-3", "-1;1", "2;1", "3;3"]
+		},
+		{
+			"description": "Erreur : décalage d'un rang (u₁ placé en 0)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;-1", "1;1", "2;3", "3;5"]
+		},
+		{
+			"description": "u_n = −n + 4 : 4, 3, 2, 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;4", "1;3", "2;2", "3;1"]
+		},
+		{
+			"description": "u_n = n² − 5 : −5, −4, −1, 4",
+			"variationIndex": 1,
+			"variables": {
+				"sg": "1",
+				"c": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;-5", "1;-4", "2;-1", "3;4"]
+		},
+		{
+			"description": "Erreur : n² lu 2n (−5, −3, −1, 1)",
+			"variationIndex": 1,
+			"variables": {
+				"sg": "1",
+				"c": "-5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;-5", "1;-3", "2;-1", "3;1"]
+		},
+		{
+			"description": "u_n = −n² + 6 : 6, 5, 2, −3",
+			"variationIndex": 1,
+			"variables": {
+				"sg": "-1",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;6", "1;5", "2;2", "3;-3"]
+		},
+		{
+			"description": "u_n = −n² : 0, −1, −4, −9",
+			"variationIndex": 1,
+			"variables": {
+				"sg": "-1",
+				"c": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;0", "1;-1", "2;-4", "3;-9"]
+		},
+		{
+			"description": "Erreur : −n² lu (−n)² (0, 1, 4, 9)",
+			"variationIndex": 1,
+			"variables": {
+				"sg": "-1",
+				"c": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;0", "1;1", "2;4", "3;9"]
+		},
+		{
+			"description": "u₀ = 2, u(n+1) = 2u(n) − 3 : 2, 1, −1, −5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"t0": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;2", "1;1", "2;-1", "3;-5"]
+		},
+		{
+			"description": "Erreur : 2(u − 3) au lieu de 2u − 3 (2, −2, −10…)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"t0": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2", "1;-2", "2;-10", "3;-26"]
+		},
+		{
+			"description": "Erreur : u₁ calculé avec n à la place de u (2, −3, −1, 1)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"t0": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2", "1;-3", "2;-1", "3;1"]
+		},
+		{
+			"description": "u₀ = 1, u(n+1) = −2u(n) + 1 : 1, −1, 3, −5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"t0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1", "1;-1", "2;3", "3;-5"]
+		},
+		{
+			"description": "u₀ = 0, u(n+1) = u(n)² − 1 : 0, −1, 0, −1",
+			"variationIndex": 3,
+			"variables": {
+				"c": "1",
+				"t0": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;0", "1;-1", "2;0", "3;-1"]
+		},
+		{
+			"description": "Erreur : (−1)² − 1 calculé −2 (0, −1, −2, 3)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "1",
+				"t0": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;0", "1;-1", "2;-2", "3;3"]
+		},
+		{
+			"description": "u₀ = 0, u(n+1) = u(n)² − 2 : 0, −2, 2, 2",
+			"variationIndex": 3,
+			"variables": {
+				"c": "2",
+				"t0": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;0", "1;-2", "2;2", "3;2"]
+		},
+		{
+			"description": "u₀ = 1, u(n+1) = u(n) + 2n : 1, 1, 3, 7",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"t0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1", "1;1", "2;3", "3;7"]
+		},
+		{
+			"description": "u₀ = 0, u(n+1) = u(n) + n : 0, 0, 1, 3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"t0": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;0", "1;0", "2;1", "3;3"]
+		},
+		{
+			"description": "Erreur : on ajoute n + 1 (0, 1, 3, 6)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"t0": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;0", "1;1", "2;3", "3;6"]
+		},
+		{
+			"description": "Erreur : suite arithmétique de raison 2 (1, 3, 5, 7)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"t0": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1", "1;3", "2;5", "3;7"]
+		},
+		{
+			"description": "u₀ = 4, u(n+1) = u(n) − n : 4, 4, 3, 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-1",
+				"t0": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;4", "1;4", "2;3", "3;1"]
+		}
+	]
+}

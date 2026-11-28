@@ -1,0 +1,456 @@
+{
+	"id": "ae70373c-8135-4c3b-bf17-74ca1e265c68",
+	"title": "Limite d'une fonction par comparaison ou encadrement",
+	"description": "Encadrement, minoration ou majoration donnés ; fonction bornée divisée par x² (pièges : limite d'un seul membre, L ± m, sens de la comparaison)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}"
+				}
+			],
+			"statement": "Une fonction $f$ vérifie, pour tout réel $x>0$ :\n\n$${{L}}-\\dfrac{ {{a}} }{x}\\leqslant f(x)\\leqslant{{L}}+\\dfrac{ {{b}} }{x^{2}}$$\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{a}} }{x}=0$ et $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{b}} }{x^{2}}=0$ : les deux membres de l'encadrement tendent vers ${{L}}$.",
+					"D'après le théorème des gendarmes, $f(x)$ tend aussi vers ${{L}}$.",
+					"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{L}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "+\\infty"
+				}
+			],
+			"statement": "Une fonction $f$ vérifie, pour tout réel $x>0$ :\n\n$$f(x)\\geqslant {{if:s==0|{{if:k==1||{{if:k==-1|-|{{k}}}}}}x^{2}|{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{x}}}$$\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}{{if:s==0|{{if:k==1||{{if:k==-1|-|{{k}}}}}}x^{2}|{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{x}}}=+\\infty$.",
+					"$f(x)$ est minorée par une fonction qui tend vers $+\\infty$ : par comparaison, $f(x)$ tend aussi vers $+\\infty$.",
+					"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-\\infty"
+				}
+			],
+			"statement": "Une fonction $f$ vérifie, pour tout réel $x$ :\n\n$$f(x)\\leqslant {{if:k==1||{{if:k==-1|-|{{k}}}}}}x{{c;+}}$$\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to-\\infty}\\left({{if:k==1||{{if:k==-1|-|{{k}}}}}}x{{c;+}}\\right)=-\\infty$ (le coefficient ${{k}}$ est positif).",
+					"$f(x)$ est majorée par une fonction qui tend vers $-\\infty$ : par comparaison, $f(x)$ tend aussi vers $-\\infty$.",
+					"$$\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{-\\infty}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}"
+				}
+			],
+			"statement": "Une fonction $g$ vérifie, pour tout réel $x$ : $-{{m}}\\leqslant g(x)\\leqslant{{m}}$.\n\nSoit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)={{L}}+\\dfrac{g(x)}{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise l'encadrement de $g(x)$ par $x^{2}>0$ et on ajoute ${{L}}$ : ${{L}}-\\dfrac{ {{m}} }{x^{2}}\\leqslant f(x)\\leqslant{{L}}+\\dfrac{ {{m}} }{x^{2}}$.",
+					"Les deux membres tendent vers ${{L}}$ : d'après le théorème des gendarmes, $f(x)$ aussi.",
+					"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{L}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}{{b;+}}{{c;+}}{{if:t==0|\\cos x|\\sin x}}$.\n\nDétermine la limite de $f$ en ${{if:sg>0|+|-}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:a>0|-\\infty|+\\infty}}",
+							"message": "Le coefficient de $x^2$ est {{if:a>0|positif|négatif}} : en $-\\infty$ comme en $+\\infty$, $x^2$ tend vers $+\\infty$.",
+							"label": "Signe inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $-1\\leqslant{{if:t==0|\\cos x|\\sin x}}\\leqslant1$, donc $-{{eval:abs(c)}}\\leqslant{{c}}{{if:t==0|\\cos x|\\sin x}}\\leqslant{{eval:abs(c)}}$.",
+					"{{if:a>0|Donc $f(x)\\geqslant{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}{{eval:b-abs(c);+}}$, qui tend vers $+\\infty$|Donc $f(x)\\leqslant{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}{{eval:b+abs(c);+}}$, qui tend vers $-\\infty$}} en ${{if:sg>0|+|-}}\\infty$.",
+					"Par comparaison, $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:a>0|+\\infty|-\\infty}} }$."
+				]
+			},
+			"hint": "Encadre ${{c}}{{if:t==0|\\cos x|\\sin x}}$ à l'aide de $-1\\leqslant{{if:t==0|\\cos x|\\sin x}}\\leqslant1$, puis utilise un théorème de comparaison."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{ {{c}}\\sin x}{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $-1\\leqslant\\sin x\\leqslant1$ et ${{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}>0$, donc $-\\dfrac{ {{eval:abs(c)}} }{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}}\\leqslant f(x)\\leqslant\\dfrac{ {{eval:abs(c)}} }{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}}$.",
+					"Les deux membres tendent vers $0$ en $+\\infty$ : par le théorème des gendarmes, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			},
+			"hint": "Encadre $\\sin x$ entre $-1$ et $1$, divise par le dénominateur (positif), puis utilise le théorème des gendarmes."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}\\cos x\\,e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $-1\\leqslant\\cos x\\leqslant1$ et $e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}>0$, donc $-{{eval:abs(c)}}e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}\\leqslant f(x)\\leqslant{{eval:abs(c)}}e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.",
+					"$e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$ tend vers $0$ en $+\\infty$ : par le théorème des gendarmes, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			},
+			"hint": "Encadre $\\cos x$ entre $-1$ et $1$, multiplie par $e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$ (positif), puis utilise le théorème des gendarmes."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"b": "5"
+			},
+			"description": "v0 : L = 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"b": "5"
+			},
+			"description": "v0 : L − a (limite d'un seul membre, mal prise)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"b": "5"
+			},
+			"description": "v0 : 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"s": "0"
+			},
+			"description": "v1 : f ⩾ 4x² → +∞",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1",
+				"s": "1"
+			},
+			"description": "v1 : f ⩾ √x → +∞",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"s": "0"
+			},
+			"description": "v1 : k",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "-3",
+				"k": "2"
+			},
+			"description": "v2 : f ⩽ 2x − 3 en −∞ → −∞",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "-3",
+				"k": "2"
+			},
+			"description": "v2 : +∞",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "-5",
+				"m": "2"
+			},
+			"description": "v3 : L = −5",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "-5",
+				"m": "2"
+			},
+			"description": "v3 : L + m",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "-5",
+				"m": "2"
+			},
+			"description": "v3 : 0",
+			"variationIndex": 3
+		},
+		{
+			"description": "F9a : 2x² + 3 − 4cos x en +∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-4",
+				"t": "0",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "F9a : −x² + 1 + 2 sin x en −∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-1",
+				"b": "1",
+				"c": "2",
+				"t": "1",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "F9a : signe inversé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-1",
+				"b": "1",
+				"c": "2",
+				"t": "1",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient de $x^2$ est négatif : en $-\\infty$ comme en $+\\infty$, $x^2$ tend vers $+\\infty$."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "F9b : 3 sin x/(2x² + 5)",
+			"variationIndex": 5,
+			"variables": {
+				"c": "3",
+				"a": "2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9b : 3 à tort",
+			"variationIndex": 5,
+			"variables": {
+				"c": "3",
+				"a": "2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F9c : −5 cos x e^(−2x)",
+			"variationIndex": 6,
+			"variables": {
+				"c": "-5",
+				"m": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9c : −5 à tort",
+			"variationIndex": 6,
+			"variables": {
+				"c": "-5",
+				"m": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-5"]
+		}
+	]
+}

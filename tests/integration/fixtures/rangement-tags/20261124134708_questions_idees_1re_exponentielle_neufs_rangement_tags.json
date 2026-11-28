@@ -1,0 +1,60 @@
+{
+	"migration": "supabase/migrations/20261124134708_questions_idees_1re_exponentielle_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "a540eb67-7d12-41b0-bf6d-988548b96683",
+			"title": "Développer avec des exponentielles",
+			"fichier": "f1-developper-avec-des-exponentielles.json",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sousNotion": "propriétés algébriques",
+			"point": "1SPE-294"
+		},
+		{
+			"id": "a90f018e-74cd-43df-b584-c174c95c5878",
+			"title": "Équation produit nul avec une exponentielle",
+			"fichier": "f2-equation-produit-nul-exponentielle.json",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sousNotion": "variations",
+			"point": "1SPE-405"
+		},
+		{
+			"id": "b72f757b-0113-4908-aa08-c6db1018412a",
+			"title": "Inéquation produit avec une exponentielle",
+			"fichier": "f3-inequation-produit-exponentielle.json",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sousNotion": "variations",
+			"point": "1SPE-405"
+		},
+		{
+			"id": "2f0add65-4ac6-4f63-87a6-fc8ba0e6bce6",
+			"title": "Dériver un produit avec une exponentielle",
+			"fichier": "f4-deriver-produit-avec-exponentielle.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "opérations sur les dérivées",
+			"point": "1SPE-394"
+		},
+		{
+			"id": "4c5c5839-73e4-4966-b40d-9ff2f77be5ce",
+			"title": "Dériver un quotient avec une exponentielle",
+			"fichier": "f5-deriver-quotient-avec-exponentielle.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "opérations sur les dérivées",
+			"point": "1SPE-396"
+		},
+		{
+			"id": "f61ddbbb-d952-4b9b-9f1e-28335a508b32",
+			"title": "Tableau de variations d'une fonction avec exponentielle",
+			"fichier": "f6-tableau-variations-avec-exponentielle.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "variations et extremums",
+			"point": "1SPE-283"
+		}
+	],
+	"niveaux": []
+}

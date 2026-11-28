@@ -1,0 +1,810 @@
+{
+	"migration": "supabase/migrations/20261126072928_questions_idees_1re_variations_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "2b382069-eaad-4627-8405-bddd24b81c38",
+			"title": "Intervalles où f est croissante, f′ trinôme du second degré",
+			"fichier": "2b382069.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;{{p}}]\\cup[{{q}};+\\infty["
+							}
+						],
+						"statement": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "p",
+								"expression": "-5..3"
+							},
+							{
+								"name": "d",
+								"expression": "1..6"
+							},
+							{
+								"name": "q",
+								"expression": "eval:p+d"
+							},
+							{
+								"name": "B",
+								"expression": "eval:-a*(p+q)"
+							},
+							{
+								"name": "C",
+								"expression": "eval:a*p*q"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'$ est un trinôme du second degré : $\\Delta={{eval:B^2-4*a*C}}=\\left({{eval:abs(a)*(q-p)}}\\right)^2>0$. Ses racines sont $\\dfrac{ {{eval:-B}}-{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{p}}$ et $\\dfrac{ {{eval:-B}}+{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{q}}$.",
+								"Le coefficient de $x^2$ vaut ${{a}}>0$ : $f'(x)$ est **positif à l'extérieur** des racines, négatif entre elles.",
+								"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{p}}\\right]\\cup\\left[{{q}}\\,;+\\infty\\right[}$ : $f$ est croissante sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$, décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[{{p}};{{q}}]"
+							}
+						],
+						"statement": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "-3..-1"
+							},
+							{
+								"name": "p",
+								"expression": "-5..3"
+							},
+							{
+								"name": "d",
+								"expression": "1..6"
+							},
+							{
+								"name": "q",
+								"expression": "eval:p+d"
+							},
+							{
+								"name": "B",
+								"expression": "eval:-a*(p+q)"
+							},
+							{
+								"name": "C",
+								"expression": "eval:a*p*q"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'$ est un trinôme du second degré : $\\Delta={{eval:B^2-4*a*C}}=\\left({{eval:abs(a)*(q-p)}}\\right)^2>0$. Ses racines sont $\\dfrac{ {{eval:-B}}-{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{q}}$ et $\\dfrac{ {{eval:-B}}+{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{p}}$.",
+								"Le coefficient de $x^2$ vaut ${{a}}<0$ : $f'(x)$ est **positif entre** les racines, négatif à l'extérieur.",
+								"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: -\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), bottom\n  {{q}}: f\\left({{q}}\\right), top\n```",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$ : $f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$, décroissante sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;{{p}}]\\cup[{{q}};+\\infty["
+							}
+						],
+						"statement": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "q",
+								"expression": "1..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:-q"
+							},
+							{
+								"name": "B",
+								"expression": "eval:-a*(p+q)"
+							},
+							{
+								"name": "C",
+								"expression": "eval:a*p*q"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'$ est un trinôme du second degré sans terme en $x$ : $f'(x)={{if:a==1|x^2-{{eval:q^2}}|{{a}}\\left(x^2-{{eval:q^2}}\\right)}}={{if:a==1||{{a}}}}\\left(x+{{q}}\\right)\\left(x-{{q}}\\right)$. Ses racines sont ${{p}}$ et ${{q}}$.",
+								"Le coefficient de $x^2$ vaut ${{a}}>0$ : $f'(x)$ est **positif à l'extérieur** des racines, négatif entre elles.",
+								"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{p}}\\right]\\cup\\left[{{q}}\\,;+\\infty\\right[}$ : $f$ est croissante sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$, décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["]-\\infty;-1]\\cup[3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "x²−2x−3 : ]−∞;−1]∪[3;+∞[",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[3;+\\infty[\\cup]-\\infty;-1]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "réunion écrite dans l'autre ordre",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[-1;3]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "entre les racines [−1;3] (signe de a oublié)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;-1[\\cup]3;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "bornes exclues (f′ > 0)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;-3]\\cup[1;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "racines de signe opposé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;-1]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "une seule branche ]−∞;−1]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[1;4]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "10",
+							"C": "-8",
+							"a": "-2",
+							"d": "3",
+							"p": "1",
+							"q": "4"
+						},
+						"description": "−2x²+10x−8 : [1;4]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;1]\\cup[4;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "10",
+							"C": "-8",
+							"a": "-2",
+							"d": "3",
+							"p": "1",
+							"q": "4"
+						},
+						"description": "a<0 : réponse du cas a>0",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]1;4["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "10",
+							"C": "-8",
+							"a": "-2",
+							"d": "3",
+							"p": "1",
+							"q": "4"
+						},
+						"description": "a<0 : bornes exclues",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;-2]\\cup[2;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "0",
+							"C": "-12",
+							"a": "3",
+							"p": "-2",
+							"q": "2"
+						},
+						"description": "3x²−12 : ]−∞;−2]∪[2;+∞[",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[-2;2]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "0",
+							"C": "-12",
+							"a": "3",
+							"p": "-2",
+							"q": "2"
+						},
+						"description": "3x²−12 : [−2;2]",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[2;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "0",
+							"C": "-12",
+							"a": "3",
+							"p": "-2",
+							"q": "2"
+						},
+						"description": "3x²−12 : racine positive seule [2;+∞[",
+						"variationIndex": 2
+					}
+				],
+				"description": "f′(x) = ax² + bx + c à racines entières : signe du trinôme, réponse en intervalle ou réunion, tableau de variations au corrigé"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;{{p}}]\\cup[{{q}};+\\infty["
+							}
+						],
+						"statement": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "p",
+								"expression": "-5..3"
+							},
+							{
+								"name": "d",
+								"expression": "1..6"
+							},
+							{
+								"name": "q",
+								"expression": "eval:p+d"
+							},
+							{
+								"name": "B",
+								"expression": "eval:-a*(p+q)"
+							},
+							{
+								"name": "C",
+								"expression": "eval:a*p*q"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'$ est un trinôme du second degré : $\\Delta={{eval:B^2-4*a*C}}=\\left({{eval:abs(a)*(q-p)}}\\right)^2>0$. Ses racines sont $\\dfrac{ {{eval:-B}}-{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{p}}$ et $\\dfrac{ {{eval:-B}}+{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{q}}$.",
+								"Le coefficient de $x^2$ vaut ${{a}}>0$ : $f'(x)$ est **positif à l'extérieur** des racines, négatif entre elles.",
+								"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{p}}\\right]\\cup\\left[{{q}}\\,;+\\infty\\right[}$ : $f$ est croissante sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$, décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[{{p}};{{q}}]"
+							}
+						],
+						"statement": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "-3..-1"
+							},
+							{
+								"name": "p",
+								"expression": "-5..3"
+							},
+							{
+								"name": "d",
+								"expression": "1..6"
+							},
+							{
+								"name": "q",
+								"expression": "eval:p+d"
+							},
+							{
+								"name": "B",
+								"expression": "eval:-a*(p+q)"
+							},
+							{
+								"name": "C",
+								"expression": "eval:a*p*q"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'$ est un trinôme du second degré : $\\Delta={{eval:B^2-4*a*C}}=\\left({{eval:abs(a)*(q-p)}}\\right)^2>0$. Ses racines sont $\\dfrac{ {{eval:-B}}-{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{q}}$ et $\\dfrac{ {{eval:-B}}+{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{p}}$.",
+								"Le coefficient de $x^2$ vaut ${{a}}<0$ : $f'(x)$ est **positif entre** les racines, négatif à l'extérieur.",
+								"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: -\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), bottom\n  {{q}}: f\\left({{q}}\\right), top\n```",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$ : $f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$, décroissante sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;{{p}}]\\cup[{{q}};+\\infty["
+							}
+						],
+						"statement": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "q",
+								"expression": "1..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:-q"
+							},
+							{
+								"name": "B",
+								"expression": "eval:-a*(p+q)"
+							},
+							{
+								"name": "C",
+								"expression": "eval:a*p*q"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'$ est un trinôme du second degré sans terme en $x$ : $f'(x)={{if:a==1|x^2-{{eval:q^2}}|{{a}}\\left(x^2-{{eval:q^2}}\\right)}}={{if:a==1||{{a}}}}\\left(x+{{q}}\\right)\\left(x-{{q}}\\right)$. Ses racines sont ${{p}}$ et ${{q}}$.",
+								"Le coefficient de $x^2$ vaut ${{a}}>0$ : $f'(x)$ est **positif à l'extérieur** des racines, négatif entre elles.",
+								"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
+								"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{p}}\\right]\\cup\\left[{{q}}\\,;+\\infty\\right[}$ : $f$ est croissante sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$, décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:3*a*x^2+2*b*x+c}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle, réunion d'intervalles, $\\mathbb{R}$ ou $\\emptyset$) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "-5..5"
+							},
+							{
+								"name": "c",
+								"expression": "-9..9"
+							}
+						],
+						"conditions": ["b^2-3*a*c < 0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|\\mathbb{R}|\\emptyset}}",
+								"expectedErrors": [
+									{
+										"answer": "\\emptyset",
+										"message": "$\\Delta<0$ : $f'(x)$ ne s'annule jamais et garde le signe du coefficient de $x^2$, ici ${{eval:3*a}}$.",
+										"label": "∅ alors que f′ > 0"
+									},
+									{
+										"answer": "\\mathbb{R}",
+										"message": "$\\Delta<0$ : $f'(x)$ ne s'annule jamais et garde le signe du coefficient de $x^2$, ici ${{eval:3*a}}$.",
+										"label": "ℝ alors que f′ < 0"
+									},
+									{
+										"answer": "{{if:a>0|[{{eval:-b/(3*a)}};+\\infty[|]-\\infty;{{eval:-b/(3*a)}}]}}",
+										"message": "$-\\dfrac{b}{2a}$ est l'abscisse du sommet de la parabole, pas une racine : comme $\\Delta<0$, $f'(x)$ ne change pas de signe.",
+										"label": "Intervalle autour du sommet"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'$ est un trinôme du second degré : $\\Delta={{eval:(2*b)^2}}-4\\times{{eval:3*a;()}}\\times{{c;()}}={{eval:4*b^2-12*a*c}}<0$. $f'(x)$ ne s'annule pas.",
+								"Il garde le signe du coefficient de $x^2$, ${{eval:3*a}}$ : $f'(x)$ est {{if:a>0|strictement positif|strictement négatif}} pour tout réel $x$.",
+								"$S=\\textcolor{{{color:primary.0}}}{ {{if:a>0|\\mathbb{R}|\\emptyset}} }$ : $f$ est {{if:a>0|croissante|décroissante}} sur $\\mathbb{R}$."
+							]
+						},
+						"hint": "Calcule le discriminant de $f'(x)$. S'il est négatif, $f'(x)$ ne s'annule pas : quel signe garde-t-il ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["]-\\infty;-1]\\cup[3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "x²−2x−3 : ]−∞;−1]∪[3;+∞[",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[3;+\\infty[\\cup]-\\infty;-1]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "réunion écrite dans l'autre ordre",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[-1;3]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "entre les racines [−1;3] (signe de a oublié)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;-1[\\cup]3;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "bornes exclues (f′ > 0)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;-3]\\cup[1;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "racines de signe opposé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;-1]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "-2",
+							"C": "-3",
+							"a": "1",
+							"d": "4",
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "une seule branche ]−∞;−1]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[1;4]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "10",
+							"C": "-8",
+							"a": "-2",
+							"d": "3",
+							"p": "1",
+							"q": "4"
+						},
+						"description": "−2x²+10x−8 : [1;4]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;1]\\cup[4;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "10",
+							"C": "-8",
+							"a": "-2",
+							"d": "3",
+							"p": "1",
+							"q": "4"
+						},
+						"description": "a<0 : réponse du cas a>0",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]1;4["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "10",
+							"C": "-8",
+							"a": "-2",
+							"d": "3",
+							"p": "1",
+							"q": "4"
+						},
+						"description": "a<0 : bornes exclues",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;-2]\\cup[2;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"B": "0",
+							"C": "-12",
+							"a": "3",
+							"p": "-2",
+							"q": "2"
+						},
+						"description": "3x²−12 : ]−∞;−2]∪[2;+∞[",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[-2;2]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "0",
+							"C": "-12",
+							"a": "3",
+							"p": "-2",
+							"q": "2"
+						},
+						"description": "3x²−12 : [−2;2]",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[2;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"B": "0",
+							"C": "-12",
+							"a": "3",
+							"p": "-2",
+							"q": "2"
+						},
+						"description": "3x²−12 : racine positive seule [2;+∞[",
+						"variationIndex": 2
+					},
+					{
+						"description": "3x² + 2x + 2 : ℝ",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1",
+							"b": "1",
+							"c": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\mathbb{R}"]
+					},
+					{
+						"description": "3x² + 2x + 2 : ]−∞ ; +∞[",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1",
+							"b": "1",
+							"c": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["]-\\infty;+\\infty["]
+					},
+					{
+						"description": "3x² + 2x + 2 : ∅",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1",
+							"b": "1",
+							"c": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\Delta < 0$ : $f'\\left( x \\right)$ ne s'annule jamais et garde le signe du coefficient de $x^2$, ici $3$."
+						},
+						"answers": ["\\emptyset"]
+					},
+					{
+						"description": "3x² + 2x + 2 : autour du sommet",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1",
+							"b": "1",
+							"c": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$-\\dfrac{b}{2a}$ est l'abscisse du sommet de la parabole, pas une racine : comme $\\Delta < 0$, $f'\\left( x \\right)$ ne change pas de signe."
+						},
+						"answers": ["[-\\frac{1}{3};+\\infty["]
+					},
+					{
+						"description": "−6x² + 2x − 3 : ∅",
+						"variationIndex": 3,
+						"variables": {
+							"a": "-2",
+							"b": "1",
+							"c": "-3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\emptyset"]
+					},
+					{
+						"description": "−6x² + 2x − 3 : ℝ",
+						"variationIndex": 3,
+						"variables": {
+							"a": "-2",
+							"b": "1",
+							"c": "-3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\Delta < 0$ : $f'\\left( x \\right)$ ne s'annule jamais et garde le signe du coefficient de $x^2$, ici $-6$."
+						},
+						"answers": ["\\mathbb{R}"]
+					}
+				],
+				"description": "f′(x) = ax² + bx + c à racines entières : signe du trinôme, réponse en intervalle ou réunion, tableau de variations au corrigé"
+			},
+			"changements": {
+				"ajoutees": [4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

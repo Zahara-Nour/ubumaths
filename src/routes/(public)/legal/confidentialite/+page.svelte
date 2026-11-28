@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de confidentialité</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 17 novembre 2026 | Version 1.4</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 28 novembre 2026 | Version 1.6</p>
 
 		<hr />
 
@@ -388,8 +388,21 @@
 							</td>
 						</tr>
 						<tr>
+							<td>
+								Invitation de cours particulier (prénom de l'enfant, adresse e-mail du parent,
+								niveau ; lien conservé sous forme chiffrée)
+							</td>
+							<td>
+								Effacée 30 jours après sa fin : création du compte, annulation, ou expiration du
+								lien (valable 7 jours)
+							</td>
+						</tr>
+						<tr>
 							<td>Lien du carnet de liaison</td>
-							<td>Expire le 31 août de chaque année ; effacé avec l'adresse</td>
+							<td>
+								Expire à la fin de l'année scolaire de l'école (le 31 août si elle n'a pas saisi ses
+								dates) ; effacé avec l'adresse
+							</td>
 						</tr>
 						<tr>
 							<td>Liste des courriels envoyés aux parents</td>

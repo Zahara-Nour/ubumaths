@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261127105154_questions_idees_1re_geometrie_reperee_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "75a03073-8b67-47f3-bb4e-c566f200cf0f",
+			"title": "Synthèse : droite, perpendiculaire, projeté et cercle",
+			"fichier": "n1-synthese-droite-projete-cercle.json",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sousNotion": "projeté orthogonal",
+			"point": "1SPE-437"
+		},
+		{
+			"id": "bbafb6dd-72b6-4d13-b435-fbbea6b669ba",
+			"title": "Synthèse avec le produit scalaire : carré, projeté et cercle",
+			"fichier": "n2-synthese-carre-projete-cercle.json",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sousNotion": "projeté orthogonal",
+			"point": "1SPE-437"
+		}
+	],
+	"niveaux": []
+}

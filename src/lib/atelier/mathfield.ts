@@ -27,7 +27,7 @@ import {
 	type Provenance
 } from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
-import { intervalFieldLatex } from './interval';
+import { intervalFieldLatex, intervalKeyword } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
 import { argumentSeparatorsShown } from './decimal-comma';
 import { readArguments, readConstruction } from './construction-read';
@@ -60,10 +60,12 @@ export function fieldLatexOf(
 	functionNames: readonly string[],
 	letter: string = INTERNAL_LETTER
 ): string {
-	// `f(x) = x^2 sur [0;+∞[` : l'ensemble suit la définition, « sur » écrit en mot
+	// `f(x) = x^2 sur [0;+∞[` : l'ensemble suit la définition, « sur » écrit en mot ;
+	// `f(x) = x pour x > 2` : la condition, après « pour » (ce qui a été tapé)
 	const expression = expressionFieldLatex(object, functionNames, letter);
 	const interval = intervalFieldLatex(object);
-	return interval === null ? expression : `${expression}\\text{ sur }${interval}`;
+	if (interval === null) return expression;
+	return `${expression}\\text{ ${intervalKeyword(interval)} }${interval}`;
 }
 
 /** La définition seule, sans l'ensemble. */

@@ -1,0 +1,51 @@
+{
+	"migration": "supabase/migrations/20261127091828_questions_idees_6e_problemes_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "a06458ad-94cb-468a-91ed-84eed2dffa45",
+			"title": "Balances : la masse de deux objets",
+			"fichier": "n1-balances-deux-objets.json",
+			"branche": "Algèbre",
+			"notion": "Premiers pas algébriques",
+			"sousNotion": "nombre inconnu",
+			"point": "6-142"
+		},
+		{
+			"id": "4048d9c5-3e97-4aad-ae20-75d89a4a63fe",
+			"title": "Deux nombres inconnus : billets et devinettes",
+			"fichier": "n2-deux-nombres-inconnus.json",
+			"branche": "Algèbre",
+			"notion": "Premiers pas algébriques",
+			"sousNotion": "nombre inconnu",
+			"point": "6-142"
+		},
+		{
+			"id": "7dcb0da1-1975-4a9f-878a-71026aca612e",
+			"title": "Problèmes à plusieurs étapes avec des décimaux",
+			"fichier": "n3-problemes-plusieurs-etapes-decimaux.json",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sousNotion": "multiplication",
+			"point": "6-120"
+		},
+		{
+			"id": "60ad8893-00b7-4f6e-aee9-fc255709c509",
+			"title": "Quelles informations servent ?",
+			"fichier": "n4-quelles-informations-servent.json",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sousNotion": null,
+			"point": "5-001"
+		},
+		{
+			"id": "2aae946c-e511-40e9-8a15-59967181590b",
+			"title": "Problèmes avec des données inutiles",
+			"fichier": "n5-problemes-donnees-inutiles.json",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sousNotion": null,
+			"point": "5-001"
+		}
+	],
+	"niveaux": []
+}

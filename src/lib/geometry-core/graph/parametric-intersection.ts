@@ -20,24 +20,11 @@
  */
 
 import type { GeoParametricCurve } from '../types/elements';
+import type { NewtonConfig } from './parametric-newton';
 
-export interface IntersectionConfig {
-	/** Number of starts per axis (total = N²). */
-	numStartsPerAxis: number;
-	/** Maximum Newton iterations per start. */
-	maxIterations: number;
-	/** Convergence tolerance on ‖F(t1, t2)‖ = ‖γ1 − γ2‖. */
-	convergenceTolerance: number;
-	/** After clamping, reject if ‖γ1 − γ2‖ exceeds this (more permissive). */
-	acceptanceTolerance: number;
-	/** Skip start / abandon iteration if |det(J)| < this. */
-	singularityThreshold: number;
-	/** Dedup epsilon = (t_max − t_min) × this on each axis. */
-	duplicateThresholdRatio: number;
-}
-
-const DEFAULT_CONFIG: IntersectionConfig = {
-	numStartsPerAxis: 8,
+/** `numStarts` = départs par axe (N² au total). */
+const DEFAULT_CONFIG: NewtonConfig = {
+	numStarts: 8,
 	maxIterations: 20,
 	convergenceTolerance: 1e-8,
 	acceptanceTolerance: 1e-6,
@@ -68,7 +55,7 @@ export function findParametricIntersections(
 	t1Max: number,
 	t2Min: number,
 	t2Max: number,
-	config?: Partial<IntersectionConfig>
+	config?: Partial<NewtonConfig>
 ): ParametricIntersection[] {
 	const cfg = { ...DEFAULT_CONFIG, ...config };
 
@@ -104,7 +91,7 @@ export function findParametricIntersections(
 		};
 	};
 
-	const N = Math.max(2, cfg.numStartsPerAxis);
+	const N = Math.max(2, cfg.numStarts);
 	const step1 = (t1Max - t1Min) / (N - 1);
 	const step2 = (t2Max - t2Min) / (N - 1);
 

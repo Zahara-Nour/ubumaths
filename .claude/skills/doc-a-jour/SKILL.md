@@ -7,7 +7,7 @@ description: Mettre à jour la doc système que touche un changement de code, da
 
 Règle de Chiphre : **chaque PR met à jour la doc du code qu'elle change**. La garde
 `pnpm docs:check-a-jour --depuis origin/main` la vérifie : elle échoue quand on la lance soi-même et
-**en CI** (PR rouge) ; au `pre-push`, elle avertit seulement (une sortie à lire, pas un feu vert). Ce skill dit comment le
+**en CI** (PR rouge), et refuse le push au `pre-push`. Ce skill dit comment le
 faire bien. Carte module → doc : [docs/README.md](../../../docs/README.md).
 
 ## 1. Trouver les docs concernées

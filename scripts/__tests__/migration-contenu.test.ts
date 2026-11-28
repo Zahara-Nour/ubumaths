@@ -67,7 +67,7 @@ function migre(plus: Partial<ModeleMigre> = {}): ModeleMigre {
 		fichier: '01-additions.json',
 		avant: { variations: [V1, V2], testSpecs: SPECS, description: null },
 		apres: { variations: [V1, V2, V3], testSpecs: SPECS, description: null },
-		changements: { ajoutees: [3], corrigees: [], specs: false, description: false },
+		changements: { ajoutees: [3], corrigees: [], specs: false, description: false, options: false },
 		...plus
 	};
 }
@@ -165,7 +165,8 @@ describe('examinerModele', () => {
 			ajoutees: [3],
 			corrigees: [],
 			specs: false,
-			description: false
+			description: false,
+			options: false
 		});
 	});
 
@@ -180,7 +181,8 @@ describe('examinerModele', () => {
 			ajoutees: [],
 			corrigees: [],
 			specs: true,
-			description: true
+			description: true,
+			options: false
 		});
 	});
 
@@ -212,6 +214,58 @@ describe('examinerModele', () => {
 		expect(e.sorte === 'refuse' && e.erreur).toMatch(/01\.json.*retirée/);
 	});
 
+	it('options changées : migré, avant = options de la prod, après = celles du fichier', () => {
+		const prod = { constraints: { spacesFromFourDigits: true } };
+		const voulues = { constraints: { spacesFromFourDigits: true, fractions: 'off' } };
+		const e = examinerModele(
+			'01.json',
+			fichier({ variations: [V1, V2, V3], options: voulues }),
+			ligne({ options: prod })
+		);
+		expect(e.sorte).toBe('migre');
+		if (e.sorte !== 'migre') return;
+		expect(e.modele.avant.options).toEqual(prod);
+		expect(e.modele.apres.options).toEqual(voulues);
+		expect(e.modele.changements.options).toBe(true);
+	});
+
+	it('options seules changées : migré (pas « inchangé »)', () => {
+		const e = examinerModele(
+			'01.json',
+			fichier({ options: { orderIndependent: true } }),
+			ligne({ options: null })
+		);
+		expect(e.sorte === 'migre' && e.modele.changements).toEqual({
+			ajoutees: [],
+			corrigees: [],
+			specs: false,
+			description: false,
+			options: true
+		});
+	});
+
+	it('options identiques (ordre des clés compris) : le contenu ne les porte pas, la migration n’y touche pas', () => {
+		const e = examinerModele(
+			'01.json',
+			fichier({ variations: [V1, V2, V3], options: { b: 1, a: 2 } }),
+			ligne({ options: { a: 2, b: 1 } })
+		);
+		expect(e.sorte).toBe('migre');
+		if (e.sorte !== 'migre') return;
+		expect('options' in e.modele.avant).toBe(false);
+		expect('options' in e.modele.apres).toBe(false);
+		expect(e.modele.changements.options).toBe(false);
+	});
+
+	it('options absentes du fichier mais présentes en prod : refusé (jamais effacées en silence)', () => {
+		const e = examinerModele(
+			'01.json',
+			fichier({ variations: [V1, V2, V3] }),
+			ligne({ options: { orderIndependent: true } })
+		);
+		expect(e.sorte === 'refuse' && e.erreur).toMatch(/options.*effacerait/);
+	});
+
 	it('champ que la migration ne touche pas (niveaux) différent : refusé avec la différence', () => {
 		const e = examinerModele('01.json', fichier({ grades: ['2', '1spe'] }), ligne());
 		expect(e.sorte === 'refuse' && e.erreur).toMatch(/grades/);
@@ -236,7 +290,13 @@ describe('genererMigration', () => {
 			migre({
 				id: '0000000b-0000-4000-8000-000000000000',
 				title: 'Soustractions',
-				changements: { ajoutees: [], corrigees: [1, 2], specs: true, description: false }
+				changements: {
+					ajoutees: [],
+					corrigees: [1, 2],
+					specs: true,
+					description: false,
+					options: false
+				}
 			})
 		]);
 		expect(sql).toContain('0000000a « Additions »');
@@ -254,6 +314,54 @@ describe('genererMigration', () => {
 		]);
 		const corps = sql.split('\n').filter((l) => !l.startsWith('--'));
 		expect(corps.filter((l) => l.startsWith('do $'))).toHaveLength(1);
+	});
+
+	it('modèle absent : sauté, mais nommé par un notice (aller et rollback)', () => {
+		const sql = genererMigration(ENTETE, [
+			migre(),
+			migre({ id: '0000000b-0000-4000-8000-000000000000' })
+		]);
+		const corps = sql.split('\n').filter((l) => !l.startsWith('--'));
+		const retour = sql.split('\n').filter((l) => l.startsWith('-- '));
+		for (const lignes of [corps, retour]) {
+			for (const id8 of ['0000000a', '0000000b']) {
+				expect(
+					lignes.filter((l) => l.includes(`raise notice '${id8} absent, saute'`))
+				).toHaveLength(1);
+			}
+		}
+	});
+
+	it('options changées : écrites et gardées (aller et rollback), signalées en en-tête', () => {
+		const prod = { constraints: { spacesFromFourDigits: true } };
+		const voulues = { constraints: { spacesFromFourDigits: true, fractions: 'off' } };
+		const sql = genererMigration(ENTETE, [
+			migre({
+				avant: { variations: [V1, V2], testSpecs: SPECS, description: null, options: prod },
+				apres: { variations: [V1, V2, V3], testSpecs: SPECS, description: null, options: voulues },
+				changements: {
+					ajoutees: [3],
+					corrigees: [],
+					specs: false,
+					description: false,
+					options: true
+				}
+			})
+		]);
+		expect(sql).toMatch(/⚠️ options modifiées/);
+		const corps = sql
+			.split('\n')
+			.filter((l) => !l.startsWith('--'))
+			.join('\n');
+		expect(corps).toMatch(/options = \$q\$\{"constraints"/);
+		expect(corps).toMatch(/options is not distinct from/);
+		const retour = extractRollback(ecrire(sql));
+		expect(retour).toMatch(/options = \$q\$\{"constraints":\{"spacesFromFourDigits":true\}\}/);
+	});
+
+	it('options inchangées : la migration ne les écrit ni ne les garde', () => {
+		const sql = genererMigration(ENTETE, [migre()]);
+		expect(sql).not.toMatch(/\boptions\b\s*(=|is not distinct)/);
 	});
 
 	it('ne touche ni titre, ni statut, ni niveaux, ni nœud', () => {
@@ -283,6 +391,29 @@ describe('genererMigration', () => {
 		}
 	});
 
+	it('balise de dollar dans les options : évitée aussi', () => {
+		const sql = genererMigration(ENTETE, [
+			migre({
+				avant: { variations: [V1, V2], testSpecs: SPECS, description: null, options: null },
+				apres: {
+					variations: [V1, V2],
+					testSpecs: SPECS,
+					description: null,
+					options: { note: 'le piège $q$' }
+				},
+				changements: {
+					ajoutees: [],
+					corrigees: [],
+					specs: false,
+					description: false,
+					options: true
+				}
+			})
+		]);
+		expect(sql).toMatch(/^do \$contenu1\$$/m);
+		expect(sql).toContain('options = $q1${"note"');
+	});
+
 	it('balise de dollar dans un titre : évitée aussi', () => {
 		const sql = genererMigration(ENTETE, [migre({ title: 'Le piège $contenu$ et $q$' })]);
 		expect(sql).toMatch(/^do \$contenu1\$$/m);
@@ -293,7 +424,13 @@ describe('genererMigration', () => {
 		const sql = genererMigration(ENTETE, [
 			migre({
 				apres: { variations: [V1, V2, V3], testSpecs: SPECS, description: 'ligne 1\nligne 2' },
-				changements: { ajoutees: [3], corrigees: [], specs: false, description: true }
+				changements: {
+					ajoutees: [3],
+					corrigees: [],
+					specs: false,
+					description: true,
+					options: false
+				}
 			})
 		]);
 		expect(sql).not.toContain('ligne 1\nligne 2');

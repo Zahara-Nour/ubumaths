@@ -20,7 +20,9 @@ import {
 	lineMissingFeedback,
 	notMediatriceFeedback,
 	notMidpointFeedback,
-	notPerpendicularToSegmentFeedback
+	notPerpendicularToSegmentFeedback,
+	notThroughPointFeedback,
+	throughLineMissingFeedback
 } from '../line';
 import { POINT_EYEBALLED_FEEDBACK } from '../point';
 import {
@@ -301,7 +303,7 @@ describe('vérification droite : deux médiatrices, autre expression', () => {
 		});
 	});
 
-	it('une expression autre que la médiatrice : messages génériques', () => {
+	it('perpendiculaire par un point : messages de l’outil n° 40 (décision 3 du 2026-11-28)', () => {
 		// Par C(2 ; 6), perpendiculaire à [AB] : x = 2
 		const source = figure(
 			'droite p = perpendiculaire(C, s)',
@@ -311,9 +313,19 @@ describe('vérification droite : deux médiatrices, autre expression', () => {
 		expect(judge(source, [droite(2, 0, 2, 8)])).toEqual({ status: 'correct' });
 		expect(judge(source, [droite(3, 0, 3, 8)])).toEqual({
 			status: 'incorrect',
-			feedback: LINE_NOT_IN_PLACE_FEEDBACK
+			feedback: notThroughPointFeedback('perpendiculaire', 's', 'C')
 		});
 		expect(judge(source, [cercle(2, 3, 6, 3)])).toEqual({
+			status: 'incorrect',
+			feedback: throughLineMissingFeedback('perpendiculaire', 's', 'C')
+		});
+		// Une autre expression : messages génériques
+		const other = figure('droite p = droite(A, C)', [...AB_BODY, 'C = point(2, 6)'], ['grille: 1']);
+		expect(judge(other, [droite(3, 0, 3, 8)])).toEqual({
+			status: 'incorrect',
+			feedback: LINE_NOT_IN_PLACE_FEEDBACK
+		});
+		expect(judge(other, [cercle(2, 3, 6, 3)])).toEqual({
 			status: 'incorrect',
 			feedback: lineMissingFeedback('p')
 		});
@@ -441,12 +453,12 @@ describe('vérification droite : erreurs d’auteur', () => {
 		);
 	});
 
-	it('papier uni : seulement une médiatrice (revue : point de passage invisible)', () => {
+	it('papier uni : perpendiculaire par un point invisible (revue ; outil n° 40)', () => {
 		const source = figure('droite p = perpendiculaire(C, s)', [
 			...AB_BODY,
 			'C = point(3, 6, visible=faux)'
 		]);
-		expect(() => assertChecks(source)).toThrow(/sans quadrillage, seulement une médiatrice/);
+		expect(() => assertChecks(source)).toThrow(/C n’est pas visible/);
 	});
 
 	it('deux vérifications pour la même droite (revue)', () => {

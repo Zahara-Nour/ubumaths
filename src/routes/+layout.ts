@@ -35,6 +35,7 @@
  */
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
+import { browserSessionCookie, browserSupabaseUrl } from '#lib/utils/supabase-address.ts';
 // Module sans dépendance : son import statique ne crée pas de chaîne (Safari TDZ)
 import { browserCookieMethods } from '#lib/utils/session-cookies.ts';
 import { browser, version } from '$app/env';
@@ -193,10 +194,13 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	 * - Read-only during SSR (can't write cookies from here)
 	 */
 	const supabase = isBrowser()
-		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		? createBrowserClient(browserSupabaseUrl(location.origin), PUBLIC_SUPABASE_ANON_KEY, {
 				global: {
 					fetch // Use SvelteKit's fetch for better performance
 				},
+				// Dev sur la base locale : le navigateur passe par le relais du serveur de
+				// dev, et garde le nom de cookie du serveur. `undefined` en prod.
+				cookieOptions: browserSessionCookie(),
 				// SECURITY (findings H3, A1) : quand le navigateur rafraîchit la session,
 				// il réécrit le cookie ; sans ces méthodes, pour 400 jours au lieu de 30.
 				cookies: browserCookieMethods({

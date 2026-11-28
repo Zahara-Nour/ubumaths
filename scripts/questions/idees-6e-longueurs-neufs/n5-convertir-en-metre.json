@@ -1,0 +1,877 @@
+{
+	"id": "10dc7b1c-e3b6-4c97-9be8-17170eea29e6",
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Unités et conversions > unités simples",
+		"point": null
+	},
+	"title": "Convertir en mètre, et du mètre vers une autre unité",
+	"description": "a dam, hm, km → m et a dm, cm, mm → m (a de 10 à 90, de 100 à 900, de 11 à 99) ; a m → dam, hm, km (a de 1 à 9 compris) ; décimaux vers le mètre ; pièges : le mauvais sens, un rang de trop ou de moins",
+	"grades": ["6"],
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Convertis en mètres.\n\n${{a}}~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}} = ?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:u+1"
+				},
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "11..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(10*n1)*(1-min(abs(g-0),1))+(100*n1)*(1-min(abs(g-1),1))+(n2)*(1-min(abs(g-2),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*10^k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*10^(k+1)}}",
+							"message": "Entre le {{if:u==0|dam|{{if:u==1|hm|km}}}} et le mètre, il y a {{if:u==0|un rang|{{if:u==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:a*10^(k-1)}}",
+							"message": "Entre le {{if:u==0|dam|{{if:u==1|hm|km}}}} et le mètre, il y a {{if:u==0|un rang|{{if:u==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:a/10^k;d}}",
+							"message": "Le {{if:u==0|dam|{{if:u==1|hm|km}}}} est plus grand que le mètre : il faut **plus** de mètres que de {{if:u==0|dam|{{if:u==1|hm|km}}}}, le nombre doit grandir.",
+							"label": "Mauvais sens"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}} = {{if:u==0|10|{{if:u==1|100|1\\,000}}}}~\\unit{m}$ : on multiplie par ${{if:u==0|10|{{if:u==1|100|1\\,000}}}}$.",
+					"${{a}} \\times {{if:u==0|10|{{if:u==1|100|1\\,000}}}} = {{eval:a*10^k}}$, donc ${{a}}~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:a*10^k}}~\\unit{m}}$."
+				]
+			},
+			"hint": "Combien de mètres dans $1$ {{if:u==0|dam|{{if:u==1|hm|km}}}} ? Le nombre de mètres sera-t-il plus grand ou plus petit ?"
+		},
+		{
+			"statement": "Convertis en mètres.\n\n${{a}}~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}} = ?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:u+1"
+				},
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "11..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(10*n1)*(1-min(abs(g-0),1))+(100*n1)*(1-min(abs(g-1),1))+(n2)*(1-min(abs(g-2),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10^k;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a/10^(k+1);d}}",
+							"message": "Entre le {{if:u==0|dm|{{if:u==1|cm|mm}}}} et le mètre, il y a {{if:u==0|un rang|{{if:u==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:a/10^(k-1);d}}",
+							"message": "Entre le {{if:u==0|dm|{{if:u==1|cm|mm}}}} et le mètre, il y a {{if:u==0|un rang|{{if:u==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:a*10^k}}",
+							"message": "Le {{if:u==0|dm|{{if:u==1|cm|mm}}}} est plus petit que le mètre : il faut **moins** de mètres que de {{if:u==0|dm|{{if:u==1|cm|mm}}}}, le nombre doit diminuer.",
+							"label": "Mauvais sens"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}} = {{if:u==0|0{,}1|{{if:u==1|0{,}01|0{,}001}}}}~\\unit{m}$ : on divise par ${{if:u==0|10|{{if:u==1|100|1\\,000}}}}$.",
+					"${{a}} \\div {{if:u==0|10|{{if:u==1|100|1\\,000}}}} = {{eval:a/10^k;d}}$, donc ${{a}}~\\unit{{{if:u==0|dm|{{if:u==1|cm|mm}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:a/10^k;d}}~\\unit{m}}$."
+				]
+			},
+			"hint": "Combien de {{if:u==0|dm|{{if:u==1|cm|mm}}}} faut-il pour faire $1$ mètre ? Le nombre de mètres sera-t-il plus grand ou plus petit ?"
+		},
+		{
+			"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{m} = ?~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}}$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:u+1"
+				},
+				{
+					"name": "g",
+					"expression": "0..3"
+				},
+				{
+					"name": "n0",
+					"expression": "1..9"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "11..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(10*n1)*(1-min(abs(g-0),1))+(100*n1)*(1-min(abs(g-1),1))+(n2)*(1-min(abs(g-2),1))+(n0)*(1-min(abs(g-3),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10^k;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a/10^(k+1);d}}",
+							"message": "Entre le {{if:u==0|dam|{{if:u==1|hm|km}}}} et le mètre, il y a {{if:u==0|un rang|{{if:u==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:a/10^(k-1);d}}",
+							"message": "Entre le {{if:u==0|dam|{{if:u==1|hm|km}}}} et le mètre, il y a {{if:u==0|un rang|{{if:u==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:a*10^k}}",
+							"message": "Le {{if:u==0|dam|{{if:u==1|hm|km}}}} est plus grand que le mètre : il faut **moins** de {{if:u==0|dam|{{if:u==1|hm|km}}}} que de mètres, le nombre doit diminuer.",
+							"label": "Mauvais sens"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}} = {{if:u==0|10|{{if:u==1|100|1\\,000}}}}~\\unit{m}$ : on divise par ${{if:u==0|10|{{if:u==1|100|1\\,000}}}}$.",
+					"${{a}} \\div {{if:u==0|10|{{if:u==1|100|1\\,000}}}} = {{eval:a/10^k;d}}$, donc ${{a}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:a/10^k;d}}~\\unit{{{if:u==0|dam|{{if:u==1|hm|km}}}}}}$."
+				]
+			},
+			"hint": "Combien de mètres dans $1$ {{if:u==0|dam|{{if:u==1|hm|km}}}} ? Le nombre de {{if:u==0|dam|{{if:u==1|hm|km}}}} sera-t-il plus grand ou plus petit que le nombre de mètres ?"
+		},
+		{
+			"statement": "Convertis en mètres.\n\n${{eval:N/D;d}}~\\unit{{{if:u==0|km|{{if:u==1|hm|{{if:u==2|dam|{{if:u==3|dm|{{if:u==4|cm|mm}}}}}}}}}}} = ?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "g0",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "eval:(1-s)*g0"
+				},
+				{
+					"name": "q1",
+					"expression": "1..9"
+				},
+				{
+					"name": "q2",
+					"expression": "10..99"
+				},
+				{
+					"name": "q0",
+					"expression": "1..9"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(10*q1+q0)*(1-min(abs(g-0),1))+(q0)*(1-min(abs(g-1),1))+(10*q2+q0)*(1-min(abs(g-2),1))"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(10)*(1-min(abs(g-0),1))+(100)*(1-min(abs(g-1),1))+(10)*(1-min(abs(g-2),1))"
+				},
+				{
+					"name": "u",
+					"expression": "eval:3*s+w"
+				},
+				{
+					"name": "E",
+					"expression": "eval:(1-s)*(3-w)-s*(w+1)"
+				},
+				{
+					"name": "R",
+					"expression": "eval:(1-s)*(3-w)+s*(w+1)"
+				},
+				{
+					"name": "r0",
+					"expression": "eval:R-1"
+				}
+			],
+			"conditions": ["u!=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N*10^(E+3)/(1000*D);d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N*10^(E+4)/(1000*D);d}}",
+							"message": "Entre le {{if:u==0|km|{{if:u==1|hm|{{if:u==2|dam|{{if:u==3|dm|{{if:u==4|cm|mm}}}}}}}}}} et le mètre, il y a {{if:r0==0|un rang|{{if:r0==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de trop (× 10)"
+						},
+						{
+							"answer": "{{eval:N*10^(E+2)/(1000*D);d}}",
+							"message": "Entre le {{if:u==0|km|{{if:u==1|hm|{{if:u==2|dam|{{if:u==3|dm|{{if:u==4|cm|mm}}}}}}}}}} et le mètre, il y a {{if:r0==0|un rang|{{if:r0==1|deux rangs|trois rangs}}}} dans le tableau de conversion : pas un de plus, pas un de moins.",
+							"label": "Un rang de moins (÷ 10)"
+						},
+						{
+							"answer": "{{eval:N*10^(3-E)/(1000*D);d}}",
+							"message": "{{if:s==0|Le {{if:w==0|km|{{if:w==1|hm|dam}}}} est plus grand que le mètre : il faut **plus** de mètres que de {{if:w==0|km|{{if:w==1|hm|dam}}}}, le nombre doit grandir.|Le {{if:w==0|dm|{{if:w==1|cm|mm}}}} est plus petit que le mètre : il faut **moins** de mètres que de {{if:w==0|dm|{{if:w==1|cm|mm}}}}, le nombre doit diminuer.}}",
+							"label": "Mauvais sens"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:u==0|km|{{if:u==1|hm|{{if:u==2|dam|{{if:u==3|dm|{{if:u==4|cm|mm}}}}}}}}}}} = {{if:u==0|1\\,000|{{if:u==1|100|{{if:u==2|10|{{if:u==3|0{,}1|{{if:u==4|0{,}01|0{,}001}}}}}}}}}}~\\unit{m}$.",
+					"${{eval:N/D;d}} {{if:u==0|\\times 1\\,000|{{if:u==1|\\times 100|{{if:u==2|\\times 10|{{if:u==3|\\div 10|{{if:u==4|\\div 100|\\div 1\\,000}}}}}}}}}} = {{eval:N*10^(E+3)/(1000*D);d}}$, donc ${{eval:N/D;d}}~\\unit{{{if:u==0|km|{{if:u==1|hm|{{if:u==2|dam|{{if:u==3|dm|{{if:u==4|cm|mm}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:N*10^(E+3)/(1000*D);d}}~\\unit{m}}$ : on déplace la virgule de {{if:r0==0|un rang|{{if:r0==1|deux rangs|trois rangs}}}} vers la {{if:s==0|droite|gauche}}."
+				]
+			},
+			"hint": "Le {{if:u==0|km|{{if:u==1|hm|{{if:u==2|dam|{{if:u==3|dm|{{if:u==4|cm|mm}}}}}}}}}} est-il plus grand ou plus petit que le mètre ? De combien de rangs faut-il déplacer la virgule ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "45 hm = 4 500 m",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4\\,500"]
+		},
+		{
+			"description": "45 hm : 45 000",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le hm et le mètre, il y a deux rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["45\\,000"]
+		},
+		{
+			"description": "45 hm : 450",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le hm et le mètre, il y a deux rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["450"]
+		},
+		{
+			"description": "45 hm : 0,45",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le hm est plus grand que le mètre : il faut **plus** de mètres que de hm, le nombre doit grandir."
+			},
+			"answers": ["0{,}45"]
+		},
+		{
+			"description": "300 km = 300 000 m",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "1",
+				"n1": "3",
+				"n2": "11",
+				"a": "300"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["300\\,000"]
+		},
+		{
+			"description": "70 dam = 700 m",
+			"variationIndex": 0,
+			"variables": {
+				"u": "0",
+				"k": "1",
+				"g": "0",
+				"n1": "7",
+				"n2": "11",
+				"a": "70"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["700"]
+		},
+		{
+			"description": "32 cm = 0,32 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "2",
+				"n1": "1",
+				"n2": "32",
+				"a": "32"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}32"]
+		},
+		{
+			"description": "30 cm = 0,3 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "0",
+				"n1": "3",
+				"n2": "11",
+				"a": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}3"]
+		},
+		{
+			"description": "300 cm = 3 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "1",
+				"n1": "3",
+				"n2": "11",
+				"a": "300"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "45 mm = 0,045 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}045"]
+		},
+		{
+			"description": "45 mm : 0,45 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le mm et le mètre, il y a trois rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["0{,}45"]
+		},
+		{
+			"description": "45 mm : 0,0045 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le mm et le mètre, il y a trois rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["0{,}0045"]
+		},
+		{
+			"description": "45 mm : 45 000 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le mm est plus petit que le mètre : il faut **moins** de mètres que de mm, le nombre doit diminuer."
+			},
+			"answers": ["45\\,000"]
+		},
+		{
+			"description": "60 dm = 6 m",
+			"variationIndex": 1,
+			"variables": {
+				"u": "0",
+				"k": "1",
+				"g": "0",
+				"n1": "6",
+				"n2": "11",
+				"a": "60"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "400 m = 0,4 km",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "1",
+				"n1": "4",
+				"n2": "11",
+				"a": "400",
+				"n0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "400 m : 4 km",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "1",
+				"n1": "4",
+				"n2": "11",
+				"a": "400",
+				"n0": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le km et le mètre, il y a trois rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "7 m = 0,007 km",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "3",
+				"n1": "1",
+				"n2": "11",
+				"a": "7",
+				"n0": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}007"]
+		},
+		{
+			"description": "7 m : 7 000 km",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "3",
+				"n1": "1",
+				"n2": "11",
+				"a": "7",
+				"n0": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le km est plus grand que le mètre : il faut **moins** de km que de mètres, le nombre doit diminuer."
+			},
+			"answers": ["7\\,000"]
+		},
+		{
+			"description": "7 m : 0,07 km",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "3",
+				"n1": "1",
+				"n2": "11",
+				"a": "7",
+				"n0": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le km et le mètre, il y a trois rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["0{,}07"]
+		},
+		{
+			"description": "7 m : 0,0007 km",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"k": "3",
+				"g": "3",
+				"n1": "1",
+				"n2": "11",
+				"a": "7",
+				"n0": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le km et le mètre, il y a trois rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["0{,}0007"]
+		},
+		{
+			"description": "45 m = 0,45 hm",
+			"variationIndex": 2,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45",
+				"n0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}45"]
+		},
+		{
+			"description": "45 m = 0.45 hm (point)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "1",
+				"k": "2",
+				"g": "2",
+				"n1": "1",
+				"n2": "45",
+				"a": "45",
+				"n0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0.45"]
+		},
+		{
+			"description": "3,7 dm = 0,37 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"w": "0",
+				"g0": "0",
+				"g": "0",
+				"q1": "3",
+				"q2": "10",
+				"q0": "7",
+				"N": "37",
+				"D": "10",
+				"u": "3",
+				"E": "-1",
+				"R": "1",
+				"r0": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}37"]
+		},
+		{
+			"description": "3,7 dm : 37 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"w": "0",
+				"g0": "0",
+				"g": "0",
+				"q1": "3",
+				"q2": "10",
+				"q0": "7",
+				"N": "37",
+				"D": "10",
+				"u": "3",
+				"E": "-1",
+				"R": "1",
+				"r0": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dm est plus petit que le mètre : il faut **moins** de mètres que de dm, le nombre doit diminuer."
+			},
+			"answers": ["37"]
+		},
+		{
+			"description": "3,7 dm : 0,037 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"w": "0",
+				"g0": "0",
+				"g": "0",
+				"q1": "3",
+				"q2": "10",
+				"q0": "7",
+				"N": "37",
+				"D": "10",
+				"u": "3",
+				"E": "-1",
+				"R": "1",
+				"r0": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le dm et le mètre, il y a un rang dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["0{,}037"]
+		},
+		{
+			"description": "0,05 km = 50 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"w": "0",
+				"g0": "1",
+				"g": "1",
+				"q1": "1",
+				"q2": "10",
+				"q0": "5",
+				"N": "5",
+				"D": "100",
+				"u": "0",
+				"E": "3",
+				"R": "3",
+				"r0": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["50"]
+		},
+		{
+			"description": "0,05 km : 500 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"w": "0",
+				"g0": "1",
+				"g": "1",
+				"q1": "1",
+				"q2": "10",
+				"q0": "5",
+				"N": "5",
+				"D": "100",
+				"u": "0",
+				"E": "3",
+				"R": "3",
+				"r0": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le km et le mètre, il y a trois rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["500"]
+		},
+		{
+			"description": "0,05 km : 0,000 05 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"w": "0",
+				"g0": "1",
+				"g": "1",
+				"q1": "1",
+				"q2": "10",
+				"q0": "5",
+				"N": "5",
+				"D": "100",
+				"u": "0",
+				"E": "3",
+				"R": "3",
+				"r0": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le km est plus grand que le mètre : il faut **plus** de mètres que de km, le nombre doit grandir."
+			},
+			"answers": ["0{,}00005"]
+		},
+		{
+			"description": "12,4 hm = 1 240 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"w": "1",
+				"g0": "2",
+				"g": "2",
+				"q1": "1",
+				"q2": "12",
+				"q0": "4",
+				"N": "124",
+				"D": "10",
+				"u": "1",
+				"E": "2",
+				"R": "2",
+				"r0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\,240"]
+		},
+		{
+			"description": "12,4 hm : 124 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"w": "1",
+				"g0": "2",
+				"g": "2",
+				"q1": "1",
+				"q2": "12",
+				"q0": "4",
+				"N": "124",
+				"D": "10",
+				"u": "1",
+				"E": "2",
+				"R": "2",
+				"r0": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre le hm et le mètre, il y a deux rangs dans le tableau de conversion : pas un de plus, pas un de moins."
+			},
+			"answers": ["124"]
+		},
+		{
+			"description": "4,6 cm = 0,046 m",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"w": "1",
+				"g0": "2",
+				"g": "0",
+				"q1": "4",
+				"q2": "10",
+				"q0": "6",
+				"N": "46",
+				"D": "10",
+				"u": "4",
+				"E": "-2",
+				"R": "2",
+				"r0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}046"]
+		}
+	]
+}

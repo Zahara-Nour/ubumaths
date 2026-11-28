@@ -108,6 +108,107 @@ describe('Solide — figure', () => {
 		);
 	});
 
+	it('repère et point par coordonnées : trois flèches, le point nommé, lus par le lecteur d’écran', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node(
+					'forme: cube 2',
+					'sommets: A B C D E F G H',
+					'repere: A ; AB, AD, AE',
+					'points: M (1 ; 0,5 ; 1)'
+				)
+			}
+		});
+		expect(screen.container.querySelectorAll('polygon.solide-pointe')).toHaveLength(3);
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('M');
+		const label = screen.container.querySelector('svg')!.getAttribute('aria-label');
+		expect(label).toContain('repère d’origine A');
+		expect(label).toContain('point M de coordonnées (1 ; 0,5 ; 1)');
+	});
+
+	it('point d’intersection : un disque et son nom, sans droite ni plan dessinés (lot 7e)', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node(
+					'forme: cube 2',
+					'sommets: A B C D E F G H',
+					'points: I milieu AE, K intersection (IG) (BDE)'
+				)
+			}
+		});
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('K');
+		expect(screen.container.querySelectorAll('polygon.solide-plan')).toHaveLength(0);
+		expect(screen.container.querySelectorAll('polyline.solide-droite')).toHaveLength(0);
+		const label = screen.container.querySelector('svg')!.getAttribute('aria-label');
+		expect(label).toContain('point K intersection de la droite (IG) et du plan (BDE)');
+	});
+
+	it('plans donnés : teintés, bord en couleur, tirets pour le bord caché, nom entre parenthèses', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node('forme: cube 2', 'sommets: A B C D E F G H', 'plans: P = (BDE), (ACG)')
+			}
+		});
+		const fills = [...screen.container.querySelectorAll('polygon.solide-plan')];
+		expect(fills).toHaveLength(2);
+		// Teintés, chacun de sa couleur, sans contour
+		const tints = fills.map((f) => getComputedStyle(f).fill);
+		expect(tints[0]).not.toBe('none');
+		expect(tints[1]).not.toBe('none');
+		expect(tints[0]).not.toBe(tints[1]);
+		// Bord : (BDE) a un côté visible ([BE], face de devant) et deux cachés
+		const borders = [...screen.container.querySelectorAll('polyline.solide-plan-bord')];
+		const first = borders.filter((b) => !b.classList.contains('solide-plan-second'));
+		expect(first.map((p) => p.getAttribute('stroke-dasharray') !== null).sort()).toEqual([
+			false,
+			true,
+			true
+		]);
+		const edge = screen.container.querySelector('polyline.solide-trait')!;
+		const stroke = getComputedStyle(first[0]).stroke;
+		expect(stroke).not.toBe('none');
+		expect(stroke).not.toBe(getComputedStyle(edge).stroke);
+		expect(getComputedStyle(first[0]).fill).toBe('none');
+		expect(parseFloat(getComputedStyle(first[0]).strokeWidth)).toBeGreaterThan(0);
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('(P)');
+	});
+
+	it('droites données : en couleur, tirets dans le solide, nom entre parenthèses', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node('forme: cube 2', 'sommets: A B C D E F G H', 'droites: d = (AG)')
+			}
+		});
+		// (AG) : plein, tirets dans le cube, plein
+		const pieces = [...screen.container.querySelectorAll('polyline.solide-droite')];
+		expect(pieces).toHaveLength(3);
+		expect(pieces.map((p) => p.getAttribute('stroke-dasharray') !== null)).toEqual([
+			false,
+			true,
+			false
+		]);
+		// Une couleur à elle : ni celle des arêtes, ni rien
+		const stroke = getComputedStyle(pieces[0]).stroke;
+		const edge = screen.container.querySelector('polyline:not(.solide-droite)')!;
+		expect(stroke).not.toBe('none');
+		expect(stroke).not.toBe(getComputedStyle(edge).stroke);
+		expect(getComputedStyle(pieces[0]).fill).toBe('none');
+		// Le trait a une vraie épaisseur à l'écran
+		expect(parseFloat(getComputedStyle(pieces[0]).strokeWidth)).toBeGreaterThan(0);
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('(d)');
+		expect(screen.container.querySelector('svg')!.getAttribute('aria-label')).toContain(
+			'droite d égale à (AG)'
+		);
+	});
+
 	it('vecteur indicé : w puis 1 en indice (tspan plus petit, abaissé)', async () => {
 		const screen = await render(Espace, {
 			target: mainElement(),
@@ -117,6 +218,48 @@ describe('Solide — figure', () => {
 		const sub = w?.querySelector('tspan');
 		expect(sub?.textContent).toBe('1');
 		expect(Number(sub?.getAttribute('dy'))).toBeGreaterThan(0);
+	});
+
+	it('plan posé sur une face, figure tirée jusqu’à la butée : le bord reste en trait plein', async () => {
+		// La base (ABC) du prisme est alors vue par la tranche : son bord se dessine sur
+		// des arêtes en trait plein, il a leur état
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node(
+					'forme: prisme triangle 3,3 2,1 4,7',
+					'sommets: A B C D E F',
+					'plans: (ABC)',
+					'tourner: oui'
+				)
+			}
+		});
+		const svg = screen.container.querySelector('svg') as SVGSVGElement;
+		const box = svg.getBoundingClientRect();
+		const x = box.left + box.width / 2;
+		const y = box.top + box.height / 2;
+		const pointer = (type: string, clientY: number) =>
+			svg.dispatchEvent(
+				new PointerEvent(type, {
+					pointerId: 7,
+					isPrimary: true,
+					button: 0,
+					clientX: x,
+					clientY,
+					bubbles: true
+				})
+			);
+		for (const dy of [400, -800]) {
+			// 400 px : bien plus qu'un quart de tour, la bascule s'arrête à la butée
+			pointer('pointerdown', y);
+			pointer('pointermove', y + dy / 2);
+			pointer('pointermove', y + dy);
+			pointer('pointerup', y + dy);
+			await new Promise((resolve) => setTimeout(resolve, 450));
+			const border = [...screen.container.querySelectorAll('polyline.solide-plan-bord')];
+			expect(border.length).toBeGreaterThan(0);
+			expect(border.filter((piece) => piece.hasAttribute('stroke-dasharray'))).toEqual([]);
+		}
 	});
 
 	it('bloc en erreur : cadre neutre pour l’élève, messages pour le prof', async () => {

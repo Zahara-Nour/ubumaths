@@ -3,6 +3,8 @@
  * Format: topic-shortid (e.g., "algebre-k8m2n4p7")
  */
 
+import { slugify } from '#lib/utils/string.ts';
+
 // URL-safe characters, excluding ambiguous ones (l, o, 0, 1, I, O)
 const ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
 
@@ -16,19 +18,6 @@ function generateShortId(length = 8): string {
 		result += ALPHABET[randomValues[i] % ALPHABET.length];
 	}
 	return result;
-}
-
-/**
- * Converts a string to a URL-friendly slug
- */
-function slugify(text: string): string {
-	return text
-		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '') // Remove accents
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-') // Replace non-alphanum with dash
-		.replace(/^-|-$/g, '') // Trim dashes
-		.replace(/-{2,}/g, '-'); // Collapse multiple dashes
 }
 
 /**

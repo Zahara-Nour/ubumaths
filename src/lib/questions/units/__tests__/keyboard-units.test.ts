@@ -39,6 +39,14 @@ describe('unitKeysFor — grandeur attendue', () => {
 		expect(unitKeysFor(['3\\unit{h}'], [undefined])).toEqual(['s', 'min', 'h']);
 	});
 
+	it('durée attendue en h-min, écrite par {{eval}} (`{1[h]}{6[min]}`) : s, min, h (#2276)', () => {
+		expect(unitKeysFor(['{1[h]}{6[min]}'], [undefined])).toEqual(['s', 'min', 'h']);
+	});
+
+	it('grandeur attendue en syntaxe maison (`28[mm]`) : mêmes touches que `28\\unit{mm}`', () => {
+		expect(unitKeysFor(['28[mm]'], [undefined])).toEqual(['mm', 'cm', 'm', 'km']);
+	});
+
 	it('volume en litres ou en cm³ : même onglet', () => {
 		const expected = ['mL', 'cL', 'L', 'cm^3', 'm^3'];
 		expect(unitKeysFor(['4\\unit{L}'], [undefined])).toEqual(expected);

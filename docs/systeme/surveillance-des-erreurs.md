@@ -198,7 +198,8 @@ admin seul, textes en français : boutons qui provoquent des erreurs de test).
   tout, appelée par `clearWorkData` (déconnexion, suppression du compte, autre compte sur
   l'appareil) et par un onglet qui voit le compte changer ailleurs, avant de se recharger
   (voir [RGPD](conformite/rgpd.md)) ;
-- `getFreezeDetectionContext()` rend gels, actions et Web Vitals pour un signalement.
+- `getFreezeDetectionContext()` rend gels et actions pour un signalement (les mesures de
+  performance n'y figurent pas : elles vont à la table des mesures, M47).
 
 Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte`
 (`setFreezePromptCallback`, `setAutoReportCallback`). Ils consultent la configuration
@@ -230,9 +231,14 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
 - **`/api/bug-reports/[reportId]/screenshot`** : `POST`, l'auteur seul. Taille plafonnée
   par `MAX_IMAGE_SIZE_BYTES`, signature binaire vérifiée (`validateFileSignature`).
   Chemin `<id utilisateur>/<id du rapport>/<horodatage>.<ext>` dans le bucket
-  `bug-report-screenshots` ; l'ancienne capture est retirée. Si la mise à jour du rapport ne
-  touche aucune ligne (rapport plus `pending`, refus de la RLS), le fichier envoyé est retiré
-  et la route rend 403.
+  `bug-report-screenshots` ; l'extension vient du type vérifié (`jpg`, `png`, `gif`, `webp`),
+  jamais du nom du fichier. L'ancienne capture n'est retirée qu'une fois la nouvelle rattachée
+  au rapport. Si la mise à jour du rapport ne touche aucune ligne (rapport plus `pending`, refus
+  de la RLS), le fichier envoyé est retiré, l'ancienne capture reste, et la route rend 403.
+- **Suppression d'un rapport** (`DELETE` seul ou en lot, admin) : `deleteBugReportWithScreenshot`
+  retire d'abord la capture du bucket, puis la ligne. Capture impossible à effacer → la ligne
+  est gardée (500 « Suppression impossible : la capture n'a pas pu être effacée », ou une
+  ligne `failed` dans le lot).
 - **`src/lib/server/bug-report-screenshots.ts`** : le bucket est privé ; `bug_reports.screenshot_url`
   est recalculé à chaque lecture depuis `screenshot_path` en URL signée
   (`DISPLAY_SIGNED_URL_TTL` = 1 h ; `EXPORT_SIGNED_URL_TTL` = 7 jours). Échec de signature
@@ -274,7 +280,10 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 - `/dashboard/admin/docs` et `/dashboard/admin/docs/[...path]` : lisent `docs/` sur le
   disque au moment de la requête (`src/lib/server/docs-scanner.ts`) et rendent le
   Markdown en HTML (`src/lib/server/markdown-parser.ts`, `marked`). `getDocumentContent`
-  refuse un chemin qui sort de `docs/` (`..`).
+  refuse un chemin qui sort de `docs/` (`..`). Rubriques = dossiers de `docs/`, dans l'ordre
+  systeme, pratiques, adr, wip, archive, puis les autres. La recherche (`?q=`, Zod, 100 caractères
+  au plus) garde les docs dont le titre ou le chemin contient le texte, sans tenir compte des
+  accents (`filterDocCategories`).
 - `/dev/*` (admin seul, hors du tableau de bord) : pages d'essai (session, RLS, avatar, roue,
   PDF Typst et LaTeX, MathField, carte question, éditeur riche…), listées par `/dev`. Plus rien
   sous `/dashboard/admin/debug/`. Les anciennes adresses sont redirigées en 308 ([auth.md](auth.md)).
@@ -285,7 +294,8 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   (`latexcgi`) pour la page `/dev/pdf-latex`, son seul appelant. Compte exigé
   (`requireAuth`, l'ancien relais ouvert du finding H13) ; Zod `compileLatexSchema`
   (`src/lib/server/validation/latex.ts` : 50 000 caractères au plus, `svg` / `png` / `pdf`,
-  corps 8 à 72). La réponse de texlive.net est renvoyée telle quelle, avec son `Content-Type`.
+  corps 8 à 72) : un refus rend 400 avec son message, jamais 500 (L111). La réponse de
+  texlive.net est renvoyée telle quelle, avec son `Content-Type`.
 - `src/lib/utils/version.ts` : `getVersion()` / `getRawVersion()`, lisent
   `__APP_VERSION__` injecté par `vite.config.ts`. Affichés par `InfoPanel.svelte` et la
   page admin des réglages.
@@ -293,7 +303,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 ### OpenAPI et la page Swagger
 
 - `src/lib/server/openapi/generator.ts` : `generateOpenAPISpec()` écrit **à la main** une
-  spécification OpenAPI 3.1 de 11 chemins.
+  spécification OpenAPI 3.1 de 7 chemins.
 - `GET /api/openapi.json` : admin seul, `Cache-Control: private, no-store`.
 - `/dev/api` (ex-`/dashboard/admin/debug/api-docs` ; admin seul : garde de `/dev` et `requireAdmin`
   dans `+page.server.ts` ; `ssr = false`, entrée « API (Swagger) » de `/dev`) :
@@ -312,11 +322,15 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   `requireRole(locals, 'admin')`.
 - `bug_reports` : l'auteur voit les siens et modifie les siens **tant qu'ils sont
   `pending`** ; l'admin voit, modifie et supprime tout. Les routes recopient ces règles
-  (403 si ce n'est ni l'auteur ni l'admin).
+  (403 si ce n'est ni l'auteur ni l'admin). L'auteur n'écrit que le titre, la description et
+  la capture, et un rapport naît toujours `pending`, sans capture ni résolution : deux gardes
+  en base (`20261126060048`) refusent le reste, même par l'API de la base →
+  [base-de-donnees.md](base-de-donnees.md#exploitation-journaux-configuration-cache).
 - `bug_reports_config` : lisible par tout compte connecté, modifiable par l'admin.
 - Captures : bucket privé ; l'auteur lit son propre dossier (premier segment = son id),
-  l'admin tout. Les policies du storage ne sont pas dans `supabase/migrations/` : elles
-  datent d'avant le baseline (`supabase/migrations_archive/20260614101541_bug_report_screenshots_private.sql`).
+  l'admin tout. Les policies du storage sont dans
+  `supabase/migrations/20261126060050_captures_rapports_de_bug_regles_de_stockage.sql`
+  (recopie de celles de la prod) ; le bucket lui-même est créé par `supabase/seed.sql`.
 
 ### Données d'élèves mineurs
 
@@ -328,8 +342,12 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 - Le jeton d'un lien du carnet de liaison (ADR 0040) est dans le CHEMIN (`/carnet/<jeton>`,
   `/carnet/confirmer/<jeton>`), que `sanitizeUrl` ne voit pas : `logError` le remplace par
   `[token]` dans l'URL et le message (`redactSecretUrl`, `src/lib/utils/analytics-redact.ts`,
-  depuis le 2026-11-16). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
+  depuis le 2026-11-16) ; de même le jeton d'une invitation de cours particulier
+  (`/auth/register/invitation/<jeton>`, depuis le 2026-11-25). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
   lente et exception de `hooks.server.ts`.
+- Les valeurs texte du `context` passent aussi par `redactSecretUrl` (`redactValue` dans
+  `sanitizeObject`, depuis le 2026-11-25) : `freezeDetection` y range l'URL de la page
+  (`context.url` d'une tâche longue ou d'un gel), que le masquage de `url` ne voyait pas.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les
   erreurs récentes de l'auteur n'y sont **pas** enregistrées : son auteur peut le relire, et
@@ -391,7 +409,8 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/routes/api/bug-reports/__tests__/write-verdict.test.ts` : zéro ligne touchée n'est pas
   un succès — `DELETE` d'un rapport → 404 ; dans un lot, chaque rapport intact passe dans
   `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
-  du bucket.
+  du bucket ; rapport supprimé → sa capture retirée du bucket avant la ligne, et ligne gardée
+  si le bucket refuse.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
   contexte et l'URL, jeton du carnet masqué dans l'URL et le message, message de l'alerte
   critique échappé.
@@ -409,8 +428,10 @@ rapport en UUID. Exceptions : voir Écarts.
   partent à la déconnexion, quand un autre compte prend l'onglet ou un autre onglet, restent pour
   le même compte ; une navigation est retenue sans ses paramètres.
 
-Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les pages admin, ni
-`docs-scanner.ts`.
+- `src/lib/server/__tests__/docs-scanner.test.ts` : ordre et noms des rubriques de la doc
+  admin, filtre de la recherche (V116).
+
+Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement) ni les pages admin.
 
 ## Décisions
 
@@ -426,32 +447,9 @@ Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les p
 
 ## Écarts connus
 
-Constatés le 2026-10-13, non corrigés.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Notification critique** : `system_event_type: 'assessment_graded'` faute de valeur
-  adaptée (commentaire dans le code).
-- **Supprimer un rapport ne supprime pas sa capture** : ni `DELETE` ni le lot ne touchent
-  au storage.
-- **Zod manquant** : la page `/dashboard/admin/errors` passe les filtres de l'adresse sans
-  validation ; l'action `resolve` de `/dashboard/admin/errors/[id]` lit `notes` sans borne ;
-  `/dashboard/admin/bug-reports` passe `status`, `category`, `severity` tels quels.
-- **Configuration** : le commentaire de `bugReportsConfigStore.load` dit « seuls les admins
-  peuvent charger la config » ; faux, `GET /api/bug-reports/config` ne demande qu'un compte
-  et la table est lisible par tous. La détection de gel tourne et envoie ses erreurs
-  même si `freeze_detection_enabled` vaut `false` : le drapeau ne coupe que la proposition et
-  l'envoi automatique d'un signalement.
-- **Web Vitals jamais dans le contexte de gel** : `reportWebVital` de `freezeDetection.ts`
-  dit être appelée par `errorMonitoring.ts`, qui ne l'importe pas. `webVitals` reste vide
-  dans les signalements.
-- **Doc admin** : la recherche (`?q=`) s'affiche mais ne cherche rien (aucune fonction
-  de recherche depuis le 2026-10-13) ; `CATEGORY_CONFIG` nomme des dossiers
-  (`features`, `architecture`, `guides`…) qui n'existent plus dans `docs/`. Lecture
-  de `docs/` sur le disque au moment de la requête : non vérifié que ces fichiers sont
-  présents dans le déploiement Vercel.
-- **OpenAPI** : 11 chemins sur environ 380 routes, dont 4 qui n'existent plus en tant que
-  route (`/api/messages`, `/api/questions`, `/api/notifications`, `/api/rewards/award`).
-- **Commentaire périmé** : l'en-tête de `healthStats.ts` dit que `server_cache`,
-  `background_job_runs` et les vues `admin_*` manquent dans `database.ts` ; elles y sont.
-- **`/api/latex/compile` répond 500 à une entrée invalide** : le `throw error(400, …)` de la
-  validation (et l'erreur d'un texlive.net en panne) est rattrapé par le `catch` global, qui
-  relance un 500 « Compilation failed: Unknown error » (`HttpError` n'étend pas `Error`).
+### Points non vérifiés
+
+- Doc admin : lecture de `docs/` sur le disque au moment de la requête ; non vérifié que ces
+  fichiers sont présents dans le déploiement Vercel.

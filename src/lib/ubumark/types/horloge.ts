@@ -81,6 +81,12 @@ export interface HorlogeSpec {
 	 * `docs/wip/reponses-a-placer-progress.md` § 13, 14)
 	 */
 	placer?: HorlogeTime;
+	/**
+	 * `solution: oui` (avec `placer:`, sans `case:`) : les aiguilles de `placer`
+	 * dessinées en vert, à l'écran comme au PDF ; rien à faire pour l'élève
+	 * (corrigé imprimé d'une série d'automatismes, V109)
+	 */
+	solution?: true;
 	/** Une légende par cadran, ou null */
 	captions: string[] | null;
 	numbers: HorlogeNumbers;

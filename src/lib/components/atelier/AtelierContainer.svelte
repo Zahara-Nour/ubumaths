@@ -1557,6 +1557,18 @@
 		align-items: center;
 		gap: 0.25rem;
 	}
+	/* E7 (2026-11-23) : au téléphone, neuf boutons de 40 px et leurs marges
+	   faisaient 416 px ; le dernier (plein écran) était coupé à 393. Les boutons
+	   gardent leur taille (le doigt), les marges se resserrent : 372 px */
+	@media (max-width: 480px) {
+		.barre {
+			gap: 0.25rem;
+			padding: 0.25rem 0.125rem;
+		}
+		.outils {
+			gap: 0;
+		}
+	}
 	.onglets {
 		display: flex;
 		gap: 0.125rem;

@@ -134,7 +134,9 @@ function fakeService(
 		from: (table: string) => builder(table),
 		rpc: (name: string, args: Record<string, unknown>) => {
 			rpcCalls.push([name, args]);
-			return Promise.resolve(rpc(name, args));
+			const result = Promise.resolve(rpc(name, args));
+			// `current_school_year` se lit par `.rpc(…).maybeSingle()`.
+			return Object.assign(result, { maybeSingle: () => result });
 		}
 	};
 	return { service: service as never, calls, rpcCalls };
@@ -354,7 +356,7 @@ describe('sendContactConfirmation (A2, A4)', () => {
 describe('sendCarnetLink (A1, A6, D2)', () => {
 	const confirmed = { id: CONTACT, student_id: ELEVE, email: ADRESSE, status: 'confirmed' };
 
-	it('nominal : lien émis haché (31 août), courriel avec le jeton, trace « link »', async () => {
+	it('nominal : lien émis haché (31 août, école sans dates), courriel avec le jeton, trace « link »', async () => {
 		const { service, calls, rpcCalls } = fakeService(
 			(call) => {
 				if (call.table === 'parent_contacts') return { data: confirmed, error: null };
@@ -372,11 +374,46 @@ describe('sendCarnetLink (A1, A6, D2)', () => {
 		expect(args.p_token_hash).toBe(hashCarnetToken(token));
 		expect(JSON.stringify(rpcCalls)).not.toContain(token);
 		expect(new Date(args.p_expires_at as string).getUTCMonth()).toBe(7);
-		expect(sendLink).toHaveBeenCalledWith(ADRESSE, { studentFirstname: 'Léa', token });
+		expect(sendLink).toHaveBeenCalledWith(ADRESSE, {
+			studentFirstname: 'Léa',
+			token,
+			expiresAt: new Date(args.p_expires_at as string)
+		});
 		expect(calls.find((c) => c.table === 'parent_notifications')?.payload).toMatchObject({
 			kind: 'link',
 			status: 'sent'
 		});
+	});
+
+	it("l'école a saisi ses dates : le lien expire à la fin de SON année", async () => {
+		vi.useFakeTimers({ now: new Date('2026-11-28T10:00:00Z'), toFake: ['Date'] });
+		try {
+			const { service, rpcCalls } = fakeService(
+				(call) => {
+					if (call.table === 'parent_contacts') return { data: confirmed, error: null };
+					if (call.table === 'profiles')
+						return { data: { firstname: 'Léa', school_id: 'ecole' }, error: null };
+				},
+				(name) =>
+					name === 'current_school_year'
+						? { data: { start_date: '2026-09-01', end_date: '2027-07-15' }, error: null }
+						: { data: true, error: null }
+			);
+
+			expect(await sendCarnetLink(CONTACT, service)).toBe('sent');
+
+			expect(rpcCalls.find(([n]) => n === 'current_school_year')?.[1]).toEqual({
+				p_school_id: 'ecole'
+			});
+			const issue = rpcCalls.find(([n]) => n === 'issue_parent_carnet_link');
+			expect(issue?.[1].p_expires_at).toBe('2027-07-15T23:59:59.000Z');
+			expect(sendLink).toHaveBeenLastCalledWith(
+				ADRESSE,
+				expect.objectContaining({ expiresAt: new Date('2027-07-15T23:59:59Z') })
+			);
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 
 	it('adresse non confirmée → ni lien ni courriel (E7)', async () => {

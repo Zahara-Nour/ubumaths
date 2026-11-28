@@ -183,10 +183,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 			categorie: 'compte-appelant-ou-prof',
 			justification: 'soi-même, ou prof et élève inscrit ; filtres de rareté réservés au prof'
 		},
-	'duplicate_template(p_template_id uuid, p_user_id uuid, p_new_title text)': {
-		categorie: 'compte-appelant-ou-prof',
-		justification: 'exige p_user_id = auth.uid() ET is_teacher_or_admin'
-	},
 	'get_allowed_recipients(p_user_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde auth.uid() = p_user_id ou is_admin'
@@ -229,11 +225,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde auth.uid() = p_user_id ou is_teacher_or_admin (lot 4)'
 	},
-	'log_template_action(p_template_id uuid, p_action text, p_performed_by uuid, p_changes jsonb, p_metadata jsonb)':
-		{
-			categorie: 'compte-appelant-ou-prof',
-			justification: 'hors prof/admin : p_performed_by = auth.uid() et modèle à soi'
-		},
 	'search_private_messages(p_user_id uuid, p_query text, p_search_in text, p_has_attachments boolean, p_sender_name text, p_date_from timestamp with time zone, p_date_to timestamp with time zone, p_limit integer, p_offset integer)':
 		{
 			categorie: 'compte-appelant-ou-prof',
@@ -259,19 +250,11 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'auth-uid',
 		justification: 'filtre student_id = auth.uid()'
 	},
-	'get_my_exercise_assignments()': {
-		categorie: 'auth-uid',
-		justification: 'filtre ea.student_id / classes de auth.uid()'
-	},
 	'get_students_in_class_by_grade(target_class_id uuid)': {
 		categorie: 'auth-uid',
 		justification: 'exige que auth.uid() soit membre de target_class_id'
 	},
 	'get_teacher_assignment_stats()': {
-		categorie: 'auth-uid',
-		justification: 'filtre assigned_by = auth.uid()'
-	},
-	'get_teacher_exercise_assignments()': {
 		categorie: 'auth-uid',
 		justification: 'filtre assigned_by = auth.uid()'
 	},
@@ -465,6 +448,11 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin (lot 4)'
 	},
+	'get_flagged_messages_for_teacher(p_limit integer)': {
+		categorie: 'prof',
+		justification:
+			'refus 42501 si auth.uid() est NULL ou si son rôle lu dans profiles n’est pas teacher (ni élève, ni admin) ; ne rend que des messages is_flagged (écart T21)'
+	},
 	'get_pending_reports_count()': {
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin'
@@ -599,10 +587,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'close_school_year(p_school_year_id uuid)': {
 		categorie: 'admin',
 		justification: 'is_admin en tête, exception sinon'
-	},
-	'get_all_exercise_assignments()': {
-		categorie: 'admin',
-		justification: 'WHERE exige rôle admin de auth.uid() : vide sinon'
 	},
 	'get_database_stats()': {
 		categorie: 'admin',
@@ -752,7 +736,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	},
 	'student_has_exercise_access(p_exercise_id uuid)': {
 		categorie: 'predicat-rls',
-		justification: 'délègue à student_has_worksheet_access (auth.uid())'
+		justification:
+			'fiche : délègue à student_has_worksheet_access ; hors fiche : assignation active à auth.uid() ou à sa classe (membre actif)'
 	},
 	'student_has_worksheet_access(p_worksheet_id uuid)': {
 		categorie: 'predicat-rls',
@@ -847,14 +832,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'get_riddle_of_the_day(p_date date)': {
 		categorie: 'non-personnel',
 		justification: 'identifiant de l’énigme du jour'
-	},
-	'get_template_statistics(p_template_id uuid)': {
-		categorie: 'non-personnel',
-		justification: 'agrégats anonymes d’usage d’un modèle de message'
-	},
-	'get_templates_for_context(p_trigger_type text, p_class_id uuid)': {
-		categorie: 'non-personnel',
-		justification: 'modèle de message actif (contenu), aucune donnée d’élève'
 	},
 	'get_tournament_details(p_tournament_id uuid)': {
 		categorie: 'non-personnel',

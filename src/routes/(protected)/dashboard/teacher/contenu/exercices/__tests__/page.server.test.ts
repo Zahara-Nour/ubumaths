@@ -23,7 +23,8 @@ vi.mock('#lib/server/exercises.ts', async (importOriginal) => ({
 	deleteExercise: vi.fn()
 }));
 
-const { deleteExercise, EXERCISE_NOT_DELETED } = await import('#lib/server/exercises.ts');
+const { deleteExercise, EXERCISE_NOT_DELETED, ExerciseCitedError } =
+	await import('#lib/server/exercises.ts');
 const { actions } = await import('../+page.server');
 
 type DeleteAction = (event: unknown) => Promise<unknown>;
@@ -52,6 +53,31 @@ describe('action delete', () => {
 
 		expect(result).toMatchObject({ status: 403 });
 		expect(result).not.toMatchObject({ success: true });
+	});
+
+	it('L113 : exercice cité par 3 séances → 409, le message les compte', async () => {
+		vi.mocked(deleteExercise).mockResolvedValue({ error: new ExerciseCitedError(3) });
+
+		const result = await (actions.delete as DeleteAction)(deleteEvent(EXERCISE_ID));
+
+		expect(result).toMatchObject({
+			status: 409,
+			data: {
+				message:
+					"Cet exercice est cité dans 3 séances du cahier de texte : retirez-le d'abord de ces séances pour le supprimer."
+			}
+		});
+	});
+
+	it('L113 : compte illisible → 409 sans nombre', async () => {
+		vi.mocked(deleteExercise).mockResolvedValue({ error: new ExerciseCitedError(null) });
+
+		const result = await (actions.delete as DeleteAction)(deleteEvent(EXERCISE_ID));
+
+		expect(result).toMatchObject({
+			status: 409,
+			data: { message: expect.stringContaining('des séances du cahier de texte') }
+		});
 	});
 
 	it('suppression effective → succès', async () => {

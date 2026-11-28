@@ -1,0 +1,533 @@
+{
+	"id": "fc2ea212-c23b-407a-b4b7-6f3a48b40ef5",
+	"title": "Intégration par parties",
+	"description": "∫ₐᵇ u v′ = [uv]ₐᵇ − ∫ₐᵇ u′v : x eˣ, ln x, x ln x, x e⁻ˣ en valeur exacte (spécialité seulement)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|1|{{if:a==2|e^{2}+1|{{eval:a-1}}e^{ {{a}} }+1}}}}"
+				}
+			],
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{0}^{{{a}}}x\\,e^{x}\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u(x)=x$, $v'(x)=e^{x}$ : $u'(x)=1$, $v(x)=e^{x}$.",
+					"$\\displaystyle\\int_{0}^{{{a}}}x\\,e^{x}\\,\\mathrm{d}x=\\big[x\\,e^{x}\\big]_0^{ {{a}} }-\\displaystyle\\int_{0}^{{{a}}}e^{x}\\,\\mathrm{d}x={{if:a==1|e|{{a}}e^{ {{a}} }}}-\\left({{if:a==1|e|e^{ {{a}} }}}-1\\right)=\\textcolor{{{color:primary.0}}}{{{if:a==1|1|{{if:a==2|e^{2}+1|{{eval:a-1}}e^{ {{a}} }+1}}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{1}^{e}\\ln(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"correction": {
+				"steps": [
+					"On pose $u(x)=\\ln(x)$, $v'(x)=1$ : $u'(x)=\\dfrac{1}{x}$, $v(x)=x$.",
+					"$\\displaystyle\\int_{1}^{e}\\ln(x)\\,\\mathrm{d}x=\\big[x\\ln(x)\\big]_1^{e}-\\displaystyle\\int_{1}^{e}1\\,\\mathrm{d}x=e-(e-1)=\\textcolor{{{color:primary.0}}}{1}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{e^2+1}{4}"
+				}
+			],
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{1}^{e}x\\ln(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"correction": {
+				"steps": [
+					"On pose $u(x)=\\ln(x)$, $v'(x)=x$ : $u'(x)=\\dfrac{1}{x}$, $v(x)=\\dfrac{x^2}{2}$.",
+					"$\\displaystyle\\int_{1}^{e}x\\ln(x)\\,\\mathrm{d}x=\\left[\\dfrac{x^2}{2}\\ln(x)\\right]_1^{e}-\\displaystyle\\int_{1}^{e}\\dfrac{x}{2}\\,\\mathrm{d}x=\\dfrac{e^2}{2}-\\dfrac{e^2-1}{4}=\\textcolor{{{color:primary.0}}}{\\dfrac{e^2+1}{4}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1-\\frac{2}{e}"
+				}
+			],
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{0}^{1}x\\,e^{-x}\\,\\mathrm{d}x$.\n\n$?$",
+			"correction": {
+				"steps": [
+					"On pose $u(x)=x$, $v'(x)=e^{-x}$ : $u'(x)=1$, $v(x)=-e^{-x}$.",
+					"$\\displaystyle\\int_{0}^{1}x\\,e^{-x}\\,\\mathrm{d}x=\\big[-x\\,e^{-x}\\big]_0^1+\\displaystyle\\int_{0}^{1}e^{-x}\\,\\mathrm{d}x=-e^{-1}+\\left(1-e^{-1}\\right)=\\textcolor{{{color:primary.0}}}{1-\\dfrac{2}{e}}$."
+				]
+			}
+		},
+		{
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{0}^{1}\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}\\right)e^{{{if:k==1|x|{{if:k==-1|-x|{{k}}x}}}}}\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1|2;±"
+				}
+			],
+			"conditions": ["(a+b)*k-a != 0", "a-b*k != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/k^2-b/k}}{{if:(a+b)*k-a==k*k|+|{{if:(a+b)*k-a==-k*k|-|{{eval:(a+b)/k-a/k^2;+}}}}}}{{if:k==1|e|e^{ {{k}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-b/k}}{{eval:(a+b)/k;+}}{{if:k==1|e|e^{ {{k}} }}}",
+							"message": "Tu as oublié le second terme : $\\displaystyle\\int u'v=\\big[uv\\big]-\\int uv'$.",
+							"label": "Intégrale oubliée"
+						},
+						{
+							"answer": "{{eval:-a/k^2-b/k}}{{eval:(a+b)/k+a/k^2;+}}{{if:k==1|e|e^{ {{k}} }}}",
+							"message": "Attention au signe : $\\displaystyle\\int_0^1 u v'=\\big[uv\\big]_0^1-\\int_0^1 u'v$, avec un moins devant la seconde intégrale.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}$ et $v'(x)=e^{{{if:k==1|x|{{if:k==-1|-x|{{k}}x}}}}}$ : $u'(x)={{a}}$ et $v(x)={{if:k==1||{{if:k==-1|-|{{eval:1/k}}}}}}e^{{{if:k==1|x|{{if:k==-1|-x|{{k}}x}}}}}$.",
+					"$\\displaystyle\\int_{0}^{1}u v'=\\big[u v\\big]_0^1-\\int_0^1 u'v=\\left[{{if:k==1||{{if:k==-1|-|{{eval:1/k}}}}}}\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}\\right)e^{{{if:k==1|x|{{if:k==-1|-x|{{k}}x}}}}}\\right]_0^1-{{eval:a/k;()}}\\int_0^1e^{{{if:k==1|x|{{if:k==-1|-x|{{k}}x}}}}}\\,\\mathrm{d}x$.",
+					"$=\\left({{eval:(a+b)/k}}{{if:k==1|e|e^{ {{k}} }}}{{eval:-b/k;+}}\\right)-{{eval:a/k^2;()}}\\left({{if:k==1|e|e^{ {{k}} }}}-1\\right)=\\textcolor{{{color:primary.0}}}{{{eval:a/k^2-b/k}}{{if:(a+b)*k-a==k*k|+|{{if:(a+b)*k-a==-k*k|-|{{eval:(a+b)/k-a/k^2;+}}}}}}{{if:k==1|e|e^{ {{k}} }}}}$."
+				]
+			},
+			"hint": "Dérive le facteur affine et cherche une primitive de l'exponentielle (attention au facteur $\\dfrac{1}{ {{k}} }$)."
+		},
+		{
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{0}^{\\frac{\\pi}{2}}\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}\\right)\\cos(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["b != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|\\frac{\\pi}{2}}}{{if:a==-1|-\\frac{\\pi}{2}}}{{if:a==2|\\pi}}{{if:a==-2|-\\pi}}{{if:a==3|\\frac{3\\pi}{2}}}{{if:a==-3|-\\frac{3\\pi}{2}}}{{eval:b-a;+}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:a==1|\\frac{\\pi}{2}}}{{if:a==-1|-\\frac{\\pi}{2}}}{{if:a==2|\\pi}}{{if:a==-2|-\\pi}}{{if:a==3|\\frac{3\\pi}{2}}}{{if:a==-3|-\\frac{3\\pi}{2}}}{{b;+}}",
+							"message": "Tu as oublié le second terme : $\\displaystyle\\int u'v=\\big[uv\\big]-\\int uv'$.",
+							"label": "Intégrale oubliée"
+						},
+						{
+							"answer": "{{if:a==1|\\frac{\\pi}{2}}}{{if:a==-1|-\\frac{\\pi}{2}}}{{if:a==2|\\pi}}{{if:a==-2|-\\pi}}{{if:a==3|\\frac{3\\pi}{2}}}{{if:a==-3|-\\frac{3\\pi}{2}}}{{eval:b+a;+}}",
+							"message": "Une primitive de $\\sin$ est $-\\cos$ : $\\displaystyle\\int_0^{\\frac{\\pi}{2}}\\sin(x)\\,\\mathrm{d}x=1$, et le second terme est retranché.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}$ et $v'(x)=\\cos(x)$ : $u'(x)={{a}}$ et $v(x)=\\sin(x)$.",
+					"$\\displaystyle\\int_{0}^{\\frac{\\pi}{2}}u v'=\\left[\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}\\right)\\sin(x)\\right]_0^{\\frac{\\pi}{2}}-{{a;()}}\\int_0^{\\frac{\\pi}{2}}\\sin(x)\\,\\mathrm{d}x=\\left({{if:a==1|\\frac{\\pi}{2}}}{{if:a==-1|-\\frac{\\pi}{2}}}{{if:a==2|\\pi}}{{if:a==-2|-\\pi}}{{if:a==3|\\frac{3\\pi}{2}}}{{if:a==-3|-\\frac{3\\pi}{2}}}{{b;+}}\\right)-{{a;()}}\\big[-\\cos(x)\\big]_0^{\\frac{\\pi}{2}}$.",
+					"$=\\left({{if:a==1|\\frac{\\pi}{2}}}{{if:a==-1|-\\frac{\\pi}{2}}}{{if:a==2|\\pi}}{{if:a==-2|-\\pi}}{{if:a==3|\\frac{3\\pi}{2}}}{{if:a==-3|-\\frac{3\\pi}{2}}}{{b;+}}\\right)-{{a;()}}\\times 1=\\textcolor{{{color:primary.0}}}{{{if:a==1|\\frac{\\pi}{2}}}{{if:a==-1|-\\frac{\\pi}{2}}}{{if:a==2|\\pi}}{{if:a==-2|-\\pi}}{{if:a==3|\\frac{3\\pi}{2}}}{{if:a==-3|-\\frac{3\\pi}{2}}}{{eval:b-a;+}}}$."
+				]
+			},
+			"hint": "Dérive le facteur affine et prends une primitive de $\\cos$ ; n'oublie pas le moins devant la seconde intégrale."
+		},
+		{
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{1}^{e}\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}\\right)\\ln(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2|4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["a+4*b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a/4==1||{{if:a/4==-1|-|{{eval:a/4}}}}}}e^{2}{{eval:a/4+b;+}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:a/2==1||{{if:a/2==-1|-|{{eval:a/2}}}}}}e^2{{if:b==1|+|{{if:b==-1|-|{{eval:b;+}}}}}}e",
+							"message": "Tu as oublié le second terme : $\\displaystyle\\int u'v=\\big[uv\\big]-\\int uv'$.",
+							"label": "Intégrale oubliée"
+						},
+						{
+							"answer": "{{if:a/2==1||{{if:a/2==-1|-|{{eval:a/2}}}}}}e^{2}{{eval:a/4+b;+}}",
+							"message": "Le crochet vaut $\\left[\\left({{eval:a/2*x^2+b*x}}\\right)\\ln(x)\\right]_1^e={{if:a/2==1||{{if:a/2==-1|-|{{eval:a/2}}}}}}e^2{{if:b==1|+|{{if:b==-1|-|{{eval:b;+}}}}}}e$ : vérifie le calcul de $\\displaystyle\\int_1^e\\left({{eval:a/2*x+b}}\\right)\\mathrm{d}x$.",
+							"label": "Seconde intégrale"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u'(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}$ et $v(x)=\\ln(x)$ : $u(x)={{eval:a/2*x^2+b*x}}$ et $v'(x)=\\dfrac{1}{x}$ (on dérive le logarithme).",
+					"$\\displaystyle\\int_1^e u'v=\\left[\\left({{eval:a/2*x^2+b*x}}\\right)\\ln(x)\\right]_1^e-\\int_1^e\\left({{eval:a/2*x+b}}\\right)\\mathrm{d}x=\\left({{if:a/2==1||{{if:a/2==-1|-|{{eval:a/2}}}}}}e^2{{if:b==1|+|{{if:b==-1|-|{{eval:b;+}}}}}}e\\right)-\\left[{{eval:a/4*x^2+b*x}}\\right]_1^e$.",
+					"$=\\left({{if:a/2==1||{{if:a/2==-1|-|{{eval:a/2}}}}}}e^2{{if:b==1|+|{{if:b==-1|-|{{eval:b;+}}}}}}e\\right)-\\left({{if:a/4==1||{{if:a/4==-1|-|{{eval:a/4}}}}}}e^2{{if:b==1|+|{{if:b==-1|-|{{eval:b;+}}}}}}e{{eval:-a/4-b;+}}\\right)=\\textcolor{{{color:primary.0}}}{{{if:a/4==1||{{if:a/4==-1|-|{{eval:a/4}}}}}}e^{2}{{eval:a/4+b;+}}}$."
+				]
+			},
+			"hint": "Ici, c'est le logarithme qu'il faut dériver : prends une primitive du facteur affine."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v0 : a=1 → 1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v0 : a=1, oubli de −∫u′v",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^2+1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : a=2 → e² + 1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3e^2-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : a=2, signe du crochet",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v1 : 1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v1 : crochet seul",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v1 : e − 1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{e^2+1}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v2 : (e²+1)/4",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{e^2}{4}+\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v2 : forme développée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{e^2}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v2 : crochet seul e²/2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{3e^2-1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v2 : signe faux",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1-\\frac{2}{e}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v3 : 1 − 2/e",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1-2e^{-1}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v3 : 1 − 2e^{−1}",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{2}{e}-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v3 : v = e^{−x} (signe)",
+			"variationIndex": 3
+		},
+		{
+			"description": "F9a : (2x + 1)eˣ → e + 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["e+1"]
+		},
+		{
+			"description": "F9a : intégrale oubliée",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3e-1"]
+		},
+		{
+			"description": "F9a : signe",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5e-3"]
+		},
+		{
+			"description": "F9a : (x − 1)e^(2x) → −e²/4 + 3/4",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{1}{4}e^{2}+\\frac{3}{4}"]
+		},
+		{
+			"description": "F9a : forme factorisée acceptée",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3-e^2}{4}"]
+		},
+		{
+			"description": "F9a : 2e − 1 dans l'ordre de l'élève",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2e-1"]
+		},
+		{
+			"description": "F9a : 2e − 1 avec \\exponentialE",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\exponentialE-1"]
+		},
+		{
+			"description": "F9b : (2x + 3)cos x → π + 1",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\pi+1"]
+		},
+		{
+			"description": "F9b : intégrale oubliée",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\pi+3"]
+		},
+		{
+			"description": "F9b : signe",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\pi+5"]
+		},
+		{
+			"description": "F9b : (−x + 2)cos x → −π/2 + 3",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-1",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3-\\frac{\\pi}{2}"]
+		},
+		{
+			"description": "F9c : (2x + 1)ln x → e²/2 + 3/2",
+			"variationIndex": 6,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{e^2+3}{2}"]
+		},
+		{
+			"description": "F9c : intégrale oubliée",
+			"variationIndex": 6,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["e^2+e"]
+		},
+		{
+			"description": "F9c : seconde intégrale",
+			"variationIndex": 6,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["e^2+\\frac{3}{2}"]
+		},
+		{
+			"description": "F9c : (−4x + 3)ln x → −e² + 2",
+			"variationIndex": 6,
+			"variables": {
+				"a": "-4",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2-e^2"]
+		}
+	]
+}

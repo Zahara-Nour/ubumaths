@@ -16,7 +16,7 @@ export const solideEntry: BlockCatalogEntry = {
 	summary:
 		'Un cube, un pavé, un prisme, une pyramide, un cylindre, un cône ou une boule dessiné en perspective cavalière, arêtes cachées en tirets : pour reconnaître et nommer un solide, repérer ses faces, ses arêtes et ses sommets, lire ses dimensions.',
 	intro:
-		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse.',
+		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse. Avec tourner: oui, l’élève peut faire tourner le solide à l’écran pour voir comment ses points, ses arêtes et ses vecteurs sont disposés ; sans cette ligne, la figure est fixe. À l’écran, un bouton « Agrandir » sous la figure l’ouvre en grand (sauf dans un choix à cocher et sur une figure à geste).',
 	settingGroups: [
 		{
 			settings: [
@@ -66,10 +66,11 @@ export const solideEntry: BlockCatalogEntry = {
 				},
 				{
 					key: 'points',
-					values: 'I milieu AE | O centre ABCD | O centre ABCDEFGH (séparés par des virgules)',
+					values:
+						'I milieu AE | O centre ABCD | O centre ABCDEFGH | M (1 ; 0,5 ; 1) | K intersection (IG) (BDE) (séparés par des virgules)',
 					defaultValue: null,
 					description:
-						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. Les sommets doivent être nommés ; au plus 8 points.'
+						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. M (1 ; 0,5 ; 1) : le point par ses coordonnées dans le repère de repere: (nombres séparés par des points-virgules, virgule ou point pour les décimales, au plus 3 chiffres après la virgule, négatifs permis) ; il doit rester dans le solide, ou tout près. K intersection (IG) (BDE) : le point où la droite (IG) perce le plan (BDE) ; K intersection (AG) (BH) : le point où deux droites se croisent. La droite et le plan n’ont pas besoin d’être dessinés ; refusé quand ils ne se coupent pas en un seul point (parallèles, droite dans le plan, droites qui ne se rencontrent pas), quand le point tombe loin du solide, et avec section: ou tracer:. Les sommets doivent être nommés ; au plus 8 points.'
 				},
 				{
 					key: 'vecteurs',
@@ -79,11 +80,53 @@ export const solideEntry: BlockCatalogEntry = {
 						'Cube, pavé, prisme, pyramide : des flèches entre deux points nommés (sommets ou points de points:). u = AE écrit la lettre u près de la flèche, sous une petite flèche (une minuscule, puis éventuellement un chiffre). Les flèches sont en trait plein, même à travers le solide. Au plus 8 vecteurs.'
 				},
 				{
+					key: 'droites',
+					values: '(AG) | d = (IG) (séparées par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : des droites qui passent par deux points nommés (sommets ou points de points:), dessinées en bleu. Chaque droite traverse le solide et le dépasse un peu des deux côtés. Elle est en tirets là où une face du solide passe devant elle, en trait plein ailleurs ; avec cachees: non, en trait plein partout. d = (IG) écrit (d) près d’un bout de la droite (une minuscule, puis éventuellement un chiffre ou ’). Les parenthèses sont facultatives. Les sommets doivent être nommés ; au plus 4 droites. Le lecteur d’écran lit « droite (IG) », jamais si deux droites se coupent ou sont parallèles : ce peut être la réponse. Pas encore avec section: ni tracer:.'
+				},
+				{
+					key: 'segments',
+					values: '[AG] | [EG], [AG] (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : des segments entre deux points nommés (sommets ou points de points:), dessinés en bleu d’un point à l’autre, comme la diagonale [AG] d’un cube. Un segment est en tirets là où une face du solide passe devant lui, en trait plein ailleurs ; avec cachees: non, en trait plein partout. Une arête ne se donne pas en segment : marquer: arete AE la trace épaisse. Les crochets sont facultatifs. Les sommets doivent être nommés ; au plus 6 segments. Le lecteur d’écran lit « segment [AG] », jamais sa longueur : ce peut être la réponse. Pas encore avec section: ni tracer:.'
+				},
+				{
+					key: 'angles-droits',
+					values: 'AEG | AEG, SOA (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : code un angle droit par un petit carré bleu, au sommet de l’angle, la lettre du milieu (AEG : l’angle droit en E, entre [EA] et [EG]). Le carré est dans le plan des trois points : en perspective, il devient un petit losange penché. Il est en tirets là où une face du solide passe devant lui. L’angle doit être droit dans le solide, sinon le bloc le refuse. Au plus 3 angles droits. Le lecteur d’écran lit « angle droit en E ». Pas encore avec section: ni tracer:.'
+				},
+				{
+					key: 'plans',
+					values: '(BDE) | P = (ACG) (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : des plans qui passent par trois points nommés non alignés (sommets ou points de points:). On voit la partie du plan qui est dans le solide, teintée : le triangle BDE pour (BDE) dans un cube ; un plan qui contient une face teinte cette face. Le bord est en tirets là où une face du solide passe devant lui, en trait plein ailleurs ; avec cachees: non, en trait plein partout. P = (BDE) écrit (P) dans le plan (une majuscule qui n’est pas le nom d’un point, puis éventuellement un chiffre ou ’). Les parenthèses sont facultatives. Le premier plan est vert, le second violet ; au plus 2 plans. Va avec droites: ; le point où une droite perce un plan n’est pas dessiné : ce peut être la réponse. Le lecteur d’écran lit « plan (BDE) », jamais une position relative. Pas encore avec section: ni tracer:.'
+				},
+				{
+					key: 'repere',
+					values: 'A ; AB, AD, AE',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : le repère du solide. Une origine, un point-virgule, puis trois vecteurs qui partent de cette origine et ne sont pas dans un même plan (sommets, ou points de points: déclarés par milieu ou centre avant tout point à coordonnées). Les trois vecteurs sont dessinés en flèches depuis l’origine. Le repère permet de déclarer un point par ses coordonnées dans points: (M (1 ; 0,5 ; 1)), qui sert ensuite comme un autre point dans vecteurs:, droites: et plans:. Les parenthèses autour sont facultatives. Le lecteur d’écran lit « repère d’origine A ». Pas encore avec section: ni tracer:.'
+				},
+				{
 					key: 'tracer',
 					values: 'vecteur AB + AD + AE | vecteur AB + AD depuis A | vecteur 2 u - v',
 					defaultValue: null,
 					description:
 						'Geste de l’élève, dans une question : il touche un point pour l’origine, puis un point pour l’extrémité, et une flèche se dessine. La combinaison : au plus 6 vecteurs entre points nommés, ou nommés dans vecteurs: (2 u - v), signes + et -, coefficients entiers ou fractions irréductibles de dénominateur 2, 3 ou 4 (2 AB, 1/2 AE, 1/3 SA). depuis A impose l’origine (posée d’office, l’élève ne touche que l’extrémité) ; sans lui, tout représentant du vecteur est juste. Les points à toucher : les sommets nommés, puis les points de points: (pas de milieux automatiques) ; l’extrémité doit tomber sur l’un d’eux. Polyèdres seulement, sommets nommés. Faux : une phrase, et la flèche juste en vert. Réponse de la case : les noms des deux points (A/G).'
+				},
+				{
+					key: 'tourner',
+					values: 'oui | non',
+					defaultValue: 'non',
+					description:
+						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Cylindre, cône, boule : la figure part du dessin à plat ; basculer ouvre les ovales jusqu’au cercle (vue de dessus), le bord caché est recalculé, les deux traits du cône disparaissent quand le sommet passe dans l’ovale ; tourner à gauche ou à droite ne change rien, un solide rond a le même aspect tout autour de son axe. Solide coté (cotes:) : les longueurs écrites ne se voient qu’à la vue de départ, elles s’effacent dès que la figure tourne ; les traits en tirets qui les accompagnent (hauteur d’une pyramide, rayon) restent et tournent. Solide coupé (section:) : la section, toujours teintée avec son contour épais, tourne avec le solide ; le rectangle d’un cylindre coupé parallèlement à son axe tourne autour de l’axe. Avec tracer: (vecteur à tracer) : toucher un point sans glisser le pose, glisser tourne la figure, même si le doigt part d’un point ; la flèche de l’élève suit, tourner ne change pas sa réponse. Deux points au même endroit de l’écran : le toucher pose celui de devant. Après la correction, la figure de l’élève et celle de la correction tournent encore, chacune de son côté.'
 				}
 			]
 		}
@@ -224,6 +267,137 @@ export const solideEntry: BlockCatalogEntry = {
 				'Les vecteurs u, v, w sont dessinés et nommés ; l’élève touche l’extrémité, ici G, le centre de gravité de ABC. Une phrase de correction écrit la combinaison avec u, v, w.'
 		},
 		{
+			title: 'Un pavé que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: pave 4 2 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu CG',
+				'vecteurs: AG, u = AI',
+				'tourner: oui'
+			),
+			explanation:
+				'Faire glisser la figure la fait tourner : on voit que les flèches AG et AI ne sont pas dans une même face. « Vue de départ » revient à la perspective cavalière.'
+		},
+		{
+			title: 'Un cône que l’élève peut tourner',
+			source: fence('solide', 'forme: cone 2 4', 'sommets: S O', 'tourner: oui'),
+			explanation:
+				'Faire glisser la figure vers le bas montre le cône de dessus : l’ovale de la base s’ouvre, puis les deux traits disparaissent quand le sommet passe au-dessus du disque. Vers le haut, on le voit par-dessous.'
+		},
+		{
+			title: 'Un pavé coupé et coté que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: pave 4 2 3',
+				'sommets: A B C D E F G H',
+				'section: parallele dessus 1 IJKL',
+				'cotes: cm',
+				'tourner: oui'
+			),
+			explanation:
+				'Au départ, les longueurs sont écrites. Dès que la figure tourne, elles s’effacent ; la section IJKL suit le pavé. « Vue de départ » les fait revenir.'
+		},
+		{
+			title: 'Un cylindre coupé parallèlement à son axe, à tourner',
+			source: fence('solide', 'forme: cylindre 2 4', 'section: parallele 1', 'tourner: oui'),
+			explanation:
+				'Faire glisser la figure de côté fait tourner le rectangle autour de l’axe : de face on le voit en vraie grandeur, de profil il se réduit à un trait.'
+		},
+		{
+			title: 'Un vecteur à tracer sur un pavé que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: pave 4 2 3',
+				'sommets: A B C D E F G H',
+				'tracer: vecteur AB + AD + AE depuis A',
+				'tourner: oui'
+			),
+			explanation:
+				'Toucher un point pose l’extrémité ; faire glisser le doigt tourne le pavé, même en partant d’un point. La flèche tracée suit la rotation : on voit que AG traverse le pavé.'
+		},
+		{
+			title: 'Deux droites dans un cube que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE',
+				'droites: d = (IG), (BH)',
+				'tourner: oui'
+			),
+			explanation:
+				'Pour « les droites (IG) et (BH) sont-elles sécantes ? » : chaque droite est en tirets dans le cube, en trait plein dehors. En tournant la figure, l’élève voit si elles se croisent vraiment.'
+		},
+		{
+			title: 'Une droite et un plan dans un cube que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE',
+				'droites: (IG)',
+				'plans: P = (BDE)',
+				'tourner: oui'
+			),
+			explanation:
+				'Pour « la droite (IG) et le plan (BDE) sont-ils sécants ? » : le plan est montré par sa partie dans le cube, le triangle BDE. Le point où la droite le perce n’est pas dessiné ; en tournant la figure, l’élève voit la droite traverser le plan.'
+		},
+		{
+			title: 'Un repère du cube et un point par ses coordonnées',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'repere: A ; AB, AD, AE',
+				'points: M (1 ; 0,5 ; 1)',
+				'droites: (AM)',
+				'tourner: oui'
+			),
+			explanation:
+				'Dans le repère (A ; AB, AD, AE), M a pour coordonnées (1 ; 0,5 ; 1) : c’est le milieu de [FG]. Les trois flèches partent de A ; le point sert à la droite (AM) comme un sommet.'
+		},
+		{
+			title: 'Le point où une droite perce un plan',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE, K intersection (IG) (BDE)',
+				'droites: (IG)',
+				'plans: P = (BDE)',
+				'tourner: oui'
+			),
+			explanation:
+				'Pour un corrigé, ou une question qui part de K : le point d’intersection de la droite (IG) et du plan (BDE) est marqué et nommé. Sans intersection dans points:, il n’est jamais dessiné.'
+		},
+		{
+			title: 'Une diagonale du cube et son triangle rectangle',
+			source: fence(
+				'solide',
+				'forme: cube 5',
+				'sommets: A B C D E F G H',
+				'segments: [HF], [DF]',
+				'angles-droits: DHF',
+				'cotes: cm'
+			),
+			explanation:
+				'Pour calculer DF avec Pythagore : [HF] est la diagonale de la face du dessus, [DF] traverse le cube, en tirets. Le triangle DHF est rectangle en H. La diagonale [AG] se dessinerait sur l’arête [FG] : dans un cube en perspective cavalière, elle passe par F.'
+		},
+		{
+			title: 'La demi-diagonale d’une pyramide',
+			source: fence(
+				'solide',
+				'forme: pyramide carree 4 3',
+				'sommets: S A B C D',
+				'points: O centre ABCD',
+				'segments: [SO], [OA]',
+				'angles-droits: SOA'
+			),
+			explanation:
+				'O, le centre de la base, est le pied de la hauteur [SO] ; le triangle SOA est rectangle en O : de quoi calculer l’arête [SA].'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -288,6 +462,78 @@ export const solideEntry: BlockCatalogEntry = {
 			),
 			message: 'écrire 1/2',
 			explanation: 'La phrase de correction reprend l’écriture : 1/2 AE.'
+		},
+		{
+			title: 'La même droite écrite deux fois',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: O centre ABCDEFGH',
+				'droites: (AG), (AO)'
+			),
+			message: 'même droite',
+			explanation: 'O, le centre du cube, est sur (AG) : (AO) et (AG) sont une seule droite.'
+		},
+		{
+			title: 'Une arête donnée en segment',
+			source: fence('solide', 'forme: cube 2', 'sommets: A B C D E F G H', 'segments: [AE]'),
+			message: 'est une arête',
+			explanation: 'Pour faire ressortir une arête : marquer: arete AE.'
+		},
+		{
+			title: 'Un angle qui n’est pas droit',
+			source: fence('solide', 'forme: cube 2', 'sommets: A B C D E F G H', 'angles-droits: AGE'),
+			message: 'n’est pas droit',
+			explanation:
+				'Dans le triangle AEG, l’angle droit est en E : la lettre du milieu est le sommet de l’angle (AEG).'
+		},
+		{
+			title: 'Trois points alignés pour un plan',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE',
+				'plans: (AIE)'
+			),
+			message: 'alignés',
+			explanation:
+				'I est le milieu de [AE] : A, I et E sont sur une même droite, ils ne donnent pas un plan.'
+		},
+		{
+			title: 'Un repère dont les trois vecteurs sont dans un même plan',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'repere: A ; AB, AD, AC'
+			),
+			message: 'même plan',
+			explanation:
+				'AB, AD et AC sont tous les trois dans la face ABCD : il faut un vecteur qui en sort, comme AE.'
+		},
+		{
+			title: 'Une droite parallèle au plan',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: K intersection (EG) (ABC)'
+			),
+			message: 'ne se coupent pas en un seul point',
+			explanation: 'La droite (EG) est parallèle au plan (ABC) : il n’y a pas de point à marquer.'
+		},
+		{
+			title: 'Des coordonnées sans repère',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: M (1 ; 0,5 ; 1)'
+			),
+			message: 'demandent un repère',
+			explanation: 'Les coordonnées se lisent dans un repère : ajoute repere: A ; AB, AD, AE.'
 		},
 		{
 			title: 'Un plan qui ne coupe pas le solide',

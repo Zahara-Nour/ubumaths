@@ -1,0 +1,503 @@
+{
+	"id": "63791bb6-782b-46c4-b57f-7b10921f6b99",
+	"title": "Rang à partir duquel une suite est monotone",
+	"description": "Plus petit N tel que la suite est croissante (ou décroissante) à partir du rang N : u(n+1) − u(n) = cn + d donnée, u(n) = an² + bn + c, ou u(n+1) = u(n) + cn + d (pièges : arrondi inférieur, décalage d'un rang, racine non entière donnée)",
+	"grades": ["1_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{c}}n-{{m}}$$\n\nQuel est le plus petit entier naturel $N$ tel que la suite $(u_n)$ est croissante à partir du rang $N$, c'est-à-dire tel que $u_{n+1}\\geqslant u_n$ pour tout entier $n\\geqslant N$ ?\n\n$N=?$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				},
+				{
+					"name": "r",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "eval:c*(N-1)+r"
+				}
+			],
+			"conditions": ["r < c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N-1}}",
+							"message": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore négatif.",
+							"label": "Arrondi à l'entier inférieur"
+						},
+						{
+							"answer": "{{eval:N+1}}",
+							"message": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{eval:m/c}}",
+							"message": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier.",
+							"label": "Racine non entière donnée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche les entiers $n$ tels que $u_{n+1}-u_n\\geqslant0$ : ${{c}}n-{{m}}\\geqslant0\\iff n\\geqslant{{eval:m/c}}$.",
+					"${{eval:N-1}}<{{eval:m/c}}<{{N}}$ : pour $n={{eval:N-1}}$, $u_{n+1}-u_n=-{{r}}<0$, et pour tout $n\\geqslant{{N}}$, $u_{n+1}-u_n>0$.",
+					"Le plus petit entier cherché est $N=\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			},
+			"hint": "Cherche pour quels entiers $n$ la différence $u_{n+1}-u_n$ a le signe voulu, en résolvant une inéquation."
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{m}}-{{c}}n$$\n\nQuel est le plus petit entier naturel $N$ tel que la suite $(u_n)$ est décroissante à partir du rang $N$, c'est-à-dire tel que $u_{n+1}\\leqslant u_n$ pour tout entier $n\\geqslant N$ ?\n\n$N=?$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				},
+				{
+					"name": "r",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "eval:c*(N-1)+r"
+				}
+			],
+			"conditions": ["r < c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N-1}}",
+							"message": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore positif.",
+							"label": "Arrondi à l'entier inférieur"
+						},
+						{
+							"answer": "{{eval:N+1}}",
+							"message": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{eval:m/c}}",
+							"message": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier.",
+							"label": "Racine non entière donnée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche les entiers $n$ tels que $u_{n+1}-u_n\\leqslant0$ : ${{m}}-{{c}}n\\leqslant0\\iff n\\geqslant{{eval:m/c}}$.",
+					"${{eval:N-1}}<{{eval:m/c}}<{{N}}$ : pour $n={{eval:N-1}}$, $u_{n+1}-u_n={{r}}>0$, et pour tout $n\\geqslant{{N}}$, $u_{n+1}-u_n<0$.",
+					"Le plus petit entier cherché est $N=\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			},
+			"hint": "Cherche pour quels entiers $n$ la différence $u_{n+1}-u_n$ a le signe voulu, en résolvant une inéquation."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}n^2{{b;+}}n{{k;+}}$.\n\nQuel est le plus petit entier naturel $N$ tel que la suite $(u_n)$ est croissante à partir du rang $N$, c'est-à-dire tel que $u_{n+1}\\geqslant u_n$ pour tout entier $n\\geqslant N$ ?\n\n$N=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "N",
+					"expression": "2..6"
+				},
+				{
+					"name": "r",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a-2*a*(N-1)-r"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a+b"
+				}
+			],
+			"conditions": ["r < 2*a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N-1}}",
+							"message": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore négatif.",
+							"label": "Arrondi à l'entier inférieur"
+						},
+						{
+							"answer": "{{eval:N+1}}",
+							"message": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{eval:-d/(2*a)}}",
+							"message": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier.",
+							"label": "Racine non entière donnée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule $u_{n+1}-u_n={{if:a==1||{{a}}}}\\left((n+1)^2-n^2\\right){{b;+}}\\left((n+1)-n\\right)={{if:a==1||{{a}}}}(2n+1){{b;+}}={{eval:2*a}}n{{d;+}}$.",
+					"$u_{n+1}-u_n\\geqslant0\\iff n\\geqslant{{eval:-d/(2*a)}}$, et ${{eval:N-1}}<{{eval:-d/(2*a)}}<{{N}}$ : pour $n={{eval:N-1}}$, $u_{n+1}-u_n=-{{r}}<0$, et pour tout $n\\geqslant{{N}}$, $u_{n+1}-u_n>0$.",
+					"Le plus petit entier cherché est $N=\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			},
+			"hint": "Exprime d'abord $u_{n+1}-u_n$ en fonction de $n$, en développant $(n+1)^2$, puis cherche à partir de quel $n$ elle est positive."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n+{{c}}n-{{m}}$.\n\nQuel est le plus petit entier naturel $N$ tel que la suite $(u_n)$ est croissante à partir du rang $N$, c'est-à-dire tel que $u_{n+1}\\geqslant u_n$ pour tout entier $n\\geqslant N$ ?\n\n$N=?$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				},
+				{
+					"name": "r",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "eval:c*(N-1)+r"
+				},
+				{
+					"name": "u0",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["r < c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N-1}}",
+							"message": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore négatif.",
+							"label": "Arrondi à l'entier inférieur"
+						},
+						{
+							"answer": "{{eval:N+1}}",
+							"message": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{eval:m/c}}",
+							"message": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier.",
+							"label": "Racine non entière donnée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La relation donne directement $u_{n+1}-u_n={{c}}n-{{m}}$ : la valeur de $u_0$ ne sert pas.",
+					"${{c}}n-{{m}}\\geqslant0\\iff n\\geqslant{{eval:m/c}}$, et ${{eval:N-1}}<{{eval:m/c}}<{{N}}$ : pour $n={{eval:N-1}}$, $u_{n+1}-u_n=-{{r}}<0$, et pour tout $n\\geqslant{{N}}$, $u_{n+1}-u_n>0$.",
+					"Le plus petit entier cherché est $N=\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			},
+			"hint": "Isole $u_{n+1}-u_n$ dans la relation, puis cherche à partir de quel $n$ cette différence est positive."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4n − 30 : N = 8",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"c": "4",
+				"r": "2",
+				"m": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "Erreur prévue : 7 (arrondi inférieur)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"c": "4",
+				"r": "2",
+				"m": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore négatif."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "Erreur prévue : 9 (décalage)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"c": "4",
+				"r": "2",
+				"m": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "Erreur prévue : 7,5 (racine)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"c": "4",
+				"r": "2",
+				"m": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier."
+			},
+			"answers": ["7,5"]
+		},
+		{
+			"description": "Erreur prévue : 15/2 (racine en fraction)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"c": "4",
+				"r": "2",
+				"m": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier."
+			},
+			"answers": ["\\frac{15}{2}"]
+		},
+		{
+			"description": "25 − 3n : N = 9",
+			"variationIndex": 1,
+			"variables": {
+				"N": "9",
+				"c": "3",
+				"r": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "Erreur prévue : 8 (arrondi inférieur)",
+			"variationIndex": 1,
+			"variables": {
+				"N": "9",
+				"c": "3",
+				"r": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore positif."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "Erreur prévue : 10 (décalage)",
+			"variationIndex": 1,
+			"variables": {
+				"N": "9",
+				"c": "3",
+				"r": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur prévue : 25/3 (racine)",
+			"variationIndex": 1,
+			"variables": {
+				"N": "9",
+				"c": "3",
+				"r": "1",
+				"m": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier."
+			},
+			"answers": ["\\frac{25}{3}"]
+		},
+		{
+			"description": "3n² − 14n + 9 : N = 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"N": "2",
+				"r": "5",
+				"k": "9",
+				"b": "-14",
+				"d": "-11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur prévue : 1 (arrondi inférieur)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"N": "2",
+				"r": "5",
+				"k": "9",
+				"b": "-14",
+				"d": "-11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore négatif."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur prévue : 3 (décalage)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"N": "2",
+				"r": "5",
+				"k": "9",
+				"b": "-14",
+				"d": "-11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur prévue : 11/6 (racine)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"N": "2",
+				"r": "5",
+				"k": "9",
+				"b": "-14",
+				"d": "-11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier."
+			},
+			"answers": ["\\frac{11}{6}"]
+		},
+		{
+			"description": "u(n+1) = u(n) + 5n − 17 : N = 4",
+			"variationIndex": 3,
+			"variables": {
+				"N": "4",
+				"c": "5",
+				"r": "2",
+				"m": "17",
+				"u0": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Erreur prévue : 3 (arrondi inférieur)",
+			"variationIndex": 3,
+			"variables": {
+				"N": "4",
+				"c": "5",
+				"r": "2",
+				"m": "17",
+				"u0": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'entier inférieur : à ce rang, $u_{n + 1} - u_n$ est encore négatif."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur prévue : 5 (décalage)",
+			"variationIndex": 3,
+			"variables": {
+				"N": "4",
+				"c": "5",
+				"r": "2",
+				"m": "17",
+				"u0": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé d'un rang : $N$ est le premier entier $n$ pour lequel la différence $u_{n + 1} - u_n$ a le bon signe."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Erreur prévue : 3,4 (racine)",
+			"variationIndex": 3,
+			"variables": {
+				"N": "4",
+				"c": "5",
+				"r": "2",
+				"m": "17",
+				"u0": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la solution de $u_{n + 1} - u_n = 0$, qui n'est pas un entier : le rang cherché est un entier."
+			},
+			"answers": ["3,4"]
+		}
+	]
+}

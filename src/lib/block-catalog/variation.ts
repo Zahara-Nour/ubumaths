@@ -120,14 +120,14 @@ export const variationEntry: BlockCatalogEntry = {
 					values: 'position : top | bottom | center',
 					defaultValue: 'aucune',
 					description:
-						'Dans une ligne « variation » : l’élève écrit la valeur de f en a (-2: ?4, top). Ni un infini ni une limite autour de || ne se cachent.'
+						'Dans une ligne « variation » : l’élève écrit la valeur de f en a (-2: ?4, top). Une limite se cache aussi, au bord (-inf: ?-inf, bottom) ou autour de || (||, ?-inf, bottom, ?+inf, top) ; la marque || elle-même, non.'
 				},
 				{
 					key: 'a,b: ?flèche',
 					values: '?flèche (ou ?fleche)',
 					defaultValue: 'aucune',
 					description:
-						'Dans une ligne « variation », entre deux valeurs voisines du domaine : l’élève choisit ↗ ou ↘. La réponse se lit sur les positions écrites : l’une en haut, l’autre en bas.'
+						'Dans une ligne « variation », entre deux valeurs voisines du domaine : l’élève choisit ↗ ou ↘. La réponse se lit sur les positions écrites : l’une en haut, l’autre en bas. À côté d’une double barre, c’est la limite du côté de la flèche qui compte, même sans valeur (||, , bottom, , top) ; elle est dessinée au milieu pour l’élève.'
 				},
 				{
 					key: '??1, ??2…',
@@ -279,6 +279,23 @@ export const variationEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'L’élève écrit le maximum 4 et choisit la flèche entre −1 et 3 (↘, lue sur les positions top puis bottom). Sur la fiche PDF, aucune flèche du tableau n’est dessinée dès qu’une flèche est cachée.'
+		},
+		{
+			title: 'Flèches à compléter autour d’une valeur interdite (question)',
+			source: fence(
+				'variation',
+				'variable: x',
+				'domain: -inf, 2, +inf',
+				'',
+				'variation: f(x)',
+				'  -inf: , top',
+				'  -inf,2: ?flèche',
+				'  2: ||, , bottom, , top',
+				'  2,+inf: ?flèche',
+				'  +inf: , bottom'
+			),
+			explanation:
+				'Fonction homographique sans limites (1re) : les bornes et la double barre n’ont que des hauteurs. L’élève choisit ↘ des deux côtés ; chaque flèche se lit sur le côté de la double barre qu’elle touche. En Terminale, écrire les limites (||, ?-inf, bottom, ?+inf, top pour les faire compléter aussi).'
 		}
 	],
 	mistakes: [

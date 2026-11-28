@@ -20,6 +20,7 @@
 	import type { ImageSizeClass, ImageAlignment } from '#lib/ubumark/index.ts';
 	import { escapeHtml } from '../utils';
 	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+	import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import {
 		isProjectStorageImage,
@@ -74,7 +75,7 @@
 	});
 
 	// Escaped values for safe rendering
-	let escapedSrc = $derived(escapeHtml(src));
+	let escapedSrc = $derived(escapeHtml(toBrowserAddress(src)));
 	let escapedAlt = $derived(escapeHtml(alt));
 
 	/**

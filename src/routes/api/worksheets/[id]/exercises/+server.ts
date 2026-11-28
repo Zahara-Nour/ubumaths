@@ -5,6 +5,11 @@
  * PUT - Reorder exercises in the worksheet
  */
 
+import {
+	latestVersionId,
+	WORKSHEET_LINE_VERSION,
+	withLineVersion
+} from '#lib/server/exercise-versions.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -82,7 +87,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	);
 
 	// Fetch worksheet exercises with joined exercise data
-	const { data: exercises, error: dbError } = await locals.supabase
+	const { data: exerciseLines, error: dbError } = await locals.supabase
 		.from('worksheet_exercises')
 		.select(
 			`
@@ -91,11 +96,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				id,
 				title,
 				variables,
-				shared,
-				variations,
-				generic_functions,
 				topic
-			)
+			),
+			${WORKSHEET_LINE_VERSION}
 		`
 		)
 		.eq('worksheet_id', params.id)
@@ -105,11 +108,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		logger.error('Failed to fetch exercises:', dbError);
 		throw error(500, 'Impossible de charger les exercices');
 	}
+	// Contenu : la version choisie par la fiche (ADR 0044), pas la dernière
+	const exercises = (exerciseLines ?? []).map((line) => withLineVersion(line));
 
 	// Validate response
 	const validated = validateJsonResponse(
 		worksheetExercisesResponseSchema,
-		{ exercises: exercises ?? [] },
+		{ exercises },
 		'GET /api/worksheets/[id]/exercises'
 	);
 
@@ -170,6 +175,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(404, 'Exercice introuvable');
 	}
 
+	// La fiche prend la DERNIÈRE version de l'exercice (ADR 0044, point 5) ; créer ensuite une
+	// version ne change pas cette ligne.
+	const exerciseVersionId = await latestVersionId(locals.supabase, data.exercise_id);
+	if (!exerciseVersionId) {
+		logger.error('Exercice sans version lisible :', data.exercise_id);
+		throw error(500, "Impossible d'ajouter l'exercice à la fiche");
+	}
+
 	// Verify section exists if provided
 	if (data.section_id) {
 		const { data: sectionExists, error: sectionError } = await locals.supabase
@@ -190,6 +203,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.insert({
 			worksheet_id: params.id,
 			exercise_id: data.exercise_id,
+			exercise_version_id: exerciseVersionId,
 			section_id: data.section_id ?? null,
 			position: data.position,
 			points: data.points ?? null,

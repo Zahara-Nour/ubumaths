@@ -1,0 +1,522 @@
+{
+	"id": "7dcb0da1-1975-4a9f-878a-71026aca612e",
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"point": "6-120"
+	},
+	"title": "Problèmes à plusieurs étapes avec des décimaux",
+	"description": "Enchaîner plusieurs calculs sur des décimaux, une seule réponse : calories restantes sous 700 (masse × calories par gramme), dépassement de la charge d'une camionnette, bénéfice d'un marchand d'oranges, recette de barquettes vendues au kilogramme (grammes convertis) ; pièges : dernière étape oubliée, une partie oubliée, conversion",
+	"grades": ["6"],
+	"level": 10,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour son déjeuner, Tom ne veut pas dépasser $700$ calories. Il mange ${{m1}}~\\unit{g}$ de poulet, ${{m2}}~\\unit{g}$ de riz et ${{m3}}~\\unit{g}$ de haricots verts.\n\n| Aliment | poulet | riz | haricots verts |\n|---|---|---|---|\n| Calories dans $1~\\unit{g}$ | ${{eval:c1/10;d}}$ | ${{eval:c2/10;d}}$ | ${{eval:c3/10;d}}$ |\n\nCombien de calories lui reste-t-il avant d'atteindre $700$ ?\n\nIl lui reste $?$ calories.",
+			"variables": [
+				{
+					"name": "k1",
+					"expression": "24..31"
+				},
+				{
+					"name": "k2",
+					"expression": "24..31"
+				},
+				{
+					"name": "k3",
+					"expression": "24..31"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:5*k1"
+				},
+				{
+					"name": "m2",
+					"expression": "eval:5*k2"
+				},
+				{
+					"name": "m3",
+					"expression": "eval:5*k3"
+				},
+				{
+					"name": "c1",
+					"expression": "15..24"
+				},
+				{
+					"name": "c2",
+					"expression": "11..14"
+				},
+				{
+					"name": "c3",
+					"expression": "2..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:700-(m1*c1+m2*c2+m3*c3)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(m1*c1+m2*c2+m3*c3)/10;d}}",
+							"message": "C'est ce que Tom a mangé : la question demande ce qu'il lui reste avant $700$.",
+							"label": "Soustraction oubliée"
+						},
+						{
+							"answer": "{{eval:700-(m1*c1+m2*c2)/10;d}}",
+							"message": "Tu as oublié les haricots verts : compte les calories des trois aliments.",
+							"label": "Un aliment oublié"
+						},
+						{
+							"answer": "{{eval:700-m1-m2-m3}}",
+							"message": "Tu as retiré les masses en grammes : il faut retirer les calories, masse $\\times$ calories dans $1~\\unit{g}$.",
+							"label": "Masses retirées au lieu des calories"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les calories de chaque aliment** (masse $\\times$ calories dans $1~\\unit{g}$) : poulet ${{m1}} \\times {{eval:c1/10;d}} = {{eval:m1*c1/10;d}}$, riz ${{m2}} \\times {{eval:c2/10;d}} = {{eval:m2*c2/10;d}}$, haricots ${{m3}} \\times {{eval:c3/10;d}} = {{eval:m3*c3/10;d}}$.",
+					"**En tout.** ${{eval:m1*c1/10;d}} + {{eval:m2*c2/10;d}} + {{eval:m3*c3/10;d}} = {{eval:(m1*c1+m2*c2+m3*c3)/10;d}}$ calories.",
+					"**Ce qui reste.** $700 - {{eval:(m1*c1+m2*c2+m3*c3)/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:700-(m1*c1+m2*c2+m3*c3)/10;d}}}$ calories : Tom reste sous les $700$ calories."
+				]
+			},
+			"hint": "Combien de calories y a-t-il dans les ${{m1}}~\\unit{g}$ de poulet ? Fais de même pour les autres aliments."
+		},
+		{
+			"statement": "Un fromager livre ${{a}}$ fromages de $2.3~\\unit{kg}$ et ${{b}}$ fromages de $3.1~\\unit{kg}$. Sa camionnette ne doit pas transporter plus de $700~\\unit{kg}$.\n\nDe combien de kilogrammes dépasse-t-il cette limite ? Écris l'unité dans ta réponse.\n\nIl dépasse de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "130..139"
+				},
+				{
+					"name": "b",
+					"expression": "120..129"
+				}
+			],
+			"conditions": ["23*a+31*b>7000", "31*a+23*b!=23*a+31*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((23*a+31*b-7000)/10)[kg]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((23*a+31*b)/10)[kg]}}",
+							"message": "C'est la masse de tous les fromages : compare-la à $700~\\unit{kg}$.",
+							"label": "Comparaison oubliée"
+						},
+						{
+							"answer": "{{eval:((31*a+23*b-7000)/10)[kg]}}",
+							"message": "Tu as échangé les masses : les ${{a}}$ fromages pèsent $2.3~\\unit{kg}$ chacun.",
+							"label": "Masses échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chaque lot.** ${{a}} \\times 2.3 = {{eval:23*a/10;d}}$ et ${{b}} \\times 3.1 = {{eval:31*b/10;d}}$.",
+					"**En tout.** ${{eval:23*a/10;d}} + {{eval:31*b/10;d}} = {{eval:(23*a+31*b)/10;d}}~\\unit{kg}$ : c'est plus que $700~\\unit{kg}$.",
+					"**Le dépassement.** ${{eval:(23*a+31*b)/10;d}} - 700 = \\textcolor{{{color:primary.0}}}{{{eval:(23*a+31*b-7000)/10;d}}~\\unit{kg}}$."
+				]
+			},
+			"hint": "Quelle est la masse des ${{a}}$ fromages de $2.3~\\unit{kg}$ ? Et celle des autres ?"
+		},
+		{
+			"statement": "Un marchand achète ${{n}}$ cagettes d'oranges à ${{eval:((P)/100)[€]}}$ la cagette. Chaque cagette contient ${{eval:M/10;d}}~\\unit{kg}$ d'oranges. Il revend toutes les oranges ${{eval:((10*r)/100)[€]}}$ le kilogramme.\n\nQuel est son bénéfice (ce que la vente rapporte, moins ce que les cagettes ont coûté) ? Écris l'unité dans ta réponse.\n\nSon bénéfice est de $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "M",
+					"expression": "52..55"
+				},
+				{
+					"name": "P",
+					"expression": "620..699"
+				},
+				{
+					"name": "r",
+					"expression": "15..19"
+				}
+			],
+			"conditions": ["mod(P,10)!=0", "mod(r,5)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((n*(M*r-P))/100)[€]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((n*M*r)/100)[€]}}",
+							"message": "C'est ce que rapporte la vente : retire ce que les cagettes ont coûté.",
+							"label": "Achat non retiré"
+						},
+						{
+							"answer": "{{eval:((n*M*r-P)/100)[€]}}",
+							"message": "Tu n'as retiré le prix que d'une cagette : il en a acheté ${{n}}$.",
+							"label": "Une seule cagette payée"
+						},
+						{
+							"answer": "{{eval:((M*r-P)/100)[€]}}",
+							"message": "C'est le bénéfice sur une cagette : il en a ${{n}}$.",
+							"label": "Une seule cagette"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les oranges.** ${{n}} \\times {{eval:M/10;d}} = {{eval:n*M/10;d}}~\\unit{kg}$.",
+					"**La vente.** ${{eval:n*M/10;d}} \\times {{if:mod(10*r,100)==0|{{eval:(10*r)/100;d}}|{{eval:(10*r)/100;d2}}}} = {{if:mod(n*M*r,100)==0|{{eval:(n*M*r)/100;d}}|{{eval:(n*M*r)/100;d2}}}}~\\unit{€}$.",
+					"**L'achat.** ${{n}} \\times {{if:mod(P,100)==0|{{eval:(P)/100;d}}|{{eval:(P)/100;d2}}}} = {{if:mod(n*P,100)==0|{{eval:(n*P)/100;d}}|{{eval:(n*P)/100;d2}}}}~\\unit{€}$.",
+					"**Le bénéfice.** ${{if:mod(n*M*r,100)==0|{{eval:(n*M*r)/100;d}}|{{eval:(n*M*r)/100;d2}}}} - {{if:mod(n*P,100)==0|{{eval:(n*P)/100;d}}|{{eval:(n*P)/100;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:((n*(M*r-P))/100)[€]}}}$."
+				]
+			},
+			"hint": "Combien de kilogrammes d'oranges le marchand revend-il en tout ?"
+		},
+		{
+			"statement": "Un primeur vend ${{a}}$ barquettes de fraises de ${{g1}}~\\unit{g}$, à ${{eval:((20*u1)/100)[€]}}$ le kilogramme, et ${{b}}$ barquettes de myrtilles de ${{g2}}~\\unit{g}$, à ${{eval:((20*u2)/100)[€]}}$ le kilogramme.\n\nCombien la vente de toutes les barquettes lui rapporte-t-elle ? Écris l'unité dans ta réponse.\n\nElle lui rapporte $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..30"
+				},
+				{
+					"name": "b",
+					"expression": "20..30"
+				},
+				{
+					"name": "g1",
+					"expression": "250|500"
+				},
+				{
+					"name": "g2",
+					"expression": "250|500"
+				},
+				{
+					"name": "u1",
+					"expression": "36..42"
+				},
+				{
+					"name": "u2",
+					"expression": "36..42"
+				}
+			],
+			"conditions": ["mod(u1,5)!=0", "mod(u2,5)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((a*g1*u1/50+b*g2*u2/50)/100)[€]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(((a*g1*u1/50+b*g2*u2/50)*1000)/100)[€]}}",
+							"message": "Les prix sont donnés au kilogramme : convertis d'abord les grammes en kilogrammes.",
+							"label": "Grammes non convertis"
+						},
+						{
+							"answer": "{{eval:(((a*g1*u1/50+b*g2*u2/50)*10)/100)[€]}}",
+							"message": "Vérifie la conversion : $1~\\unit{kg} = 1\\,000~\\unit{g}$.",
+							"label": "Conversion décalée d'un rang"
+						},
+						{
+							"answer": "{{eval:((a*g1*u1/50)/100)[€]}}",
+							"message": "C'est la vente des fraises seulement : ajoute celle des myrtilles.",
+							"label": "Un seul fruit compté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les masses vendues.** Fraises : ${{a}} \\times {{g1}} = {{eval:a*g1}}~\\unit{g}$, soit ${{eval:a*g1/1000;d}}~\\unit{kg}$ ; myrtilles : ${{b}} \\times {{g2}} = {{eval:b*g2}}~\\unit{g}$, soit ${{eval:b*g2/1000;d}}~\\unit{kg}$.",
+					"**Chaque fruit.** ${{eval:a*g1/1000;d}} \\times {{if:mod(20*u1,100)==0|{{eval:(20*u1)/100;d}}|{{eval:(20*u1)/100;d2}}}} = {{if:mod(a*g1*u1/50,100)==0|{{eval:(a*g1*u1/50)/100;d}}|{{eval:(a*g1*u1/50)/100;d2}}}}$ et ${{eval:b*g2/1000;d}} \\times {{if:mod(20*u2,100)==0|{{eval:(20*u2)/100;d}}|{{eval:(20*u2)/100;d2}}}} = {{if:mod(b*g2*u2/50,100)==0|{{eval:(b*g2*u2/50)/100;d}}|{{eval:(b*g2*u2/50)/100;d2}}}}$.",
+					"**En tout.** ${{if:mod(a*g1*u1/50,100)==0|{{eval:(a*g1*u1/50)/100;d}}|{{eval:(a*g1*u1/50)/100;d2}}}} + {{if:mod(b*g2*u2/50,100)==0|{{eval:(b*g2*u2/50)/100;d}}|{{eval:(b*g2*u2/50)/100;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:((a*g1*u1/50+b*g2*u2/50)/100)[€]}}}$."
+				]
+			},
+			"hint": "Les prix sont donnés pour un kilogramme : combien de kilogrammes de fraises le primeur vend-il ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Régime : 300 + 182 + 39 = 521 → 179",
+			"variationIndex": 0,
+			"variables": {
+				"k1": "30",
+				"k2": "28",
+				"k3": "26",
+				"m1": "150",
+				"m2": "140",
+				"m3": "130",
+				"c1": "20",
+				"c2": "13",
+				"c3": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["179"]
+		},
+		{
+			"description": "Régime : soustraction oubliée (521)",
+			"variationIndex": 0,
+			"variables": {
+				"k1": "30",
+				"k2": "28",
+				"k3": "26",
+				"m1": "150",
+				"m2": "140",
+				"m3": "130",
+				"c1": "20",
+				"c2": "13",
+				"c3": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est ce que Tom a mangé : la question demande ce qu'il lui reste avant $700$."
+			},
+			"answers": ["521"]
+		},
+		{
+			"description": "Régime : haricots oubliés (218)",
+			"variationIndex": 0,
+			"variables": {
+				"k1": "30",
+				"k2": "28",
+				"k3": "26",
+				"m1": "150",
+				"m2": "140",
+				"m3": "130",
+				"c1": "20",
+				"c2": "13",
+				"c3": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié les haricots verts : compte les calories des trois aliments."
+			},
+			"answers": ["218"]
+		},
+		{
+			"description": "Régime : masses retirées (280)",
+			"variationIndex": 0,
+			"variables": {
+				"k1": "30",
+				"k2": "28",
+				"k3": "26",
+				"m1": "150",
+				"m2": "140",
+				"m3": "130",
+				"c1": "20",
+				"c2": "13",
+				"c3": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré les masses en grammes : il faut retirer les calories, masse $\\times$ calories dans $1~\\unit{g}$."
+			},
+			"answers": ["280"]
+		},
+		{
+			"description": "Fromages : 139 × 2,3 + 129 × 3,1 = 719,6 → 19,6 kg",
+			"variationIndex": 1,
+			"variables": {
+				"a": "139",
+				"b": "129"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["19{,}6\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Fromages : 19 600 g accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "139",
+				"b": "129"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["19\\,600\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Fromages : sans unité refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "139",
+				"b": "129"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["19{,}6"]
+		},
+		{
+			"description": "Fromages : masse totale (719,6 kg)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "139",
+				"b": "129"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse de tous les fromages : compare-la à $700~\\unit{kg}$."
+			},
+			"answers": ["719{,}6\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Fromages : masses échangées (727,6 kg − 700)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "139",
+				"b": "129"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les masses : les $139$ fromages pèsent $2.3~\\unit{kg}$ chacun."
+			},
+			"answers": ["27{,}6\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Cagettes : 3 × 5,3 × 1,70 − 3 × 6,45 = 7,68 €",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"M": "53",
+				"P": "645",
+				"r": "17"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}68\\,€"]
+		},
+		{
+			"description": "Cagettes : vente seule (27,03 €)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"M": "53",
+				"P": "645",
+				"r": "17"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est ce que rapporte la vente : retire ce que les cagettes ont coûté."
+			},
+			"answers": ["27{,}03\\,€"]
+		},
+		{
+			"description": "Cagettes : une cagette payée (20,58 €)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"M": "53",
+				"P": "645",
+				"r": "17"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as retiré le prix que d'une cagette : il en a acheté $3$."
+			},
+			"answers": ["20{,}58\\,€"]
+		},
+		{
+			"description": "Cagettes : une cagette (2,56 €)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"M": "53",
+				"P": "645",
+				"r": "17"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le bénéfice sur une cagette : il en a $3$."
+			},
+			"answers": ["2{,}56\\,€"]
+		},
+		{
+			"description": "Barquettes : 12 × 7,60 + 5 × 8,20 = 132,20 €",
+			"variationIndex": 3,
+			"variables": {
+				"a": "24",
+				"b": "20",
+				"g1": "500",
+				"g2": "250",
+				"u1": "38",
+				"u2": "41"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["132{,}2\\,€"]
+		},
+		{
+			"description": "Barquettes : 132,20 € accepté",
+			"variationIndex": 3,
+			"variables": {
+				"a": "24",
+				"b": "20",
+				"g1": "500",
+				"g2": "250",
+				"u1": "38",
+				"u2": "41"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["132{,}20\\,€"]
+		},
+		{
+			"description": "Barquettes : fraises seules (91,20 €)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "24",
+				"b": "20",
+				"g1": "500",
+				"g2": "250",
+				"u1": "38",
+				"u2": "41"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la vente des fraises seulement : ajoute celle des myrtilles."
+			},
+			"answers": ["91{,}2\\,€"]
+		},
+		{
+			"description": "Barquettes : × 10 (1 322 €)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "24",
+				"b": "20",
+				"g1": "500",
+				"g2": "250",
+				"u1": "38",
+				"u2": "41"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie la conversion : $1~\\unit{kg} = 1\\,000~\\unit{g}$."
+			},
+			"answers": ["1\\,322\\,€"]
+		}
+	]
+}

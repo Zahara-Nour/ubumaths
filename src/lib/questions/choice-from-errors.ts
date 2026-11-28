@@ -31,6 +31,7 @@
 
 import { isBlankValueCorrect } from '#lib/utils/answer-validator.ts';
 import { serializeChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
+import { withSingleCellShown } from '#lib/ubumark/parser/variation-table-parser.ts';
 import { createRandomSource, shuffled } from '#lib/utils/random.ts';
 import { resolvedMarkdown } from '#lib/ubumark/types/template.ts';
 import { evaluateExpression } from '#lib/math/index.ts';
@@ -146,9 +147,15 @@ export function canBeChoice(instance: QuestionInstance): boolean {
 			blank.precision.type === 'none' ||
 			isRounding(blank.precision)) &&
 		blank.neverChoice !== true &&
+		// Bouton « impossible » : en QCM, le texte du bouton ne serait proposé que sur les
+		// tirages sans réponse (il la donnerait) → reste en saisie, bouton sur tous les tirages
+		blank.impossibleLabel === undefined &&
 		(blank.expectedErrors?.length ?? 0) > 0 &&
 		blank.expressionName === undefined &&
-		String(instance.statement).split('\\placeholder[0]{}').length === 2
+		(String(instance.statement).split('\\placeholder[0]{}').length === 2 ||
+			// Case d'un tableau de variations (valeur, limite) : le tableau, sa case en « … »
+			(blank.cellule === 'valeur' &&
+				withSingleCellShown(String(instance.statement), BLANK_IN_FORMULA) !== null))
 	);
 }
 
@@ -242,7 +249,13 @@ export function asChoiceInstance(
 		multiple: false,
 		choices: order.map((index) => choices[index])
 	});
-	const statement = `${String(instance.statement).replace('\\placeholder[0]{}', BLANK_IN_FORMULA)}\n\n${block}`;
+	const source = String(instance.statement);
+	const shown =
+		blank.cellule === 'valeur'
+			? withSingleCellShown(source, BLANK_IN_FORMULA)
+			: source.replace('\\placeholder[0]{}', BLANK_IN_FORMULA);
+	if (shown === null) return null;
+	const statement = `${shown}\n\n${block}`;
 	return {
 		...instance,
 		statement: resolvedMarkdown(statement),

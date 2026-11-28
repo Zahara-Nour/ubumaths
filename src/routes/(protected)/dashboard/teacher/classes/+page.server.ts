@@ -292,7 +292,7 @@ export const actions: Actions = {
 	 *
 	 * SECURITY:
 	 * - Verifies user is authenticated
-	 * - Validates day_of_week is 0-4 (Sunday-Thursday)
+	 * - Validates day_of_week is 0-6 (Sunday-Saturday)
 	 * - Requires the teacher role (mono-teacher: classes have no per-teacher owner; RLS scopes the write)
 	 *
 	 * PROCESS:
@@ -360,7 +360,7 @@ export const actions: Actions = {
 	 *
 	 * SECURITY:
 	 * - Verifies user is authenticated
-	 * - Validates day_of_week is 0-4 (Sunday-Thursday)
+	 * - Validates day_of_week is 0-6 (Sunday-Saturday)
 	 * - Requires the teacher role; RLS scopes the write (mono-teacher: no per-teacher owner)
 	 *
 	 * PROCESS:

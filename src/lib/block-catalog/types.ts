@@ -34,6 +34,8 @@ export type CatalogNodeType =
 	| 'tortue'
 	| 'calcul'
 	| 'robot'
+	| 'labyrinthe'
+	| 'yohaku'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';

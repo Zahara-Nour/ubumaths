@@ -37,7 +37,9 @@ description, son adresse canonique, une image de partage. Trois fichiers portent
 - `toJsonLdScript(data)` : `JSON.stringify` puis `<`, `>`, `&` échappés en `<`… Le JSON relu
   est identique, mais un titre d'article ne peut ni fermer la balise ni ouvrir un commentaire.
 - `toPlainText(text)` : texte ubumark → texte brut (formules `~…~` et `$…$` aplaties, `\pi` → π,
-  gras retiré). Sert à la description d'un article du Shtam.
+  fractions en a/b, imbriquées comprises, avec parenthèses autour d'un terme composé, `\sqrt{2}` →
+  √2, gras retiré). Sert à la description d'un article du Shtam, au glossaire et à l'infobulle de la
+  grille des points de l'analytique prof (V122).
 
 ### `SeoHead.svelte`
 
@@ -100,8 +102,4 @@ Trois appelants :
 
 ## Écarts connus
 
-- **Deux `SITE_URL`** : `src/lib/seo/site.ts` (`https://www.chiph.re`, sans barre finale) et
-  `src/lib/email-templates/welcome.ts` (`https://www.chiph.re/`, avec). Le second ne passe pas
-  par `site.ts`.
-- **Données structurées limitées à deux pages** (accueil, article du Shtam). Pas de JSON-LD pour
-  les exercices publics ni les pages outils.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

@@ -1,0 +1,691 @@
+{
+	"id": "7703e625-8a3e-48bd-b4d3-245201766457",
+	"title": "Calculer un terme",
+	"description": "A l'aide d'une formule explicite (affine, an², (−1)ⁿ, n² − bn, (−1)ⁿ × n, an² + bn + c, quotient (an + b)/(cn + d))",
+	"grades": ["1_SPE", "1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*a+(c)}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n={{b}}n{{eval:c;+}}$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n={{b}}n{{eval:c;+}}$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}={{if:abs(b)!=1 or c!=0|{{if:b==1|\\textcolor{{{color:primary.0}}}{{{a}}}|{{if:b==-1|-\\textcolor{{{color:primary.0}}}{{{a}}}|{{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}}}}}{{if:c!=0|{{eval:c;+}}}}=}}{{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*a^2}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n={{b}}n^2$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..7"
+				},
+				{
+					"name": "b",
+					"expression": "2|-2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n={{b}}n^2$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}={{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}^2={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-1)^a}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n=(-1)^n$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n=(-1)^n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=(-1)^\\textcolor{{{color:primary.0}}}{{{a}}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2-b*a}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n=n^2-{{b}}n$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n=n^2-{{b}}n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=\\textcolor{{{color:primary.0}}}{{{a}}}^2-{{if:b==1|\\textcolor{{{color:primary.0}}}{{{a}}}|{{b}}\\times\\textcolor{{{color:primary.0}}}{{{a}}}}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-1)^a*a}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n=(-1)^n\\times n$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n=(-1)^n\\times n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=(-1)^\\textcolor{{{color:primary.0}}}{{{a}}}\\times\\textcolor{{{color:primary.0}}}{{{a}}}={{solution}}$ : $(-1)^n$ vaut $1$ si $n$ est pair, $-1$ s'il est impair."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k^2+b*k+c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*k)^2+b*k+c}}",
+							"message": "Le carré ne porte que sur $n$ : ${{a}}n^2$, c'est ${{a}}\\times n^2$ et non $({{a}}n)^2$.",
+							"label": "Carré du produit"
+						},
+						{
+							"answer": "{{eval:2*a*k+b*k+c}}",
+							"message": "$n^2$, c'est $n\\times n$ et non $2\\times n$.",
+							"label": "Carré pris pour un double"
+						},
+						{
+							"answer": "{{eval:a*k^2+b+c}}",
+							"message": "Le terme ${{b}}n$ dépend aussi de $n$ : remplace $n$ par ${{k}}$ partout.",
+							"label": "n oublié dans le terme du premier degré"
+						}
+					]
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n={{a}}n^2{{eval:b;+}}n{{eval:c;+}}$$\n\n$u_{ {{k}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $\\textcolor{{{color:primary.0}}}{{{k}}}$ partout, en calculant d'abord le carré.",
+					"$u_{ {{k}} }={{eval:a;()}}\\times\\textcolor{{{color:primary.0}}}{{{k}}}^2+{{eval:b;()}}\\times\\textcolor{{{color:primary.0}}}{{{k}}}+{{eval:c;()}}={{eval:a*k^2}}{{eval:b*k;+}}{{eval:c;+}}={{solution}}$"
+				]
+			},
+			"hint": "Remplace $n$ par ${{k}}$ partout, et calcule le carré avant de multiplier."
+		},
+		{
+			"blankDefaults": {
+				"acceptDecimal": true
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*k+b)/(c*k+d)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+b)/(c+d)}}",
+							"message": "On ne simplifie pas par $n$ dans une somme : remplace $n$ par ${{k}}$ en haut et en bas.",
+							"label": "Simplification par n"
+						},
+						{
+							"answer": "{{eval:(c*k+d)/(a*k+b)}}",
+							"message": "Tu as inversé le numérateur et le dénominateur.",
+							"label": "Fraction inversée"
+						},
+						{
+							"answer": "{{eval:a/c}}",
+							"message": "Tu n'as gardé que les coefficients de $n$ : remplace $n$ par ${{k}}$ partout.",
+							"label": "Coefficients de n seuls"
+						}
+					]
+				}
+			],
+			"statement": "Calcule le terme demandé et donne sa valeur exacte.\n\n$$u_n=\\dfrac{ {{a}}n{{eval:b;+}} }{ {{c}}n+{{d}} }$$\n\n$u_{ {{k}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["a*d-b*c != 0", "a*k+b != 0", "mod(a*k+b, c*k+d) != 0"],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $\\textcolor{{{color:primary.0}}}{{{k}}}$ au numérateur et au dénominateur.",
+					"$u_{ {{k}} }=\\dfrac{ {{a}}\\times\\textcolor{{{color:primary.0}}}{{{k}}}{{eval:b;+}} }{ {{c}}\\times\\textcolor{{{color:primary.0}}}{{{k}}}+{{d}} }=\\dfrac{ {{eval:a*k+b}} }{ {{eval:c*k+d}} }={{solution}}$"
+				]
+			},
+			"hint": "Remplace $n$ par ${{k}}$ au numérateur et au dénominateur, puis simplifie la fraction obtenue."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-69"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "u_9 avec u_n=-7n-6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["69"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "signe oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-63-6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-72"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "-2"
+			},
+			"description": "u_6 avec u_n=-2n^2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-144"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "-2"
+			},
+			"description": "(-2n)^2 au lieu de -2n^2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8"
+			},
+			"description": "u_8 avec (-1)^n",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8"
+			},
+			"description": "parité inversée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"description": "49-21=28",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["46"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"description": "n² - b au lieu de n² - bn",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["49-21"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9"
+			},
+			"description": "n impair → -9",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9"
+			},
+			"description": "signe oublié",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9"
+			},
+			"description": "(-1)^n seul",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "1",
+				"c": "0"
+			},
+			"description": "u_n=n (coefficient 1, terme constant nul) : u_5=5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-1",
+				"c": "0"
+			},
+			"description": "u_n=-n : u_5=-5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-1",
+				"c": "3"
+			},
+			"description": "u_n=-n+3 : u_5=-5+3=-2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-1",
+				"c": "3"
+			},
+			"description": "u_n=-n+3 : signe de -n oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "1",
+				"c": "-4"
+			},
+			"description": "u_n=n-4 : u_6=2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"c": "0"
+			},
+			"description": "u_n=7n (terme constant nul) : u_3=21",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "1"
+			},
+			"description": "u_n=n^2-n : 36-6=30",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["36-6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "6",
+				"b": "1"
+			},
+			"description": "u_n=n^2-n : calcul non effectué",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-13"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4",
+				"k": "3"
+			},
+			"description": "u_n = −2n² + 3n − 4 : u_3 = −13",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-5",
+				"c": "6",
+				"k": "4"
+			},
+			"description": "u_n = n² − 5n + 6 : u_4 = 2",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-18+9-4"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4",
+				"k": "3"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["41"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré ne porte que sur $n$ : $-2 n^2$, c'est $-2\\times n^2$ et non $\\left( -2 n \\right)^2$."
+			},
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4",
+				"k": "3"
+			},
+			"description": "(−2×3)² = 36",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$n^2$, c'est $n\\times n$ et non $2\\times n$."
+			},
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4",
+				"k": "3"
+			},
+			"description": "n² pris pour 2n",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-19"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le terme $3 n$ dépend aussi de $n$ : remplace $n$ par $3$ partout."
+			},
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4",
+				"k": "3"
+			},
+			"description": "bn sans n",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["\\frac{7}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3",
+				"k": "3"
+			},
+			"description": "(2n+1)/(n+3), u_3 = 7/6",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["\\frac{14}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3",
+				"k": "3"
+			},
+			"description": "14/12 : juste, fraction à simplifier",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "2",
+				"d": "2",
+				"k": "2"
+			},
+			"description": "(3n−1)/(2n+2), u_2 = 5/6",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "1",
+				"d": "1",
+				"k": "3"
+			},
+			"description": "(n−1)/(n+1), u_3 = 2/4 : écriture décimale 0,5",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne simplifie pas par $n$ dans une somme : remplace $n$ par $3$ en haut et en bas."
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3",
+				"k": "3"
+			},
+			"description": "simplification par n",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["\\frac{6}{7}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le numérateur et le dénominateur."
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3",
+				"k": "3"
+			},
+			"description": "fraction inversée",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as gardé que les coefficients de $n$ : remplace $n$ par $3$ partout."
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3",
+				"k": "3"
+			},
+			"description": "a/c",
+			"variationIndex": 6
+		}
+	]
+}

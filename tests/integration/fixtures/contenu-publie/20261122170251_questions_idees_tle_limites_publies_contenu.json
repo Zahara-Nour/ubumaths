@@ -1,0 +1,5059 @@
+{
+	"migration": "supabase/migrations/20261122170251_questions_idees_tle_limites_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "04ec9518-1d43-461c-beb0-aa38d62b6835",
+			"title": "Limite en un point : dénominateur qui tend vers 0",
+			"fichier": "04ec9518.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "k",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0"],
+						"correction": {
+							"steps": [
+								"Pour $x>{{a}}$, $x{{eval:-a;+}}>0$ et $x{{eval:-a;+}}$ tend vers $0$ : $\\dfrac{1}{x{{eval:-a;+}}}$ tend vers $+\\infty$.",
+								"Le numérateur vaut ${{k}}$, {{if:k>0|positif|négatif}} : par produit, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$ (à droite)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k>0|-\\infty|+\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à gauche** (pour $x<{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "k",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0"],
+						"correction": {
+							"steps": [
+								"Pour $x<{{a}}$, $x{{eval:-a;+}}<0$ et $x{{eval:-a;+}}$ tend vers $0$ : $\\dfrac{1}{x{{eval:-a;+}}}$ tend vers $-\\infty$.",
+								"Le numérateur vaut ${{k}}$, {{if:k>0|positif|négatif}} : par produit (règle des signes), $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|-\\infty|+\\infty}}}$ (à gauche)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{\\left(x{{eval:-a;+}}\\right)^{2}}$.\n\nDétermine la limite de $f$ en ${{a}}$.\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "k",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0"],
+						"correction": {
+							"steps": [
+								"Un carré est positif : quand $x$ tend vers ${{a}}$, $\\left(x{{eval:-a;+}}\\right)^{2}$ tend vers $0$ **par valeurs positives**, des deux côtés.",
+								"Donc $\\dfrac{1}{\\left(x{{eval:-a;+}}\\right)^{2}}$ tend vers $+\\infty$ et, le numérateur ${{k}}$ étant {{if:k>0|positif|négatif}}, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a+b>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)=\\dfrac{x{{b;+}}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0", "a + b != 0"],
+						"correction": {
+							"steps": [
+								"Le numérateur tend vers ${{a}}{{b;+}}={{eval:a+b}}$, {{if:a+b>0|positif|négatif}}.",
+								"Le dénominateur tend vers $0$ par valeurs positives (car $x>{{a}}$).",
+								"Par quotient, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a+b>0|+\\infty|-\\infty}}}$ (à droite)."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v0 : 3/(x−2) à droite → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v0 : 0 (limite de 1/x à l'infini confondue)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"k": "-5"
+						},
+						"description": "v0 : −5/(x+1) à droite → −∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"k": "-5"
+						},
+						"description": "v0 : signe du numérateur oublié",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v1 : 3/(x−2) à gauche → −∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v1 : côté oublié (+∞)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-3",
+							"k": "-4"
+						},
+						"description": "v1 : −4/(x+3) à gauche → +∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"k": "2"
+						},
+						"description": "v2 : 2/(x−1)² → +∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"k": "-7"
+						},
+						"description": "v2 : −7/(x+4)² → −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-4",
+							"k": "-7"
+						},
+						"description": "v2 : « pas de limite » remplacé par +∞ malgré k < 0",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v3 : (x+1)/(x−3) à droite → +∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-5"
+						},
+						"description": "v3 : (x−5)/(x−3) à droite → −∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-5"
+						},
+						"description": "v3 : quotient des coefficients (1)",
+						"variationIndex": 3
+					}
+				],
+				"description": "Limite à droite, à gauche ou des deux côtés de k/(x−a), k/(x−a)², (x+b)/(x−a) : signe du dénominateur selon le côté (pièges : côté oublié, signe du numérateur, 0 au lieu de ±∞)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "k",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0"],
+						"correction": {
+							"steps": [
+								"Pour $x>{{a}}$, $x{{eval:-a;+}}>0$ et $x{{eval:-a;+}}$ tend vers $0$ : $\\dfrac{1}{x{{eval:-a;+}}}$ tend vers $+\\infty$.",
+								"Le numérateur vaut ${{k}}$, {{if:k>0|positif|négatif}} : par produit, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$ (à droite)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k>0|-\\infty|+\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à gauche** (pour $x<{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "k",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0"],
+						"correction": {
+							"steps": [
+								"Pour $x<{{a}}$, $x{{eval:-a;+}}<0$ et $x{{eval:-a;+}}$ tend vers $0$ : $\\dfrac{1}{x{{eval:-a;+}}}$ tend vers $-\\infty$.",
+								"Le numérateur vaut ${{k}}$, {{if:k>0|positif|négatif}} : par produit (règle des signes), $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|-\\infty|+\\infty}}}$ (à gauche)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{\\left(x{{eval:-a;+}}\\right)^{2}}$.\n\nDétermine la limite de $f$ en ${{a}}$.\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "k",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0"],
+						"correction": {
+							"steps": [
+								"Un carré est positif : quand $x$ tend vers ${{a}}$, $\\left(x{{eval:-a;+}}\\right)^{2}$ tend vers $0$ **par valeurs positives**, des deux côtés.",
+								"Donc $\\dfrac{1}{\\left(x{{eval:-a;+}}\\right)^{2}}$ tend vers $+\\infty$ et, le numérateur ${{k}}$ étant {{if:k>0|positif|négatif}}, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a+b>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)=\\dfrac{x{{b;+}}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["a != 0", "a + b != 0"],
+						"correction": {
+							"steps": [
+								"Le numérateur tend vers ${{a}}{{b;+}}={{eval:a+b}}$, {{if:a+b>0|positif|négatif}}.",
+								"Le dénominateur tend vers $0$ par valeurs positives (car $x>{{a}}$).",
+								"Par quotient, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a+b>0|+\\infty|-\\infty}}}$ (à droite)."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{r}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{ {{a}}x{{eval:-a*r;+}} }$.\n\nDétermine la limite de $f$ en ${{r}}$ **{{if:d==1|à droite|à gauche}}** (pour $x{{if:d==1|>|<}}{{r}}$).\n\n$\\displaystyle\\lim_{x\\to {{r}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..-1"
+							},
+							{
+								"name": "r",
+								"expression": "-6..6"
+							},
+							{
+								"name": "k",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "d",
+								"expression": "0|1"
+							}
+						],
+						"conditions": ["r != 0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k*(1-2*d)>0|+\\infty|-\\infty}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:k*(1-2*d)>0|-\\infty|+\\infty}}",
+										"message": "Le coefficient de $x$ est négatif : ${{a}} x {{eval:-a*r;+}}$ est {{if:d==1|négatif|positif}} pour $x {{if:d==1|>|<}} {{r}}$.",
+										"label": "Pente négative oubliée"
+									},
+									{
+										"answer": "0",
+										"message": "Le dénominateur tend vers $0$ et le numérateur non : le quotient tend vers l'infini.",
+										"label": "Zéro au lieu de l'infini"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{a}}x{{eval:-a*r;+}}={{a}}\\left(x{{eval:-r;+}}\\right)$ s'annule en ${{r}}$ ; le coefficient ${{a}}$ est négatif : pour $x{{if:d==1|>|<}}{{r}}$, ${{a}}x{{eval:-a*r;+}}{{if:d==1|<|>}}0$, et il tend vers $0$.",
+								"Donc $\\dfrac{1}{ {{a}}x{{eval:-a*r;+}} }$ tend vers ${{if:d==1|-|+}}\\infty$. Le numérateur vaut ${{k}}$ : par produit, $\\displaystyle\\lim_{x\\to {{r}}}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:k*(1-2*d)>0|+\\infty|-\\infty}} }$ ({{if:d==1|à droite|à gauche}})."
+							]
+						},
+						"hint": "Étudie le signe de ${{a}}x{{eval:-a*r;+}}$ {{if:d==1|à droite|à gauche}} de ${{r}}$ : attention, le coefficient de $x$ est négatif."
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -{{a}}\\,;{{a}} \\right\\}$ par $f(x)=\\dfrac{{{if:c==1||{{if:c==-1|-|{{c}}}}}}x{{d;+}}}{x^{2}-{{eval:a*a}}}$.\n\nDétermine la limite de $f$ en ${{eval:a*(1-2*w)}}$ **{{if:w==0|à droite|à gauche}}** (pour $x{{if:w==0|>|<}}{{eval:a*(1-2*w)}}$).\n\n$\\displaystyle\\lim_{x\\to {{eval:a*(1-2*w)}}}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..6"
+							},
+							{
+								"name": "c",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "d",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "w",
+								"expression": "0|1"
+							}
+						],
+						"conditions": ["c*a+d != 0", "-c*a+d != 0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:c*a*(1-2*w)+d>0|+\\infty|-\\infty}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:c*a*(1-2*w)+d>0|-\\infty|+\\infty}}",
+										"message": "Le dénominateur est positif {{if:w==0|à droite de|à gauche de}} ${{eval:a*(1-2*w)}}$ : le signe de la limite est celui du numérateur, qui tend vers ${{eval:c*a*(1-2*w)+d}}$.",
+										"label": "Signe inversé"
+									},
+									{
+										"answer": "0",
+										"message": "Le dénominateur tend vers $0$ et le numérateur non : le quotient tend vers l'infini.",
+										"label": "Zéro au lieu de l'infini"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le numérateur tend vers ${{eval:c*a*(1-2*w)+d}}$, {{if:c*a*(1-2*w)+d>0|positif|négatif}}.",
+								"$x^{2}-{{eval:a*a}}=(x-{{a}})(x+{{a}})$ est positif à l'extérieur de l'intervalle $\\left[-{{a}}\\,;{{a}}\\right]$ : pour $x{{if:w==0|>|<}}{{eval:a*(1-2*w)}}$, il est positif et tend vers $0$.",
+								"Par quotient, $\\displaystyle\\lim_{x\\to {{eval:a*(1-2*w)}}}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:c*a*(1-2*w)+d>0|+\\infty|-\\infty}} }$ ({{if:w==0|à droite|à gauche}})."
+							]
+						},
+						"hint": "Cherche la limite du numérateur, puis le signe de $x^{2}-{{eval:a*a}}$ {{if:w==0|à droite|à gauche}} de ${{eval:a*(1-2*w)}}$ (un tableau de signes aide)."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v0 : 3/(x−2) à droite → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v0 : 0 (limite de 1/x à l'infini confondue)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"k": "-5"
+						},
+						"description": "v0 : −5/(x+1) à droite → −∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"k": "-5"
+						},
+						"description": "v0 : signe du numérateur oublié",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v1 : 3/(x−2) à gauche → −∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"k": "3"
+						},
+						"description": "v1 : côté oublié (+∞)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-3",
+							"k": "-4"
+						},
+						"description": "v1 : −4/(x+3) à gauche → +∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"k": "2"
+						},
+						"description": "v2 : 2/(x−1)² → +∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"k": "-7"
+						},
+						"description": "v2 : −7/(x+4)² → −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-4",
+							"k": "-7"
+						},
+						"description": "v2 : « pas de limite » remplacé par +∞ malgré k < 0",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v3 : (x+1)/(x−3) à droite → +∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-5"
+						},
+						"description": "v3 : (x−5)/(x−3) à droite → −∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-5"
+						},
+						"description": "v3 : quotient des coefficients (1)",
+						"variationIndex": 3
+					},
+					{
+						"description": "F6a : 3/(−2x + 4) à droite de 2",
+						"variationIndex": 4,
+						"variables": {
+							"a": "-2",
+							"r": "2",
+							"k": "3",
+							"d": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F6a : pente négative oubliée",
+						"variationIndex": 4,
+						"variables": {
+							"a": "-2",
+							"r": "2",
+							"k": "3",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le coefficient de $x$ est négatif : $-2 x + 4$ est négatif pour $x > 2$."
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F6a : zéro",
+						"variationIndex": 4,
+						"variables": {
+							"a": "-2",
+							"r": "2",
+							"k": "3",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le dénominateur tend vers $0$ et le numérateur non : le quotient tend vers l'infini."
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F6a : −5/(−x − 3) à gauche de −3",
+						"variationIndex": 4,
+						"variables": {
+							"a": "-1",
+							"r": "-3",
+							"k": "-5",
+							"d": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F6b : (2x + 1)/(x² − 9) en 3 à droite",
+						"variationIndex": 5,
+						"variables": {
+							"a": "3",
+							"c": "2",
+							"d": "1",
+							"w": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F6b : signe inversé",
+						"variationIndex": 5,
+						"variables": {
+							"a": "3",
+							"c": "2",
+							"d": "1",
+							"w": "0"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le dénominateur est positif à droite de $3$ : le signe de la limite est celui du numérateur, qui tend vers $7$."
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F6b : zéro",
+						"variationIndex": 5,
+						"variables": {
+							"a": "3",
+							"c": "2",
+							"d": "1",
+							"w": "0"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le dénominateur tend vers $0$ et le numérateur non : le quotient tend vers l'infini."
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F6b : (2x + 1)/(x² − 9) en −3 à gauche",
+						"variationIndex": 5,
+						"variables": {
+							"a": "3",
+							"c": "2",
+							"d": "1",
+							"w": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\infty"]
+					}
+				],
+				"description": "Limite à droite, à gauche ou des deux côtés de k/(x−a), k/(x−a)², (x+b)/(x−a) : signe du dénominateur selon le côté (pièges : côté oublié, signe du numérateur, 0 au lieu de ±∞)"
+			},
+			"changements": {
+				"ajoutees": [5, 6],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "5bf5b452-1039-4139-aff0-ed5224050761",
+			"title": "Comparaison et encadrement pour les fonctions",
+			"fichier": "5bf5b452.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\geqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n- On ne peut rien conclure.\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (théorème de comparaison) : si $f(x)\\geqslant g(x)$ pour $x$ assez grand et si $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$, alors $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$, $g$ et $h$ trois fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $g(x)\\leqslant f(x)\\leqslant h(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=2$ et $\\lim\\limits_{x\\to+\\infty}h(x)=2$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=2$\n- $f$ a une limite finie en $+\\infty$, mais pas forcément $2$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=4$\n- On ne peut rien conclure.\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (théorème d'encadrement, ou « des gendarmes ») : si $g(x)\\leqslant f(x)\\leqslant h(x)$ pour $x$ assez grand, et si $g$ et $h$ ont la même limite finie $\\ell$ en $+\\infty$, alors $f$ a aussi pour limite $\\ell$.",
+								"Ici $\\ell=2$, donc $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=2}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\leqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Que peut-on dire de la limite de $f$ en $+\\infty$ ?\n\n```choix\n- On ne peut rien conclure.\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : la comparaison pousse vers $+\\infty$ la fonction la plus GRANDE.",
+								"Ici, c'est la plus grande, $g$, qui tend vers $+\\infty$ : cela ne dit rien de $f$. Par exemple $g(x)=x$ avec $f(x)=1$, ou avec $f(x)=-x$. Donc $\\textcolor{{{color:primary.0}}}{\\text{on ne peut rien conclure}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : −∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : limite finie",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : rien",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f → 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : limite finie quelconque",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : somme 4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : rien",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "rien",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : +∞ (sens inversé)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : limite finie",
+						"variationIndex": 2
+					}
+				],
+				"description": "À savoir : f ≥ g et g → +∞ ⟹ f → +∞ ; encadrement g ≤ f ≤ h, même limite ; piège : f ≤ g et g → +∞ ne dit rien de f"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\geqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n- On ne peut rien conclure.\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (théorème de comparaison) : si $f(x)\\geqslant g(x)$ pour $x$ assez grand et si $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$, alors $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$, $g$ et $h$ trois fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $g(x)\\leqslant f(x)\\leqslant h(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=2$ et $\\lim\\limits_{x\\to+\\infty}h(x)=2$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=2$\n- $f$ a une limite finie en $+\\infty$, mais pas forcément $2$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=4$\n- On ne peut rien conclure.\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (théorème d'encadrement, ou « des gendarmes ») : si $g(x)\\leqslant f(x)\\leqslant h(x)$ pour $x$ assez grand, et si $g$ et $h$ ont la même limite finie $\\ell$ en $+\\infty$, alors $f$ a aussi pour limite $\\ell$.",
+								"Ici $\\ell=2$, donc $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=2}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\leqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Que peut-on dire de la limite de $f$ en $+\\infty$ ?\n\n```choix\n- On ne peut rien conclure.\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : la comparaison pousse vers $+\\infty$ la fonction la plus GRANDE.",
+								"Ici, c'est la plus grande, $g$, qui tend vers $+\\infty$ : cela ne dit rien de $f$. Par exemple $g(x)=x$ avec $f(x)=1$, ou avec $f(x)=-x$. Donc $\\textcolor{{{color:primary.0}}}{\\text{on ne peut rien conclure}}$."
+							]
+						}
+					},
+					{
+						"statement": "Une fonction $f$ définie sur $\\mathbb{R}$ vérifie, pour tout réel $x$ :\n\n$${{if:m==0|{{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}\\leqslant f(x)|f(x)\\leqslant {{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}}}$$\n\nQuelle limite de $f$ cette inégalité permet-elle d'affirmer ?\n\n```choix\nmelanger: non\n- $\\displaystyle\\lim_{x\\to-\\infty}f(x)={{if:m==0|+|-}}\\infty$\n- $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{if:m==0|+|-}}\\infty$\n- $\\displaystyle\\lim_{x\\to {{x0}}}f(x)={{eval:a*x0+c}}$\n- Cette inégalité ne permet d'affirmer aucune de ces limites.\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-4..4"
+							},
+							{
+								"name": "c",
+								"expression": "1..6;±"
+							},
+							{
+								"name": "m",
+								"expression": "0|1"
+							},
+							{
+								"name": "x0",
+								"expression": "-3..3"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a==0|3|{{if:a*(1-2*m)>0|1|0}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"{{if:a==0|La fonction est seulement {{if:m==0|minorée|majorée}} par une constante : cela ne donne aucune limite.|${{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}$ tend vers ${{if:m==0|+|-}}\\infty$ en ${{if:a*(1-2*m)>0|+|-}}\\infty$, et $f$ est {{if:m==0|au-dessus|au-dessous}}.}}",
+								"{{if:a==0|$\\textcolor{{{color:primary.0}}}{\\text{Aucune limite}}$ ne peut être affirmée.|Par comparaison, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to{{if:a*(1-2*m)>0|+|-}}\\infty}f(x)={{if:m==0|+|-}}\\infty}$.}}",
+								"Une inégalité ne donne jamais la limite en un réel $x_0$ : $f$ peut valoir n'importe quoi {{if:m==0|au-dessus|au-dessous}} de la droite."
+							]
+						},
+						"hint": "Un théorème de comparaison demande une fonction {{if:m==0|minorée|majorée}} par une fonction qui tend vers ${{if:m==0|+|-}}\\infty$ : de quel côté la droite $y={{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}$ le fait-elle ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : −∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : limite finie",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : rien",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f → 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : limite finie quelconque",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : somme 4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : rien",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "rien",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : +∞ (sens inversé)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : limite finie",
+						"variationIndex": 2
+					},
+					{
+						"description": "F7 : 2x − 1 ⩽ f(x) → +∞ en +∞",
+						"variationIndex": 3,
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"m": "0",
+							"x0": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F7 : 2x − 1 ⩽ f(x), côté inversé",
+						"variationIndex": 3,
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"m": "0",
+							"x0": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F7 : 2x − 1 ⩽ f(x), leurre en x₀",
+						"variationIndex": 3,
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"m": "0",
+							"x0": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F7 : −3x + 2 ⩽ f(x) → +∞ en −∞",
+						"variationIndex": 3,
+						"variables": {
+							"a": "-3",
+							"c": "2",
+							"m": "0",
+							"x0": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F7 : f(x) ⩽ x + 4 → −∞ en −∞",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1",
+							"c": "4",
+							"m": "1",
+							"x0": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F7 : f(x) ⩽ −2x + 1 → −∞ en +∞",
+						"variationIndex": 3,
+						"variables": {
+							"a": "-2",
+							"c": "1",
+							"m": "1",
+							"x0": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F7 : 5 ⩽ f(x), aucune",
+						"variationIndex": 3,
+						"variables": {
+							"a": "0",
+							"c": "5",
+							"m": "0",
+							"x0": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F7 : 5 ⩽ f(x), +∞ à tort",
+						"variationIndex": 3,
+						"variables": {
+							"a": "0",
+							"c": "5",
+							"m": "0",
+							"x0": "-1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					}
+				],
+				"description": "À savoir : f ≥ g et g → +∞ ⟹ f → +∞ ; encadrement g ≤ f ≤ h, même limite ; piège : f ≤ g et g → +∞ ne dit rien de f"
+			},
+			"changements": {
+				"ajoutees": [4],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "7844be9a-36f9-4f27-8c6a-34529c3e6523",
+			"title": "Limite d'une fonction : lever une forme indéterminée par le terme prépondérant",
+			"fichier": "7844be9a.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|-\\infty|+\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^{3}+{{eval:sign(a)*bb}}x^{2}{{c;+}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "bb",
+								"expression": "1..9"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"En $-\\infty$, ${{a}}x^{3}$ tend vers {{if:a>0|$-\\infty$|$+\\infty$}} et ${{eval:sign(a)*bb}}x^{2}$ vers {{if:a>0|$+\\infty$|$-\\infty$}} : forme indéterminée « $\\infty-\\infty$ ».",
+								"On factorise par $x^{3}$ : $f(x)=x^{3}\\left({{a}}{{if:a>0|+|-}}\\dfrac{ {{bb}} }{x}{{if:c>0|+|-}}\\dfrac{ {{eval:abs(c)}} }{x^{3}}\\right)$ ; la parenthèse tend vers ${{a}}$.",
+								"Donc $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\lim_{x\\to-\\infty}{{a}}x^{3}=\\textcolor{{{color:primary.0}}}{{{if:a>0|-\\infty|+\\infty}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a/c}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{ {{a}}x^{2}{{b;+}} }{ {{c}}x^{2}+{{d}} }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "d",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["a != c", "a != -c"],
+						"correction": {
+							"steps": [
+								"Numérateur et dénominateur tendent vers l'infini : forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ».",
+								"On factorise par $x^{2}$ : $f(x)=\\dfrac{ {{a}}{{if:b>0|+|-}}\\frac{ {{eval:abs(b)}} }{x^{2}} }{ {{c}}+\\frac{ {{d}} }{x^{2}} }$, qui tend vers ${{eval:a/c}}$.",
+								"$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{eval:a/c}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{ {{a}}x{{b;+}} }{ {{c}}x^{2}+{{d}} }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "d",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ » : on factorise par les termes de plus haut degré.",
+								"$f(x)=\\dfrac{x\\left({{a}}{{if:b>0|+|-}}\\frac{ {{eval:abs(b)}} }{x}\\right)}{x^{2}\\left({{c}}+\\frac{ {{d}} }{x^{2}}\\right)}=\\dfrac{1}{x}\\times\\dfrac{ {{a}}{{if:b>0|+|-}}\\frac{ {{eval:abs(b)}} }{x} }{ {{c}}+\\frac{ {{d}} }{x^{2}} }$.",
+								"Le second facteur tend vers ${{eval:a/c}}$ et $\\dfrac{1}{x}$ vers $0$ : $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{ {{a}}x^{2}{{b;+}} }{ {{c}}x }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							}
+						],
+						"conditions": ["a != c", "a != -c"],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ».",
+								"$f(x)=\\dfrac{ {{a}}x^{2}}{ {{c}}x}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{ {{c}}x}={{eval:a/c}}x{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{ {{c}}x}$ ; le premier terme tend vers {{if:a>0|$+\\infty$|$-\\infty$}}, le second vers $0$.",
+								"$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"bb": "5"
+						},
+						"description": "v0 : 2x³ + 5x² − 1 en −∞ → −∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"bb": "5"
+						},
+						"description": "v0 : « forme indéterminée » → 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"bb": "5"
+						},
+						"description": "v0 : signe de x³ en −∞ oublié",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-3",
+							"c": "2",
+							"bb": "4"
+						},
+						"description": "v0 : −3x³ − 4x² + 2 en −∞ → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : (3x²+1)/(2x²+5) → 3/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : 1,5 accepté",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : b/d (termes constants)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : ∞/∞ = 1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{4}{6}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "-4",
+							"b": "1",
+							"c": "6",
+							"d": "5"
+						},
+						"description": "v1 : −4/6 non simplifiée",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3",
+							"d": "1"
+						},
+						"description": "v2 : (2x+1)/(3x²+1) → 0",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{2}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3",
+							"d": "1"
+						},
+						"description": "v2 : a/c (degrés ignorés)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3"
+						},
+						"description": "v3 : (2x²+1)/(3x) → +∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{2}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3"
+						},
+						"description": "v3 : a/c (degrés ignorés)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-5",
+							"b": "2",
+							"c": "4"
+						},
+						"description": "v3 : (−5x²+2)/(4x) → −∞",
+						"variationIndex": 3
+					}
+				],
+				"description": "Polynôme en −∞ et fractions rationnelles en +∞ : factoriser par le terme de plus haut degré (pièges : FI prise pour 0 ou 1, quotient des termes constants, signe de x³ en −∞)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|-\\infty|+\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^{3}+{{eval:sign(a)*bb}}x^{2}{{c;+}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "bb",
+								"expression": "1..9"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"En $-\\infty$, ${{a}}x^{3}$ tend vers {{if:a>0|$-\\infty$|$+\\infty$}} et ${{eval:sign(a)*bb}}x^{2}$ vers {{if:a>0|$+\\infty$|$-\\infty$}} : forme indéterminée « $\\infty-\\infty$ ».",
+								"On factorise par $x^{3}$ : $f(x)=x^{3}\\left({{a}}{{if:a>0|+|-}}\\dfrac{ {{bb}} }{x}{{if:c>0|+|-}}\\dfrac{ {{eval:abs(c)}} }{x^{3}}\\right)$ ; la parenthèse tend vers ${{a}}$.",
+								"Donc $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\lim_{x\\to-\\infty}{{a}}x^{3}=\\textcolor{{{color:primary.0}}}{{{if:a>0|-\\infty|+\\infty}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a/c}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{ {{a}}x^{2}{{b;+}} }{ {{c}}x^{2}+{{d}} }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "d",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["a != c", "a != -c"],
+						"correction": {
+							"steps": [
+								"Numérateur et dénominateur tendent vers l'infini : forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ».",
+								"On factorise par $x^{2}$ : $f(x)=\\dfrac{ {{a}}{{if:b>0|+|-}}\\frac{ {{eval:abs(b)}} }{x^{2}} }{ {{c}}+\\frac{ {{d}} }{x^{2}} }$, qui tend vers ${{eval:a/c}}$.",
+								"$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{eval:a/c}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{ {{a}}x{{b;+}} }{ {{c}}x^{2}+{{d}} }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "d",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ » : on factorise par les termes de plus haut degré.",
+								"$f(x)=\\dfrac{x\\left({{a}}{{if:b>0|+|-}}\\frac{ {{eval:abs(b)}} }{x}\\right)}{x^{2}\\left({{c}}+\\frac{ {{d}} }{x^{2}}\\right)}=\\dfrac{1}{x}\\times\\dfrac{ {{a}}{{if:b>0|+|-}}\\frac{ {{eval:abs(b)}} }{x} }{ {{c}}+\\frac{ {{d}} }{x^{2}} }$.",
+								"Le second facteur tend vers ${{eval:a/c}}$ et $\\dfrac{1}{x}$ vers $0$ : $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{ {{a}}x^{2}{{b;+}} }{ {{c}}x }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							}
+						],
+						"conditions": ["a != c", "a != -c"],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ».",
+								"$f(x)=\\dfrac{ {{a}}x^{2}}{ {{c}}x}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{ {{c}}x}={{eval:a/c}}x{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{ {{c}}x}$ ; le premier terme tend vers {{if:a>0|$+\\infty$|$-\\infty$}}, le second vers $0$.",
+								"$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}e^{x}{{b;+}}}{{{if:c==1||{{if:c==-1|-|{{c}}}}}}e^{x}+{{d}}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..6"
+							},
+							{
+								"name": "b",
+								"expression": "1..6;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..6"
+							},
+							{
+								"name": "d",
+								"expression": "1..6"
+							}
+						],
+						"conditions": ["a*d != b*c"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a/c}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:b/d}}",
+										"message": "Tu as fait le quotient des termes constants : en $+\\infty$, ce sont les termes exponentiels qui l'emportent.",
+										"label": "Quotient des constantes"
+									},
+									{
+										"answer": "1",
+										"message": "Un quotient de deux infinis est une forme indéterminée : il ne vaut pas $1$.",
+										"label": "Infini sur infini = 1"
+									},
+									{
+										"answer": "+\\infty",
+										"message": "Le numérateur et le dénominateur tendent tous deux vers $+\\infty$ : c'est une forme indéterminée, pas $+\\infty$.",
+										"label": "FI prise pour +∞"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Forme indéterminée : on factorise par $e^{x}$ en haut et en bas. $f(x)=\\dfrac{e^{x}\\left({{a}}{{b;+}}e^{-x}\\right)}{e^{x}\\left({{c}}+{{d}}e^{-x}\\right)}=\\dfrac{ {{a}}{{b;+}}e^{-x}}{ {{c}}+{{d}}e^{-x}}$.",
+								"$e^{-x}$ tend vers $0$ en $+\\infty$ : $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\dfrac{ {{a}} }{ {{c}} }=\\textcolor{{{color:primary.0}}}{ {{eval:a/c}} }$."
+							]
+						},
+						"hint": "Factorise le numérateur et le dénominateur par $e^{x}$, puis utilise la limite de $e^{-x}$ en $+\\infty$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"bb": "5"
+						},
+						"description": "v0 : 2x³ + 5x² − 1 en −∞ → −∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"bb": "5"
+						},
+						"description": "v0 : « forme indéterminée » → 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"c": "-1",
+							"bb": "5"
+						},
+						"description": "v0 : signe de x³ en −∞ oublié",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-3",
+							"c": "2",
+							"bb": "4"
+						},
+						"description": "v0 : −3x³ − 4x² + 2 en −∞ → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : (3x²+1)/(2x²+5) → 3/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : 1,5 accepté",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : b/d (termes constants)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1",
+							"c": "2",
+							"d": "5"
+						},
+						"description": "v1 : ∞/∞ = 1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{4}{6}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "-4",
+							"b": "1",
+							"c": "6",
+							"d": "5"
+						},
+						"description": "v1 : −4/6 non simplifiée",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3",
+							"d": "1"
+						},
+						"description": "v2 : (2x+1)/(3x²+1) → 0",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{2}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3",
+							"d": "1"
+						},
+						"description": "v2 : a/c (degrés ignorés)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3"
+						},
+						"description": "v3 : (2x²+1)/(3x) → +∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{2}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "3"
+						},
+						"description": "v3 : a/c (degrés ignorés)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-5",
+							"b": "2",
+							"c": "4"
+						},
+						"description": "v3 : (−5x²+2)/(4x) → −∞",
+						"variationIndex": 3
+					},
+					{
+						"description": "F11 : (2eˣ − 3)/(4eˣ + 1)",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "4",
+							"d": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{1}{2}"]
+					},
+					{
+						"description": "F11 : 0,5 accepté",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "4",
+							"d": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0.5"]
+					},
+					{
+						"description": "F11 : quotient des constantes",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "4",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as fait le quotient des termes constants : en $+\\infty$, ce sont les termes exponentiels qui l'emportent."
+						},
+						"answers": ["-3"]
+					},
+					{
+						"description": "F11 : ∞/∞ = 1",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "4",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Un quotient de deux infinis est une forme indéterminée : il ne vaut pas $1$."
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F11 : FI prise pour +∞",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "4",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le numérateur et le dénominateur tendent tous deux vers $+\\infty$ : c'est une forme indéterminée, pas $+\\infty$."
+						},
+						"answers": ["+\\infty"]
+					}
+				],
+				"description": "Polynôme en −∞ et fractions rationnelles en +∞ : factoriser par le terme de plus haut degré (pièges : FI prise pour 0 ou 1, quotient des termes constants, signe de x³ en −∞)"
+			},
+			"changements": {
+				"ajoutees": [5],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "806c10f4-d04c-44c2-9af1-84a65b636aca",
+			"title": "Limite d'une fonction par opérations, sans forme indéterminée",
+			"fichier": "806c10f4.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)={{a}}+\\dfrac{ {{b}} }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}x^{2}=+\\infty$, donc $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{b}} }{x^{2}}=0$.",
+								"Par somme, $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{a}}+0=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}e^{x}{{b;+}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to-\\infty}e^{x}=0$, donc $\\displaystyle\\lim_{x\\to-\\infty}{{a}}e^{x}=0$.",
+								"Par somme, $\\displaystyle\\lim_{x\\to-\\infty}f(x)=0{{b;+}}=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)={{a}}x^{3}{{eval:sign(a)*bb;+}}\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "bb",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}x^{3}=+\\infty$ et $\\displaystyle\\lim_{x\\to+\\infty}\\sqrt{x}=+\\infty$.",
+								"Les coefficients ${{a}}$ et ${{eval:sign(a)*bb}}$ ont le même signe : les deux termes tendent vers ${{if:a>0|+\\infty|-\\infty}}$, pas de forme indéterminée.",
+								"Par somme, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:b>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{a}}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Quand $x$ tend vers $0$ avec $x>0$, $\\dfrac{1}{x}$ tend vers $+\\infty$ (inverse d'un nombre positif de plus en plus petit).",
+								"Donc ${{if:b>0|\\dfrac{ {{b}} }{x}|-\\dfrac{ {{eval:abs(b)}} }{x}}}$ tend vers {{if:b>0|$+\\infty$|$-\\infty$ (coefficient négatif)}}, et ${{a}}$ ne change rien : $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{{{if:b>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 : 3 + 5/x² → 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 : a + b",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 : +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "4"
+						},
+						"description": "v1 : −2eˣ + 4 → 4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "4"
+						},
+						"description": "v1 : limite de eˣ prise égale à 1 (a + b)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "4"
+						},
+						"description": "v1 : −∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"bb": "3"
+						},
+						"description": "v2 : 2x³ + 3√x → +∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"bb": "3"
+						},
+						"description": "v2 : +∞ sans le +",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-3",
+							"bb": "4"
+						},
+						"description": "v2 : −3x³ − 4√x → −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-3",
+							"bb": "4"
+						},
+						"description": "v2 : signe oublié",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "v3 : 2 + 3/x en 0⁺ → +∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v3 : −5/x en 0⁺ → −∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v3 : signe du coefficient ignoré",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v3 : limite = a (1/x → 0 confondu)",
+						"variationIndex": 3
+					}
+				],
+				"description": "Limites en ±∞ ou en 0 de sommes simples de fonctions de référence (1/x, 1/x², √x, x³, eˣ) sans forme indéterminée (pièges : signe du coefficient, eˣ → 0 en −∞)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)={{a}}+\\dfrac{ {{b}} }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}x^{2}=+\\infty$, donc $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{b}} }{x^{2}}=0$.",
+								"Par somme, $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{a}}+0=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}e^{x}{{b;+}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to-\\infty}e^{x}=0$, donc $\\displaystyle\\lim_{x\\to-\\infty}{{a}}e^{x}=0$.",
+								"Par somme, $\\displaystyle\\lim_{x\\to-\\infty}f(x)=0{{b;+}}=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)={{a}}x^{3}{{eval:sign(a)*bb;+}}\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "bb",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}x^{3}=+\\infty$ et $\\displaystyle\\lim_{x\\to+\\infty}\\sqrt{x}=+\\infty$.",
+								"Les coefficients ${{a}}$ et ${{eval:sign(a)*bb}}$ ont le même signe : les deux termes tendent vers ${{if:a>0|+\\infty|-\\infty}}$, pas de forme indéterminée.",
+								"Par somme, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:b>0|+\\infty|-\\infty}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{a}}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Quand $x$ tend vers $0$ avec $x>0$, $\\dfrac{1}{x}$ tend vers $+\\infty$ (inverse d'un nombre positif de plus en plus petit).",
+								"Donc ${{if:b>0|\\dfrac{ {{b}} }{x}|-\\dfrac{ {{eval:abs(b)}} }{x}}}$ tend vers {{if:b>0|$+\\infty$|$-\\infty$ (coefficient négatif)}}, et ${{a}}$ ne change rien : $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{{{if:b>0|+\\infty|-\\infty}}}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:n==1|x|x^{ {{n}} }}}+e^{x}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "n",
+								"expression": "1..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k*(-1)^n>0|+\\infty|-\\infty}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:k*(-1)^n>0|-\\infty|+\\infty}}",
+										"message": "En $-\\infty$, $x^{{n}}$ tend vers ${{if:(-1)^n>0|+|-}}\\infty$ (puissance {{if:(-1)^n>0|paire|impaire}}), puis multiplie par ${{k}}$.",
+										"label": "Signe de la puissance"
+									},
+									{
+										"answer": "0",
+										"message": "Pas de forme indéterminée ici : en $-\\infty$, l'exponentielle tend vers $0$, la limite est celle de la puissance.",
+										"label": "Croissances comparées à tort"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"En $-\\infty$, $e^{x}$ tend vers $0$ et ${{if:n==1|x|x^{ {{n}} }}}$ tend vers ${{if:(-1)^n>0|+|-}}\\infty$ (puissance {{if:(-1)^n>0|paire|impaire}}), donc ${{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:n==1|x|x^{ {{n}} }}}$ tend vers ${{if:k*(-1)^n>0|+|-}}\\infty$.",
+								"Pas de forme indéterminée : par somme, $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:k*(-1)^n>0|+\\infty|-\\infty}} }$."
+							]
+						},
+						"hint": "Cherche séparément la limite de chaque terme en $-\\infty$ : y a-t-il vraiment une forme indéterminée ?"
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:n==1|x|x^{ {{n}} }}}e^{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "n",
+								"expression": "1..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}",
+								"expectedErrors": [
+									{
+										"answer": "0",
+										"message": "Pas de forme indéterminée ici : en $+\\infty$, les deux facteurs tendent vers $+\\infty$.",
+										"label": "Croissances comparées à tort"
+									},
+									{
+										"answer": "{{if:k>0|-\\infty|+\\infty}}",
+										"message": "Le coefficient ${{k}}$ est {{if:k>0|positif|négatif}} : il donne le signe de la limite.",
+										"label": "Signe du coefficient"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"En $+\\infty$, ${{if:n==1|x|x^{ {{n}} }}}$ et $e^{x}$ tendent vers $+\\infty$ : pas de forme indéterminée, leur produit tend vers $+\\infty$.",
+								"Le coefficient ${{k}}$ est {{if:k>0|positif|négatif}} : $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:k>0|+\\infty|-\\infty}} }$."
+							]
+						},
+						"hint": "Cherche la limite de chaque facteur en $+\\infty$ : y a-t-il vraiment une forme indéterminée ?"
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{{{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "n",
+								"expression": "1..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k*(-1)^n>0|+\\infty|-\\infty}}",
+								"expectedErrors": [
+									{
+										"answer": "0",
+										"message": "Par croissances comparées, $x^{{n}}$ divisé par l'exponentielle tend vers $0$ en $+\\infty$, pas en $-\\infty$ : ici, le dénominateur tend vers $0$.",
+										"label": "Croissances comparées à tort"
+									},
+									{
+										"answer": "{{if:k*(-1)^n>0|-\\infty|+\\infty}}",
+										"message": "En $-\\infty$, $x^{{n}}$ tend vers ${{if:(-1)^n>0|+|-}}\\infty$ (puissance {{if:(-1)^n>0|paire|impaire}}), puis multiplie par ${{k}}$.",
+										"label": "Signe de la puissance"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f(x)={{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:n==1|x|x^{ {{n}} }}}\\times e^{-x}$. En $-\\infty$, $e^{-x}$ tend vers $+\\infty$ et ${{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:n==1|x|x^{ {{n}} }}}$ vers ${{if:k*(-1)^n>0|+|-}}\\infty$.",
+								"Pas de forme indéterminée : par produit, $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:k*(-1)^n>0|+\\infty|-\\infty}} }$."
+							]
+						},
+						"hint": "Écris $\\dfrac{1}{e^{x}}=e^{-x}$ et cherche la limite de chaque facteur en $-\\infty$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 : 3 + 5/x² → 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 : a + b",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 : +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "4"
+						},
+						"description": "v1 : −2eˣ + 4 → 4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "4"
+						},
+						"description": "v1 : limite de eˣ prise égale à 1 (a + b)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "4"
+						},
+						"description": "v1 : −∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"bb": "3"
+						},
+						"description": "v2 : 2x³ + 3√x → +∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"bb": "3"
+						},
+						"description": "v2 : +∞ sans le +",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-3",
+							"bb": "4"
+						},
+						"description": "v2 : −3x³ − 4√x → −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-3",
+							"bb": "4"
+						},
+						"description": "v2 : signe oublié",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "v3 : 2 + 3/x en 0⁺ → +∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v3 : −5/x en 0⁺ → −∞",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v3 : signe du coefficient ignoré",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v3 : limite = a (1/x → 0 confondu)",
+						"variationIndex": 3
+					},
+					{
+						"description": "F10a : 3x² + eˣ en −∞",
+						"variationIndex": 4,
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F10a : −2x³ + eˣ en −∞",
+						"variationIndex": 4,
+						"variables": {
+							"k": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F10a : signe de la puissance",
+						"variationIndex": 4,
+						"variables": {
+							"k": "4",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "En $-\\infty$, $x^3$ tend vers $-\\infty$ (puissance impaire), puis multiplie par $4$."
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F10a : croissances comparées à tort",
+						"variationIndex": 4,
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Pas de forme indéterminée ici : en $-\\infty$, l'exponentielle tend vers $0$, la limite est celle de la puissance."
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F10b : −3x²eˣ en +∞",
+						"variationIndex": 5,
+						"variables": {
+							"k": "-3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F10b : croissances comparées à tort",
+						"variationIndex": 5,
+						"variables": {
+							"k": "-3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Pas de forme indéterminée ici : en $+\\infty$, les deux facteurs tendent vers $+\\infty$."
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F10b : signe du coefficient",
+						"variationIndex": 5,
+						"variables": {
+							"k": "-3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le coefficient $-3$ est négatif : il donne le signe de la limite."
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F10c : 2x³/eˣ en −∞",
+						"variationIndex": 6,
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F10c : croissances comparées à tort",
+						"variationIndex": 6,
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Par croissances comparées, $x^3$ divisé par l'exponentielle tend vers $0$ en $+\\infty$, pas en $-\\infty$ : ici, le dénominateur tend vers $0$."
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F10c : signe de la puissance",
+						"variationIndex": 6,
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "En $-\\infty$, $x^3$ tend vers $-\\infty$ (puissance impaire), puis multiplie par $2$."
+						},
+						"answers": ["+\\infty"]
+					}
+				],
+				"description": "Limites en ±∞ ou en 0 de sommes simples de fonctions de référence (1/x, 1/x², √x, x³, eˣ) sans forme indéterminée (pièges : signe du coefficient, eˣ → 0 en −∞)"
+			},
+			"changements": {
+				"ajoutees": [5, 6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "a4d8dc52-30c4-4414-b9d7-b1a0d13f6ae9",
+			"title": "Asymptote parallèle à un axe : équation à partir d'une limite",
+			"fichier": "a4d8dc52.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "y={{b}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{s}}\\infty}f(x)={{b}}$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "+|-"
+							},
+							{
+								"name": "b",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une limite **finie** ${{b}}$ en ${{s}}\\infty$ donne une asymptote **horizontale** en ${{s}}\\infty$.",
+								"Son équation est $\\textcolor{{{color:primary.0}}}{y={{b}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "x={{a}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction définie sur $\\left]{{a}}\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{a}}}f(x)={{s}}\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "+|-"
+							},
+							{
+								"name": "a",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une limite **infinie** en un réel ${{a}}$ donne une asymptote **verticale**.",
+								"Son équation est $\\textcolor{{{color:primary.0}}}{x={{a}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "y={{b}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **horizontale** à $\\mathcal{C}_f$ en $+\\infty$.\n\n$?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-6..6"
+							},
+							{
+								"name": "b",
+								"expression": "-6..6"
+							},
+							{
+								"name": "k",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["a != 0", "b != 0", "a != b"],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{k}} }{x{{eval:-a;+}}}=0$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{b}}$.",
+								"L'asymptote horizontale a pour équation $\\textcolor{{{color:primary.0}}}{y={{b}}}$ (et $x={{a}}$ est l'asymptote verticale)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "x={{a}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **verticale** à $\\mathcal{C}_f$.\n\n$?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-6..6"
+							},
+							{
+								"name": "b",
+								"expression": "-6..6"
+							},
+							{
+								"name": "k",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["a != 0", "b != 0", "a != b"],
+						"correction": {
+							"steps": [
+								"Le dénominateur s'annule en ${{a}}$ et le numérateur ${{k}}$ ne s'annule pas : $f$ a une limite infinie en ${{a}}$ (à gauche et à droite).",
+								"L'asymptote verticale a pour équation $\\textcolor{{{color:primary.0}}}{x={{a}}}$ (et $y={{b}}$ est l'asymptote horizontale)."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["y=3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : lim en +∞ = 3 → y = 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["y-3=0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : y − 3 = 0 (même droite)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["x=3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : x = 3 (asymptote verticale à tort)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : nombre seul 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["x=2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"s": "+"
+						},
+						"description": "v1 : lim en 2 = +∞ → x = 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["y=2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"s": "+"
+						},
+						"description": "v1 : y = 2 (horizontale à tort)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["x=-4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"s": "-"
+						},
+						"description": "v1 : a = −4 → x = −4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["x=4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-4",
+							"s": "-"
+						},
+						"description": "v1 : signe de a changé (x = 4)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["y=2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2",
+							"k": "3"
+						},
+						"description": "v2 : 2 + 3/(x−1) → y = 2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["x=1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2",
+							"k": "3"
+						},
+						"description": "v2 : verticale donnée (x = 1)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["y=0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2",
+							"k": "3"
+						},
+						"description": "v2 : y = 0 (limite de la fraction seule)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["x=-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "-1",
+							"k": "5"
+						},
+						"description": "v3 : −1 + 5/(x+2) → x = −2",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["x=2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "-1",
+							"k": "5"
+						},
+						"description": "v3 : x = 2 (racine mal lue)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["y=-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "-1",
+							"k": "5"
+						},
+						"description": "v3 : horizontale donnée (y = −1)",
+						"variationIndex": 3
+					}
+				],
+				"description": "Lien limite ↔ asymptote : limite finie en ±∞ → y = b ; limite infinie en a → x = a ; lecture sur f(x) = b + k/(x−a) (pièges : x et y échangés, limite de la fraction seule)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "y={{b}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{s}}\\infty}f(x)={{b}}$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "+|-"
+							},
+							{
+								"name": "b",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une limite **finie** ${{b}}$ en ${{s}}\\infty$ donne une asymptote **horizontale** en ${{s}}\\infty$.",
+								"Son équation est $\\textcolor{{{color:primary.0}}}{y={{b}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "x={{a}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction définie sur $\\left]{{a}}\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{a}}}f(x)={{s}}\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "+|-"
+							},
+							{
+								"name": "a",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une limite **infinie** en un réel ${{a}}$ donne une asymptote **verticale**.",
+								"Son équation est $\\textcolor{{{color:primary.0}}}{x={{a}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "y={{b}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **horizontale** à $\\mathcal{C}_f$ en $+\\infty$.\n\n$?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-6..6"
+							},
+							{
+								"name": "b",
+								"expression": "-6..6"
+							},
+							{
+								"name": "k",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["a != 0", "b != 0", "a != b"],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{k}} }{x{{eval:-a;+}}}=0$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{b}}$.",
+								"L'asymptote horizontale a pour équation $\\textcolor{{{color:primary.0}}}{y={{b}}}$ (et $x={{a}}$ est l'asymptote verticale)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"answerKind": "equation",
+								"expectedAnswer": "x={{a}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **verticale** à $\\mathcal{C}_f$.\n\n$?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-6..6"
+							},
+							{
+								"name": "b",
+								"expression": "-6..6"
+							},
+							{
+								"name": "k",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["a != 0", "b != 0", "a != b"],
+						"correction": {
+							"steps": [
+								"Le dénominateur s'annule en ${{a}}$ et le numérateur ${{k}}$ ne s'annule pas : $f$ a une limite infinie en ${{a}}$ (à gauche et à droite).",
+								"L'asymptote verticale a pour équation $\\textcolor{{{color:primary.0}}}{x={{a}}}$ (et $y={{b}}$ est l'asymptote horizontale)."
+							]
+						}
+					},
+					{
+						"statement": "Voici le tableau de variations d'une fonction $f$ définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$.\n\n```variation\nvariable: x\ndomain: -inf, {{c}}, +inf\n\nvariation: f(x)\n  -inf: {{if:sg>0|-inf|{{b}}}}, bottom\n  {{c}}: {{eval:b+h}}, top\n  +inf: {{if:sg>0|{{b}}|-inf}}, bottom\n```\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on peut lire dans ce tableau.\n\n$?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "-5..5"
+							},
+							{
+								"name": "c",
+								"expression": "-4..4"
+							},
+							{
+								"name": "h",
+								"expression": "1..4"
+							},
+							{
+								"name": "sg",
+								"expression": "1|-1"
+							}
+						],
+						"conditions": ["c != b"],
+						"blanks": [
+							{
+								"expectedAnswer": "y={{b}}",
+								"answerKind": "equation",
+								"expectedErrors": [
+									{
+										"answer": "x={{b}}",
+										"message": "Une limite finie en ${{if:sg>0|+|-}}\\infty$ donne une asymptote horizontale : son équation commence par $y =$.",
+										"label": "x et y échangés"
+									},
+									{
+										"answer": "y={{eval:b+h}}",
+										"message": "Tu as lu le maximum de $f$ : l'asymptote vient de la limite écrite au bout du tableau.",
+										"label": "Maximum lu"
+									},
+									{
+										"answer": "x={{c}}",
+										"message": "Tu as donné l'abscisse du maximum : l'asymptote vient de la limite écrite au bout du tableau.",
+										"label": "Abscisse du maximum"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le tableau donne $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)={{b}}$ : une limite **finie** en ${{if:sg>0|+|-}}\\infty$.",
+								"La droite d'équation $\\textcolor{{{color:primary.0}}}{y={{b}}}$ est asymptote horizontale à $\\mathcal{C}_f$ en ${{if:sg>0|+|-}}\\infty$."
+							]
+						},
+						"hint": "Cherche dans le tableau une limite finie en $+\\infty$ ou en $-\\infty$, ou une limite infinie en un réel."
+					},
+					{
+						"statement": "Voici le tableau de variations d'une fonction $f$ définie sur $\\left]{{a}}\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$.\n\n```variation\nvariable: x\ndomain: {{a}}, {{eval:a+h}}, +inf\n\nvariation: f(x)\n  {{a}}: ||, right, {{if:sg>0|+inf, top|-inf, bottom}}\n  {{eval:a+h}}: {{N}}, {{if:sg>0|bottom|top}}\n  +inf: {{if:sg>0|+inf, top|-inf, bottom}}\n```\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on peut lire dans ce tableau.\n\n$?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-5..5"
+							},
+							{
+								"name": "h",
+								"expression": "1..3"
+							},
+							{
+								"name": "N",
+								"expression": "-5..5"
+							},
+							{
+								"name": "sg",
+								"expression": "1|-1"
+							}
+						],
+						"conditions": ["N != a", "N != a+h"],
+						"blanks": [
+							{
+								"expectedAnswer": "x={{a}}",
+								"answerKind": "equation",
+								"expectedErrors": [
+									{
+										"answer": "y={{a}}",
+										"message": "Une limite infinie en ${{a}}$ donne une asymptote verticale : son équation commence par $x =$.",
+										"label": "x et y échangés"
+									},
+									{
+										"answer": "x={{eval:a+h}}",
+										"message": "Tu as donné l'abscisse {{if:sg>0|du minimum|du maximum}} : l'asymptote vient de la limite infinie en ${{a}}$, sous la double barre.",
+										"label": "Abscisse de l'extremum"
+									},
+									{
+										"answer": "y={{N}}",
+										"message": "Tu as lu {{if:sg>0|le minimum|le maximum}} de $f$ : l'asymptote vient de la limite infinie en ${{a}}$, sous la double barre.",
+										"label": "Extremum lu"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le tableau donne $\\displaystyle\\lim_{x\\to {{a}}}f(x)={{if:sg>0|+|-}}\\infty$ (à droite de ${{a}}$) : une limite **infinie** en un réel.",
+								"La droite d'équation $\\textcolor{{{color:primary.0}}}{x={{a}}}$ est asymptote verticale à $\\mathcal{C}_f$. En $+\\infty$, la limite est infinie : pas d'asymptote horizontale."
+							]
+						},
+						"hint": "Cherche dans le tableau une limite finie en $+\\infty$ ou en $-\\infty$, ou une limite infinie en un réel."
+					},
+					{
+						"statement": "Soit $f$ une fonction, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to{{if:t<2|{{s}}\\infty|{{a}}}}}f(x)={{if:t==1|{{s2}}\\infty|{{if:t==2|{{s2}}\\infty|{{b}}}}}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $\\mathcal{C}_f$ admet l'asymptote horizontale d'équation $y={{b}}$.\n- $\\mathcal{C}_f$ admet l'asymptote verticale d'équation $x={{b}}$.\n- $\\mathcal{C}_f$ admet l'asymptote verticale d'équation $x={{a}}$.\n- Cette limite ne donne pas d'asymptote parallèle à un axe.\n```",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "0..3"
+							},
+							{
+								"name": "a",
+								"expression": "-6..6"
+							},
+							{
+								"name": "b",
+								"expression": "-6..6"
+							},
+							{
+								"name": "s",
+								"expression": "+|-"
+							},
+							{
+								"name": "s2",
+								"expression": "+|-"
+							}
+						],
+						"conditions": ["a != b", "a != 0", "b != 0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:t==0|0|{{if:t==2|2|3}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une asymptote **horizontale** vient d'une limite **finie** en $+\\infty$ ou en $-\\infty$ ; une asymptote **verticale**, d'une limite **infinie** en un réel.",
+								"{{if:t==0|Ici, la limite est finie en ${{s}}\\infty$ : $\\textcolor{{{color:primary.0}}}{y={{b}}}$ est asymptote horizontale.|{{if:t==2|Ici, la limite est infinie en ${{a}}$ : $\\textcolor{{{color:primary.0}}}{x={{a}}}$ est asymptote verticale.|{{if:t==1|Ici, la limite est infinie en ${{s}}\\infty$|Ici, la limite est finie en ${{a}}$}} : $\\textcolor{{{color:primary.0}}}{\\text{pas d'asymptote}}$ parallèle à un axe.}}}}"
+							]
+						},
+						"hint": "Une asymptote horizontale vient d'une limite finie en $+\\infty$ ou en $-\\infty$ ; une asymptote verticale, d'une limite infinie en un réel."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["y=3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : lim en +∞ = 3 → y = 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["y-3=0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : y − 3 = 0 (même droite)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["x=3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : x = 3 (asymptote verticale à tort)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "3",
+							"s": "+"
+						},
+						"description": "v0 : nombre seul 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["x=2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"s": "+"
+						},
+						"description": "v1 : lim en 2 = +∞ → x = 2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["y=2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"s": "+"
+						},
+						"description": "v1 : y = 2 (horizontale à tort)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["x=-4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"s": "-"
+						},
+						"description": "v1 : a = −4 → x = −4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["x=4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-4",
+							"s": "-"
+						},
+						"description": "v1 : signe de a changé (x = 4)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["y=2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2",
+							"k": "3"
+						},
+						"description": "v2 : 2 + 3/(x−1) → y = 2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["x=1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2",
+							"k": "3"
+						},
+						"description": "v2 : verticale donnée (x = 1)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["y=0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2",
+							"k": "3"
+						},
+						"description": "v2 : y = 0 (limite de la fraction seule)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["x=-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "-1",
+							"k": "5"
+						},
+						"description": "v3 : −1 + 5/(x+2) → x = −2",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["x=2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "-1",
+							"k": "5"
+						},
+						"description": "v3 : x = 2 (racine mal lue)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["y=-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "-1",
+							"k": "5"
+						},
+						"description": "v3 : horizontale donnée (y = −1)",
+						"variationIndex": 3
+					},
+					{
+						"description": "F4a : tableau, lim en +∞ = 2",
+						"variationIndex": 4,
+						"variables": {
+							"b": "2",
+							"c": "-1",
+							"h": "3",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["y=2"]
+					},
+					{
+						"description": "F4a : y − 2 = 0",
+						"variationIndex": 4,
+						"variables": {
+							"b": "2",
+							"c": "-1",
+							"h": "3",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["y-2=0"]
+					},
+					{
+						"description": "F4a : x et y échangés",
+						"variationIndex": 4,
+						"variables": {
+							"b": "2",
+							"c": "-1",
+							"h": "3",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Une limite finie en $+\\infty$ donne une asymptote horizontale : son équation commence par $y =$."
+						},
+						"answers": ["x=2"]
+					},
+					{
+						"description": "F4a : maximum lu",
+						"variationIndex": 4,
+						"variables": {
+							"b": "2",
+							"c": "-1",
+							"h": "3",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as lu le maximum de $f$ : l'asymptote vient de la limite écrite au bout du tableau."
+						},
+						"answers": ["y=5"]
+					},
+					{
+						"description": "F4a : abscisse du maximum",
+						"variationIndex": 4,
+						"variables": {
+							"b": "2",
+							"c": "-1",
+							"h": "3",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné l'abscisse du maximum : l'asymptote vient de la limite écrite au bout du tableau."
+						},
+						"answers": ["x=-1"]
+					},
+					{
+						"description": "F4a : lim en −∞ = −3",
+						"variationIndex": 4,
+						"variables": {
+							"b": "-3",
+							"c": "2",
+							"h": "1",
+							"sg": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["y=-3"]
+					},
+					{
+						"description": "F4b : verticale x = 1",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"h": "2",
+							"N": "-2",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["x=1"]
+					},
+					{
+						"description": "F4b : x et y échangés",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"h": "2",
+							"N": "-2",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Une limite infinie en $1$ donne une asymptote verticale : son équation commence par $x =$."
+						},
+						"answers": ["y=1"]
+					},
+					{
+						"description": "F4b : abscisse de l'extremum",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"h": "2",
+							"N": "-2",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné l'abscisse du minimum : l'asymptote vient de la limite infinie en $1$, sous la double barre."
+						},
+						"answers": ["x=3"]
+					},
+					{
+						"description": "F4b : extremum lu",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"h": "2",
+							"N": "-2",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as lu le minimum de $f$ : l'asymptote vient de la limite infinie en $1$, sous la double barre."
+						},
+						"answers": ["y=-2"]
+					},
+					{
+						"description": "F4b : vers −∞, x = −4",
+						"variationIndex": 5,
+						"variables": {
+							"a": "-4",
+							"h": "1",
+							"N": "2",
+							"sg": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["x=-4"]
+					},
+					{
+						"description": "F5 : limite finie en +∞",
+						"variationIndex": 6,
+						"variables": {
+							"t": "0",
+							"a": "2",
+							"b": "-3",
+							"s": "+",
+							"s2": "+"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F5 : limite finie en +∞, verticale à tort",
+						"variationIndex": 6,
+						"variables": {
+							"t": "0",
+							"a": "2",
+							"b": "-3",
+							"s": "+",
+							"s2": "+"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F5 : limite infinie en +∞, pas d'asymptote",
+						"variationIndex": 6,
+						"variables": {
+							"t": "1",
+							"a": "2",
+							"b": "-3",
+							"s": "+",
+							"s2": "-"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F5 : limite infinie en +∞, horizontale à tort",
+						"variationIndex": 6,
+						"variables": {
+							"t": "1",
+							"a": "2",
+							"b": "-3",
+							"s": "+",
+							"s2": "-"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F5 : limite infinie en a",
+						"variationIndex": 6,
+						"variables": {
+							"t": "2",
+							"a": "2",
+							"b": "-3",
+							"s": "+",
+							"s2": "+"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F5 : limite finie en a, pas d'asymptote",
+						"variationIndex": 6,
+						"variables": {
+							"t": "3",
+							"a": "2",
+							"b": "-3",
+							"s": "+",
+							"s2": "+"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F5 : limite finie en a, verticale à tort",
+						"variationIndex": 6,
+						"variables": {
+							"t": "3",
+							"a": "2",
+							"b": "-3",
+							"s": "+",
+							"s2": "+"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2"]
+					}
+				],
+				"description": "Lien limite ↔ asymptote : limite finie en ±∞ → y = b ; limite infinie en a → x = a ; lecture sur f(x) = b + k/(x−a) (pièges : x et y échangés, limite de la fraction seule)"
+			},
+			"changements": {
+				"ajoutees": [5, 6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "ae70373c-8135-4c3b-bf17-74ca1e265c68",
+			"title": "Limite d'une fonction par comparaison ou encadrement",
+			"fichier": "ae70373c.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{L}}"
+							}
+						],
+						"statement": "Une fonction $f$ vérifie, pour tout réel $x>0$ :\n\n$${{L}}-\\dfrac{ {{a}} }{x}\\leqslant f(x)\\leqslant{{L}}+\\dfrac{ {{b}} }{x^{2}}$$\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "L",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "a",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{a}} }{x}=0$ et $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{b}} }{x^{2}}=0$ : les deux membres de l'encadrement tendent vers ${{L}}$.",
+								"D'après le théorème des gendarmes, $f(x)$ tend aussi vers ${{L}}$.",
+								"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{L}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "+\\infty"
+							}
+						],
+						"statement": "Une fonction $f$ vérifie, pour tout réel $x>0$ :\n\n$$f(x)\\geqslant {{if:s==0|{{if:k==1||{{if:k==-1|-|{{k}}}}}}x^{2}|{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{x}}}$$\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "s",
+								"expression": "0..1"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}{{if:s==0|{{if:k==1||{{if:k==-1|-|{{k}}}}}}x^{2}|{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{x}}}=+\\infty$.",
+								"$f(x)$ est minorée par une fonction qui tend vers $+\\infty$ : par comparaison, $f(x)$ tend aussi vers $+\\infty$.",
+								"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "-\\infty"
+							}
+						],
+						"statement": "Une fonction $f$ vérifie, pour tout réel $x$ :\n\n$$f(x)\\leqslant {{if:k==1||{{if:k==-1|-|{{k}}}}}}x{{c;+}}$$\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to-\\infty}\\left({{if:k==1||{{if:k==-1|-|{{k}}}}}}x{{c;+}}\\right)=-\\infty$ (le coefficient ${{k}}$ est positif).",
+								"$f(x)$ est majorée par une fonction qui tend vers $-\\infty$ : par comparaison, $f(x)$ tend aussi vers $-\\infty$.",
+								"$$\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{-\\infty}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{L}}"
+							}
+						],
+						"statement": "Une fonction $g$ vérifie, pour tout réel $x$ : $-{{m}}\\leqslant g(x)\\leqslant{{m}}$.\n\nSoit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)={{L}}+\\dfrac{g(x)}{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "L",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "m",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On divise l'encadrement de $g(x)$ par $x^{2}>0$ et on ajoute ${{L}}$ : ${{L}}-\\dfrac{ {{m}} }{x^{2}}\\leqslant f(x)\\leqslant{{L}}+\\dfrac{ {{m}} }{x^{2}}$.",
+								"Les deux membres tendent vers ${{L}}$ : d'après le théorème des gendarmes, $f(x)$ aussi.",
+								"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{L}}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"description": "v0 : L = 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"description": "v0 : L − a (limite d'un seul membre, mal prise)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"description": "v0 : 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"s": "0"
+						},
+						"description": "v1 : f ⩾ 4x² → +∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"s": "1"
+						},
+						"description": "v1 : f ⩾ √x → +∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"s": "0"
+						},
+						"description": "v1 : k",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "-3",
+							"k": "2"
+						},
+						"description": "v2 : f ⩽ 2x − 3 en −∞ → −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "-3",
+							"k": "2"
+						},
+						"description": "v2 : +∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "-5",
+							"m": "2"
+						},
+						"description": "v3 : L = −5",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "-5",
+							"m": "2"
+						},
+						"description": "v3 : L + m",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "-5",
+							"m": "2"
+						},
+						"description": "v3 : 0",
+						"variationIndex": 3
+					}
+				],
+				"description": "Encadrement, minoration ou majoration donnés ; fonction bornée divisée par x² (pièges : limite d'un seul membre, L ± m, sens de la comparaison)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{L}}"
+							}
+						],
+						"statement": "Une fonction $f$ vérifie, pour tout réel $x>0$ :\n\n$${{L}}-\\dfrac{ {{a}} }{x}\\leqslant f(x)\\leqslant{{L}}+\\dfrac{ {{b}} }{x^{2}}$$\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "L",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "a",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{a}} }{x}=0$ et $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{b}} }{x^{2}}=0$ : les deux membres de l'encadrement tendent vers ${{L}}$.",
+								"D'après le théorème des gendarmes, $f(x)$ tend aussi vers ${{L}}$.",
+								"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{L}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "+\\infty"
+							}
+						],
+						"statement": "Une fonction $f$ vérifie, pour tout réel $x>0$ :\n\n$$f(x)\\geqslant {{if:s==0|{{if:k==1||{{if:k==-1|-|{{k}}}}}}x^{2}|{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{x}}}$$\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "s",
+								"expression": "0..1"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to+\\infty}{{if:s==0|{{if:k==1||{{if:k==-1|-|{{k}}}}}}x^{2}|{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{x}}}=+\\infty$.",
+								"$f(x)$ est minorée par une fonction qui tend vers $+\\infty$ : par comparaison, $f(x)$ tend aussi vers $+\\infty$.",
+								"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "-\\infty"
+							}
+						],
+						"statement": "Une fonction $f$ vérifie, pour tout réel $x$ :\n\n$$f(x)\\leqslant {{if:k==1||{{if:k==-1|-|{{k}}}}}}x{{c;+}}$$\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\displaystyle\\lim_{x\\to-\\infty}\\left({{if:k==1||{{if:k==-1|-|{{k}}}}}}x{{c;+}}\\right)=-\\infty$ (le coefficient ${{k}}$ est positif).",
+								"$f(x)$ est majorée par une fonction qui tend vers $-\\infty$ : par comparaison, $f(x)$ tend aussi vers $-\\infty$.",
+								"$$\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{-\\infty}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{L}}"
+							}
+						],
+						"statement": "Une fonction $g$ vérifie, pour tout réel $x$ : $-{{m}}\\leqslant g(x)\\leqslant{{m}}$.\n\nSoit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)={{L}}+\\dfrac{g(x)}{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "L",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "m",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On divise l'encadrement de $g(x)$ par $x^{2}>0$ et on ajoute ${{L}}$ : ${{L}}-\\dfrac{ {{m}} }{x^{2}}\\leqslant f(x)\\leqslant{{L}}+\\dfrac{ {{m}} }{x^{2}}$.",
+								"Les deux membres tendent vers ${{L}}$ : d'après le théorème des gendarmes, $f(x)$ aussi.",
+								"$$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{L}}}$$"
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}{{b;+}}{{c;+}}{{if:t==0|\\cos x|\\sin x}}$.\n\nDétermine la limite de $f$ en ${{if:sg>0|+|-}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "t",
+								"expression": "0|1"
+							},
+							{
+								"name": "sg",
+								"expression": "1|-1"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:a>0|-\\infty|+\\infty}}",
+										"message": "Le coefficient de $x^2$ est {{if:a>0|positif|négatif}} : en $-\\infty$ comme en $+\\infty$, $x^2$ tend vers $+\\infty$.",
+										"label": "Signe inversé"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $-1\\leqslant{{if:t==0|\\cos x|\\sin x}}\\leqslant1$, donc $-{{eval:abs(c)}}\\leqslant{{c}}{{if:t==0|\\cos x|\\sin x}}\\leqslant{{eval:abs(c)}}$.",
+								"{{if:a>0|Donc $f(x)\\geqslant{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}{{eval:b-abs(c);+}}$, qui tend vers $+\\infty$|Donc $f(x)\\leqslant{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}{{eval:b+abs(c);+}}$, qui tend vers $-\\infty$}} en ${{if:sg>0|+|-}}\\infty$.",
+								"Par comparaison, $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:a>0|+\\infty|-\\infty}} }$."
+							]
+						},
+						"hint": "Encadre ${{c}}{{if:t==0|\\cos x|\\sin x}}$ à l'aide de $-1\\leqslant{{if:t==0|\\cos x|\\sin x}}\\leqslant1$, puis utilise un théorème de comparaison."
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{ {{c}}\\sin x}{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "a",
+								"expression": "1..5"
+							},
+							{
+								"name": "b",
+								"expression": "1..8"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $-1\\leqslant\\sin x\\leqslant1$ et ${{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}>0$, donc $-\\dfrac{ {{eval:abs(c)}} }{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}}\\leqslant f(x)\\leqslant\\dfrac{ {{eval:abs(c)}} }{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{2}+{{b}}}$.",
+								"Les deux membres tendent vers $0$ en $+\\infty$ : par le théorème des gendarmes, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						},
+						"hint": "Encadre $\\sin x$ entre $-1$ et $1$, divise par le dénominateur (positif), puis utilise le théorème des gendarmes."
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}\\cos x\\,e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "m",
+								"expression": "1..4"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $-1\\leqslant\\cos x\\leqslant1$ et $e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}>0$, donc $-{{eval:abs(c)}}e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}\\leqslant f(x)\\leqslant{{eval:abs(c)}}e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.",
+								"$e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$ tend vers $0$ en $+\\infty$ : par le théorème des gendarmes, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						},
+						"hint": "Encadre $\\cos x$ entre $-1$ et $1$, multiplie par $e^{-{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$ (positif), puis utilise le théorème des gendarmes."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"description": "v0 : L = 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"description": "v0 : L − a (limite d'un seul membre, mal prise)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"description": "v0 : 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"s": "0"
+						},
+						"description": "v1 : f ⩾ 4x² → +∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"s": "1"
+						},
+						"description": "v1 : f ⩾ √x → +∞",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"s": "0"
+						},
+						"description": "v1 : k",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "-3",
+							"k": "2"
+						},
+						"description": "v2 : f ⩽ 2x − 3 en −∞ → −∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "-3",
+							"k": "2"
+						},
+						"description": "v2 : +∞",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "-5",
+							"m": "2"
+						},
+						"description": "v3 : L = −5",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "-5",
+							"m": "2"
+						},
+						"description": "v3 : L + m",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "-5",
+							"m": "2"
+						},
+						"description": "v3 : 0",
+						"variationIndex": 3
+					},
+					{
+						"description": "F9a : 2x² + 3 − 4cos x en +∞",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"c": "-4",
+							"t": "0",
+							"sg": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F9a : −x² + 1 + 2 sin x en −∞",
+						"variationIndex": 4,
+						"variables": {
+							"a": "-1",
+							"b": "1",
+							"c": "2",
+							"t": "1",
+							"sg": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F9a : signe inversé",
+						"variationIndex": 4,
+						"variables": {
+							"a": "-1",
+							"b": "1",
+							"c": "2",
+							"t": "1",
+							"sg": "-1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le coefficient de $x^2$ est négatif : en $-\\infty$ comme en $+\\infty$, $x^2$ tend vers $+\\infty$."
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F9b : 3 sin x/(2x² + 5)",
+						"variationIndex": 5,
+						"variables": {
+							"c": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F9b : 3 à tort",
+						"variationIndex": 5,
+						"variables": {
+							"c": "3",
+							"a": "2",
+							"b": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F9c : −5 cos x e^(−2x)",
+						"variationIndex": 6,
+						"variables": {
+							"c": "-5",
+							"m": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F9c : −5 à tort",
+						"variationIndex": 6,
+						"variables": {
+							"c": "-5",
+							"m": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-5"]
+					}
+				],
+				"description": "Encadrement, minoration ou majoration donnés ; fonction bornée divisée par x² (pièges : limite d'un seul membre, L ± m, sens de la comparaison)"
+			},
+			"changements": {
+				"ajoutees": [5, 6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "b97dabe1-0c52-483e-a738-e62386d5a638",
+			"title": "Croissances comparées : exponentielle et puissances",
+			"fichier": "b97dabe1.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "+\\infty"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{x}-{{k}}x^{ {{n}} }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "2..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\infty-\\infty$ ». On factorise : $f(x)=e^{x}\\left(1-{{if:k==1||{{k}}}}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}\\right)$.",
+								"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}=0$ : la parenthèse tend vers $1$.",
+								"Donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$ : l'exponentielle l'emporte sur toute puissance."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}x^{ {{n}} }e^{-x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "1..4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\infty\\times0$ ». On écrit $f(x)={{if:k==1||{{k}}}}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}$.",
+								"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^{x}}{{{if:n==1|x|x^{ {{n}} }}}}=+\\infty$, donc $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}=0$ et $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}x^{ {{n}} }e^{x}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "1..4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"En $-\\infty$, ${{if:n==1|x|x^{ {{n}} }}}$ tend vers l'infini et $e^{x}$ vers $0$ : forme indéterminée « $\\infty\\times0$ ».",
+								"Par croissances comparées, $\\displaystyle\\lim_{x\\to-\\infty}{{if:n==1|x|x^{ {{n}} }}}e^{x}=0$, donc $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "v0 : eˣ − 3x² → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "v0 : −∞ (la puissance l'emporterait)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "v0 : 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"description": "v1 : 2x³e⁻ˣ → 0",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"description": "v1 : +∞ (limite de x³ seule)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"description": "v1 : k (∞ × 0 = 1)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5",
+							"n": "2"
+						},
+						"description": "v2 : 5x²eˣ en −∞ → 0",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "2"
+						},
+						"description": "v2 : +∞ (limite de x² seule)",
+						"variationIndex": 2
+					}
+				],
+				"description": "Limites de eˣ − kxⁿ et xⁿe⁻ˣ en +∞, de xⁿeˣ en −∞ (pièges : x e⁻ˣ → +∞, ∞ × 0 = 1, limite d'un seul facteur)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "+\\infty"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{x}-{{k}}x^{ {{n}} }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "2..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\infty-\\infty$ ». On factorise : $f(x)=e^{x}\\left(1-{{if:k==1||{{k}}}}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}\\right)$.",
+								"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}=0$ : la parenthèse tend vers $1$.",
+								"Donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$ : l'exponentielle l'emporte sur toute puissance."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}x^{ {{n}} }e^{-x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "1..4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Forme indéterminée « $\\infty\\times0$ ». On écrit $f(x)={{if:k==1||{{k}}}}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}$.",
+								"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^{x}}{{{if:n==1|x|x^{ {{n}} }}}}=+\\infty$, donc $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}=0$ et $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}x^{ {{n}} }e^{x}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "1..4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"En $-\\infty$, ${{if:n==1|x|x^{ {{n}} }}}$ tend vers l'infini et $e^{x}$ vers $0$ : forme indéterminée « $\\infty\\times0$ ».",
+								"Par croissances comparées, $\\displaystyle\\lim_{x\\to-\\infty}{{if:n==1|x|x^{ {{n}} }}}e^{x}=0$, donc $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{{{if:c==1||{{if:c==-1|-|{{c}}}}}}e^{x}}{{{if:n==1|x|x^{ {{n}} }}}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "n",
+								"expression": "1..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:c>0|+\\infty|-\\infty}}",
+								"expectedErrors": [
+									{
+										"answer": "0",
+										"message": "Tu as inversé les croissances comparées : en $+\\infty$, c'est l'exponentielle qui l'emporte sur toute puissance de $x$.",
+										"label": "Croissances comparées inversées"
+									},
+									{
+										"answer": "{{if:c>0|-\\infty|+\\infty}}",
+										"message": "Le coefficient ${{c}}$ est {{if:c>0|positif|négatif}} : il donne le signe de la limite.",
+										"label": "Signe du coefficient"
+									},
+									{
+										"answer": "{{c}}",
+										"message": "Un quotient de deux infinis est une forme indéterminée : il ne vaut pas $1$.",
+										"label": "Infini sur infini = 1"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^{x}}{{{if:n==1|x|x^{ {{n}} }}}}=+\\infty$.",
+								"Le coefficient ${{c}}$ est {{if:c>0|positif|négatif}} : par produit, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:c>0|+\\infty|-\\infty}} }$."
+							]
+						},
+						"hint": "Écris $f(x)={{c}}\\times\\dfrac{e^{x}}{{{if:n==1|x|x^{ {{n}} }}}}$ et utilise les croissances comparées."
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:c==1||{{if:c==-1|-|{{c}}}}}}{{if:n==1|x|x^{ {{n}} }}}e^{ {{k}}x }$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "n",
+								"expression": "1..4"
+							},
+							{
+								"name": "k",
+								"expression": "2..4"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "0",
+								"expectedErrors": [
+									{
+										"answer": "{{if:c*(-1)^n>0|+\\infty|-\\infty}}",
+										"message": "Tu n'as regardé que la puissance de $x$ : le facteur exponentiel tend vers $0$ et l'emporte, par croissances comparées.",
+										"label": "Limite d'un seul facteur"
+									},
+									{
+										"answer": "{{c}}",
+										"message": "Un produit « infini fois zéro » est une forme indéterminée : il ne vaut pas $1$.",
+										"label": "Infini fois zéro = 1"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"On pose $X={{k}}x$ : quand $x$ tend vers $-\\infty$, $X$ aussi, et $x=\\dfrac{X}{ {{k}} }$.",
+								"$f(x)=\\dfrac{ {{c}} }{ {{eval:k^n}} }X^{ {{n}} }e^{X}$ ; par croissances comparées, $\\displaystyle\\lim_{X\\to-\\infty}X^{ {{n}} }e^{X}=0$.",
+								"Donc $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+							]
+						},
+						"hint": "Pose $X={{k}}x$ : écris $x^{n}$ en fonction de $X$, puis utilise la limite de $X^{n}e^{X}$ en $-\\infty$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "v0 : eˣ − 3x² → +∞",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "v0 : −∞ (la puissance l'emporterait)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "2"
+						},
+						"description": "v0 : 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"description": "v1 : 2x³e⁻ˣ → 0",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"description": "v1 : +∞ (limite de x³ seule)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"description": "v1 : k (∞ × 0 = 1)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5",
+							"n": "2"
+						},
+						"description": "v2 : 5x²eˣ en −∞ → 0",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["+\\infty"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "2"
+						},
+						"description": "v2 : +∞ (limite de x² seule)",
+						"variationIndex": 2
+					},
+					{
+						"description": "F8a : 3eˣ/x² en +∞",
+						"variationIndex": 3,
+						"variables": {
+							"c": "3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F8a : croissances comparées inversées",
+						"variationIndex": 3,
+						"variables": {
+							"c": "3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as inversé les croissances comparées : en $+\\infty$, c'est l'exponentielle qui l'emporte sur toute puissance de $x$."
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F8a : −2eˣ/x³",
+						"variationIndex": 3,
+						"variables": {
+							"c": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F8a : signe du coefficient",
+						"variationIndex": 3,
+						"variables": {
+							"c": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le coefficient $-2$ est négatif : il donne le signe de la limite."
+						},
+						"answers": ["+\\infty"]
+					},
+					{
+						"description": "F8a : ∞/∞ = 1",
+						"variationIndex": 3,
+						"variables": {
+							"c": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Un quotient de deux infinis est une forme indéterminée : il ne vaut pas $1$."
+						},
+						"answers": ["-2"]
+					},
+					{
+						"description": "F8b : 5x³e^(2x) en −∞",
+						"variationIndex": 4,
+						"variables": {
+							"c": "5",
+							"n": "3",
+							"k": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F8b : limite d'un seul facteur",
+						"variationIndex": 4,
+						"variables": {
+							"c": "5",
+							"n": "3",
+							"k": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu n'as regardé que la puissance de $x$ : le facteur exponentiel tend vers $0$ et l'emporte, par croissances comparées."
+						},
+						"answers": ["-\\infty"]
+					},
+					{
+						"description": "F8b : ∞ × 0 = 1",
+						"variationIndex": 4,
+						"variables": {
+							"c": "5",
+							"n": "3",
+							"k": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Un produit « infini fois zéro » est une forme indéterminée : il ne vaut pas $1$."
+						},
+						"answers": ["5"]
+					}
+				],
+				"description": "Limites de eˣ − kxⁿ et xⁿe⁻ˣ en +∞, de xⁿeˣ en −∞ (pièges : x e⁻ˣ → +∞, ∞ × 0 = 1, limite d'un seul facteur)"
+			},
+			"changements": {
+				"ajoutees": [4, 5],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		}
+	]
+}

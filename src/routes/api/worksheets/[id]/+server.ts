@@ -5,7 +5,7 @@
  * DELETE - Delete worksheet (draft only)
  */
 
-import { error, isHttpError } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { loadStyleTemplate } from '#lib/server/worksheets/worksheet-styles.ts';
@@ -13,7 +13,8 @@ import { fetchResourceTagNames, syncResourceTags } from '#lib/server/resource-ta
 import {
 	applyClassification,
 	loadWorksheetClassifications,
-	prepareClassification
+	prepareClassification,
+	type ClassificationFields
 } from '#lib/server/worksheets/worksheet-classification.ts';
 import {
 	validateUpdateWorksheet,
@@ -24,6 +25,7 @@ import { uuidSchema } from '#lib/server/validation/common.ts';
 import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
 import type { TablesUpdate } from '#lib/types/database.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { WORKSHEET_LINE_VERSION, withLineVersion } from '#lib/server/exercise-versions.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/+server');
 
@@ -98,7 +100,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Fetch exercises with joined exercise data
-	const { data: exercises, error: exercisesError } = await locals.supabase
+	const { data: exerciseLines, error: exercisesError } = await locals.supabase
 		.from('worksheet_exercises')
 		.select(
 			`
@@ -106,12 +108,11 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			exercise:exercises (
 				id,
 				title,
+				translations,
 				variables,
-				shared,
-				variations,
-				generic_functions,
 				topic
-			)
+			),
+			${WORKSHEET_LINE_VERSION}
 		`
 		)
 		.eq('worksheet_id', worksheet.id)
@@ -121,6 +122,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		logger.error('Failed to fetch exercises:', exercisesError);
 		throw error(500, 'Impossible de charger les exercices de la fiche');
 	}
+	// Contenu : la version choisie par la fiche (ADR 0044), pas la dernière
+	const exercises = (exerciseLines ?? []).map((line) => withLineVersion(line));
 
 	// La fiche d'un style du prof, pour le PDF ; `null` pour un style de
 	// Chiphre (Typst dans le code) ou un style illisible (style par défaut).
@@ -150,7 +153,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				tags,
 				classifications,
 				sections: sections ?? [],
-				exercises: exercises ?? [],
+				exercises,
 				template
 			}
 		},
@@ -253,15 +256,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, 'Aucune modification demandée');
 	}
 
-	// Deux mises à jour de la fiche : d'abord les champs sans rapport avec les
+	// Deux écritures de la fiche : d'abord les champs sans rapport avec les
 	// notions (un refus, style d'un autre auteur par exemple, arrive AVANT que
-	// la moindre notion soit retirée) ; puis type, catégorie, case et titre
-	// composé, entre le retrait des notions en trop et l'écriture des nouvelles
-	// (l'ordre qui passe la garde de la base : une notion sauf Révisions /
-	// Automatismes). Trois requêtes, donc trois transactions : une fonction SQL
-	// les réunirait (écart connu, docs/systeme/fiches-et-pdf.md).
+	// la moindre notion soit retirée) ; puis type, catégorie, case, titre composé
+	// ET notions, en une transaction (`save_worksheet_classification`, L86)
 	const CLASSIFICATION_FIELDS = ['type', 'category', 'custom_title', 'title'] as const;
-	const classificationUpdate: TablesUpdate<'worksheets'> = {};
+	const classificationUpdate: ClassificationFields = {};
 	const otherUpdate: TablesUpdate<'worksheets'> = { ...updateData };
 	for (const field of CLASSIFICATION_FIELDS) {
 		if (field in updateData) {
@@ -292,14 +292,15 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	await writeWorksheet(otherUpdate);
-	try {
-		await applyClassification(locals.supabase, params.id, plan, () =>
-			writeWorksheet(classificationUpdate)
-		);
-	} catch (cause) {
-		if (isHttpError(cause)) throw cause;
-		logger.error('Failed to save classification:', cause);
-		throw error(500, 'Impossible d’enregistrer les notions de la fiche');
+	// Rien à classer (ni colonne, ni notions) : aucune écriture
+	if (Object.keys(classificationUpdate).length > 0 || plan.notions !== null) {
+		try {
+			worksheet = await applyClassification(locals.supabase, params.id, plan, classificationUpdate);
+		} catch (cause) {
+			logger.error('Failed to save classification:', cause);
+			// La fiche ou ses notions : la transaction a tout annulé
+			throw error(500, 'Impossible d’enregistrer la fiche et ses notions');
+		}
 	}
 
 	// `undefined` signifie « champ absent de la requête » : on ne touche alors pas

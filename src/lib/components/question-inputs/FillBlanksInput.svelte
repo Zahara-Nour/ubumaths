@@ -37,7 +37,7 @@
 <script lang="ts">
 	import '#lib/utils/mathlive-styles.ts';
 	import { parseMarkdown } from '#lib/ubumark/index.ts';
-	import { lexiconRuntime, loadLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
 	import { readLexicon } from '#lib/components/markdown/lexicon-context.ts';
 	import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 	import type { GradeLevel, InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
@@ -69,6 +69,7 @@
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '#lib/components/markdown/nodes/ParagraphNode.svelte';
 	import MathBlock from '#lib/components/markdown/nodes/MathBlock.svelte';
+	import { IMPOSSIBLE_ANSWER, isImpossibleAnswer } from '#lib/questions/impossible-answer.ts';
 	import MathPrompt from '#lib/components/markdown/nodes/MathPrompt.svelte';
 	import HeadingNode from '#lib/components/markdown/nodes/HeadingNode.svelte';
 	import StaticBlockNode from '#lib/components/markdown/nodes/StaticBlockNode.svelte';
@@ -87,6 +88,8 @@
 	import TrousEtiquettes from '#lib/components/markdown/nodes/TrousEtiquettes.svelte';
 	import TortueProgramme from '#lib/components/markdown/nodes/TortueProgramme.svelte';
 	import RobotCode from '#lib/components/markdown/nodes/RobotCode.svelte';
+	import Labyrinthe from '#lib/components/markdown/nodes/Labyrinthe.svelte';
+	import Yohaku from '#lib/components/markdown/nodes/Yohaku.svelte';
 	import CalculProgramme from '#lib/components/markdown/nodes/CalculProgramme.svelte';
 	import PartageColorier from '#lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '#lib/components/markdown/nodes/CubesGeste.svelte';
@@ -98,6 +101,8 @@
 	import ChoiceBlock from '#lib/components/markdown/nodes/ChoiceBlock.svelte';
 	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
 	import SignCellPicker from './SignCellPicker.svelte';
+	import ResolutionInput from './ResolutionInput.svelte';
+	import ParametricLineInput from './ParametricLineInput.svelte';
 	import type { HiddenCell, VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
 	import type { ChoiceNode } from '#lib/ubumark/types/choix.ts';
@@ -249,6 +254,8 @@
 		if (node.type === 'tortue') return node.caseIndex !== undefined;
 		if (node.type === 'calcul') return node.caseIndex !== undefined;
 		if (node.type === 'robot') return node.caseIndex !== undefined;
+		if (node.type === 'labyrinthe') return node.caseIndex !== undefined;
+		if (node.type === 'yohaku') return node.caseIndex !== undefined;
 		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
 	}
@@ -403,6 +410,83 @@
 
 	let container: HTMLDivElement | undefined = $state();
 
+	/**
+	 * Cases ordinaires à bouton « impossible » (index de la case + texte du bouton) : seulement
+	 * une vraie case de formule, écrite `\placeholder[N]{}` dans l'énoncé. Une grille d'opération,
+	 * un choix, une construction ou un geste n'en ont pas, même si `blankDefaults` porte un texte.
+	 */
+	let impossibleBlanks = $derived(
+		blanks.flatMap((blank, index) =>
+			blank.type === 'math' &&
+			!blank.answerKind &&
+			!blank.choice &&
+			!blank.construction &&
+			!blank.construire &&
+			blank.impossibleLabel &&
+			new RegExp(`\\\\placeholder\\[${index}\\]`).test(statement)
+				? [{ index, label: blank.impossibleLabel }]
+				: []
+		)
+	);
+
+	/**
+	 * Bouton enfoncé = valeur de la case égale à la marque réservée `IMPOSSIBLE_ANSWER`, que rien
+	 * de tapé ne produit : l'état du bouton est à part (décision de David, 2026-11-23).
+	 */
+	function isImpossiblePressed(index: number): boolean {
+		return isImpossibleAnswer(values[index]);
+	}
+
+	/** Champ MathLive qui porte la case `index` (MathLive chargé seulement) */
+	function mathFieldOfBlank(index: number): MathfieldElement | undefined {
+		const fields = container?.querySelectorAll<MathfieldElement>('math-field') ?? [];
+		return Array.from(fields).find(
+			(field) =>
+				typeof field.getPrompts === 'function' && field.getPrompts().includes(String(index))
+		);
+	}
+
+	/** Case du bouton : vidée et verrouillée (grisée par MathLive) quand il est enfoncé, libre sinon */
+	function syncImpossiblePrompt(index: number, pressed: boolean) {
+		const field = mathFieldOfBlank(index);
+		if (!field) return;
+		const id = String(index);
+		if (pressed && field.getPromptValue(id) !== '') {
+			field.setPromptValue(id, '', { silenceNotifications: true });
+		}
+		if (field.getPromptState(id)[1] !== pressed) field.setPromptState(id, undefined, pressed);
+	}
+
+	/** Clic : bouton enfoncé, case vidée et verrouillée ; second clic : case libre et vide */
+	function toggleImpossible(index: number) {
+		if (effectiveDisabled) return;
+		const pressed = !isImpossiblePressed(index);
+		values[index] = pressed ? IMPOSSIBLE_ANSWER : '';
+		valuesLatex[index] = values[index];
+		syncImpossiblePrompt(index, pressed);
+	}
+
+	// Garde défensive : valeur qui porte déjà la marque (aucun parent ne la remonte aujourd'hui ;
+	// clic avant le chargement de MathLive) → case verrouillée dès que MathLive est là
+	$effect(() => {
+		const states = impossibleBlanks.map(({ index }) => ({
+			index,
+			pressed: isImpossiblePressed(index)
+		}));
+		if (!container || states.length === 0 || showCorrectAnswers) return;
+		let cancelled = false;
+		void customElements.whenDefined('math-field').then(() => {
+			// Les champs se montent après la définition : un tour de plus
+			requestAnimationFrame(() => {
+				if (cancelled) return;
+				for (const { index, pressed } of states) syncImpossiblePrompt(index, pressed);
+			});
+		});
+		return () => {
+			cancelled = true;
+		};
+	});
+
 	/** Champ MathLive (sans importer mathlive à l'exécution : le composant est rendu côté serveur) */
 	function isMathField(target: EventTarget | null): target is MathfieldElement {
 		return target instanceof HTMLElement && target.tagName === 'MATH-FIELD';
@@ -551,7 +635,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus]:not([read-only]), [data-calcul-focus]:not(:disabled), [data-graduer-focus]:not(:disabled), math-field[data-resolution-focus], math-field[data-parametrique-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -715,6 +799,10 @@
 	function handleInputChange(index: number, value: string) {
 		if (effectiveDisabled) return;
 
+		// Bouton « impossible » enfoncé : la case verrouillée relue vide (frappe dans une autre case
+		// de la formule) ne l'efface pas ; seul un second clic sur le bouton le relâche
+		if (isImpossiblePressed(index)) return;
+
 		// Update values array
 		if (index >= 0 && index < blanks.length) {
 			values[index] = value;
@@ -724,6 +812,28 @@
 				valuesLatex[index] = value;
 			}
 		}
+	}
+
+	/**
+	 * Case « résolution » posée seule dans un bloc `$$\placeholder[N]{}$$` : son index,
+	 * undefined pour tout autre bloc (formule ordinaire, autre case)
+	 */
+	function resolutionCaseOf(expression: string): number | undefined {
+		const match = /^\s*\\placeholder\[(\d+)\]\{\}\s*$/.exec(expression);
+		if (!match) return undefined;
+		const index = Number(match[1]);
+		return blanks[index]?.answerKind === 'resolution' ? index : undefined;
+	}
+
+	/**
+	 * Case « droite paramétrique » posée seule dans un bloc `$$\placeholder[N]{}$$` : son
+	 * index, undefined pour tout autre bloc
+	 */
+	function parametricCaseOf(expression: string): number | undefined {
+		const match = /^\s*\\placeholder\[(\d+)\]\{\}\s*$/.exec(expression);
+		if (!match) return undefined;
+		const index = Number(match[1]);
+		return blanks[index]?.answerKind === 'droite-parametrique' ? index : undefined;
 	}
 
 	// ============================================================================
@@ -897,6 +1007,32 @@
 						{#key filledLatex}
 							<MathBlock expression={filledLatex} syntax="latex" />
 						{/key}
+					{:else if parametricCaseOf(node.expression) !== undefined}
+						<!-- Case « droite paramétrique » : trois lignes x =, y =, z = -->
+						{@const caseIndex = parametricCaseOf(node.expression) ?? 0}
+						<ParametricLineInput
+							value={inputStates[caseIndex]?.value ?? ''}
+							isCorrect={inputStates[caseIndex]?.isCorrect ?? null}
+							disabled={effectiveDisabled}
+							caseNumber={caseIndex + 1}
+							onChange={(value) => handleInputChange(caseIndex, value)}
+						/>
+					{:else if resolutionCaseOf(node.expression) !== undefined}
+						<!-- Case « résolution » : une colonne de lignes à la place du champ -->
+						{@const caseIndex = resolutionCaseOf(node.expression) ?? 0}
+						{@const blank = blanks[caseIndex]}
+						<ResolutionInput
+							value={inputStates[caseIndex]?.value ?? ''}
+							isCorrect={inputStates[caseIndex]?.isCorrect ?? null}
+							disabled={effectiveDisabled}
+							caseNumber={caseIndex + 1}
+							fields={{
+								equation: blank?.equation,
+								variable: blank?.variable,
+								minLines: blank?.minLines
+							}}
+							onChange={(value) => handleInputChange(caseIndex, value)}
+						/>
 					{:else}
 						{#key node.expression}
 							<MathPrompt
@@ -951,6 +1087,26 @@
 								}
 							: undefined}
 					/>
+				{/if}
+			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.graduer !== undefined}
+				<!-- Droite à graduer : la case N est le nombre de parts, le point k a la case N + 1 + k -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = 1 + (node.placer?.length ?? 0)}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite partagée, les points justes -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<NumberLine
+							{node}
+							answers={Array.from({ length: caseCount }, (_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
 				{/if}
 			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.placer !== undefined}
 				<!-- Droite à placer : l'élève pose ses points, une case par point (N, N + 1…),
@@ -1258,6 +1414,66 @@
 						{/key}
 					</div>
 				{/if}
+			{:else if node.type === 'labyrinthe' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Labyrinthe à parcourir : l'élève trace le chemin, son chemin en texte est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le bon chemin et sa sortie -->
+					<BuildAnswer
+						kind="labyrinthe"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						{#key node.source}
+							<Labyrinthe
+								{node}
+								expected={flashMode ? undefined : expected}
+								answer={{
+									value: state?.value ?? '',
+									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex, value)
+								}}
+							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'yohaku' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Grille yohaku : l'élève remplit des champs, ses valeurs en tableau sont la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : une grille juste et la mention des autres -->
+					<BuildAnswer
+						kind="yohaku"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						{#key node.source}
+							<Yohaku
+								{node}
+								expected={flashMode ? undefined : expected}
+								answer={{
+									value: state?.value ?? '',
+									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex, value)
+								}}
+							/>
+						{/key}
+					</div>
+				{/if}
 			{:else if node.type === 'calcul' && node.caseIndex !== undefined && node.spec !== null}
 				<!-- Programme de calcul : l'élève assemble des blocs, son programme écrit en texte est la réponse -->
 				{@const caseIndex = node.caseIndex}
@@ -1507,7 +1723,8 @@
 				<HeadingNode level={node.level} children={node.children} />
 			{:else if node.type === 'table' && tableHasBlanks(node, blanksCapitalPairs())}
 				<!-- `relative` : les éléments en position absolue des champs MathLive (libellés
-				     pour lecteur d'écran) restent dans le cadre défilant, sinon la page déborde -->
+				     pour lecteur d'écran) restent dans le cadre défilant, sinon la page déborde ;
+				     `table-with-blanks` : cellules resserrées au téléphone (style plus bas) -->
 				<TableNode
 					header={node.header}
 					rows={node.rows}
@@ -1516,13 +1733,31 @@
 					cross={node.cross}
 					{genericFunctions}
 					customCell={blankCell}
-					class="relative"
+					class="table-with-blanks relative"
 				/>
 			{:else}
 				<!-- Blocs sans trou (courbe, tableau, code, liste…) : rendus tels quels -->
 				<StaticBlockNode {node} />
 			{/if}
 		{/each}
+	{/if}
+
+	<!-- Cases « expression, ou bien : impossible » : un bouton par case, état = marque de la case -->
+	{#if impossibleBlanks.length > 0 && !flashMode}
+		<div class="mt-2 flex flex-wrap gap-2">
+			{#each impossibleBlanks as { index, label } (index)}
+				{@const pressed = isImpossiblePressed(index)}
+				<button
+					type="button"
+					class="impossible-toggle"
+					aria-pressed={pressed}
+					disabled={effectiveDisabled}
+					onclick={() => toggleImpossible(index)}
+				>
+					{impossibleBlanks.length > 1 ? `Case ${index + 1} : ${label}` : label}
+				</button>
+			{/each}
+		</div>
 	{/if}
 
 	<!-- Messages par blanc (après correction) -->
@@ -1549,6 +1784,34 @@
 </div>
 
 <style>
+	/* Bouton « impossible » : contour sobre, plein quand il est enfoncé ; cible tactile ≥ 44 px */
+	.impossible-toggle {
+		min-height: 2.75rem;
+		padding: 0.25rem 1rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md, 0.5rem);
+		background: var(--color-background);
+		color: var(--color-foreground);
+		font-size: 0.95rem;
+		cursor: pointer;
+	}
+
+	.impossible-toggle[aria-pressed='true'] {
+		border-color: var(--color-primary);
+		background: var(--color-primary);
+		color: var(--color-primary-foreground);
+	}
+
+	.impossible-toggle:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 2px;
+	}
+
+	.impossible-toggle:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
 	.fill-blanks-container {
 		width: 100%;
 	}
@@ -1565,6 +1828,27 @@
 	/* Cellule étroite : sans le bouton de menu (le clic droit l'ouvre toujours) */
 	:global(.table-blank-cell math-field::part(menu-toggle)) {
 		display: none;
+	}
+
+	/* Tableau à cases sur écran étroit (outil n° 57) : cellules et cases resserrées, comme
+	   le tableau de variations à compléter (5 colonnes de 5e tiennent dans un iPhone) */
+	@media (max-width: 30rem) {
+		:global(.table-with-blanks :is(th, td)) {
+			padding-inline: 0.25em;
+		}
+
+		:global(.table-blank-cell math-field) {
+			padding: 2px;
+			margin: 0;
+		}
+	}
+
+	/* Écran tactile : pas de bouton clavier dans la case — la toucher ouvre le clavier,
+	   « Fermer le clavier » (MathKeyboardClose) le referme. Gagne 60 px par case. */
+	@media (pointer: coarse) {
+		:global(.table-blank-cell math-field::part(virtual-keyboard-toggle)) {
+			display: none;
+		}
 	}
 
 	.helper-text {

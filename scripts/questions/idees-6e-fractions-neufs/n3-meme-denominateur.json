@@ -1,0 +1,261 @@
+{
+	"id": "eae76a51-a027-46c8-825e-bd8d5d897025",
+	"rangement": {
+		"noeud": "Nombres et calculs > Fractions : sens et écritures > égalité de fractions",
+		"point": "6-132"
+	},
+	"title": "Mettre deux fractions au même dénominateur",
+	"description": "Écrire deux fractions avec un dénominateur commun donné : un dénominateur multiple de l'autre (2/3 et 5/12 sur 12), ou des cas simples (2/3 et 3/4 sur 12, 1/2 et 4/5 sur 10) ; pièges : numérateur inchangé, même nombre ajouté en haut et en bas",
+	"grades": ["6"],
+	"level": 10,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris ces deux fractions avec le même dénominateur, ${{D}}$.\n\n$$\\frac{{{a}}}{{{b}}} = \\frac{?}{{{D}}} \\qquad \\frac{{{c}}}{{{D}}} = \\frac{?}{{{D}}}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "D",
+					"expression": "eval:k*b"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:D-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,D)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Le dénominateur a été multiplié par ${{k}}$ : multiplie aussi le numérateur.",
+							"label": "Numérateur inchangé"
+						},
+						{
+							"answer": "{{eval:a+D-b}}",
+							"message": "On ne rajoute pas le même nombre en haut et en bas : on multiplie le numérateur et le dénominateur par le même nombre.",
+							"label": "Addition au lieu de multiplication"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction égale.** ${{b}} \\times \\textcolor{{{color:primary.1}}}{{{k}}} = {{D}}$ : on multiplie le numérateur et le dénominateur de $\\frac{{{a}}}{{{b}}}$ par ${{k}}$.",
+					"$$\\frac{{{a}}}{{{b}}} = \\frac{{{a}} \\times \\textcolor{{{color:primary.1}}}{{{k}}}}{{{b}} \\times \\textcolor{{{color:primary.1}}}{{{k}}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{eval:a*k}}}}{{{D}}}$$",
+					"$\\frac{{{c}}}{{{D}}}$ a déjà le dénominateur ${{D}}$ : elle ne change pas, $\\frac{\\textcolor{{{color:primary.0}}}{{{c}}}}{{{D}}}$."
+				]
+			},
+			"hint": "Par quel nombre faut-il multiplier ${{b}}$ pour obtenir ${{D}}$ ? Fais de même au numérateur."
+		},
+		{
+			"statement": "Écris ces deux fractions avec le même dénominateur, ${{D}}$.\n\n$$\\frac{{{a}}}{{{b}}} = \\frac{?}{{{D}}} \\qquad \\frac{{{c}}}{{{m}}} = \\frac{?}{{{D}}}$$",
+			"variables": [
+				{
+					"name": "t1",
+					"expression": "0..1"
+				},
+				{
+					"name": "t2",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:2+t2+2*t1-3*t1*t2"
+				},
+				{
+					"name": "m",
+					"expression": "eval:3+t2+3*t1-2*t1*t2"
+				},
+				{
+					"name": "D",
+					"expression": "eval:b*m/gcd(b,m)"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:2*m-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,m)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*D/b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Le dénominateur a été multiplié par ${{eval:D/b}}$ : multiplie aussi le numérateur.",
+							"label": "Numérateur inchangé"
+						},
+						{
+							"answer": "{{eval:a+D-b}}",
+							"message": "On ne rajoute pas le même nombre en haut et en bas : on multiplie le numérateur et le dénominateur par le même nombre.",
+							"label": "Addition au lieu de multiplication"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:c*D/m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}",
+							"message": "Le dénominateur a été multiplié par ${{eval:D/m}}$ : multiplie aussi le numérateur.",
+							"label": "Numérateur inchangé"
+						},
+						{
+							"answer": "{{eval:c+D-m}}",
+							"message": "On ne rajoute pas le même nombre en haut et en bas : on multiplie le numérateur et le dénominateur par le même nombre.",
+							"label": "Addition au lieu de multiplication"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fractions égales.** ${{b}} \\times {{eval:D/b}} = {{D}}$ et ${{m}} \\times {{eval:D/m}} = {{D}}$ : on multiplie le numérateur et le dénominateur de chaque fraction par le même nombre.",
+					"$$\\frac{{{a}}}{{{b}}} = \\frac{{{a}} \\times {{eval:D/b}}}{{{b}} \\times {{eval:D/b}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{eval:a*D/b}}}}{{{D}}} \\qquad \\frac{{{c}}}{{{m}}} = \\frac{{{c}} \\times {{eval:D/m}}}{{{m}} \\times {{eval:D/m}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{eval:c*D/m}}}}{{{D}}}$$"
+				]
+			},
+			"hint": "Pour chaque fraction, cherche par quel nombre multiplier le dénominateur pour obtenir ${{D}}$, et fais de même au numérateur."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A : 2/3 et 5/12 → 8/12 et 5/12",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"k": "4",
+				"D": "12",
+				"a": "2",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8", "5"]
+		},
+		{
+			"description": "A : numérateur inchangé (2)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"k": "4",
+				"D": "12",
+				"a": "2",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur a été multiplié par $4$ : multiplie aussi le numérateur."
+			},
+			"answers": ["2", "5"]
+		},
+		{
+			"description": "A : addition (11)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"k": "4",
+				"D": "12",
+				"a": "2",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne rajoute pas le même nombre en haut et en bas : on multiplie le numérateur et le dénominateur par le même nombre."
+			},
+			"answers": ["11", "5"]
+		},
+		{
+			"description": "B : 2/3 et 3/4 → 8/12 et 9/12",
+			"variationIndex": 1,
+			"variables": {
+				"t1": "0",
+				"t2": "1",
+				"b": "3",
+				"m": "4",
+				"D": "12",
+				"a": "2",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8", "9"]
+		},
+		{
+			"description": "B : numérateurs inchangés",
+			"variationIndex": 1,
+			"variables": {
+				"t1": "0",
+				"t2": "1",
+				"b": "3",
+				"m": "4",
+				"D": "12",
+				"a": "2",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur a été multiplié par $4$ : multiplie aussi le numérateur."
+			},
+			"answers": ["2", "9"]
+		},
+		{
+			"description": "B : addition sur la seconde (11)",
+			"variationIndex": 1,
+			"variables": {
+				"t1": "0",
+				"t2": "1",
+				"b": "3",
+				"m": "4",
+				"D": "12",
+				"a": "2",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne rajoute pas le même nombre en haut et en bas : on multiplie le numérateur et le dénominateur par le même nombre."
+			},
+			"answers": ["8", "11"]
+		},
+		{
+			"description": "B : 1/2 et 4/5 → 5/10 et 8/10",
+			"variationIndex": 1,
+			"variables": {
+				"t1": "1",
+				"t2": "1",
+				"b": "2",
+				"m": "5",
+				"D": "10",
+				"a": "1",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "8"]
+		}
+	]
+}

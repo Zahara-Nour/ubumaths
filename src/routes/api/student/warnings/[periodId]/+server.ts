@@ -14,8 +14,8 @@
  * - Cache TTL: 10 minutes per period
  * - Map-based caching allows multiple periods to be cached simultaneously
  *
- * NOTE: Currently students cannot view their own warnings in the UI.
- * This endpoint structure is ready for when/if this feature is added.
+ * L'élève voit ses avertissements de la période courante sur son tableau de bord
+ * (RewardsBlock, via studentCache.getWarnings).
  *
  * RESPONSE:
  * {
@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate periodId parameter
 	const periodIdValidation = periodIdSchema.safeParse(params.periodId);
 	if (!periodIdValidation.success) {
-		throw error(400, 'Invalid period ID format');
+		throw error(400, 'Identifiant de période invalide');
 	}
 	const periodId = periodIdValidation.data;
 

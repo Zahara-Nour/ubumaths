@@ -1,0 +1,33 @@
+{
+	"migration": "supabase/migrations/20261126103343_questions_idees_tle_geometrie_espace_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "6c2e48c3-7745-4080-8f31-97e4da535ca0",
+			"title": "Espace : écrire une représentation paramétrique de droite",
+			"fichier": "n1-ecrire-representation-parametrique.json",
+			"branche": "Géométrie",
+			"notion": "Espace",
+			"sousNotion": "représentation paramétrique",
+			"point": "TSPE-365"
+		},
+		{
+			"id": "35c6fad0-c023-4a0e-a927-86d20e736e79",
+			"title": "Espace : position relative de deux droites en repère",
+			"fichier": "n2-position-relative-deux-droites.json",
+			"branche": "Géométrie",
+			"notion": "Espace",
+			"sousNotion": "positions relatives et intersections",
+			"point": "TSPE-567"
+		},
+		{
+			"id": "d2ad4df0-bbb6-4fa3-9d16-f55794249e65",
+			"title": "Espace : coordonnées d'un point dans un repère du cube",
+			"fichier": "n3-coordonnees-point-repere-cube.json",
+			"branche": "Géométrie",
+			"notion": "Espace",
+			"sousNotion": "coordonnées",
+			"point": "TSPE-332"
+		}
+	],
+	"niveaux": []
+}

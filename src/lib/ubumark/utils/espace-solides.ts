@@ -8,11 +8,12 @@
  * diverger. Chantier `solides`, lot 3 (§ 8 du journal), ADR 0034.
  *
  * Perspective : celle de ```cubes — face avant en vraie grandeur, fuyantes à
- * 45° vers le haut à droite, réduites de moitié. Polyèdres : une arête est
- * cachée (tirets) quand toutes ses faces tournent le dos à l'œil. Cylindre,
- * cône, boule : ellipses « à plat » (horizontales, comme le CP et les
- * manuels), moitié arrière en tirets ; les génératrices du cône sont
- * tangentes à l'ellipse.
+ * 45° vers le haut à droite, réduites de moitié. Polyèdres : projection et
+ * arêtes cachées par le moteur de vue (`espace-vue.ts`), à la vue de départ ;
+ * une arête est cachée (tirets) quand toutes ses faces tournent le dos à
+ * l'œil. Cylindre, cône, boule : ellipses « à plat » (horizontales, comme le
+ * CP et les manuels), moitié arrière en tirets ; les génératrices du cône
+ * sont tangentes à l'ellipse.
  *
  * Section (`section:`, lot 6) : le polygone de coupe, teinté, contour en
  * trait plein épais ; le plan n'est pas dessiné ; boule coupée : sans équateur.
@@ -25,11 +26,34 @@
  * `SOLIDE_SIZE` cm sur son plus grand côté. Repère : y vers le BAS (SVG), une
  * unité = 1 cm, étiquettes comprises dans la boîte.
  *
+ * Figure que l'on peut tourner (`tourner: oui`, chantier `solides-3d`, lot 2,
+ * ADR 0045) : `buildSolideScene(spec, vue)` dessine le solide vu de `vue`,
+ * dans un cadre FIXE — même échelle que le dessin fixe, centre du solide au
+ * milieu d'un carré qui contient la figure sous tous les angles (la page ne
+ * bouge pas quand la figure tourne). À la vue de départ, c'est le dessin fixe,
+ * déplacé en bloc. Sans `vue` : le dessin fixe, celui du PDF. Cylindre, cône,
+ * boule (lot 3) : `turnedRoundDraft`, de vrais ovales qui s'ouvrent avec la
+ * bascule ; leur bascule de départ est celle de l'ovale à plat (`solideTilt`).
+ *
  * @module ubumark/utils/espace-solides
  */
 
 import type { SolideForm, SolidePoint, SolideSpec } from '../types/espace';
 import { ESPACE_STROKE, type EspacePoint } from './espace-scene';
+import {
+	VUE_DE_DEPART,
+	VUE_TILT,
+	chordInSolid,
+	hiddenEdges,
+	hiddenStretches,
+	planeInSolid,
+	vueProjection,
+	type EspaceVue,
+	type Point3,
+	type VueTilt
+} from './espace-vue';
+
+export type { Point3 } from './espace-vue';
 
 // ============================================================================
 // TYPES
@@ -94,6 +118,37 @@ export interface SolideScene {
 	points: EspacePoint[];
 	/** Vecteurs donnés, puis petites flèches de leurs noms ; dessinées après les traits */
 	arrows: SolideArrow[];
+	/**
+	 * Droites données (`droites:`), dans l'ordre écrit : chacune en morceaux qui se
+	 * suivent, en tirets là où une face du solide passe devant ; dessinées en
+	 * couleur après les arêtes. Absent : le bloc n'a pas de droites.
+	 */
+	droites?: SolideLine[][];
+	/**
+	 * Segments donnés (`segments:`), puis les deux côtés du petit carré de chaque
+	 * angle droit codé (`angles-droits:`), en morceaux : en tirets là où une face
+	 * du solide passe devant ; dessinés en couleur, comme les droites. Absent : ni
+	 * segment ni angle droit.
+	 */
+	segments?: SolideLine[];
+	/**
+	 * Plans donnés (`plans:`), dans l'ordre écrit : la partie du plan dans le
+	 * solide, teintée après les faces marquées, et son bord en couleur, en tirets
+	 * là où une face du solide passe devant. Absent : le bloc n'a pas de plans.
+	 */
+	plans?: SolidePlanShape[];
+	/**
+	 * Figure que l'on peut tourner seulement : la place de chaque nom de `labels`
+	 * par rapport à son point (sommet, point déclaré, milieu du vecteur), à
+	 * redonner à `buildSolideScene` pour tenir les noms pendant la rotation
+	 */
+	labelOffsets?: EspacePoint[];
+}
+
+/** Un plan donné, dessiné : son polygone dans le solide et les morceaux de son bord */
+export interface SolidePlanShape {
+	fill: EspacePoint[];
+	border: SolideLine[];
 }
 
 /** Ce qu'il faut savoir d'une forme pour lire `sommets:` et `marquer:` */
@@ -149,12 +204,6 @@ export const SOLIDE_DOT_RADIUS = 0.06;
 /** Taille du texte des étiquettes, en cm */
 export const SOLIDE_LABEL_SIZE = 0.36;
 
-/** Déport des fuyantes pour une profondeur de 1 : 0,5 × arête, à 45° */
-const DEPTH_SHIFT = 0.5 * Math.SQRT1_2;
-
-/** Vers l'œil : les points (x, y, z) et (x − K, y − K, z + 1) se confondent au dessin */
-const TOWARD_EYE = { x: DEPTH_SHIFT, y: DEPTH_SHIFT, z: -1 };
-
 /** Aplatissement des ellipses « à plat » (petit axe / grand axe), celui du CP */
 const ELLIPSE_RATIO = 0.3;
 
@@ -163,6 +212,15 @@ const ELLIPSE_RATIO = 0.3;
  * sommet tombe dans l'ellipse et le cône ne se reconnaît plus ; marge jusqu'à 0,5
  */
 export const SOLIDE_FLAT_CONE = 0.5;
+
+/**
+ * Solide rond que l'on peut tourner : son dessin « à plat » est la vraie vue
+ * d'un œil placé à cette inclinaison au-dessus de l'horizontale (hauteurs non
+ * raccourcies). La figure tournée en part et la garde dans la vue droite : seule
+ * la hauteur raccourcit pendant le passage (chantier `solides-3d`, lot 3).
+ */
+const ROUND_ELEVATION = Math.asin(ELLIPSE_RATIO);
+export const SOLIDE_ROUND_TILT: VueTilt = { atRest: ROUND_ELEVATION, straight: ROUND_ELEVATION };
 
 /** Segments d'une ellipse ou d'un cercle complet */
 const ARC_STEPS = 72;
@@ -182,6 +240,60 @@ const DOT_CLEARANCE = 0.06;
 
 /** Distance d'une étiquette de sommet à son point, en cm */
 const LABEL_GAP = 0.28;
+/**
+ * Places essayées pour le nom d'un sommet, dans l'ordre : distance (× LABEL_GAP)
+ * et écart d'angle (huitièmes de demi-tour) à la direction libre ; la première
+ * qui ne touche aucun trait. Près de la direction libre d'abord, puis tout le
+ * tour du sommet (E49 : un trait de section passe près du sommet)
+ */
+const NAME_PLACES: { gap: number; turn: number }[] = [
+	[0, 1, -1],
+	[2, -2],
+	[3, -3],
+	[4, -4],
+	[5, -5],
+	[6, -6],
+	[7, -7],
+	[8]
+].flatMap((turns) =>
+	[1, 1.35].flatMap((gap) => turns.map((k) => ({ gap, turn: (k * Math.PI) / 8 })))
+);
+
+/**
+ * Marge du cadre d'une figure que l'on peut tourner, autour du plus grand
+ * cercle que parcourt un point du solide, en cm : la place du nom d'un sommet
+ * (au plus loin `LABEL_GAP` × 1,35, plus sa demi-boîte)
+ */
+const TURN_PAD = 0.75;
+
+/**
+ * Ce qu'une droite dépasse du solide, de chaque côté, en part de sa plus grande
+ * dimension ; un point donné par ses coordonnées ne sort pas du solide de plus
+ * que cela (`solide-parser.ts`)
+ */
+export const DROITE_OVERHANG = 0.18;
+
+/** Le côté du carré d'un angle droit codé, en part de la plus grande dimension du solide */
+const RIGHT_ANGLE_SIZE = 0.1;
+
+/** Nom d'un point déclaré sur une figure à droites : second tour de places, à cette part de l'écart habituel */
+const POINT_NAME_FAR = 1.7;
+
+/** Le nom d'une droite : vide laissé entre sa boîte et le trait, en cm */
+const DROITE_NAME_CLEAR = 0.08;
+
+/** Le nom d'une droite : à cette distance de son bout, le long du trait, en cm */
+const DROITE_NAME_BACK = [0.35, 0.8, 1.25];
+
+/**
+ * Le nom d'un plan : écrit en un point du plan, pris parmi son milieu et les
+ * points à ces parts du chemin du milieu vers chaque coin et chaque milieu de côté
+ */
+const PLAN_NAME_TOWARD = [0.3, 0.55];
+
+/** Le nom d'un plan écrit à côté de son bord : à ces parts du côté, à ces écarts en plus (cm) */
+const PLAN_NAME_AWAY = [0, 0.3, 0.6];
+const PLAN_NAME_ALONG = [0.5, 0.3, 0.7];
 
 /** Distance d'une cote à son trait, en cm */
 const COTE_GAP = 0.14;
@@ -316,17 +428,9 @@ export function solideTopology(form: SolideForm): SolideTopology {
 // GÉOMÉTRIE
 // ============================================================================
 
-export interface Point3 {
-	x: number;
-	y: number;
-	z: number;
-}
-
-/** Projection cavalière, y vers le HAUT (repère de calcul) */
-const project = (p: Point3): EspacePoint => ({
-	x: p.x + p.z * DEPTH_SHIFT,
-	y: p.y + p.z * DEPTH_SHIFT
-});
+/** La bascule que le dessin d'une forme ajoute à celle de la vue (pour `turnVue`) */
+export const solideTilt = (form: SolideForm): VueTilt =>
+	solideTopology(form).curved ? SOLIDE_ROUND_TILT : VUE_TILT;
 
 /** Sommets 3D d'un polyèdre : x vers la droite, y vers le haut, z vers le fond */
 export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
@@ -372,16 +476,67 @@ export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 }
 
 /**
+ * Le point où la droite (a b) coupe `other` : un plan (trois points) ou une autre
+ * droite (deux points, dans un même plan que la première). Le lecteur du bloc a
+ * déjà refusé les cas sans point unique (parallèles, droite dans le plan…)
+ */
+export function meetPoint(a: Point3, b: Point3, other: Point3[]): Point3 {
+	const minus = (p: Point3, q: Point3) => ({ x: p.x - q.x, y: p.y - q.y, z: p.z - q.z });
+	const cross = (u: Point3, v: Point3) => ({
+		x: u.y * v.z - u.z * v.y,
+		y: u.z * v.x - u.x * v.z,
+		z: u.x * v.y - u.y * v.x
+	});
+	const dot = (u: Point3, v: Point3) => u.x * v.x + u.y * v.y + u.z * v.z;
+	const u = minus(b, a);
+	const [p, q, r] = other;
+	let t: number;
+	if (r !== undefined) {
+		// Plan : n · (a + t u − p) = 0
+		const n = cross(minus(q, p), minus(r, p));
+		t = dot(n, minus(p, a)) / dot(n, u);
+	} else {
+		// Droite (p q) : a + t u = p + s v, lu le long de u × v
+		const v = minus(q, p);
+		const n = cross(u, v);
+		t = dot(cross(minus(p, a), v), n) / dot(n, n);
+	}
+	return { x: a.x + t * u.x, y: a.y + t * u.y, z: a.z + t * u.z };
+}
+
+/**
  * Les points nommables d'un polyèdre, en 3D : les sommets, puis chaque point
- * déclaré (isobarycentre de ses points `of`, sommets ou points déclarés avant lui)
+ * déclaré (isobarycentre de ses points `of`, sommets ou points déclarés avant lui ;
+ * ou point donné par ses coordonnées dans le repère du solide, `coords` ; ou point
+ * d'intersection, `meet`)
  */
 export function solidePoints3(
 	form: SolideForm,
 	dims: number[],
-	points: Pick<SolidePoint, 'of'>[]
+	points: Pick<SolidePoint, 'of' | 'coords' | 'meet'>[]
 ): Point3[] {
 	const all = polyhedronVertices(form, dims);
 	for (const point of points) {
+		if (point.meet !== undefined) {
+			const { line, other } = point.meet;
+			all.push(
+				meetPoint(
+					all[line[0]],
+					all[line[1]],
+					other.map((i) => all[i])
+				)
+			);
+			continue;
+		}
+		// Par ses coordonnées : origine + x × premier vecteur + y × deuxième + z × troisième
+		if (point.coords !== undefined) {
+			const { origin, axes, values } = point.coords;
+			const o = all[origin];
+			const along = (pick: (p: Point3) => number) =>
+				pick(o) + axes.reduce((sum, axis, i) => sum + values[i] * (pick(all[axis]) - pick(o)), 0);
+			all.push({ x: along((p) => p.x), y: along((p) => p.y), z: along((p) => p.z) });
+			continue;
+		}
 		const of = point.of.map((i) => all[i]);
 		all.push({
 			x: of.reduce((s, p) => s + p.x, 0) / of.length,
@@ -392,28 +547,30 @@ export function solidePoints3(
 	return all;
 }
 
-const sub = (a: Point3, b: Point3): Point3 => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z });
-const dot = (a: Point3, b: Point3) => a.x * b.x + a.y * b.y + a.z * b.z;
-const cross = (a: Point3, b: Point3): Point3 => ({
-	x: a.y * b.z - a.z * b.y,
-	y: a.z * b.x - a.x * b.z,
-	z: a.x * b.y - a.y * b.x
+const bounds3 = (points: Point3[]) => ({
+	minX: Math.min(...points.map((p) => p.x)),
+	maxX: Math.max(...points.map((p) => p.x)),
+	minY: Math.min(...points.map((p) => p.y)),
+	maxY: Math.max(...points.map((p) => p.y)),
+	minZ: Math.min(...points.map((p) => p.z)),
+	maxZ: Math.max(...points.map((p) => p.z))
 });
+
+/** Distance du point p au segment [a, b] */
+function distanceToSegment(p: EspacePoint, a: EspacePoint, b: EspacePoint): number {
+	const dx = b.x - a.x;
+	const dy = b.y - a.y;
+	const squared = dx * dx + dy * dy;
+	const t =
+		squared === 0 ? 0 : Math.min(1, Math.max(0, ((p.x - a.x) * dx + (p.y - a.y) * dy) / squared));
+	return Math.hypot(p.x - (a.x + dx * t), p.y - (a.y + dy * t));
+}
+
 const centroid = (points: Point3[]): Point3 => ({
 	x: points.reduce((s, p) => s + p.x, 0) / points.length,
 	y: points.reduce((s, p) => s + p.y, 0) / points.length,
 	z: points.reduce((s, p) => s + p.z, 0) / points.length
 });
-
-/** La face tourne-t-elle vers l'œil ? (normale sortante, de face ou par la tranche) */
-function facesEye(face: number[], vertices: Point3[], center: Point3): boolean {
-	const [a, b, c] = face.map((i) => vertices[i]);
-	let normal = cross(sub(b, a), sub(c, a));
-	if (dot(normal, sub(centroid(face.map((i) => vertices[i])), center)) < 0) {
-		normal = { x: -normal.x, y: -normal.y, z: -normal.z };
-	}
-	return dot(normal, TOWARD_EYE) > -1e-9;
-}
 
 /** Arc d'ellipse à plat (repère de calcul), de l'angle `from` à `to` */
 function arc(
@@ -455,6 +612,8 @@ interface Draft {
 	vertices: EspacePoint[];
 	/** Sommets qui sont des centres (étiquette à gauche, point si nommé) */
 	centers: number[];
+	/** Sommets que plus aucun trait ne montre (cône vu de haut) : un point s'ils sont nommés */
+	lone?: number[];
 	/** Arêtes (polyèdres) : un nom se pose dans le plus grand angle libre entre elles */
 	edges: [number, number][];
 	cotes: Cote[];
@@ -464,6 +623,36 @@ interface Draft {
 	sectionLabels: { at: EspacePoint; away: EspacePoint; text: string }[];
 	/** Points déclarés (`points:`) ; aucun pour un solide rond */
 	points: EspacePoint[];
+	/** Droites données (`droites:`), chacune en morceaux qui se suivent ; polyèdres seulement */
+	droites?: SolideLine[][];
+	/** Segments donnés, puis carrés des angles droits codés, en morceaux ; polyèdres seulement */
+	segments?: SolideLine[];
+	/**
+	 * Plans donnés (`plans:`) ; `spots` : les points du plan où écrire le nom d'un plan
+	 * nommé, du plus dégagé au moins dégagé sur le dessin de départ ; `borderSpots` : des
+	 * points de son bord (`side` : le côté, de `fill[side]` au suivant), à côté desquels
+	 * écrire le nom quand il n'a pas la place dans le plan, les plus longs côtés du
+	 * dessin de départ d'abord ; polyèdres seulement
+	 */
+	plans?: (SolidePlanShape & {
+		spots: EspacePoint[];
+		borderSpots: { at: EspacePoint; side: number }[];
+	})[];
+}
+
+/**
+ * La place du nom d'un plan : `inside`, le rang d'un point du plan (`spots`) ;
+ * sinon à côté du bord, à l'écart `offset` (écran, cm) du point `border` de
+ * `borderSpots`
+ */
+type PlanSpot = { inside: number } | { border: number; offset: EspacePoint };
+
+/** Un solide vu d'une vue : son dessin, le centre autour duquel il tourne, sa plus grande demi-diagonale */
+interface TurnedDraft extends Draft {
+	/** Le centre du solide, projeté (repère de calcul) */
+	pivot: EspacePoint;
+	/** Distance, dans l'espace, du centre au point nommable le plus éloigné */
+	reach: number;
 }
 
 const segment = (a: EspacePoint, b: EspacePoint, dashed: boolean): SolideLine => ({
@@ -476,17 +665,17 @@ const middle = (a: EspacePoint, b: EspacePoint): EspacePoint => ({
 	y: (a.y + b.y) / 2
 });
 
-function polyhedronDraft(spec: SolideSpec): Draft {
+function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): TurnedDraft {
 	const topology = solideTopology(spec.form);
 	const points3 = polyhedronVertices(spec.form, spec.dims);
-	const center = centroid(points3);
+	// Vue de départ : la cavalière ; une figure que l'on peut tourner : la vue du moment (ADR 0045)
+	const center3 = centroid(points3);
+	const view = vueProjection(vue, center3);
+	const project = view.project;
 	const vertices = points3.map(project);
-	const seen = topology.faces.map((face) => facesEye(face, points3, center));
-	const lines = topology.edges.map(([a, b]) => {
-		const hidden = topology.faces.every(
-			(face, i) => !(face.includes(a) && face.includes(b)) || !seen[i]
-		);
-		const line = segment(vertices[a], vertices[b], spec.hidden && hidden);
+	const hiddenEdge = hiddenEdges(points3, topology.faces, topology.edges, view);
+	const lines = topology.edges.map(([a, b], k) => {
+		const line = segment(vertices[a], vertices[b], spec.hidden && hiddenEdge[k]);
 		const marked = spec.marks.some(
 			(m) => m.kind === 'arete' && m.vertices.includes(a) && m.vertices.includes(b)
 		);
@@ -556,11 +745,184 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				break;
 		}
 	}
-	const { section, sectionLabels } = boxSection(spec, topology, points3, lines, cotes);
-	const points = solidePoints3(spec.form, spec.dims, spec.points)
-		.slice(points3.length)
-		.map(project);
+	const { section, sectionLabels } = boxSection(spec, topology, points3, lines, cotes, project);
+	const named3 = solidePoints3(spec.form, spec.dims, spec.points);
+	const points = named3.slice(points3.length).map(project);
+
+	// Droites données : de part et d'autre de la corde dans le solide, en tirets là
+	// où une face passe devant (lot 7a, question (c))
+	const box = bounds3(points3);
+	const overhang =
+		DROITE_OVERHANG * Math.max(box.maxX - box.minX, box.maxY - box.minY, box.maxZ - box.minZ);
+	const ends3: Point3[] = [];
+	const droites = spec.droites?.map((droite) => {
+		const a = named3[droite.from];
+		const b = named3[droite.to];
+		const along = (t: number): Point3 => ({
+			x: a.x + (b.x - a.x) * t,
+			y: a.y + (b.y - a.y) * t,
+			z: a.z + (b.z - a.z) * t
+		});
+		const [enter, leave] = chordInSolid(points3, topology.faces, a, b);
+		const beyond = overhang / Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+		const from = along(enter - beyond);
+		const to = along(leave + beyond);
+		ends3.push(from, to);
+		const stretches = spec.hidden
+			? hiddenStretches(points3, topology.faces, topology.edges, from, to, view)
+			: [{ from: 0, to: 1, hidden: false }];
+		const at = (t: number) =>
+			project({
+				x: from.x + (to.x - from.x) * t,
+				y: from.y + (to.y - from.y) * t,
+				z: from.z + (to.z - from.z) * t
+			});
+		return stretches.map((stretch) => segment(at(stretch.from), at(stretch.to), stretch.hidden));
+	});
+
+	// Segments donnés, puis carrés des angles droits codés (outil n° 72) : d'un point
+	// à l'autre, en tirets là où une face passe devant, comme les droites
+	const piecesOf = (from: Point3, to: Point3): SolideLine[] => {
+		const stretches = spec.hidden
+			? hiddenStretches(points3, topology.faces, topology.edges, from, to, view)
+			: [{ from: 0, to: 1, hidden: false }];
+		const at = (t: number) =>
+			project({
+				x: from.x + (to.x - from.x) * t,
+				y: from.y + (to.y - from.y) * t,
+				z: from.z + (to.z - from.z) * t
+			});
+		return stretches.map((stretch) => segment(at(stretch.from), at(stretch.to), stretch.hidden));
+	};
+	const size3 = Math.max(box.maxX - box.minX, box.maxY - box.minY, box.maxZ - box.minZ);
+	const givenSegments =
+		spec.segments === undefined && spec.rightAngles === undefined
+			? undefined
+			: [
+					...(spec.segments ?? []).flatMap((s) => piecesOf(named3[s.from], named3[s.to])),
+					...(spec.rightAngles ?? []).flatMap((angle) => {
+						const corner = named3[angle.at];
+						const toward = (p: Point3) => {
+							const length = Math.hypot(p.x - corner.x, p.y - corner.y, p.z - corner.z);
+							return {
+								length,
+								unit: {
+									x: (p.x - corner.x) / length,
+									y: (p.y - corner.y) / length,
+									z: (p.z - corner.z) / length
+								}
+							};
+						};
+						const u = toward(named3[angle.from]);
+						const w = toward(named3[angle.to]);
+						// Le côté du carré : une part du solide, jamais plus du tiers d'un côté de l'angle
+						const side = Math.min(RIGHT_ANGLE_SIZE * size3, Math.min(u.length, w.length) / 3);
+						const shifted = (a: number, b: number): Point3 => ({
+							x: corner.x + side * (a * u.unit.x + b * w.unit.x),
+							y: corner.y + side * (a * u.unit.y + b * w.unit.y),
+							z: corner.z + side * (a * u.unit.z + b * w.unit.z)
+						});
+						return [
+							...piecesOf(shifted(1, 0), shifted(1, 1)),
+							...piecesOf(shifted(1, 1), shifted(0, 1))
+						];
+					})
+				];
+
+	// Plans donnés : la partie du plan dans le solide ; son bord en tirets là où une
+	// face passe devant (lot 7b, question (c))
+	const lerp = (p: Point3, q: Point3, t: number): Point3 => ({
+		x: p.x + (q.x - p.x) * t,
+		y: p.y + (q.y - p.y) * t,
+		z: p.z + (q.z - p.z) * t
+	});
+	const polygons3 = (spec.plans ?? []).map((plan) => {
+		const [a, b, c] = plan.through.map((i) => named3[i]);
+		return planeInSolid(points3, topology.edges, a, b, c);
+	});
+	// Le nom d'un plan se choisit sur le dessin de départ, puis suit son point du plan
+	const restProject = vueProjection(VUE_DE_DEPART, center3).project;
+	const restObstacles: [EspacePoint, EspacePoint][] = [
+		...topology.edges.map(([i, j]): [EspacePoint, EspacePoint] => [
+			restProject(points3[i]),
+			restProject(points3[j])
+		]),
+		...ends3.flatMap((p, i): [EspacePoint, EspacePoint][] =>
+			i % 2 === 0 ? [[restProject(p), restProject(ends3[i + 1])]] : []
+		),
+		...polygons3.flatMap((polygon) =>
+			polygon.map((p, i): [EspacePoint, EspacePoint] => [
+				restProject(p),
+				restProject(polygon[(i + 1) % polygon.length])
+			])
+		)
+	];
+	const restNamed = named3.map(restProject);
+	const plans = spec.plans?.map((plan, k) => {
+		const polygon = polygons3[k];
+		const border = polygon.flatMap((from, i) => {
+			const to = polygon[(i + 1) % polygon.length];
+			const stretches = spec.hidden
+				? hiddenStretches(points3, topology.faces, topology.edges, from, to, view)
+				: [{ from: 0, to: 1, hidden: false }];
+			return stretches.map((stretch) =>
+				segment(
+					project(lerp(from, to, stretch.from)),
+					project(lerp(from, to, stretch.to)),
+					stretch.hidden
+				)
+			);
+		});
+		let spots: EspacePoint[] = [];
+		let borderSpots: { at: EspacePoint; side: number }[] = [];
+		if (plan.name !== null) {
+			const middle3 = centroid(polygon);
+			const toward = polygon.flatMap((p, i) => [
+				p,
+				lerp(p, polygon[(i + 1) % polygon.length], 0.5)
+			]);
+			// Du plus dégagé au moins dégagé : le plus loin de tout trait et de tout point
+			// nommé du dessin de départ (à égalité, l'ordre écrit : le milieu d'abord)
+			const room = (spot: Point3) => {
+				const p = restProject(spot);
+				return Math.min(
+					...restObstacles.map(([a, b]) => distanceToSegment(p, a, b)),
+					...restNamed.map((q) => Math.hypot(p.x - q.x, p.y - q.y))
+				);
+			};
+			spots = [middle3, ...PLAN_NAME_TOWARD.flatMap((t) => toward.map((p) => lerp(middle3, p, t)))]
+				.map((spot, i) => ({ spot, i, room: room(spot) }))
+				.sort((p, q) => (Math.abs(q.room - p.room) > 1e-9 ? q.room - p.room : p.i - q.i))
+				.map(({ spot }) => project(spot));
+			const restLength = (side: number) => {
+				const a = restProject(polygon[side]);
+				const b = restProject(polygon[(side + 1) % polygon.length]);
+				return Math.hypot(b.x - a.x, b.y - a.y);
+			};
+			borderSpots = polygon
+				.map((_, side) => ({ side, length: restLength(side) }))
+				.sort((p, q) =>
+					Math.abs(q.length - p.length) > 1e-9 ? q.length - p.length : p.side - q.side
+				)
+				.flatMap(({ side }) =>
+					PLAN_NAME_ALONG.map((t) => ({
+						at: project(lerp(polygon[side], polygon[(side + 1) % polygon.length], t)),
+						side
+					}))
+				);
+		}
+		return { fill: polygon.map(project), border, spots, borderSpots };
+	});
 	return {
+		pivot: project(center3),
+		reach: Math.max(
+			...[...named3, ...ends3].map((p) =>
+				Math.hypot(p.x - center3.x, p.y - center3.y, p.z - center3.z)
+			)
+		),
+		...(droites !== undefined && { droites }),
+		...(givenSegments !== undefined && { segments: givenSegments }),
+		...(plans !== undefined && { plans }),
 		lines,
 		fills,
 		vertices,
@@ -594,7 +956,8 @@ function boxSection(
 	topology: SolideTopology,
 	points3: Point3[],
 	lines: SolideLine[],
-	cotes: Cote[]
+	cotes: Cote[],
+	project: (p: Point3) => EspacePoint
 ): Pick<Draft, 'section' | 'sectionLabels'> {
 	const cut = spec.section;
 	if (cut?.kind !== 'face') return { section: null, sectionLabels: [] };
@@ -693,7 +1056,9 @@ function roundDraft(spec: SolideSpec): Draft {
 				// Distance à l'axe : en tirets, du centre de la base du bas au bord de la section
 				if (spec.cotes && cut.distance > 0) {
 					lines.push(segment({ x: 0, y: 0 }, { x: 0, y: low }, true));
-					cotes.push({ at: { x: 0, y: -ry }, value: cut.distance, side: 'dessous' });
+					// Contre le trait, en haut à gauche de son bout au centre de la base : sous la
+					// base, il était loin du trait court ; à mi-hauteur, sur le bord de la coupe (V110)
+					cotes.push({ at: { x: 0, y: 0 }, value: cut.distance, side: 'haut-gauche' });
 				}
 			}
 			if (section !== null) lines.push(sectionOutline(section));
@@ -781,6 +1146,185 @@ function roundDraft(spec: SolideSpec): Draft {
 	}
 }
 
+/**
+ * Un solide rond vu d'une vue : de vrais ovales (un cercle horizontal regardé
+ * de l'inclinaison e a pour petit axe r × sin e), les hauteurs raccourcies de
+ * cos e. Tourner autour de l'axe (`vue.yaw`) ne change rien au solide nu ; le
+ * rayon coté, la coupe parallèle à l'axe et sa distance, eux, tournent (lot 4).
+ * À la vue de départ : le dessin « à plat » de `roundDraft`, trait pour trait,
+ * cotes comprises.
+ */
+function turnedRoundDraft(spec: SolideSpec, vue: EspaceVue): TurnedDraft {
+	const [r, h = 0] = spec.dims;
+	const back = spec.hidden;
+	const ball = spec.form === 'boule';
+	// Rien de basculé : les nombres du dessin fixe, sans passer par sinus et cosinus
+	const still = vue.pitch === 0 && vue.oblique === 1;
+	const elevation = ROUND_ELEVATION + vue.pitch;
+	// Petit axe des ovales, signé : négatif, on regarde par-dessous (le fond passe en bas)
+	const ry = r * (still ? ELLIPSE_RATIO : Math.sin(elevation));
+	// Au repos les hauteurs sont entières ; le passage les amène à leur vraie longueur
+	const stretch = 1 + vue.oblique * (1 / Math.cos(ROUND_ELEVATION) - 1);
+	// Ce que devient une hauteur de 1 : cylindre et cône (entière au repos) ; boule
+	// (toujours la vraie vue : son contour reste un cercle)
+	const rise = ball
+		? still
+			? Math.sqrt(1 - ELLIPSE_RATIO ** 2)
+			: Math.max(0, Math.cos(elevation))
+		: still
+			? 1
+			: Math.max(0, Math.cos(elevation)) * stretch;
+	const top = h * rise;
+	const fromAbove = ry >= 0;
+	const cy = Math.cos(vue.yaw);
+	const sy = Math.sin(vue.yaw);
+	/**
+	 * Un point du solide (x à droite, y le long de l'axe, z vers le fond), tourné
+	 * autour de l'axe puis vu de l'inclinaison de la vue
+	 */
+	const place = (x: number, y: number, z: number): EspacePoint => ({
+		x: x * cy + z * sy,
+		y: y * rise + ((-x * sy + z * cy) * ry) / r
+	});
+	const plainArc = (points: EspacePoint[], dashed = false): SolideLine => ({
+		points,
+		dashed,
+		thick: false
+	});
+	const shared = { fills: [], edges: [], sectionLabels: [], points: [] };
+	// Le centre du solide ; aucun point n'en est plus loin que `reach`, passage compris
+	const axis = {
+		pivot: { x: 0, y: top / 2 },
+		reach: Math.hypot(r, h / 2 / Math.cos(ROUND_ELEVATION))
+	};
+	const lines: SolideLine[] = [];
+	const cotes: Cote[] = [];
+	switch (spec.form) {
+		case 'cylindre': {
+			// Caché : le fond du cercle du bas vu de dessus, celui du cercle du haut vu de dessous
+			lines.push(plainArc(arc(0, 0, r, ry, 0, Math.PI), back && fromAbove));
+			lines.push(plainArc(arc(0, 0, r, ry, Math.PI, 2 * Math.PI)));
+			if (fromAbove) lines.push(plainArc(arc(0, top, r, ry, 0, 2 * Math.PI)));
+			else {
+				lines.push(plainArc(arc(0, top, r, ry, 0, Math.PI), back));
+				lines.push(plainArc(arc(0, top, r, ry, Math.PI, 2 * Math.PI)));
+			}
+			lines.push(segment({ x: -r, y: 0 }, { x: -r, y: top }, false));
+			lines.push(segment({ x: r, y: 0 }, { x: r, y: top }, false));
+			if (spec.cotes) {
+				// Le rayon du disque du haut : derrière le solide quand on regarde par-dessous
+				lines.push(segment(place(0, h, 0), place(r, h, 0), back && !fromAbove));
+				cotes.push({ at: place(r, h, 0), value: r, side: 'droite' });
+				cotes.push({ at: place(-r, h / 2, 0), value: h, side: 'gauche' });
+			}
+			let section: EspacePoint[] | null = null;
+			const cut = spec.section;
+			if (cut?.kind === 'perpendiculaire') {
+				section = arc(0, cut.distance * rise, r, ry, 0, 2 * Math.PI);
+				if (spec.cotes) {
+					cotes.push({ at: place(r, cut.distance / 2, 0), value: cut.distance, side: 'droite' });
+				}
+			} else if (cut?.kind === 'parallele') {
+				// Plan à `distance` de l'axe, du côté de l'œil au départ : il tourne avec le solide
+				const half = Math.sqrt(r * r - cut.distance * cut.distance);
+				section = [
+					place(-half, 0, -cut.distance),
+					place(half, 0, -cut.distance),
+					place(half, h, -cut.distance),
+					place(-half, h, -cut.distance)
+				];
+				if (spec.cotes && cut.distance > 0) {
+					lines.push(segment(place(0, 0, 0), place(0, 0, -cut.distance), true));
+					// Contre le trait, comme la vue fixe (V110)
+					cotes.push({ at: place(0, 0, 0), value: cut.distance, side: 'haut-gauche' });
+				}
+			}
+			if (section !== null) lines.push(sectionOutline(section));
+			return {
+				...shared,
+				...axis,
+				section,
+				cotes,
+				lines,
+				vertices: [
+					{ x: 0, y: 0 },
+					{ x: 0, y: top }
+				],
+				centers: [0, 1]
+			};
+		}
+		case 'cone': {
+			const apex = { x: 0, y: top };
+			const flat = Math.abs(ry);
+			const outside = top > flat + 1e-9;
+			if (outside) {
+				// Sommet hors de l'ovale : deux traits tangents ; vu de dessus, l'arc du fond est caché
+				const t = Math.asin(flat / top);
+				lines.push(plainArc(arc(0, 0, r, flat, t, Math.PI - t), back && fromAbove));
+				lines.push(plainArc(arc(0, 0, r, flat, Math.PI - t, 2 * Math.PI + t)));
+				const foot = (s: number) => ({ x: s * r * Math.cos(t), y: flat * Math.sin(t) });
+				lines.push(segment(foot(-1), apex, false));
+				lines.push(segment(foot(1), apex, false));
+			} else {
+				// Sommet dans l'ovale (vu de haut ou de bas) : il ne reste que l'ovale, entier
+				lines.push(plainArc(arc(0, 0, r, flat, 0, 2 * Math.PI)));
+			}
+			if (spec.cotes) {
+				// Rayon de la base et hauteur : traits de construction, toujours en tirets
+				lines.push(segment(place(0, 0, 0), place(r, 0, 0), true));
+				lines.push(segment(apex, place(0, 0, 0), true));
+				cotes.push({ at: place(r, 0, 0), value: r, side: 'droite' });
+				cotes.push({ at: place(0, h / 3, 0), value: h, side: 'droite' });
+			}
+			return {
+				...shared,
+				...axis,
+				section: null,
+				cotes,
+				lines,
+				vertices: [apex, { x: 0, y: 0 }],
+				centers: [1],
+				// Plus de traits qui s'y rejoignent : son nom, s'il en a un, flotterait sans point
+				...(!outside && { lone: [0] })
+			};
+		}
+		default: {
+			// Boule ; coupée, sans équateur (il se confondrait avec la section à `section: 0`)
+			const cut = spec.section?.kind === 'boule' ? spec.section : null;
+			lines.push(plainArc(arc(0, 0, r, r, 0, 2 * Math.PI)));
+			if (cut === null) {
+				lines.push(plainArc(arc(0, 0, r, ry, 0, Math.PI), back));
+				lines.push(plainArc(arc(0, 0, r, ry, Math.PI, 2 * Math.PI)));
+			}
+			if (spec.cotes) {
+				lines.push(segment(place(0, 0, 0), place(r, 0, 0), true));
+				cotes.push({ at: place(r / 2, 0, 0), value: r, side: 'dessous' });
+			}
+			let section: EspacePoint[] | null = null;
+			if (cut !== null) {
+				const radius = Math.sqrt(r * r - cut.distance * cut.distance);
+				const y = cut.distance * rise;
+				section = arc(0, y, radius, (radius * ry) / r, 0, 2 * Math.PI);
+				lines.push(sectionOutline(section));
+				if (spec.cotes && cut.distance > 0) {
+					lines.push(segment({ x: 0, y: 0 }, { x: 0, y }, true));
+					cotes.push({ at: { x: 0, y: y / 2 }, value: cut.distance, side: 'gauche' });
+				}
+			}
+			return {
+				...shared,
+				section,
+				cotes,
+				lines,
+				pivot: { x: 0, y: 0 },
+				reach: r,
+				vertices: [{ x: 0, y: 0 }],
+				centers: [0]
+			};
+		}
+	}
+}
+
 /** Boîte d'une étiquette centrée en `at` */
 /** Boîte d'une étiquette (coins bas-gauche, haut-droit), en cm ; exportée pour les tests */
 export const labelBox = (label: SolideLabel) => {
@@ -838,10 +1382,11 @@ function arrowOf(
 	size: { length: number; halfWidth: number },
 	small: boolean
 ): SolideArrow {
-	const length = Math.hypot(to.x - from.x, to.y - from.y);
+	// Vecteur vu par le bout (figure tournée) : réduit à un point, sans direction
+	const length = Math.hypot(to.x - from.x, to.y - from.y) || 1;
 	const ux = (to.x - from.x) / length;
 	const uy = (to.y - from.y) / length;
-	const head = Math.min(size.length, length / 2);
+	const head = Math.min(size.length, Math.hypot(to.x - from.x, to.y - from.y) / 2);
 	const base = { x: to.x - ux * head, y: to.y - uy * head };
 	return {
 		shaft: [from, base],
@@ -886,6 +1431,28 @@ function segmentHitsBox(a: EspacePoint, b: EspacePoint, box: EspacePoint[]): boo
 }
 
 /**
+ * L'étiquette ne touche ni une de `placed`, ni un trait de `segments`, ni un
+ * point de `dots` ; `rise` : hauteur en plus au-dessus de la boîte
+ */
+function isFree(
+	c: SolideLabel,
+	placed: SolideLabel[],
+	segments: [EspacePoint, EspacePoint][],
+	dots: EspacePoint[],
+	rise = 0
+): boolean {
+	if (placed.some((l) => overlaps(c, l))) return false;
+	const [lo, hi] = labelBox(c);
+	const box = [{ x: lo.x, y: lo.y - rise }, hi];
+	const inside = (p: EspacePoint) =>
+		p.x > box[0].x - DOT_CLEARANCE &&
+		p.x < box[1].x + DOT_CLEARANCE &&
+		p.y > box[0].y - DOT_CLEARANCE &&
+		p.y < box[1].y + DOT_CLEARANCE;
+	return !segments.some(([a, b]) => segmentHitsBox(a, b, box)) && !dots.some(inside);
+}
+
+/**
  * La première étiquette qui ne touche ni une de `placed` ni un trait de
  * `segments` ; à défaut, la première qui ne touche aucune étiquette ; la
  * première sinon. `rise` : hauteur en plus au-dessus de la boîte (petite flèche
@@ -899,21 +1466,33 @@ function firstFree(
 	rise = 0
 ): SolideLabel {
 	const clearOfLabels = (c: SolideLabel) => !placed.some((l) => overlaps(c, l));
-	const clearOfLines = (c: SolideLabel) => {
-		const [lo, hi] = labelBox(c);
-		const box = [{ x: lo.x, y: lo.y - rise }, hi];
-		const inside = (p: EspacePoint) =>
-			p.x > box[0].x - DOT_CLEARANCE &&
-			p.x < box[1].x + DOT_CLEARANCE &&
-			p.y > box[0].y - DOT_CLEARANCE &&
-			p.y < box[1].y + DOT_CLEARANCE;
-		return !segments.some(([a, b]) => segmentHitsBox(a, b, box)) && !dots.some(inside);
-	};
+	const clearOfLines = (c: SolideLabel) => isFree(c, [], segments, dots, rise);
 	return (
 		candidates.find((c) => clearOfLabels(c) && clearOfLines(c)) ??
 		candidates.find(clearOfLabels) ??
 		candidates[0]
 	);
+}
+
+/** Une cote écrite à côté de son trait, du côté `side` du point `p` (écran) */
+function sideCote(
+	side: Exclude<Cote['side'], 'renvoi'>,
+	p: EspacePoint,
+	text: string
+): SolideLabel {
+	const halfWidth = (text.length * CHAR_WIDTH) / 2;
+	const halfHeight = SOLIDE_LABEL_SIZE / 2;
+	const shift = {
+		dessous: { x: 0, y: COTE_GAP + halfHeight },
+		dessus: { x: 0, y: -(COTE_GAP + halfHeight) },
+		droite: { x: COTE_GAP + halfWidth, y: 0 },
+		gauche: { x: -(COTE_GAP + halfWidth), y: 0 },
+		// Plus bas que le milieu de la fuyante : loin du nom du sommet du fond
+		'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP + halfHeight / 2 },
+		// Au-dessus d'une fuyante du haut à gauche : hors du dessin
+		'haut-gauche': { x: -(COTE_GAP + halfWidth / 2), y: -(COTE_GAP + halfHeight) }
+	}[side];
+	return { at: { x: p.x + shift.x, y: p.y + shift.y }, text };
 }
 
 /**
@@ -952,27 +1531,162 @@ function leaderCote(
 	return options.find(clear) ?? options[0];
 }
 
-/** Le dessin d'un solide */
-export function buildSolideScene(spec: SolideSpec): SolideScene {
-	const draft = solideTopology(spec.form).curved ? roundDraft(spec) : polyhedronDraft(spec);
+/**
+ * Le dessin d'un solide. `vue` : figure que l'on peut tourner, vue de là, dans
+ * son cadre fixe ; absente : le dessin fixe.
+ * `held` (figure tournée) : places des noms à tenir (`labelOffsets` d'une scène
+ * du même bloc) — pendant que la figure tourne, un nom ne change pas de côté ;
+ * sans elles, chaque nom est placé pour cette vue.
+ * Les cotes (`cotes:`) ne sont écrites qu'à la vue de départ : leur place est
+ * pensée pour elle (Q1 du chantier `solides-3d`) ; les traits qui les
+ * accompagnent (hauteur, rayon) restent et tournent (Q7).
+ */
+export function buildSolideScene(
+	spec: SolideSpec,
+	vue?: EspaceVue,
+	held?: EspacePoint[]
+): SolideScene {
+	return layoutSolide(spec, vue, held).scene;
+}
+
+/**
+ * La scène, et pour une figure tournée la place que prennent ses cotes (textes
+ * et traits de renvoi), repérée depuis le centre du solide : le cadre la
+ * réserve à chaque angle
+ */
+function layoutSolide(
+	spec: SolideSpec,
+	vue?: EspaceVue,
+	held?: EspacePoint[]
+): {
+	scene: SolideScene;
+	coteMarks: EspacePoint[];
+	coteLabels: SolideLabel[];
+	coteLines: SolideLine[];
+	/** Pour chaque plan, la place de son nom (sans nom : la première) */
+	planSpots: PlanSpot[];
+} {
+	const curved = solideTopology(spec.form).curved;
+	// Le dessin fixe donne l'échelle, que la figure tournée garde
+	const polyhedron = curved ? null : polyhedronDraft(spec);
+	const fixed = polyhedron ?? roundDraft(spec);
+	const view = (at: EspaceVue) => (curved ? turnedRoundDraft(spec, at) : polyhedronDraft(spec, at));
+	const turned = vue !== undefined ? view(vue) : null;
+	// Les longueurs ne sont écrites qu'à la vue de départ
+	const atStart = vue === undefined || (vue.yaw === 0 && vue.pitch === 0 && vue.oblique === 1);
+	// Le dessin au repos, repéré depuis le centre du solide
+	const rest = turned === null ? null : (polyhedron ?? view(VUE_DE_DEPART));
+	const draft = turned ?? fixed;
 
 	// Mise à l'échelle (plus grand côté : SOLIDE_SIZE) et passage en y vers le bas
-	const geometry = bounds([...draft.lines.flatMap((l) => l.points), ...draft.vertices]);
+	const geometry = bounds([...fixed.lines.flatMap((l) => l.points), ...fixed.vertices]);
 	const scale =
 		SOLIDE_SIZE / Math.max(geometry.maxX - geometry.minX, geometry.maxY - geometry.minY);
-	const toScreen = (p: EspacePoint): EspacePoint => ({
-		x: (p.x - geometry.minX) * scale,
-		y: (geometry.maxY - p.y) * scale
-	});
+	// Figure tournée : repérée depuis le centre du solide, qui ne bouge pas
+	const toScreen =
+		turned === null
+			? (p: EspacePoint): EspacePoint => ({
+					x: (p.x - geometry.minX) * scale,
+					y: (geometry.maxY - p.y) * scale
+				})
+			: (p: EspacePoint): EspacePoint => ({
+					x: (p.x - turned.pivot.x) * scale,
+					y: (turned.pivot.y - p.y) * scale
+				});
 	const lines = draft.lines.map((l) => ({ ...l, points: l.points.map(toScreen) }));
 	const fills = draft.fills.map((f) => f.map(toScreen));
 	const section = draft.section?.map(toScreen) ?? null;
 	const vertices = draft.vertices.map(toScreen);
 	const points = draft.points.map(toScreen);
 	const named = [...vertices, ...points];
+	const droites = draft.droites?.map((pieces) =>
+		pieces.map((l) => ({ ...l, points: l.points.map(toScreen) }))
+	);
+	const givenSegments = draft.segments?.map((l) => ({ ...l, points: l.points.map(toScreen) }));
+	const givenSegmentEnds = (givenSegments ?? []).map((l): [EspacePoint, EspacePoint] => [
+		l.points[0],
+		l.points[1]
+	]);
+	// Chaque droite d'un bout à l'autre : les noms l'évitent
+	const droiteSegments = (droites ?? []).map((pieces): [EspacePoint, EspacePoint] => [
+		pieces[0].points[0],
+		pieces[pieces.length - 1].points[1]
+	]);
+	const plans = draft.plans?.map((plan) => ({
+		fill: plan.fill.map(toScreen),
+		border: plan.border.map((l) => ({ ...l, points: l.points.map(toScreen) })),
+		spots: plan.spots.map(toScreen),
+		borderSpots: plan.borderSpots.map((spot) => ({ ...spot, at: toScreen(spot.at) }))
+	}));
+	// Le bord de chaque plan, côté par côté : les noms des points l'évitent
+	const planSegments = (plans ?? []).flatMap((plan) =>
+		plan.fill.map((p, i, all): [EspacePoint, EspacePoint] => [p, all[(i + 1) % all.length]])
+	);
+	// Les sommets dans le repère du dessin fixe, pour l'angle libre où poser un nom : deux
+	// angles libres égaux (sommets D et F d'un pavé) sont départagés par le dernier chiffre,
+	// qui doit être le même au repos que dans le dessin fixe — sinon le nom change de côté
+	const fixedVertices = draft.vertices.map((p) => ({
+		x: (p.x - geometry.minX) * scale,
+		y: (geometry.maxY - p.y) * scale
+	}));
+
+	// Traits du dessin (arêtes, contour de la section) : les noms des sommets les évitent
+	const edgeSegments: [EspacePoint, EspacePoint][] = [
+		...lines.flatMap((l) =>
+			l.points.slice(1).map((p, i): [EspacePoint, EspacePoint] => [l.points[i], p])
+		),
+		...(section ?? []).map((p, i, all): [EspacePoint, EspacePoint] => [
+			p,
+			all[(i + 1) % all.length]
+		]),
+		...droiteSegments,
+		...givenSegmentEnds
+	];
 
 	// Noms des sommets : à l'extérieur, en s'éloignant du centre du dessin
 	const labels: SolideLabel[] = [];
+	// Les noms que l'on peut tenir (sommets, points de la section, points, vecteurs) et
+	// le point auquel chacun est attaché ; les cotes n'en sont pas
+	const anchors: EspacePoint[] = [];
+	const anchored: SolideLabel[] = [];
+	// Places tenues : toutes ou aucune (celles d'un autre bloc ne valent rien)
+	const nameCount =
+		(spec.names?.filter((n) => n !== null).length ?? 0) +
+		draft.sectionLabels.length +
+		spec.points.length +
+		spec.vectors.filter((v) => v.name !== null).length +
+		(spec.droites?.filter((d) => d.name !== null).length ?? 0);
+	const holding = turned !== null && held !== undefined && held.length === nameCount;
+	/** Le nom attaché à `anchor` : à sa place tenue, sinon parmi `candidates` */
+	const nameAt = (
+		anchor: EspacePoint,
+		candidates: SolideLabel[],
+		find: () => SolideLabel
+	): SolideLabel => {
+		const offset = holding ? held[anchors.length] : undefined;
+		anchors.push(anchor);
+		const label =
+			offset === undefined
+				? find()
+				: { ...candidates[0], at: { x: anchor.x + offset.x, y: anchor.y + offset.y } };
+		anchored.push(label);
+		return label;
+	};
+	const unit = spec.cotes?.unit ? ` ${spec.cotes.unit}` : '';
+	const coteText = (cote: Cote) => `${frenchNumber(cote.value)}${unit}`;
+	// Figure cotée, ailleurs qu'au repos sans nom tenu : les cotes du repos, pour leur
+	// place dans le cadre et, de retour à la vue de départ pendant que les noms se
+	// replacent, pour les écrire là où elles seront (le renvoi d'une pyramide évite les noms)
+	const atRest =
+		turned !== null && spec.cotes !== null && !(atStart && !holding)
+			? layoutSolide(spec, VUE_DE_DEPART)
+			: null;
+	const writtenCotes = atStart && atRest === null ? draft.cotes : [];
+	// Les cotes écrites à côté de leur trait : le nom d'un centre les évite (boule coupée
+	// près du centre : la distance du plan s'écrit là où le nom se pose d'habitude)
+	const sideCotes = writtenCotes.flatMap((cote) =>
+		cote.side === 'renvoi' ? [] : [sideCote(cote.side, toScreen(cote.at), coteText(cote))]
+	);
 	const dots: EspacePoint[] = [];
 	const middleOfDrawing = {
 		x: vertices.reduce((s, p) => s + p.x, 0) / vertices.length,
@@ -983,7 +1697,7 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		const p = vertices[i];
 		let dx = p.x - middleOfDrawing.x;
 		let dy = p.y - middleOfDrawing.y;
-		const free = freeDirection(i, vertices, draft.edges);
+		const free = freeDirection(i, fixedVertices, draft.edges);
 		if (free) {
 			dx = free.x;
 			dy = free.y;
@@ -993,12 +1707,20 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 			dx = -1;
 			dy = 0.35;
 		}
-		const length = Math.hypot(dx, dy);
-		labels.push({
-			at: { x: p.x + (dx / length) * LABEL_GAP, y: p.y + (dy / length) * LABEL_GAP },
+		// La place habituelle d'abord ; si elle touche un trait (angle libre étroit,
+		// trait de section), un peu plus loin ou en tournant un peu
+		const base = Math.atan2(dy, dx);
+		const candidates = NAME_PLACES.map(({ gap, turn }) => ({
+			at: {
+				x: p.x + Math.cos(base + turn) * LABEL_GAP * gap,
+				y: p.y + Math.sin(base + turn) * LABEL_GAP * gap
+			},
 			text: name
-		});
-		if (draft.centers.includes(i)) dots.push(p);
+		}));
+		const others = vertices.filter((_, k) => k !== i);
+		const taken = draft.centers.includes(i) ? [...labels, ...sideCotes] : labels;
+		labels.push(nameAt(p, candidates, () => firstFree(candidates, taken, edgeSegments, others)));
+		if (draft.centers.includes(i) || draft.lone?.includes(i)) dots.push(p);
 	});
 	for (const mark of spec.marks) {
 		if (mark.kind !== 'sommet') continue;
@@ -1006,30 +1728,31 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		if (!dots.includes(p)) dots.push(p);
 	}
 
-	// Cotes : le texte à côté du trait, du côté demandé
-	const unit = spec.cotes?.unit ? ` ${spec.cotes.unit}` : '';
-	for (const cote of draft.cotes) {
-		const text = `${frenchNumber(cote.value)}${unit}`;
-		const halfWidth = (text.length * CHAR_WIDTH) / 2;
-		const halfHeight = SOLIDE_LABEL_SIZE / 2;
+	// Cotes : le texte à côté du trait, du côté demandé ; figure tournée : à la vue de
+	// départ seulement
+	const coteMarks: EspacePoint[] = [];
+	const coteLabels: SolideLabel[] = [];
+	const coteLines: SolideLine[] = [];
+	if (atRest !== null && atStart) {
+		lines.push(...atRest.coteLines);
+		labels.push(...atRest.coteLabels);
+	}
+	for (const cote of writtenCotes) {
+		const text = coteText(cote);
 		const p = toScreen(cote.at);
 		if (cote.side === 'renvoi') {
 			const leader = leaderCote(p, text, vertices, lines, labels);
 			lines.push(leader.line);
 			labels.push(leader.label);
+			coteLines.push(leader.line);
+			coteLabels.push(leader.label);
+			coteMarks.push(...leader.line.points, ...labelBox(leader.label));
 			continue;
 		}
-		const shift = {
-			dessous: { x: 0, y: COTE_GAP + halfHeight },
-			dessus: { x: 0, y: -(COTE_GAP + halfHeight) },
-			droite: { x: COTE_GAP + halfWidth, y: 0 },
-			gauche: { x: -(COTE_GAP + halfWidth), y: 0 },
-			// Plus bas que le milieu de la fuyante : loin du nom du sommet du fond
-			'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP + halfHeight / 2 },
-			// Au-dessus d'une fuyante du haut à gauche : hors du dessin
-			'haut-gauche': { x: -(COTE_GAP + halfWidth / 2), y: -(COTE_GAP + halfHeight) }
-		}[cote.side];
-		labels.push({ at: { x: p.x + shift.x, y: p.y + shift.y }, text });
+		const label = sideCote(cote.side, p, text);
+		labels.push(label);
+		coteLabels.push(label);
+		coteMarks.push(...labelBox(label));
 	}
 
 	// Noms des sommets de la section : vers l'extérieur, sinon en tournant, sans
@@ -1043,20 +1766,106 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 			at: { x: p.x + Math.cos(t) * LABEL_GAP, y: p.y + Math.sin(t) * LABEL_GAP },
 			text: name.text
 		}));
-		const free = candidates.find((c) => !labels.some((l) => overlaps(c, l)));
-		labels.push(free ?? candidates[0]);
+		labels.push(
+			nameAt(
+				p,
+				candidates,
+				() => candidates.find((c) => !labels.some((l) => overlaps(c, l))) ?? candidates[0]
+			)
+		);
 	}
 
 	// Flèches des vecteurs donnés ; les traits que les noms des points et des vecteurs évitent
-	const arrows: SolideArrow[] = spec.vectors.map((v) =>
+	// Le repère (lot 7c) : ses trois vecteurs, depuis l'origine, après les vecteurs donnés
+	const repereVectors = (spec.repere?.axes ?? []).map((to) => ({
+		from: spec.repere?.origin ?? 0,
+		to
+	}));
+	const arrows: SolideArrow[] = [...spec.vectors, ...repereVectors].map((v) =>
 		arrowOf(named[v.from], named[v.to], SOLIDE_ARROW, false)
 	);
 	const segments: [EspacePoint, EspacePoint][] = [
 		...lines.flatMap((l) =>
 			l.points.slice(1).map((p, i): [EspacePoint, EspacePoint] => [l.points[i], p])
 		),
-		...arrows.map((a): [EspacePoint, EspacePoint] => [a.shaft[0], a.head[0]])
+		...arrows.map((a): [EspacePoint, EspacePoint] => [a.shaft[0], a.head[0]]),
+		...droiteSegments,
+		...givenSegmentEnds,
+		...planSegments
 	];
+
+	// Plans nommés : « (P) » écrit dans le plan, en un point du plan qu'il suit quand la
+	// figure tourne (il ne se tient pas comme les autres noms). Le point se choisit sur le
+	// dessin fixe : le plus dégagé où le nom ne touche ni trait ni étiquette déjà posée ;
+	// s'il n'y a pas la place dans le plan (plan mince ou petit), à côté de son bord,
+	// à un écart fixe d'un point du bord
+	const planSpots: PlanSpot[] =
+		turned !== null && spec.plans?.some((plan) => plan.name !== null)
+			? layoutSolide(spec).planSpots
+			: (spec.plans ?? []).map(() => ({ inside: 0 }));
+	const planNames: SolideLabel[] = [];
+	spec.plans?.forEach((plan, k) => {
+		const shape = plans?.[k];
+		if (plan.name === null || shape === undefined || shape.spots.length === 0) return;
+		const text = `(${plan.name})`;
+		if (turned === null) {
+			const free = (at: EspacePoint) => isFree({ at, text }, labels, segments, named);
+			const inside = shape.spots.findIndex(free);
+			if (inside >= 0) planSpots[k] = { inside };
+			else {
+				const middleOfPlan = {
+					x: shape.fill.reduce((sum, p) => sum + p.x, 0) / shape.fill.length,
+					y: shape.fill.reduce((sum, p) => sum + p.y, 0) / shape.fill.length
+				};
+				const [lo, hi] = labelBox({ at: { x: 0, y: 0 }, text });
+				// À côté d'un côté, vers l'extérieur du plan d'abord ; l'écart dépend de la pente
+				// du côté, comme pour le nom d'une droite
+				const beside = shape.borderSpots.flatMap((spot, border) => {
+					const from = shape.fill[spot.side];
+					const to = shape.fill[(spot.side + 1) % shape.fill.length];
+					const length = Math.hypot(to.x - from.x, to.y - from.y);
+					if (length < 1e-9) return [];
+					const u = { x: (to.x - from.x) / length, y: (to.y - from.y) / length };
+					const out =
+						-u.y * (spot.at.x - middleOfPlan.x) + u.x * (spot.at.y - middleOfPlan.y) < 0 ? -1 : 1;
+					const gap =
+						(Math.abs(u.y) * (hi.x - lo.x)) / 2 +
+						(Math.abs(u.x) * (hi.y - lo.y)) / 2 +
+						DROITE_NAME_CLEAR;
+					return PLAN_NAME_AWAY.flatMap((away) =>
+						[out, -out].map((side) => ({
+							border,
+							away,
+							offset: { x: -side * u.y * (gap + away), y: side * u.x * (gap + away) }
+						}))
+					);
+				});
+				// Tout contre le bord d'abord, quel que soit le côté ; plus loin ensuite
+				beside.sort((p, q) => p.away - q.away);
+				const outside = beside.find(({ border, offset }) =>
+					free({
+						x: shape.borderSpots[border].at.x + offset.x,
+						y: shape.borderSpots[border].at.y + offset.y
+					})
+				);
+				// Nulle part : dans le plan, là où il ne touche au moins aucune étiquette
+				const fallback = shape.spots.findIndex(
+					(at) => !labels.some((l) => overlaps({ at, text }, l))
+				);
+				planSpots[k] = outside ?? { inside: Math.max(fallback, 0) };
+			}
+		}
+		const spot = planSpots[k];
+		let at = shape.spots[0];
+		if ('inside' in spot) at = shape.spots[spot.inside] ?? at;
+		else {
+			const anchor = shape.borderSpots[spot.border]?.at ?? at;
+			at = { x: anchor.x + spot.offset.x, y: anchor.y + spot.offset.y };
+		}
+		const label = { at, text };
+		if (!('inside' in spot)) planNames.push(label);
+		labels.push(label);
+	});
 
 	// Points déclarés : un disque ; le nom en s'éloignant du milieu du dessin, sinon
 	// en tournant, sans toucher une étiquette déjà posée
@@ -1068,12 +1877,20 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		// Au milieu du dessin (centre du cube) : à gauche, un peu plus bas, comme un centre
 		const base = Math.hypot(dx, dy) < 1e-6 ? Math.atan2(0.35, -1) : Math.atan2(dy, dx);
 		const turns = [0, 1, -1, 2, -2, 3, -3, 4].map((t) => base + (t * Math.PI) / 4);
-		const candidates = turns.map((t) => ({
-			at: { x: p.x + Math.cos(t) * LABEL_GAP, y: p.y + Math.sin(t) * LABEL_GAP },
-			text: point.name
-		}));
+		// Avec des droites, un point où passe une droite n'a souvent plus de place libre
+		// tout près : un second tour, plus loin (sans droites, les places d'avant)
+		const gaps = spec.droites === undefined && spec.plans === undefined ? [1] : [1, POINT_NAME_FAR];
+		const candidates = gaps.flatMap((gap) =>
+			turns.map((t) => ({
+				at: {
+					x: p.x + Math.cos(t) * LABEL_GAP * gap,
+					y: p.y + Math.sin(t) * LABEL_GAP * gap
+				},
+				text: point.name
+			}))
+		);
 		const others = named.filter((_, i) => i !== vertices.length + k);
-		labels.push(firstFree(candidates, labels, segments, others));
+		labels.push(nameAt(p, candidates, () => firstFree(candidates, labels, segments, others)));
 	});
 
 	// Vecteurs donnés : un nom près du milieu de la flèche, du côté extérieur d'abord
@@ -1082,7 +1899,11 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		const to = named[vector.to];
 		if (vector.name === null) continue;
 		const length = Math.hypot(to.x - from.x, to.y - from.y);
-		let normal = { x: -(to.y - from.y) / length, y: (to.x - from.x) / length };
+		// Vu par le bout (figure tournée) : pas de direction, le nom se pose au-dessus
+		let normal =
+			length < 1e-9
+				? { x: 0, y: -1 }
+				: { x: -(to.y - from.y) / length, y: (to.x - from.x) / length };
 		const mid = middle(from, to);
 		if (normal.x * (mid.x - middleOfDrawing.x) + normal.y * (mid.y - middleOfDrawing.y) < 0) {
 			normal = { x: -normal.x, y: -normal.y };
@@ -1099,7 +1920,9 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 				}))
 			)
 		);
-		const label = firstFree(candidates, labels, segments, named, NAME_ARROW_TOP);
+		const label = nameAt(mid, candidates, () =>
+			firstFree(candidates, labels, segments, named, NAME_ARROW_TOP)
+		);
 		labels.push(label);
 		// La petite flèche au-dessus de la lettre, de gauche à droite (sens de la lecture)
 		const half = Math.max(labelChars(label) * CHAR_WIDTH, CHAR_WIDTH * 1.2) / 2;
@@ -1109,17 +1932,82 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		);
 	}
 
-	// Cadrage : tout dans la boîte, étiquettes comprises
-	const all = bounds([
+	// Droites nommées : « (d) » près d'un bout, à côté du trait, du côté libre
+	const droiteNames: SolideLabel[] = [];
+	spec.droites?.forEach((droite, k) => {
+		if (droite.name === null) return;
+		const [start, end] = droiteSegments[k];
+		const length = Math.hypot(end.x - start.x, end.y - start.y);
+		// Vue par le bout (figure tournée) : pas de direction, le nom se pose au-dessus
+		const u =
+			length < 1e-9
+				? { x: 1, y: 0 }
+				: { x: (end.x - start.x) / length, y: (end.y - start.y) / length };
+		const text = `(${droite.name})`;
+		// L'écart au trait dépend de sa pente : la boîte du nom, large et basse, ne doit
+		// pas toucher sa propre droite (en biais, son coin est plus près que son milieu)
+		const [lo, hi] = labelBox({ at: { x: 0, y: 0 }, text });
+		const gap =
+			(Math.abs(u.y) * (hi.x - lo.x)) / 2 + (Math.abs(u.x) * (hi.y - lo.y)) / 2 + DROITE_NAME_CLEAR;
+		const candidates = DROITE_NAME_BACK.map((back) => Math.min(back, length / 2)).flatMap((back) =>
+			[
+				{ from: end, toward: -1 },
+				{ from: start, toward: 1 }
+			].flatMap(({ from, toward }) =>
+				[-1, 1].map((side) => ({
+					at: {
+						x: from.x + toward * u.x * back - side * u.y * gap,
+						y: from.y + toward * u.y * back + side * u.x * gap
+					},
+					text
+				}))
+			)
+		);
+		const label = nameAt(end, candidates, () => firstFree(candidates, labels, segments, named));
+		droiteNames.push(label);
+		labels.push(label);
+	});
+
+	// Cadrage : tout dans la boîte, étiquettes comprises ; figure tournée : un carré
+	// fixe autour du centre du solide, où elle tient sous tous les angles
+	const drawn = [
 		...lines.flatMap((l) => l.points),
 		...vertices,
 		...points,
 		...labels.flatMap(labelBox),
-		...arrows.flatMap((a) => [...a.shaft, ...a.head])
-	]);
+		...arrows.flatMap((a) => [...a.shaft, ...a.head]),
+		...droiteSegments.flat()
+	];
+	let all = bounds(drawn);
+	if (turned !== null && rest !== null) {
+		// Au repos (cavalière, ovales à plat), le dessin peut dépasser ce cercle
+		const restDrawn = [
+			...rest.vertices,
+			...rest.points,
+			...rest.lines.flatMap((l) => l.points),
+			...(rest.droites ?? []).flatMap((pieces) => pieces.flatMap((l) => l.points))
+		];
+		const restReach = Math.max(
+			...restDrawn.map((p) => Math.max(Math.abs(p.x - rest.pivot.x), Math.abs(p.y - rest.pivot.y)))
+		);
+		const half = Math.max(turned.reach, restReach) * scale + TURN_PAD;
+		// Nom de droite tenu pendant la rotation : sa place, prise le long d'un trait qui
+		// a tourné depuis, peut pointer hors du cadre — il y est ramené
+		// (de même le nom d'un plan écrit à côté de son bord)
+		for (const label of [...droiteNames, ...planNames]) {
+			const [lo, hi] = labelBox(label);
+			const within = (v: number, size: number) =>
+				Math.min(Math.max(v, -half + size / 2), half - size / 2);
+			label.at = { x: within(label.at.x, hi.x - lo.x), y: within(label.at.y, hi.y - lo.y) };
+		}
+		// La place des cotes de la vue de départ (placées sans nom tenu), réservée à
+		// chaque angle : le cadre ne change pas quand elles s'effacent
+		const reserved = atRest?.coteMarks ?? coteMarks;
+		all = bounds([{ x: -half, y: -half }, { x: half, y: half }, ...reserved]);
+	}
 	const shift = (p: EspacePoint): EspacePoint => ({ x: p.x - all.minX, y: p.y - all.minY });
 	const order = (l: SolideLine) => (l.thick ? 2 : l.dashed ? 0 : 1);
-	return {
+	const scene: SolideScene = {
 		width: all.maxX - all.minX,
 		height: all.maxY - all.minY,
 		drawingWidth: (geometry.maxX - geometry.minX) * scale,
@@ -1137,8 +2025,28 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 			shaft: [shift(a.shaft[0]), shift(a.shaft[1])],
 			head: a.head.map(shift),
 			small: a.small
-		}))
+		})),
+		...(droites !== undefined && {
+			droites: droites.map((pieces) => pieces.map((l) => ({ ...l, points: l.points.map(shift) })))
+		}),
+		...(givenSegments !== undefined && {
+			segments: givenSegments.map((l) => ({ ...l, points: l.points.map(shift) }))
+		}),
+		...(plans !== undefined && {
+			plans: plans.map((plan) => ({
+				fill: plan.fill.map(shift),
+				border: plan.border.map((l) => ({ ...l, points: l.points.map(shift) }))
+			}))
+		}),
+		// Une place par nom que l'on peut tenir, dans l'ordre où ils sont posés
+		...(turned !== null && {
+			labelOffsets: anchored.map((l, i) => ({
+				x: l.at.x - anchors[i].x,
+				y: l.at.y - anchors[i].y
+			}))
+		})
 	};
+	return { scene, coteMarks, coteLabels, coteLines, planSpots };
 }
 
 /**
@@ -1147,6 +2055,7 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
  */
 export function solideLabel(spec: SolideSpec): string {
 	const parts = ['Solide en perspective cavalière'];
+	const turnable = spec.rotate ? ['figure que l’on peut tourner'] : [];
 	for (const mark of spec.marks) {
 		parts.push(`${mark.label} ${mark.kind === 'sommet' ? 'marqué' : 'marquée'}`);
 	}
@@ -1162,6 +2071,26 @@ export function solideLabel(spec: SolideSpec): string {
 		const ends = `${known[vector.from]}${known[vector.to]}`;
 		parts.push(vector.name === null ? `vecteur ${ends}` : `vecteur ${vector.name} égal à ${ends}`);
 	}
+	if (spec.repere !== undefined) parts.push(`repère d’origine ${known[spec.repere.origin]}`);
+	// Droites données : leurs points seulement, jamais une position relative (la réponse)
+	for (const droite of spec.droites ?? []) {
+		const through = `(${known[droite.from]}${known[droite.to]})`;
+		parts.push(
+			droite.name === null ? `droite ${through}` : `droite ${droite.name} égale à ${through}`
+		);
+	}
+	// Segments et angles droits donnés : ils sont dans l'énoncé (jamais leur longueur)
+	for (const given of spec.segments ?? []) {
+		parts.push(`segment [${known[given.from]}${known[given.to]}]`);
+	}
+	for (const angle of spec.rightAngles ?? []) {
+		parts.push(`angle droit en ${known[angle.at]}`);
+	}
+	// Plans donnés : leurs points seulement, jamais une position relative (la réponse)
+	for (const plan of spec.plans ?? []) {
+		const through = `(${plan.through.map((i) => known[i]).join('')})`;
+		parts.push(plan.name === null ? `plan ${through}` : `plan ${plan.name} égal à ${through}`);
+	}
 	// Jamais la nature de la section (rectangle, disque) : la réponse de 3e-020
 	const cut = spec.section;
 	if (cut) {
@@ -1172,5 +2101,5 @@ export function solideLabel(spec: SolideSpec): string {
 			parts.push(`plan à ${frenchNumber(cut.distance)}${unit}`);
 		}
 	}
-	return parts.join(', ');
+	return [...parts, ...turnable].join(', ');
 }

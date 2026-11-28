@@ -8,7 +8,6 @@
 import { describe, it, expect } from 'vitest';
 import { registerFormSchema, updatePasswordSchema } from '../auth';
 import { chatRequestSchema } from '../chat';
-import { previewTemplateSchema } from '../message-templates';
 
 describe('H6 — password policy is enforced server-side', () => {
 	const base = {
@@ -72,15 +71,5 @@ describe('H11 — chat history cannot inject a system turn', () => {
 			]
 		});
 		expect(parsed.success).toBe(true);
-	});
-});
-
-describe('M11 — template preview data keys are constrained', () => {
-	it('rejects a regex-metacharacter key', () => {
-		expect(previewTemplateSchema.safeParse({ data: { '(': 'x' } }).success).toBe(false);
-	});
-
-	it('accepts a normal identifier key', () => {
-		expect(previewTemplateSchema.safeParse({ data: { firstname: 'Alice' } }).success).toBe(true);
 	});
 });

@@ -113,6 +113,34 @@ lui survivent (cf. `worksheets.tags`, 2026-09-09 — 500 sur trois routes).
 même. Le tri de `class_members` est dans
 [docs/archive/wip/tri-adhesions-archivees.md](../archive/wip/tri-adhesions-archivees.md).
 
+## Le corollaire n° 3 : une policy ne borne pas les colonnes
+
+Une policy `UPDATE` dit **quelles lignes** un compte peut modifier, jamais **quelles colonnes**.
+« L'élève modifie ses propres messages » lui laissait donc, par l'API de la base, la date
+d'envoi, la marque de grossièreté, la conversation et l'auteur. Une policy `INSERT` qui ne
+contrôle que l'auteur laisse de même choisir l'état, les dates et tout le reste à la création.
+Cinq écarts de ce motif ont été fermés en novembre 2026 (T29 à T33, chantier
+`ecarts-moderation`), sur `messages`, `conversation_participants` et `bug_reports`.
+
+- **Question à se poser pour toute policy `UPDATE` ou `INSERT` d'un compte d'élève** : quelles
+  colonnes l'écran lui fait-il écrire ? Tout le reste doit être refusé en base.
+- **Parade : un trigger de garde en liste blanche** (`BEFORE UPDATE`, colonnes changées lues par
+  `to_jsonb(NEW)` contre `to_jsonb(OLD)`), qui refuse par une erreur `42501` toute colonne hors
+  liste, d'aujourd'hui ou ajoutée plus tard. Le serveur (`auth.uid()` vide) passe. Modèles :
+  `20261125145621_message_chat_non_reecrit.sql`, `20261126060048_rapport_de_bug_non_reecrit.sql`.
+- **À la création** : forcer les valeurs (`20261125152013`) ou les refuser (`20261126060048`).
+  Une date laissée au `DEFAULT now()` est exactement égale à `now()` dans le trigger.
+- **Pourquoi pas un retrait de droits par colonne** (`REVOKE UPDATE` puis `GRANT UPDATE (…)`) :
+  il passe avant les triggers et remplace leur message par un « permission denied » muet.
+- **Pièges rencontrés** : une clé étrangère `ON DELETE SET NULL` met la ligne à jour au nom du
+  compte connecté (prévoir l'exception, sinon une suppression de compte échoue) ; l'ordre des
+  triggers `BEFORE` est alphabétique (la garde doit passer avant celui qui recalcule
+  `updated_at`) ; message d'erreur sans accent (PostgREST rend sinon un 500 sans code).
+- **Preuve** : un test d'intégration par colonne, avec le client de l'élève, rouge sans la
+  migration ; asserter l'erreur ET la ligne intacte.
+
+Le motif peut exister sur d'autres tables d'élèves : il n'a été cherché que sur ces trois-là.
+
 ## Retirer une policy : la checklist
 
 Retirer un accès est aussi dangereux qu'en ouvrir un, et c'est moins intuitif.
@@ -171,20 +199,17 @@ paquet assigné passe déjà par le client service). La séquence a suivi l'ordr
 ci-dessus : code déployé, PUIS migration. Preuve :
 `tests/integration/paquet-programme-rempli-par-le-serveur.test.ts`.
 
-## La contrainte d'ordre : `db:types` génère depuis la PRODUCTION
+## Les types suivent les migrations de la branche, plus la prod
 
-`pnpm db:types` interroge le projet distant. Une RPC qui n'est pas encore en
-production n'existe pas dans `database.ts`, donc **tout code qui l'appelle ne
-peut pas typechecker**.
+`pnpm db:types` génère `database.ts` depuis une base locale qui porte exactement
+les migrations de la branche (la pile de test). Une nouvelle fonction SQL et le
+code qui l'appelle tiennent donc dans **une seule PR** : migration, `pnpm db:types`,
+code. La CI régénère le fichier et le compare (`pnpm db:types:verifier`).
 
-Conséquence : livrer une nouvelle fonction SQL et le code qui l'utilise demande
-**deux PR**, dans cet ordre :
-
-1. la migration seule → merge → `db:migrate` → `db:types` ;
-2. le code qui l'appelle.
-
-Rencontré trois fois dans la même session. Un test peut contourner
-(`const F = 'ma_fonction' as never`), du code de production ne devrait pas.
+Jusqu'au 2026-11-22, les types venaient de la production, et il fallait deux PR
+(migration, `db:migrate`, `db:types`, puis le code). Les tests d'intégration
+écrits alors contournent encore (`const F = 'ma_fonction' as never`, client non
+typé) : ce n'est plus nécessaire.
 
 ⚠️ Si une migration doit partir AVANT d'autres déjà écrites, `pnpm db:migrate`
 (`supabase db push`) les pousse toutes. Les déplacer temporairement hors de `supabase/migrations/`

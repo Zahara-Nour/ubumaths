@@ -542,7 +542,8 @@ class ChatStore {
 					id: msg.id,
 					conversation_id: msg.conversation_id,
 					sender_id: msg.sender_id,
-					content: msg.content,
+					// Colonne obligatoire : la fonction la rend telle quelle, son type de retour ne le dit pas.
+					content: msg.content as Message['content'],
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,
@@ -709,7 +710,8 @@ class ChatStore {
 					id: msg.id,
 					conversation_id: msg.conversation_id,
 					sender_id: msg.sender_id,
-					content: msg.content,
+					// Colonne obligatoire : la fonction la rend telle quelle, son type de retour ne le dit pas.
+					content: msg.content as Message['content'],
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,

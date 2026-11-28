@@ -61,6 +61,8 @@ const ALLOWED_JOB_PATHS = [
 	'/api/cron/deleted-account-files',
 	// Carnet de liaison : liens manquants, courriels d'exception, trimestriel (cron Vercel quotidien)
 	'/api/cron/carnet-de-liaison',
+	// Invitations de cours particulier finies depuis 30 jours (cron Vercel quotidien)
+	'/api/cron/invitations-cours-particulier',
 	// pg_cron jobs (database RPC functions)
 	'rpc:cleanup_stale_trades',
 	'rpc:run_recalculate_minesweeper_ref_times',

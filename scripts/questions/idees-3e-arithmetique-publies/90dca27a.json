@@ -1,0 +1,483 @@
+{
+	"id": "90dca27a-fc58-4821-9648-9cdc406b263f",
+	"title": "Simplifier une fraction",
+	"description": "La simplification peut se faire en plusieurs étapes",
+	"grades": ["3"],
+	"level": 4,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"reducedFractions": "strict"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+				}
+			],
+			"statement": "Simplifie le plus possible.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!m(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{eval:b*c}}/{{eval:a*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align} \\dfrac{{{eval:b*c}}}{{{eval:a*c}}} &= \\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Simplifie le plus possible.\n\n$$\\dfrac{ {{eval:g*p}} }{ {{eval:g*q}} } = ?$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "0..2"
+				},
+				{
+					"name": "y",
+					"expression": "0..1"
+				},
+				{
+					"name": "z",
+					"expression": "0..1"
+				},
+				{
+					"name": "g",
+					"expression": "eval:2^x*3^y*5^z"
+				},
+				{
+					"name": "p",
+					"expression": "2|3|5|7|11|13|17|19"
+				},
+				{
+					"name": "q",
+					"expression": "2|3|5|7|11|13|17|19"
+				}
+			],
+			"conditions": [
+				"x+y+z>=2",
+				"g>=6",
+				"g<=30",
+				"p!=q",
+				"mod(g,p)!=0",
+				"mod(g,q)!=0",
+				"g*p<=400",
+				"g*q<=400",
+				"max(g*p,g*q)>=50"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{ {{p}} }{ {{q}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\dfrac{ {{q}} }{ {{p}} }",
+							"message": "Tu as inversé la fraction : le numérateur reste au numérateur.",
+							"label": "Fraction inversée"
+						},
+						{
+							"answer": "\\dfrac{ {{p}} }{ {{eval:g*q}} }",
+							"message": "Tu as divisé le numérateur par ${{g}}$, mais pas le dénominateur : on divise les deux par le même nombre.",
+							"label": "Dénominateur oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On décompose le numérateur et le dénominateur en produits de facteurs premiers.",
+					"$$\\dfrac{ {{eval:g*p}} }{ {{eval:g*q}} } = \\dfrac{\\textcolor{{{color:primary.0}}}{{{if:x>=1|2|}}{{if:x>=2|\\times 2|}}{{if:y>=1|{{if:x>=1|\\times |}}3|}}{{if:z>=1|{{if:x+y>=1|\\times |}}5|}}}\\times {{p}} }{\\textcolor{{{color:primary.0}}}{{{if:x>=1|2|}}{{if:x>=2|\\times 2|}}{{if:y>=1|{{if:x>=1|\\times |}}3|}}{{if:z>=1|{{if:x+y>=1|\\times |}}5|}}}\\times {{q}} }$$",
+					"Les facteurs communs donnent ${{g}}$ : on divise le numérateur et le dénominateur par ${{g}}$, et il ne reste plus de facteur commun.",
+					"$$\\dfrac{ {{eval:g*p}} }{ {{eval:g*q}} } = \\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }}$$"
+				]
+			},
+			"hint": "Décompose le numérateur et le dénominateur en facteurs premiers, puis repère les facteurs communs."
+		},
+		{
+			"statement": "Simplifie le plus possible.\n\n$$\\dfrac{ {{eval:c*u}} }{ {{eval:c*v}} } = ?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "13|17|19"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(u,v)==1", "u!=v"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{ {{u}} }{ {{v}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\dfrac{ {{v}} }{ {{u}} }",
+							"message": "Tu as inversé la fraction : le numérateur reste au numérateur.",
+							"label": "Fraction inversée"
+						},
+						{
+							"answer": "\\dfrac{ {{u}} }{ {{eval:c*v}} }",
+							"message": "Tu as divisé le numérateur par ${{c}}$, mais pas le dénominateur : on divise les deux par le même nombre.",
+							"label": "Dénominateur oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les tables ne suffisent pas : on cherche un diviseur commun parmi les nombres premiers $2$, $3$, $5$, $7$, $11$, $13$, $17$, $19$…",
+					"$$\\dfrac{ {{eval:c*u}} }{ {{eval:c*v}} } = \\dfrac{ {{u}} \\times \\textcolor{{{color:primary.0}}}{{{c}}}}{ {{v}} \\times \\textcolor{{{color:primary.0}}}{{{c}}}}$$",
+					"$$\\dfrac{ {{eval:c*u}} }{ {{eval:c*v}} } = \\textcolor{{{color:primary.0}}}{\\dfrac{ {{u}} }{ {{v}} }}$$"
+				]
+			},
+			"hint": "Aucun nombre des tables ne divise les deux : essaie $11$, $13$, $17$, $19$."
+		},
+		{
+			"statement": "On donne $A = {{eval:g*p}} = {{if:x>=1|2|}}{{if:x>=2|\\times 2|}}{{if:y>=1|{{if:x>=1|\\times |}}3|}}{{if:z>=1|{{if:x+y>=1|\\times |}}5|}}\\times {{p}}$ et $B = {{eval:g*q}} = {{if:x>=1|2|}}{{if:x>=2|\\times 2|}}{{if:y>=1|{{if:x>=1|\\times |}}3|}}{{if:z>=1|{{if:x+y>=1|\\times |}}5|}}\\times {{q}}$.\n\nÉcris $\\dfrac{A}{B}$ sous forme irréductible.\n\n$$\\dfrac{A}{B} = ?$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "0..2"
+				},
+				{
+					"name": "y",
+					"expression": "0..1"
+				},
+				{
+					"name": "z",
+					"expression": "0..1"
+				},
+				{
+					"name": "g",
+					"expression": "eval:2^x*3^y*5^z"
+				},
+				{
+					"name": "p",
+					"expression": "2|3|5|7|11|13|17|19"
+				},
+				{
+					"name": "q",
+					"expression": "2|3|5|7|11|13|17|19"
+				}
+			],
+			"conditions": [
+				"x+y+z>=2",
+				"g>=6",
+				"g<=30",
+				"p!=q",
+				"mod(g,p)!=0",
+				"mod(g,q)!=0",
+				"g*p<=400",
+				"g*q<=400"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{ {{p}} }{ {{q}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\dfrac{ {{q}} }{ {{p}} }",
+							"message": "Tu as inversé la fraction : le numérateur reste au numérateur.",
+							"label": "Fraction inversée"
+						},
+						{
+							"answer": "\\dfrac{ {{p}} }{ {{eval:g*q}} }",
+							"message": "Tu as divisé le numérateur par ${{g}}$, mais pas le dénominateur : on divise les deux par le même nombre.",
+							"label": "Dénominateur oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\dfrac{A}{B} = \\dfrac{\\textcolor{{{color:primary.0}}}{{{if:x>=1|2|}}{{if:x>=2|\\times 2|}}{{if:y>=1|{{if:x>=1|\\times |}}3|}}{{if:z>=1|{{if:x+y>=1|\\times |}}5|}}}\\times {{p}} }{\\textcolor{{{color:primary.0}}}{{{if:x>=1|2|}}{{if:x>=2|\\times 2|}}{{if:y>=1|{{if:x>=1|\\times |}}3|}}{{if:z>=1|{{if:x+y>=1|\\times |}}5|}}}\\times {{q}} }$$",
+					"Les facteurs communs aux deux décompositions donnent ${{g}}$ : on divise le numérateur et le dénominateur par ${{g}}$.",
+					"$$\\dfrac{A}{B} = \\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }}$$"
+				]
+			},
+			"hint": "Repère les facteurs premiers qui sont dans les deux décompositions."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "9"
+			},
+			"description": "36/54 → 2/3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{4}{6}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			},
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "9"
+			},
+			"description": "simplification partielle",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{9}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "1",
+				"c": "2"
+			},
+			"description": "borne : 2/18 → 1/9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{7}{8}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "7",
+				"c": "9"
+			},
+			"description": "63/72 → 7/8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "9"
+			},
+			"description": "inverse faux",
+			"variationIndex": 0
+		},
+		{
+			"description": "F2a : 66/30 → 11/5",
+			"variationIndex": 1,
+			"variables": {
+				"x": "1",
+				"y": "1",
+				"z": "0",
+				"p": "11",
+				"q": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{11}{5}"]
+		},
+		{
+			"description": "F2a : 33/15, simplifiée à moitié",
+			"variationIndex": 1,
+			"variables": {
+				"x": "1",
+				"y": "1",
+				"z": "0",
+				"p": "11",
+				"q": "5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			},
+			"answers": ["\\frac{33}{15}"]
+		},
+		{
+			"description": "F2a : inversée",
+			"variationIndex": 1,
+			"variables": {
+				"x": "1",
+				"y": "1",
+				"z": "0",
+				"p": "11",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé la fraction : le numérateur reste au numérateur."
+			},
+			"answers": ["\\frac{5}{11}"]
+		},
+		{
+			"description": "F2a : dénominateur oublié",
+			"variationIndex": 1,
+			"variables": {
+				"x": "1",
+				"y": "1",
+				"z": "0",
+				"p": "11",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé le numérateur par $6$, mais pas le dénominateur : on divise les deux par le même nombre."
+			},
+			"answers": ["\\frac{11}{30}"]
+		},
+		{
+			"description": "F2a : 140/340 → 7/17",
+			"variationIndex": 1,
+			"variables": {
+				"x": "2",
+				"y": "0",
+				"z": "1",
+				"p": "7",
+				"q": "17"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{7}{17}"]
+		},
+		{
+			"description": "F2a : 14/34, simplifiée par 10 seulement",
+			"variationIndex": 1,
+			"variables": {
+				"x": "2",
+				"y": "0",
+				"z": "1",
+				"p": "7",
+				"q": "17"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			},
+			"answers": ["\\frac{14}{34}"]
+		},
+		{
+			"description": "F2b : 68/51 → 4/3",
+			"variationIndex": 2,
+			"variables": {
+				"c": "17",
+				"u": "4",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{4}{3}"]
+		},
+		{
+			"description": "F2b : inversée",
+			"variationIndex": 2,
+			"variables": {
+				"c": "17",
+				"u": "4",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé la fraction : le numérateur reste au numérateur."
+			},
+			"answers": ["\\frac{3}{4}"]
+		},
+		{
+			"description": "F2b : dénominateur oublié",
+			"variationIndex": 2,
+			"variables": {
+				"c": "17",
+				"u": "4",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé le numérateur par $17$, mais pas le dénominateur : on divise les deux par le même nombre."
+			},
+			"answers": ["\\frac{4}{51}"]
+		},
+		{
+			"description": "F2b : 26/39 → 2/3",
+			"variationIndex": 2,
+			"variables": {
+				"c": "13",
+				"u": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "F2c : A = 84, B = 60 → 7/5",
+			"variationIndex": 3,
+			"variables": {
+				"x": "2",
+				"y": "1",
+				"z": "0",
+				"p": "7",
+				"q": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{7}{5}"]
+		},
+		{
+			"description": "F2c : 21/15, simplifiée par 4 seulement",
+			"variationIndex": 3,
+			"variables": {
+				"x": "2",
+				"y": "1",
+				"z": "0",
+				"p": "7",
+				"q": "5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			},
+			"answers": ["\\frac{21}{15}"]
+		},
+		{
+			"description": "F2c : inversée",
+			"variationIndex": 3,
+			"variables": {
+				"x": "2",
+				"y": "1",
+				"z": "0",
+				"p": "7",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé la fraction : le numérateur reste au numérateur."
+			},
+			"answers": ["\\frac{5}{7}"]
+		}
+	]
+}

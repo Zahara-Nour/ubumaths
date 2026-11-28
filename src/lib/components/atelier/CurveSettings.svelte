@@ -22,6 +22,7 @@
 	import {
 		arcLengthBetween,
 		curvatureAt,
+		integralRefusal,
 		integralUnder,
 		tangentAt
 	} from '#lib/grapheur/analysis.ts';
@@ -111,6 +112,12 @@
 		curve && display.integral && areaRefused === null
 			? integralUnder(curve, display.integral.from, display.integral.to)
 			: undefined
+	);
+	// E2 : sans aire (un pôle entre les bornes), la phrase qui dit pourquoi
+	const areaFailure = $derived(
+		curve && display.integral && areaRefused === null && area === undefined
+			? integralRefusal(curve, display.integral.from, display.integral.to)
+			: null
 	);
 	const length = $derived(
 		curve && display.integral && display.showArcLength && areaRefused === null
@@ -337,7 +344,7 @@
 					aria-invalid={boundRefusal?.edge === 'to'}
 				/>
 			</div>
-			<p class="refus" role="alert">{boundRefusal?.message ?? areaRefused ?? ''}</p>
+			<p class="refus" role="alert">{boundRefusal?.message ?? areaRefused ?? areaFailure ?? ''}</p>
 			<div class="ligne">
 				<span class="nombre aire">aire = {area ? formatNumber(area.value) : '—'}</span>
 				<MyCheckbox

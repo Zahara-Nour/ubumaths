@@ -1,0 +1,743 @@
+{
+	"id": "bfb21166-6482-4f30-b2e5-b5f86f5de0e0",
+	"rangement": {
+		"noeud": "Probabilités > Expériences aléatoires > événements",
+		"point": "3-033"
+	},
+	"title": "Jeux à deux épreuves : évènements « et », « ou »",
+	"description": "Calculer la probabilité de gagner à un jeu à deux épreuves (cartes, dé et urne, urne avec remise, deux dés) quand l'évènement est un « et » ou un « ou ».",
+	"grades": ["3"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": null,
+	"variations": [
+		{
+			"statement": "Léa a deux tas de cartes. Les tableaux donnent le nombre de cartes de chaque sorte dans chaque tas.\n\n| Tas 1 | Roi | Dame |\n|---|---|---|\n| Rouge | ${{r1}}$ | ${{t1}}$ |\n| Noire | ${{s1}}$ | ${{u1}}$ |\n\n| Tas 2 | Roi | Dame |\n|---|---|---|\n| Rouge | ${{r2}}$ | ${{t2}}$ |\n| Noire | ${{s2}}$ | ${{u2}}$ |\n\nElle tire une carte au hasard dans chaque tas. Elle gagne si les deux cartes ont la même figure **ou** la même couleur. Quelle est la probabilité qu'elle gagne ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "1..2"
+				},
+				{
+					"name": "s1",
+					"expression": "1..2"
+				},
+				{
+					"name": "t1",
+					"expression": "1..2"
+				},
+				{
+					"name": "u1",
+					"expression": "1..2"
+				},
+				{
+					"name": "r2",
+					"expression": "1..2"
+				},
+				{
+					"name": "s2",
+					"expression": "1..2"
+				},
+				{
+					"name": "t2",
+					"expression": "1..2"
+				},
+				{
+					"name": "u2",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [
+				"(r1+s1+t1+u1) <= 6",
+				"(r2+s2+t2+u2) <= 6",
+				"(r1+s1+t1+u1) >= 5",
+				"(r2+s2+t2+u2) >= 5",
+				"((r1+s1)*(r2+s2)+(t1+u1)*(t2+u2))+((r1+t1)*(r2+t2)+(s1+u1)*(s2+u2)) != (r1+s1+t1+u1)*(r2+s2+t2+u2)-(r1*u2+s1*t2+t1*s2+u1*r2)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(r1*u2+s1*t2+t1*s2+u1*r2)/((r1+s1+t1+u1)*(r2+s2+t2+u2))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(((r1+s1)*(r2+s2)+(t1+u1)*(t2+u2))+((r1+t1)*(r2+t2)+(s1+u1)*(s2+u2)))/((r1+s1+t1+u1)*(r2+s2+t2+u2))}}",
+							"message": "Tu as additionné « même figure » et « même couleur » : les paires de cartes identiques sont comptées deux fois.",
+							"label": "« au moins une » comptée deux fois"
+						},
+						{
+							"answer": "{{eval:(r1*r2+s1*s2+t1*t2+u1*u2)/((r1+s1+t1+u1)*(r2+s2+t2+u2))}}",
+							"message": "Tu as compté les paires de cartes identiques : « même figure **ou** même couleur » demande seulement l'un des deux.",
+							"label": "« et » au lieu de « ou »"
+						},
+						{
+							"answer": "{{eval:((r1+s1+t1+u1)*(r2+s2+t2+u2)-(r1*u2+s1*t2+t1*s2+u1*r2))/((r1+s1+t1+u1)+(r2+s2+t2+u2))}}",
+							"message": "Il y a ${{eval:(r1+s1+t1+u1)}}\\times{{eval:(r2+s2+t2+u2)}}$ paires de cartes possibles, pas ${{eval:(r1+s1+t1+u1)}} + {{eval:(r2+s2+t2+u2)}}$.",
+							"label": "Dénominateur n₁ + n₂"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un tableau à ${{eval:(r1+s1+t1+u1)}}$ lignes (cartes du tas 1) et ${{eval:(r2+s2+t2+u2)}}$ colonnes (cartes du tas 2) donne ${{eval:(r1+s1+t1+u1)*(r2+s2+t2+u2)}}$ issues équiprobables.",
+					"Léa perd seulement si les deux cartes n'ont ni la même figure ni la même couleur : un roi rouge avec une dame noire, ou un roi noir avec une dame rouge. Cela fait ${{r1}}\\times{{u2}}+{{s1}}\\times{{t2}}+{{t1}}\\times{{s2}}+{{u1}}\\times{{r2}}={{eval:(r1*u2+s1*t2+t1*s2+u1*r2)}}$ issues.",
+					"Elle gagne donc dans ${{eval:(r1+s1+t1+u1)*(r2+s2+t2+u2)-(r1*u2+s1*t2+t1*s2+u1*r2)}}$ issues : $P=\\dfrac{ {{eval:(r1+s1+t1+u1)*(r2+s2+t2+u2)-(r1*u2+s1*t2+t1*s2+u1*r2)}} }{ {{eval:(r1+s1+t1+u1)*(r2+s2+t2+u2)}} }=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Fais un tableau : les cartes du premier tas en lignes, celles du second en colonnes. Il est plus simple de compter les issues où Léa perd."
+		},
+		{
+			"statement": "Une urne contient six boules numérotées de $1$ à $6$. Les boules numérotées {{if:k==0|de $1$ à ${{m}}$|de ${{m}}$ à $6$}} sont bleues, les autres sont rouges. Hugo lance un dé équilibré à six faces, puis tire une boule au hasard dans l'urne.\n\nIl gagne si la boule est bleue **et** si son numéro est supérieur ou égal au nombre donné par le dé. Quelle est la probabilité qu'il gagne ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["((1-k)*m*(m+1)/2+k*(21-(m-1)*m/2)) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((1-k)*m*(m+1)/2+k*(21-(m-1)*m/2))/36}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(6*((1-k)*m+k*(7-m))+21-((1-k)*m*(m+1)/2+k*(21-(m-1)*m/2)))/36}}",
+							"message": "Tu as compté les issues où la boule est bleue **ou** a un numéro supérieur ou égal au dé : il faut les deux à la fois.",
+							"label": "« ou » au lieu de « et »"
+						},
+						{
+							"answer": "{{eval:(((1-k)*m*(m+1)/2+k*(21-(m-1)*m/2))-((1-k)*m+k*(7-m)))/36}}",
+							"message": "« Supérieur ou égal » : quand la boule porte le même numéro que le dé, Hugo gagne aussi (si elle est bleue).",
+							"label": "⩾ lu comme >"
+						},
+						{
+							"answer": "{{eval:((1-k)*m*(m+1)/2+k*(21-(m-1)*m/2))/12}}",
+							"message": "Il y a $6\\times6=36$ issues (dé, boule), pas $6 + 6 = 12$.",
+							"label": "Dénominateur 6 + 6"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un tableau (dé en lignes, boule en colonnes) donne $6\\times6=36$ issues équiprobables.",
+					"Une boule bleue de numéro $j$ gagne avec les dés $1$, …, $j$, soit $j$ issues. Les boules bleues portent les numéros {{if:k==0|$1$ à ${{m}}$|${{m}}$ à $6$}} : cela fait ${{eval:((1-k)*m*(m+1)/2+k*(21-(m-1)*m/2))}}$ issues gagnantes.",
+					"$P=\\dfrac{ {{eval:((1-k)*m*(m+1)/2+k*(21-(m-1)*m/2))}} }{36}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Fais le tableau des $36$ issues (dé, boule) et entoure celles où la boule est bleue **et** porte un numéro au moins égal au dé."
+		},
+		{
+			"statement": "Une urne contient ${{r}}$ {{if:r==1|boule rouge|boules rouges}}, ${{v}}$ {{if:v==1|boule verte|boules vertes}} et ${{j}}$ {{if:j==1|boule jaune|boules jaunes}}. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une seconde boule.\n\nQuelle est la probabilité d'obtenir au moins une boule rouge ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "1..4"
+				},
+				{
+					"name": "j",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["2*r < (r+v+j)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(v+j)*(v+j)/((r+v+j)*(r+v+j))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*r/(r+v+j)}}",
+							"message": "Tu as additionné « rouge au 1er tirage » et « rouge au 2e tirage » : l'issue (rouge, rouge) est comptée deux fois.",
+							"label": "« au moins une » comptée deux fois"
+						},
+						{
+							"answer": "{{eval:r*r/((r+v+j)*(r+v+j))}}",
+							"message": "Tu as calculé la probabilité de deux boules rouges : « au moins une » compte aussi les issues avec une seule boule rouge.",
+							"label": "« et » au lieu de « ou »"
+						},
+						{
+							"answer": "{{eval:2*r*(v+j)/((r+v+j)*(r+v+j))}}",
+							"message": "Tu as compté les issues avec exactement une boule rouge : « au moins une » compte aussi l'issue (rouge, rouge).",
+							"label": "Exactement une"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Numérotons les ${{eval:(r+v+j)}}$ boules : un tableau des deux tirages donne ${{eval:(r+v+j)}}\\times{{eval:(r+v+j)}}={{eval:(r+v+j)*(r+v+j)}}$ issues équiprobables.",
+					"Le contraire de « au moins une boule rouge » est « aucune boule rouge » : ${{eval:v+j}}\\times{{eval:v+j}}={{eval:(v+j)*(v+j)}}$ issues.",
+					"$P=1-\\dfrac{ {{eval:(v+j)*(v+j)}} }{ {{eval:(r+v+j)*(r+v+j)}} }=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Il est plus simple de compter les issues **sans** boule rouge, puis de passer au contraire."
+		},
+		{
+			"statement": "On lance un dé équilibré à quatre faces (numérotées de $1$ à $4$) et un dé équilibré à six faces (numérotées de $1$ à $6$).\n\nQuelle est la probabilité que {{if:k==0|les deux dés donnent|au moins un des deux dés donne}} un nombre {{if:q==0|pair|impair}} ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+2*k)/4}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(3-2*k)/4}}",
+							"message": "{{if:k==0|Tu as compté les issues où au moins un dé convient : « les deux » demande que les deux dés conviennent.|Tu as compté les issues où les deux dés conviennent : « au moins un » compte aussi les issues où un seul dé convient.}}",
+							"label": "« et » et « ou » confondus"
+						},
+						{
+							"answer": "1",
+							"message": "Tu as additionné les probabilités des deux dés : compte plutôt les issues dans le tableau des deux dés.",
+							"label": "Probabilités des deux dés additionnées"
+						},
+						{
+							"answer": "\\frac{1}{2}",
+							"message": "Il y a $4\\times6=24$ issues, pas $4 + 6 = 10$.",
+							"label": "Dénominateur 4 + 6"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un tableau (dé à quatre faces en lignes, dé à six faces en colonnes) donne $4\\times6=24$ issues équiprobables.",
+					"Le dé à quatre faces a $2$ nombres {{if:q==0|pairs|impairs}}, le dé à six faces en a $3$. {{if:k==0|Les deux dés conviennent dans $2\\times3=6$ issues.|Aucun dé ne convient dans $2\\times3=6$ issues, donc au moins un convient dans $24-6=18$ issues.}}",
+					"$P=\\dfrac{ {{eval:6+12*k}} }{24}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Fais le tableau des $24$ issues et colorie celles qui conviennent."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cartes : 19/25",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"s1": "1",
+				"t1": "1",
+				"u1": "1",
+				"r2": "1",
+				"s2": "1",
+				"t2": "2",
+				"u2": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{19}{25}"]
+		},
+		{
+			"description": "Cartes : 0,76",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"s1": "1",
+				"t1": "1",
+				"u1": "1",
+				"r2": "1",
+				"s2": "1",
+				"t2": "2",
+				"u2": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}76"]
+		},
+		{
+			"description": "Cartes : comptée deux fois",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"s1": "1",
+				"t1": "1",
+				"u1": "1",
+				"r2": "1",
+				"s2": "1",
+				"t2": "2",
+				"u2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné « même figure » et « même couleur » : les paires de cartes identiques sont comptées deux fois."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Cartes : « et »",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"s1": "1",
+				"t1": "1",
+				"u1": "1",
+				"r2": "1",
+				"s2": "1",
+				"t2": "2",
+				"u2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les paires de cartes identiques : « même figure **ou** même couleur » demande seulement l'un des deux."
+			},
+			"answers": ["\\frac{6}{25}"]
+		},
+		{
+			"description": "Cartes : n₁ + n₂",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"s1": "1",
+				"t1": "1",
+				"u1": "1",
+				"r2": "1",
+				"s2": "1",
+				"t2": "2",
+				"u2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $5\\times5$ paires de cartes possibles, pas $5 + 5$."
+			},
+			"answers": ["\\frac{19}{10}"]
+		},
+		{
+			"description": "Dé et urne k=0 m=3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{6}"]
+		},
+		{
+			"description": "Dé et urne k=0 m=3 : non réduite",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"m": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{6}{36}"]
+		},
+		{
+			"description": "Dé et urne k=0 m=3 : « ou »",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues où la boule est bleue **ou** a un numéro supérieur ou égal au dé : il faut les deux à la fois."
+			},
+			"answers": ["\\frac{11}{12}"]
+		},
+		{
+			"description": "Dé et urne k=0 m=3 : strict",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« Supérieur ou égal » : quand la boule porte le même numéro que le dé, Hugo gagne aussi (si elle est bleue)."
+			},
+			"answers": ["\\frac{1}{12}"]
+		},
+		{
+			"description": "Dé et urne k=0 m=3 : 12",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $6\\times6=36$ issues (dé, boule), pas $6 + 6 = 12$."
+			},
+			"answers": ["\\frac{1}{2}"]
+		},
+		{
+			"description": "Dé et urne k=1 m=4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"m": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5}{12}"]
+		},
+		{
+			"description": "Dé et urne k=1 m=4 : non réduite",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"m": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{15}{36}"]
+		},
+		{
+			"description": "Dé et urne k=1 m=4 : « ou »",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"m": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues où la boule est bleue **ou** a un numéro supérieur ou égal au dé : il faut les deux à la fois."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "Dé et urne k=1 m=4 : strict",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"m": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« Supérieur ou égal » : quand la boule porte le même numéro que le dé, Hugo gagne aussi (si elle est bleue)."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Dé et urne k=1 m=4 : 12",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"m": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $6\\times6=36$ issues (dé, boule), pas $6 + 6 = 12$."
+			},
+			"answers": ["\\frac{5}{4}"]
+		},
+		{
+			"description": "Urne 1-2-3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"v": "2",
+				"j": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{11}{36}"]
+		},
+		{
+			"description": "Urne 1-2-3 : non réduite",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"v": "2",
+				"j": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{11}{36}"]
+		},
+		{
+			"description": "Urne 1-2-3 : deux fois",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"v": "2",
+				"j": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné « rouge au 1er tirage » et « rouge au 2e tirage » : l'issue (rouge, rouge) est comptée deux fois."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "Urne 1-2-3 : « et »",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"v": "2",
+				"j": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la probabilité de deux boules rouges : « au moins une » compte aussi les issues avec une seule boule rouge."
+			},
+			"answers": ["\\frac{1}{36}"]
+		},
+		{
+			"description": "Urne 1-2-3 : exactement une",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"v": "2",
+				"j": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues avec exactement une boule rouge : « au moins une » compte aussi l'issue (rouge, rouge)."
+			},
+			"answers": ["\\frac{5}{18}"]
+		},
+		{
+			"description": "Urne 2-3-1",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5}{9}"]
+		},
+		{
+			"description": "Urne 2-3-1 : non réduite",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{20}{36}"]
+		},
+		{
+			"description": "Urne 2-3-1 : deux fois",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné « rouge au 1er tirage » et « rouge au 2e tirage » : l'issue (rouge, rouge) est comptée deux fois."
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "Urne 2-3-1 : « et »",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la probabilité de deux boules rouges : « au moins une » compte aussi les issues avec une seule boule rouge."
+			},
+			"answers": ["\\frac{1}{9}"]
+		},
+		{
+			"description": "Urne 2-3-1 : exactement une",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues avec exactement une boule rouge : « au moins une » compte aussi l'issue (rouge, rouge)."
+			},
+			"answers": ["\\frac{4}{9}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=0 q=0",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=0 q=0 : décimal",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}25"]
+		},
+		{
+			"description": "Dés 4 et 6 k=0 q=0 : non réduite",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{6}{24}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=0 q=0 : et / ou",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues où au moins un dé convient : « les deux » demande que les deux dés conviennent."
+			},
+			"answers": ["\\frac{3}{4}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=0 q=0 : additionné",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les probabilités des deux dés : compte plutôt les issues dans le tableau des deux dés."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Dés 4 et 6 k=0 q=0 : 4 + 6",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"q": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $4\\times6=24$ issues, pas $4 + 6 = 10$."
+			},
+			"answers": ["\\frac{1}{2}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=1 q=1",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{4}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=1 q=1 : décimal",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}75"]
+		},
+		{
+			"description": "Dés 4 et 6 k=1 q=1 : non réduite",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{18}{24}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=1 q=1 : et / ou",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les issues où les deux dés conviennent : « au moins un » compte aussi les issues où un seul dé convient."
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "Dés 4 et 6 k=1 q=1 : additionné",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les probabilités des deux dés : compte plutôt les issues dans le tableau des deux dés."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Dés 4 et 6 k=1 q=1 : 4 + 6",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $4\\times6=24$ issues, pas $4 + 6 = 10$."
+			},
+			"answers": ["\\frac{1}{2}"]
+		}
+	]
+}

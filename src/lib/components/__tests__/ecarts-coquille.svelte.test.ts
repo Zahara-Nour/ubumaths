@@ -1,0 +1,130 @@
+/**
+ * Écarts de la coquille qui demandent un navigateur (docs/ecarts/registre.md) :
+ * Aucun écart ouvert : L41 (tests dans recherche-prof.svelte.test.ts), L43, L45 et L52
+ * corrigés, leurs tests sont des tests ordinaires.
+ *
+ * Le projet vitest `ecarts` n'a pas de navigateur : chaque écart est ici en
+ * `it.fails`, et son nom porte le marqueur « écart Lnn » que la preuve du
+ * registre cherche. Tant que l'écart est vrai, `it.fails` est vert ; à la
+ * correction il devient rouge, et la PR qui corrige retire `.fails` ET le
+ * marqueur (docs/pratiques/registre-des-ecarts.md § Les trois preuves).
+ *
+ * Un `it.fails` est vert dès que son corps lève : chaque écart a donc un témoin,
+ * test ordinaire qui fait le même geste sur un cas qui marche déjà, et le corps
+ * du `it.fails` ne porte qu'une affirmation.
+ */
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { render } from 'vitest-browser-svelte';
+import { createRawSnippet, flushSync } from 'svelte';
+import TeacherLayout from '../../../routes/(protected)/dashboard/teacher/+layout.svelte';
+import type { LayoutData as TeacherLayoutData } from '../../../routes/(protected)/dashboard/teacher/$types';
+import Wheel from '../Wheel.svelte';
+import { clearSelectedClass } from '#lib/stores/selectedClass.svelte.ts';
+import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+import type { ClassWithData } from '#lib/server/students.ts';
+
+// Constantes
+const STUDENTS = [
+	{ id: 'eleve-1', firstname: 'Ada' },
+	{ id: 'eleve-2', firstname: 'Blaise' },
+	{ id: 'eleve-3', firstname: 'Sophie' }
+];
+
+// Functions
+/** Les données de la page de recherche pour une adresse `?q=…&kinds=…`. */
+function classe(id: string, name: string): ClassWithData {
+	return {
+		id,
+		name,
+		description: null,
+		join_code: 'ABC123',
+		is_active: true,
+		created_at: '2026-09-01T08:00:00.000Z',
+		updated_at: '2026-09-01T08:00:00.000Z',
+		google_classroom_course_id: null,
+		student_count: 0,
+		schedules: []
+	};
+}
+
+/** Les données du layout prof, sans utilisateur (aucune lecture réseau lancée). */
+function layoutData(classes: ClassWithData[]): TeacherLayoutData {
+	const data = {
+		classes,
+		classesLoaded: true,
+		currentPeriod: null,
+		allPeriods: [] as TeacherLayoutData['allPeriods']
+	} satisfies Pick<TeacherLayoutData, 'classes' | 'classesLoaded' | 'currentPeriod' | 'allPeriods'>;
+	return data as TeacherLayoutData;
+}
+
+const children = createRawSnippet(() => ({ render: () => '<p>page</p>' }));
+
+/** Les noms des classes que le cache du prof connaît. */
+function classesEnCache(): string[] {
+	return teacherCache
+		.getAllClassesSync()
+		.map((c) => c.name)
+		.sort();
+}
+
+/** La durée de rotation de la roue une fois lancée. */
+async function dureeDeRotation(props: { spinDuration?: number }): Promise<string> {
+	const { container } = await render(Wheel, {
+		props: { students: STUDENTS, showConfetti: false, ...props }
+	});
+	container
+		.querySelector('.center-button')
+		?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+	flushSync();
+	// Style calculé, pas le style en ligne : une durée posée par une variable CSS compte aussi.
+	const svg = container.querySelector('svg');
+	return svg ? getComputedStyle(svg).transitionDuration : 'absent';
+}
+
+describe('layout du prof : données neuves après une action de formulaire', () => {
+	beforeEach(() => {
+		teacherCache.hydrateAllClasses([]);
+	});
+	// Le layout retient la première classe dans le localStorage : ne pas la laisser aux autres tests.
+	afterEach(() => {
+		clearSelectedClass();
+	});
+
+	it('témoin : les classes d’arrivée sont dans le cache', async () => {
+		await render(TeacherLayout, {
+			props: { data: layoutData([classe('c1', '6e A')]), children }
+		});
+		expect(classesEnCache()).toEqual(['6e A']);
+	});
+
+	// Écart L45, corrigé : le layout versait ses données au cache une fois, au montage.
+	it('une classe ajoutée (données relues) arrive dans le cache', async () => {
+		const { rerender } = await render(TeacherLayout, {
+			props: { data: layoutData([classe('c1', '6e A')]), children }
+		});
+		await rerender({ data: layoutData([classe('c1', '6e A'), classe('c2', '5e B')]) });
+		expect(classesEnCache()).toEqual(['5e B', '6e A']);
+	});
+
+	// Un layout parent relu change `data` sans relire la liste : l'ancienne lecture ne
+	// doit pas écraser ce que le cache a appris depuis.
+	it('des données relues ailleurs (même liste) ne réécrivent pas le cache', async () => {
+		const data = layoutData([classe('c1', '6e A')]);
+		const { rerender } = await render(TeacherLayout, { props: { data, children } });
+		teacherCache.hydrateAllClasses([classe('c1', '6e A'), classe('c2', '5e B')]);
+		await rerender({ data: { ...data } });
+		expect(classesEnCache()).toEqual(['5e B', '6e A']);
+	});
+});
+
+describe('roue : durée de rotation', () => {
+	it('témoin : sans durée demandée, la roue tourne 4 secondes', async () => {
+		expect(await dureeDeRotation({})).toBe('4s');
+	});
+
+	// L52 corrigé : la durée demandée est celle de la transition.
+	it('avec spinDuration = 2, la roue tourne 2 secondes', async () => {
+		expect(await dureeDeRotation({ spinDuration: 2 })).toBe('2s');
+	});
+});

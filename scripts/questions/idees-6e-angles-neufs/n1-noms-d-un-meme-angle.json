@@ -1,0 +1,195 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Angles",
+		"point": "6-168"
+	},
+	"title": "Les noms d'un même angle",
+	"description": "Reconnaître tous les noms d'un angle quand ses côtés portent plusieurs points (sommet au milieu, n'importe quel point de chaque côté) ; pièges : sommet mal placé, angle voisin, angle opposé par le sommet",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Coche **tous** les noms de l'angle marqué en rouge.\n\n```figure\nfenetre: -1 ; 8 ; -1 ; 5.5\ngrille: non\ndescription: Un triangle aux sommets nommés, des points sur ses côtés ; un angle est marqué en rouge.\n---\n{{if:k==0|A|{{if:k==1|R|E}}}} = point(2.5, 4.5, etiquette=\"haut\")\n{{if:k==0|B|{{if:k==1|S|F}}}} = point(0.0, 0.0, etiquette=\"bas-gauche\")\n{{if:k==0|C|{{if:k==1|T|G}}}} = point(7.0, 0.0, etiquette=\"bas-droite\")\n{{if:k==0|M|{{if:k==1|U|P}}}} = point(1.375, 2.475, etiquette=\"gauche\")\npolygone({{if:k==0|A|{{if:k==1|R|E}}}}, {{if:k==0|B|{{if:k==1|S|F}}}}, {{if:k==0|C|{{if:k==1|T|G}}}}, couleur=\"noir\", epaisseur=2)\nsegment({{if:k==0|C|{{if:k==1|T|G}}}}, {{if:k==0|M|{{if:k==1|U|P}}}}, epaisseur=2)\nangle({{if:k==0|A|{{if:k==1|R|E}}}}, {{if:k==0|B|{{if:k==1|S|F}}}}, {{if:k==0|C|{{if:k==1|T|G}}}}, couleur=\"rouge\")\n```\n\n```choix\nplusieurs: oui\n- $\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$\n- $\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}$\n- $\\widehat{{{if:k==0|M|{{if:k==1|U|P}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$\n- $\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$\n- $\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$\n- $\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|M|{{if:k==1|U|P}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$\n- $\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;2;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nommer un angle** : la lettre du **sommet** au milieu, et de chaque côté la lettre d'un point placé sur un côté de l'angle (n'importe lequel).",
+					"Le sommet est ${{if:k==0|B|{{if:k==1|S|F}}}}$. Sur un côté il y a ${{if:k==0|A|{{if:k==1|R|E}}}}$ et ${{if:k==0|M|{{if:k==1|U|P}}}}$, sur l'autre ${{if:k==0|C|{{if:k==1|T|G}}}}$ : $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}}$, $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}}$, $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|M|{{if:k==1|U|P}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}}$ et $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}}$ sont le même angle.",
+					"$\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$ et $\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}}$ ont un autre sommet ; $\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|M|{{if:k==1|U|P}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$ a pour sommet ${{if:k==0|M|{{if:k==1|U|P}}}}$."
+				]
+			},
+			"hint": "Quelle lettre doit être au milieu ? Et quels points sont sur les côtés de cet angle ?"
+		},
+		{
+			"statement": "Coche **tous** les noms de l'angle marqué en rouge.\n\n```figure\nfenetre: -1 ; 8 ; -1 ; 5.5\ngrille: non\ndescription: Un triangle aux sommets nommés, des points sur ses côtés ; un angle est marqué en rouge.\n---\n{{if:k==0|A|{{if:k==1|R|E}}}} = point(2.5, 4.5, etiquette=\"haut\")\n{{if:k==0|B|{{if:k==1|S|F}}}} = point(0.0, 0.0, etiquette=\"bas-gauche\")\n{{if:k==0|C|{{if:k==1|T|G}}}} = point(7.0, 0.0, etiquette=\"bas-droite\")\n{{if:k==0|M|{{if:k==1|U|P}}}} = point(1.375, 2.475, etiquette=\"gauche\")\n{{if:k==0|N|{{if:k==1|V|Q}}}} = point(3.5, 0.0, etiquette=\"bas\")\n{{if:k==0|I|{{if:k==1|K|H}}}} = point(3.1207, 1.7069, etiquette=\"bas-gauche\")\npolygone({{if:k==0|A|{{if:k==1|R|E}}}}, {{if:k==0|B|{{if:k==1|S|F}}}}, {{if:k==0|C|{{if:k==1|T|G}}}}, couleur=\"noir\", epaisseur=2)\nsegment({{if:k==0|C|{{if:k==1|T|G}}}}, {{if:k==0|M|{{if:k==1|U|P}}}}, epaisseur=2)\nsegment({{if:k==0|A|{{if:k==1|R|E}}}}, {{if:k==0|N|{{if:k==1|V|Q}}}}, epaisseur=2)\nangle({{if:k==0|A|{{if:k==1|R|E}}}}, {{if:k==0|B|{{if:k==1|S|F}}}}, {{if:k==0|C|{{if:k==1|T|G}}}}, couleur=\"rouge\")\n```\n\n```choix\nplusieurs: oui\n- $\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$\n- $\\widehat{{{if:k==0|M|{{if:k==1|U|P}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|N|{{if:k==1|V|Q}}}}}$\n- $\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$\n- $\\widehat{{{if:k==0|N|{{if:k==1|V|Q}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}$\n- $\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|N|{{if:k==1|V|Q}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$\n- $\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;3;5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nommer un angle** : la lettre du **sommet** au milieu, et de chaque côté la lettre d'un point placé sur un côté de l'angle (n'importe lequel).",
+					"Le sommet est ${{if:k==0|B|{{if:k==1|S|F}}}}$. Sur un côté : ${{if:k==0|A|{{if:k==1|R|E}}}}$ ou ${{if:k==0|M|{{if:k==1|U|P}}}}$ ; sur l'autre : ${{if:k==0|C|{{if:k==1|T|G}}}}$ ou ${{if:k==0|N|{{if:k==1|V|Q}}}}$. Les noms justes : $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}}$, $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|M|{{if:k==1|U|P}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|N|{{if:k==1|V|Q}}}}}}$, $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|N|{{if:k==1|V|Q}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}}$, $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}}$.",
+					"$\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$ a pour sommet ${{if:k==0|A|{{if:k==1|R|E}}}}$, $\\widehat{{{if:k==0|B|{{if:k==1|S|F}}}}{{if:k==0|N|{{if:k==1|V|Q}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$ a pour sommet ${{if:k==0|N|{{if:k==1|V|Q}}}}$."
+				]
+			},
+			"hint": "La lettre du milieu est le sommet. Un côté de l'angle porte deux points nommés : on peut prendre l'un ou l'autre."
+		},
+		{
+			"statement": "Coche **tous** les noms de l'angle marqué en rouge.\n\n```figure\nfenetre: -1 ; 8 ; -1 ; 5.5\ngrille: non\ndescription: Un triangle aux sommets nommés, des points sur ses côtés ; un angle est marqué en rouge.\n---\n{{if:k==0|A|{{if:k==1|R|E}}}} = point(2.5, 4.5, etiquette=\"haut\")\n{{if:k==0|B|{{if:k==1|S|F}}}} = point(0.0, 0.0, etiquette=\"bas-gauche\")\n{{if:k==0|C|{{if:k==1|T|G}}}} = point(7.0, 0.0, etiquette=\"bas-droite\")\n{{if:k==0|M|{{if:k==1|U|P}}}} = point(1.375, 2.475, etiquette=\"gauche\")\n{{if:k==0|N|{{if:k==1|V|Q}}}} = point(3.5, 0.0, etiquette=\"bas\")\n{{if:k==0|I|{{if:k==1|K|H}}}} = point(3.1207, 1.7069, etiquette=\"bas-gauche\")\npolygone({{if:k==0|A|{{if:k==1|R|E}}}}, {{if:k==0|B|{{if:k==1|S|F}}}}, {{if:k==0|C|{{if:k==1|T|G}}}}, couleur=\"noir\", epaisseur=2)\nsegment({{if:k==0|C|{{if:k==1|T|G}}}}, {{if:k==0|M|{{if:k==1|U|P}}}}, epaisseur=2)\nsegment({{if:k==0|A|{{if:k==1|R|E}}}}, {{if:k==0|N|{{if:k==1|V|Q}}}}, epaisseur=2)\nangle({{if:k==0|C|{{if:k==1|T|G}}}}, {{if:k==0|I|{{if:k==1|K|H}}}}, {{if:k==0|A|{{if:k==1|R|E}}}}, couleur=\"rouge\")\n```\n\n```choix\nplusieurs: oui\n- $\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}$\n- $\\widehat{{{if:k==0|N|{{if:k==1|V|Q}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$\n- $\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}$\n- $\\widehat{{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}$\n- $\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nommer un angle** : la lettre du **sommet** au milieu, et de chaque côté la lettre d'un point placé sur un côté de l'angle (n'importe lequel).",
+					"Le sommet est ${{if:k==0|I|{{if:k==1|K|H}}}}$, les côtés sont $[{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|A|{{if:k==1|R|E}}}})$ et $[{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|C|{{if:k==1|T|G}}}})$ : $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|C|{{if:k==1|T|G}}}}}}$ ou $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}}$.",
+					"$\\widehat{{{if:k==0|N|{{if:k==1|V|Q}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$ est l'angle **opposé par le sommet** : un autre angle, de l'autre côté de ${{if:k==0|I|{{if:k==1|K|H}}}}$. $\\widehat{{{if:k==0|A|{{if:k==1|R|E}}}}{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|M|{{if:k==1|U|P}}}}}$ est un angle voisin, et $\\widehat{{{if:k==0|I|{{if:k==1|K|H}}}}{{if:k==0|C|{{if:k==1|T|G}}}}{{if:k==0|A|{{if:k==1|R|E}}}}}$ a pour sommet ${{if:k==0|C|{{if:k==1|T|G}}}}$."
+				]
+			},
+			"hint": "Repère le sommet de l'angle rouge, puis un point sur chacun de ses deux côtés."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Les quatre noms justes",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1;2;3"]
+		},
+		{
+			"description": "Deux noms seulement (partiel)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "Sommet pas au milieu (BAC)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;2;3;4"]
+		},
+		{
+			"description": "Angle de sommet M (BMC)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;5"]
+		},
+		{
+			"description": "Les quatre noms justes (b)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1;3;5"]
+		},
+		{
+			"description": "Oubli des noms avec M et N (partiel)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Sommet en N (BNM)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;3;4;5"]
+		},
+		{
+			"description": "Les deux noms justes (c)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;2"]
+		},
+		{
+			"description": "Opposé par le sommet (NIM)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;2"]
+		},
+		{
+			"description": "Angle voisin (AIM)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		}
+	]
+}

@@ -6,8 +6,9 @@
  * 1. `prepareClassification` lit ce qu'il faut, vérifie les notions (connues,
  *    sans doublon) et compose le titre ; rien n'est écrit, un refus rend un
  *    message ;
- * 2. `applyClassification` écrit : notions retirées, PUIS fiche mise à jour
- *    (catégorie, type), PUIS notions écrites. Une fiche a autant de notions
+ * 2. `applyClassification` écrit, en une transaction (fonction SQL aux droits de
+ *    l'appelant, L86) : notions retirées, PUIS fiche mise à jour (catégorie,
+ *    type), PUIS notions écrites. Une fiche a autant de notions
  *    qu'on veut, quels que soient son type et sa catégorie (ADR 0041, amendé
  *    le 2026-11-19 : la garde « une seule notion » de la base est retirée).
  *
@@ -18,15 +19,16 @@
  * amendé le 2026-11-20) : la branche se lit dans l'arbre, lisible de tous.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, TablesUpdate } from '#lib/types/database.ts';
+import type { Database, Tables, TablesUpdate } from '#lib/types/database.ts';
 import {
 	WORKSHEET_TYPES,
 	type WorksheetClassificationView,
 	type WorksheetType
 } from '#lib/types/worksheets.ts';
 import {
-	branchOf,
+	branchNodeOf,
 	composedTitle,
+	englishName,
 	isWorksheetCategory,
 	type TitleNotion,
 	type TitleTreeNode,
@@ -38,6 +40,12 @@ import {
 // ============================================================================
 
 type SB = SupabaseClient<Database>;
+
+/** La branche d'une notion : son nom, et son nom anglais (ADR 0043) */
+export interface BranchName {
+	name: string;
+	name_en: string | null;
+}
 
 /** Ce que la requête demande ; un champ absent n'est pas touché */
 export interface ClassificationRequest {
@@ -102,25 +110,26 @@ function asWorksheetType(value: string): WorksheetType {
 }
 
 /**
- * La branche de chaque nœud demandé, lue dans l'arbre en remontant les parents
- * (une requête par niveau, trois au plus). Une seule notion n'a pas besoin de
- * sa branche (le titre garde son nom) : rien n'est lu.
+ * La branche de chaque nœud demandé, avec son nom anglais, lue dans l'arbre en
+ * remontant les parents (une requête par niveau, trois au plus). Une seule
+ * notion a aussi besoin de sa branche : son nom anglais titre la fiche anglaise
+ * quand la notion n'a pas le sien (V111).
  *
  * @throws si la lecture échoue
  */
 export async function loadBranches(
 	supabase: SB,
 	nodeIds: readonly string[]
-): Promise<Map<string, string | null>> {
-	const branches = new Map<string, string | null>();
-	if (nodeIds.length < 2) return branches;
+): Promise<Map<string, BranchName | null>> {
+	const branches = new Map<string, BranchName | null>();
+	if (nodeIds.length === 0) return branches;
 
 	const tree = new Map<string, TitleTreeNode>();
 	let toRead = [...new Set(nodeIds)];
 	for (let level = 0; level < TREE_LEVELS && toRead.length > 0; level++) {
 		const { data, error } = await supabase
 			.from('classification_nodes')
-			.select('id, name, kind, parent_id')
+			.select('id, name, kind, parent_id, translations')
 			.in('id', toRead);
 		if (error) throw new Error(`arbre des notions illisible : ${error.message}`);
 		for (const node of data ?? []) tree.set(node.id, node);
@@ -128,27 +137,51 @@ export async function loadBranches(
 			.filter((node) => node.kind !== 'branch' && node.parent_id && !tree.has(node.parent_id))
 			.map((node) => node.parent_id as string);
 	}
-	for (const id of nodeIds) branches.set(id, branchOf(id, tree));
+	for (const id of nodeIds) {
+		const branch = branchNodeOf(id, tree);
+		branches.set(
+			id,
+			branch ? { name: branch.name, name_en: englishName(branch.translations) } : null
+		);
+	}
 	return branches;
 }
 
 /**
- * Ajoute à chaque notion le nom de sa branche (`loadBranches`). Pour un chemin
- * qui imprime sans écrire (lien de partage) : une lecture en échec laisse les
- * notions sans branche, le titre imprimé reprend alors les notions.
+ * Ajoute à chaque notion le nom de sa branche (`loadBranches`), et les noms
+ * anglais de la notion (tiré de ses traductions) et de sa branche (ADR 0043).
+ * Pour un chemin qui imprime sans écrire (lien de partage) : une lecture en
+ * échec laisse les notions sans branche, le titre imprimé reprend alors les
+ * notions.
  */
-export async function withBranches<T extends { node_id: string }>(
+export async function withBranches<T extends { node_id: string; translations?: unknown }>(
 	supabase: SB,
 	notions: T[]
-): Promise<Array<T & { branch?: string | null }>> {
+): Promise<
+	Array<
+		Omit<T, 'translations'> & {
+			branch?: string | null;
+			name_en: string | null;
+			branch_en?: string | null;
+		}
+	>
+> {
+	// Le nom anglais seul : le jsonb brut du nœud ne part pas vers la page (lien public)
+	const named = notions.map(({ translations, ...notion }) => ({
+		...notion,
+		name_en: englishName(translations)
+	}));
 	try {
 		const branches = await loadBranches(
 			supabase,
 			notions.map((notion) => notion.node_id)
 		);
-		return notions.map((notion) => ({ ...notion, branch: branches.get(notion.node_id) ?? null }));
+		return named.map((notion) => {
+			const branch = branches.get(notion.node_id) ?? null;
+			return { ...notion, branch: branch?.name ?? null, branch_en: branch?.name_en ?? null };
+		});
 	} catch {
-		return notions;
+		return named;
 	}
 }
 
@@ -165,7 +198,7 @@ export async function loadWorksheetClassifications(
 ): Promise<WorksheetClassificationView[]> {
 	const { data, error } = await supabase
 		.from('worksheet_classifications')
-		.select('node_id, position, node:classification_nodes (name, kind)')
+		.select('node_id, position, node:classification_nodes (name, kind, translations)')
 		.eq('worksheet_id', worksheetId)
 		.order('position', { ascending: true });
 	if (error) throw new Error(`notions de la fiche illisibles : ${error.message}`);
@@ -175,15 +208,20 @@ export async function loadWorksheetClassifications(
 	const branches = await loadBranches(
 		supabase,
 		rows.map((row) => row.node_id)
-	).catch(() => new Map<string, string | null>());
+	).catch(() => new Map<string, BranchName | null>());
 	return rows
-		.map((row) => ({
-			node_id: row.node_id,
-			name: row.node?.name ?? '',
-			kind: row.node?.kind ?? '',
-			branch: branches.get(row.node_id) ?? null,
-			position: row.position
-		}))
+		.map((row) => {
+			const branch = branches.get(row.node_id) ?? null;
+			return {
+				node_id: row.node_id,
+				name: row.node?.name ?? '',
+				kind: row.node?.kind ?? '',
+				branch: branch?.name ?? null,
+				name_en: englishName(row.node?.translations),
+				branch_en: branch?.name_en ?? null,
+				position: row.position
+			};
+		})
 		.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'));
 }
 
@@ -201,7 +239,7 @@ async function titleNotions(supabase: SB, ids: string[]): Promise<Map<string, Ti
 	if (!ids.every((id) => names.has(id))) return null;
 	const branches = await loadBranches(supabase, ids);
 	return new Map(
-		ids.map((id) => [id, { name: names.get(id) ?? '', branch: branches.get(id) ?? null }])
+		ids.map((id) => [id, { name: names.get(id) ?? '', branch: branches.get(id)?.name ?? null }])
 	);
 }
 
@@ -268,52 +306,36 @@ export async function prepareClassification(
 	return { ok: true, update, notions: request.notions ?? null, current };
 }
 
+/** Colonnes de la fiche que la classification écrit (avec ses notions, d'un coup) */
+export type ClassificationFields = Pick<
+	TablesUpdate<'worksheets'>,
+	'type' | 'category' | 'custom_title' | 'title'
+>;
+
 /**
- * Écrit : notions retirées, fiche mise à jour (`updateWorksheet`, par la route), notions
- * écrites avec leur position. Chaque écriture est vérifiée (la RLS échoue en
- * silence).
+ * Écrit en UNE transaction (`save_worksheet_classification`, L86) : notions retirées,
+ * fiche mise à jour (`fields`), notions écrites avec leur position. Droits de
+ * l'appelant : la RLS de la fiche et de ses notions s'applique comme avant ; un refus,
+ * même silencieux, lève une exception côté base et annule tout.
  *
- * @throws si une écriture échoue ou ne touche pas les lignes attendues
+ * @returns la fiche telle qu'enregistrée
+ * @throws si l'écriture échoue : rien n'a changé
  */
 export async function applyClassification(
 	supabase: SB,
 	worksheetId: string,
 	plan: Extract<ClassificationPlan, { ok: true }>,
-	updateWorksheet: () => Promise<void>
-): Promise<void> {
-	const target = plan.notions;
-
-	if (target) {
-		const removed = plan.current.filter((id) => !target.includes(id));
-		if (removed.length > 0) {
-			const { data, error } = await supabase
-				.from('worksheet_classifications')
-				.delete()
-				.eq('worksheet_id', worksheetId)
-				.in('node_id', removed)
-				.select('node_id');
-			if (error || data?.length !== removed.length) {
-				throw new Error(`notions non retirées : ${error?.message ?? 'refus silencieux'}`);
-			}
-		}
+	fields: ClassificationFields
+): Promise<Tables<'worksheets'>> {
+	const { data, error } = await supabase
+		.rpc('save_worksheet_classification', {
+			p_worksheet_id: worksheetId,
+			p_fields: fields,
+			...(plan.notions !== null && { p_notions: plan.notions })
+		})
+		.single();
+	if (error || !data) {
+		throw new Error(`classification non enregistrée : ${error?.message ?? 'fiche illisible'}`);
 	}
-
-	await updateWorksheet();
-
-	if (target && target.length > 0) {
-		const { data, error } = await supabase
-			.from('worksheet_classifications')
-			.upsert(
-				target.map((nodeId, position) => ({
-					worksheet_id: worksheetId,
-					node_id: nodeId,
-					position
-				})),
-				{ onConflict: 'worksheet_id,node_id' }
-			)
-			.select('node_id');
-		if (error || data?.length !== target.length) {
-			throw new Error(`notions non écrites : ${error?.message ?? 'refus silencieux'}`);
-		}
-	}
+	return data;
 }

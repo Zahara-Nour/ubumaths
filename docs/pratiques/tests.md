@@ -49,16 +49,17 @@ En cas de doute : « est-ce que ça peut vivre à côté de son code ? » Si oui
 
 ## 2. Quel runner pour quoi — le suffixe route
 
-| Suffixe / fichier                             | Runner                                          | Config                           | Lancement                                        |
-| --------------------------------------------- | ----------------------------------------------- | -------------------------------- | ------------------------------------------------ |
-| `src/**`, `scripts/**` `*.test.ts`            | vitest projet **`server`** (node)               | `vite.config.ts`                 | `pnpm test:server <chemin>`                      |
-| `src/**/*.svelte.test.ts`                     | vitest projet **`client`** (Chromium)           | `vite.config.ts`                 | `pnpm test:client <chemin>`                      |
-| `src/**/*-real.svelte.test.ts`                | projet `client`, **exclu en CI** (Pyodide réel) | `vite.config.ts`                 | nightly, ou `pnpm test:client` en local          |
-| `tests/integration/**/*.test.ts`              | vitest **`integration`** (node, séquentiel)     | `vitest.integration.config.ts`   | `pnpm test:integration`                          |
-| `garde-fonctions-security-definer.test.ts`    | vitest **`definer-guard`** (seul)               | `vitest.definer-guard.config.ts` | `pnpm test:definer-guard`                        |
-| `e2e/**/*.spec.ts`                            | Playwright (chromium, firefox, webkit)          | `playwright.config.ts`           | `pnpm test:e2e`                                  |
-| `e2e/verifs/*.spec.ts`                        | Playwright (chromium), serveur de dev           | `playwright.verifs.config.ts`    | `pnpm test:verifs` (`VERIFS_PORT`, `VERIFS_URL`) |
-| `eslint-rules/require-zod-validation.test.js` | node                                            | —                                | `pnpm test:lint-rules`                           |
+| Suffixe / fichier                             | Runner                                                    | Config                           | Lancement                                                  |
+| --------------------------------------------- | --------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------- |
+| `src/**`, `scripts/**` `*.test.ts`            | vitest projet **`server`** (node)                         | `vite.config.ts`                 | `pnpm test:server <chemin>`                                |
+| `src/**/*.svelte.test.ts`                     | vitest projet **`client`** (Chromium)                     | `vite.config.ts`                 | `pnpm test:client <chemin>`                                |
+| `src/**/*-real.svelte.test.ts`                | projet `client`, **exclu en CI** (Pyodide réel)           | `vite.config.ts`                 | nightly, ou `pnpm test:client` en local                    |
+| `tests/integration/**/*.test.ts`              | vitest **`integration`** (node, séquentiel)               | `vitest.integration.config.ts`   | `pnpm test:integration`                                    |
+| `tests/ecarts/**/*.test.ts`                   | vitest projet **`ecarts`**, **hors CI** (rouges attendus) | `vite.config.ts`                 | `pnpm ecarts rejouer` ([registre](registre-des-ecarts.md)) |
+| `garde-fonctions-security-definer.test.ts`    | vitest **`definer-guard`** (seul)                         | `vitest.definer-guard.config.ts` | `pnpm test:definer-guard`                                  |
+| `e2e/**/*.spec.ts`                            | Playwright (chromium, firefox, webkit)                    | `playwright.config.ts`           | `pnpm test:e2e`                                            |
+| `e2e/verifs/*.spec.ts`                        | Playwright (6 navigateurs), serveur de dev                | `playwright.verifs.config.ts`    | `pnpm test:verifs` (`VERIFS_PORT`, `VERIFS_URL`)           |
+| `eslint-rules/require-zod-validation.test.js` | node                                                      | —                                | `pnpm test:lint-rules`                                     |
 
 Détails qui comptent :
 
@@ -97,6 +98,42 @@ avec `VERIFS_URL`). La lancer sous le verrou `supabase` (celui de la base de dev
 `VERIFS_PORT=<port> bash scripts/with-db-lock.sh pnpm test:verifs carnet`. Les courriels sont lus
 dans `.captures/courriels/`, les captures d'écran (téléphone, clair et sombre) écrites dans
 `.captures/verifs/carnet/`.
+
+**Élèves partagés entre fichiers de `test:verifs`** : un verrou par groupe d'élèves
+(`e2e/verifs/helpers/verrou.ts`), rangé pour toute la machine dans
+`~/.local/state/verifs/verrous/` (`VERIFS_VERROUS` pour un autre dossier). Deux worktrees, ou un
+worktree et la tâche de nuit, jouent sur la même base locale : le second attend (30 min au plus),
+un verrou de plus de 30 min est repris.
+
+**Navigateurs de `pnpm test:verifs`** (`e2e/verifs/projets.ts`) : sans `--project`, l'ordinateur
+Chrome seul (le jour) ; `--project <nom>` pour un autre (`ordi-safari`, `ordi-firefox`, `iphone`,
+`android`, `firefox-390`, motif `ordi-*` admis) ; `pnpm test:verifs:tout` pour tous (environ 15 min).
+Un moteur absent arrête tout avec la ligne `pnpm exec playwright install …`. Un test sans sens au
+téléphone (raccourci `Ctrl+…`, clic droit, poignée) porte l'étiquette `@bureau` : sauté sur
+`iphone`, `android`, `firefox-390`. Firefox à 390 px ne joue que les graphiques, les constructions
+et `@clavier-mathlive`. Le carnet ne tourne que sur `ordi-chrome` (décor partagé de la base).
+Au téléphone, les outils communs font les gestes de l'élève : `calc` déplie « Mes objets »
+(`showCards`, sauf `leavePanelAlone`). Firefox sur macOS 27 démarre avec un dossier personnel à
+lui (`CFFIXED_USER_HOME`), sinon il s'arrête (« Could not find profile folder »). Captures « à
+l'œil » au format iPhone : `pnpm test:verifs:captures --project iphone`.
+
+**Pièges de `pnpm test:verifs`** (relevés par le chantier `ecarts-verifs`, clos le 2026-11-26) :
+
+- **Ne jamais changer l'attendu d'un test de `e2e/verifs/`** pour le faire passer : un rouge est un
+  écart à inscrire au registre (`pnpm ecarts ajouter`), tranché par David.
+- **Lancer soi-même son serveur de dev** avant `test:verifs` (`VERIFS_PORT=<port>` s'il n'est pas
+  sur 5176) : le serveur lancé par Playwright meurt avec un lot arrêté.
+- **Plusieurs lots en parallèle** (agents) : `--output=<dossier à soi>` et `--workers=1` ou `2`,
+  sinon `ENOENT` et délais dépassés.
+- **L'énoncé d'un exercice est présent deux fois dans la page** (une copie cachée) : compter avec
+  `:visible`.
+- **Un test qui ouvre un modèle de questions lit le modèle EN BASE**, pas le fichier du dépôt : un
+  modèle corrigé en prod reste à l'ancienne dans la base locale tant qu'il n'y est pas réécrit, et
+  un `pnpm db:neuf` le remet à l'ancienne.
+- **La capture WebKit d'une carte retournée sort en miroir** (artefact de `page.screenshot`, pas un
+  défaut de la page) : la retourner pour la lire, ou lire la vidéo.
+- **Un seul professeur par base** : le second compte capable d'assigner est l'admin. Le prof de la
+  base locale n'a pas d'école : ce qui dépend de l'école (périodes) ne s'y vérifie pas.
 
 **Intégration : PR ou nightly ? Les deux.** Le workflow `nightly-integration.yml` se déclenche
 (1) chaque nuit, (2) sur toute PR qui touche un fichier de son filtre `paths` (`supabase/**`,
@@ -270,8 +307,8 @@ par `createAuthenticatedClient`.
 - **Base partagée, séquentielle** : nettoyer avant et après (`cleanupAllTestData`), emails en
   `@test.com` (c'est ce que le nettoyage purge). Une transaction ouverte par un test (`pg`) se
   termine par `ROLLBACK`, jamais `COMMIT`.
-- **`db:types` génère depuis la production** : une RPC pas encore migrée en prod n'est pas typée
-  (cf. CLAUDE.md §Base de données).
+- **`db:types` génère depuis les migrations de la branche** (sur cette même pile de test) : après
+  une migration, `pnpm db:types` type la nouvelle RPC, sans attendre la prod (cf. CLAUDE.md §Base de données).
 - **Sign-in local en erreur vide** : GoTrue dégradé → dans la suite d'intégration, `pnpm db:test:stop` puis relancer les tests ; sur le serveur de dev, `pnpm db:stop` puis `pnpm db:start`.
 
 ---
@@ -350,3 +387,23 @@ Accessibilité (`axe-core` dans les e2e, agent `accessibility-tester`), régress
 Vérifié contre le code le 2026-10-10.
 
 Vérifié contre le code le 2026-10-10.
+
+## Vérifier à l'écran soi-même avant de demander à David
+
+David est presque toujours à distance et veut le moins possible de vérifications à la main
+(2026-11-23). Avant le merge, la session regarde elle-même ce qu'elle livre. Les trois moyens ont
+été essayés à distance le 2026-11-23 :
+
+| Moyen                           | Pour quoi                                                                                            | Comment                                                                                                                              |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm voir <page> [--compte …]` | le rendu d'une page (format iPhone, moteur de Safari), les erreurs de console, les requêtes en échec | [voir-une-page.md](voir-une-page.md)                                                                                                 |
+| `pnpm test:verifs`              | un parcours : cliquer, taper, lire un courriel capturé ; le test reste et se rejoue                  | `e2e/verifs/`, `VERIFS_PORT=<port du worktree>`                                                                                      |
+| Claude dans Chrome              | un geste ponctuel dans un vrai Chrome, la prod publique                                              | `https://chiph.re`, ou le lien de `pnpm lien` ; **jamais `localhost`** ([pourquoi](tester-sur-un-autre-appareil.md#les-deux-pièges)) |
+
+Les pages connectées se vérifient en local, avec les comptes fictifs (`pnpm voir --compte`,
+`pnpm test:verifs`).
+
+Reste à David, et à lui seul : le vrai iPhone (clavier, barres de Safari, zones de sécurité), le
+vidéoprojecteur, la prod avec un vrai compte (la session n'entre aucun mot de passe réel), un
+courriel reçu sur une vraie adresse. Seules ces vérifications deviennent une ligne de
+`docs/wip/verifications-manuelles.md`, et la ligne dit ce que la session a déjà vu.

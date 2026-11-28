@@ -52,7 +52,7 @@ La règle du bouton retour (quand, où, vers quelle page) est dans
 
 De gauche à droite : le menu (mobile), la gidouille (lien vers l'accueil du site, `/`), le nom de l'espace
 (« Mon cabinet », « Espace enseignant », « Administration ») avec la date de l'Almanach dessous, la
-bascule du mode test (profs), l'avatar (lien vers le profil), puis sur ordinateur la taille du
+bascule du mode test (profs ; état du **compte**, `teacherTestMode` lu par `+layout.server.ts`, jamais celui du navigateur, L40), l'avatar (lien vers le profil), puis sur ordinateur la taille du
 texte, le thème et le plein écran. Le nom de l'espace n'est pas un titre : le seul `h1` est celui
 de la page.
 
@@ -63,15 +63,15 @@ Couleur de fond selon le rôle du profil (élève, prof, admin).
 - **Les liens dépendent du rôle de navigation** : `admin` si le profil est admin ou si une
   élévation admin est active (`adminElevation`, voir [auth.md](auth.md)), sinon le rôle du profil.
 - **Élève** : accueil, Mes cours, Ma progression, Mon travail, Cahier de textes, Carnet de liaison
-  (ce que reçoivent ses parents, toujours visible, ADR 0040), amis, Chat, le
+  (ce que reçoivent ses parents, toujours visible, ADR 0040), Messages (messagerie privée `/messages` ; pastille : messages non lus), amis, Chat, le
   marché s'il est ouvert, la Chatterie (Mathoux, [mathoux.md](mathoux.md)), inventaire, Mes
   Signalements.
 - **Prof** : accueil, Classes, Mes cours, Cahier de textes, Programme, Avancement, Mes contenus,
   Recherche, observations, export des compétences, Séries, Contrôles en ligne, Mes exercices
-  Python, Figures (figures géométriques stockées), Gamification (badge : demandes de cartes VIP en attente), Modération, amis, Chat,
+  Python, Figures (figures géométriques stockées), Gamification (badge : demandes de cartes VIP en attente), Modération, Messages (pastille : messages non lus), amis, Chat,
   Administration. Ce dernier lien renvoie un prof non élevé vers l'écran d'élévation
   (`dashboard/admin/+layout.server.ts`).
-- **Admin** : accueil, Administration et ses pages (écoles, utilisateurs, classes, questions,
+- **Admin** : accueil, Administration et ses pages (écoles, cours particuliers, utilisateurs, classes, questions,
   dictionnaire, cartes VIP, signalements, suivi du site, tâches CRON, documentation, intégrité des données, débogage,
   réglages). « Debug » mène à `/dev`, espace hors du tableau de bord ; « Intégrité des données »
   (`/dashboard/admin/integrite-donnees`) a son propre lien.
@@ -118,7 +118,9 @@ Dans l'ordre :
    en cours, lus dans le cache élève (`studentCache`), chargé au montage.
 
 Les listes de l'espace élève absentes de la barre latérale ont chacune une entrée : fiches et
-contrôles depuis « Mon travail », énigmes depuis cet accueil.
+contrôles depuis « Mon travail », énigmes depuis cet accueil. Il n'y a plus de liste « Mes
+exercices » (`/dashboard/student/exercises`, retirée le 2026-11-26) : un exercice hors fiche
+s'ouvre par sa carte de « Mon travail » ou par un chapitre de cours.
 
 ### Prof (`TeacherDashboard.svelte`)
 
@@ -134,7 +136,9 @@ contrôles depuis « Mon travail », énigmes depuis cet accueil.
 - Lien vers les decks SRS.
 
 Classes et périodes viennent de `/api/teacher/classes` et `/api/teacher/periods`, gardées dans le
-cache prof (`teacherCache`).
+cache prof (`teacherCache`). Après une lecture réussie des classes, la classe retenue est confrontée
+à la liste (`reconcileSelectedClass`) : une classe supprimée ou désactivée est remplacée par la
+première, ou vidée s'il n'y en a aucune ([coquille-et-caches.md](coquille-et-caches.md)).
 
 ### Admin (`AdminDashboard.svelte`)
 
@@ -177,15 +181,8 @@ performance et erreurs, contenu et activité, tâches de fond. Chargée à l'ouv
 
 ## Écarts connus
 
-- **Requête sans affichage** : l'accueil élève charge encore les exercices récents
-  (`recentExercises`) ; leur bloc est en commentaire dans `StudentDashboard.svelte`, donc une
-  requête pour rien à chaque accueil élève. Celle des succès du Démineur, fausse en plus (elle
-  visait `game_achievements`), est retirée avec son bloc en commentaire (2026-11-22) : les succès
-  se voient sur Démineur › Mes succès.
-- `RewardsBlock` reçoit `riddlesSolved` sans s'en servir, depuis le retrait de son ancienne tuile
-  (2025-12-08).
-- **Commentaires d'en-tête périmés** : `TeacherDashboard.svelte` annonce `data.teacherClasses`
-  (les classes viennent de `teacherCache`) ; `StudentDashboard.svelte` décrit des données
-  « futures ».
-- **Deux barres latérales** : `src/lib/components/Sidebar.svelte`, rendue par le layout racine, a
-  sa propre fonction `isActive`, hors de cette doc.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Deux barres latérales : `src/lib/components/Sidebar.svelte`, rendue par le layout racine, a sa propre fonction `isActive`, qui n'est pas décrite dans cette doc.

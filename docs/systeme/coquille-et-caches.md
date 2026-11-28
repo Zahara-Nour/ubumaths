@@ -3,13 +3,15 @@ couvre:
   - src/routes/+layout.svelte
   - 'src/routes/(protected)/+layout.svelte'
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
-  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,ExerciseSkeleton,FlipCard,FontSelector,Wheel}.svelte'
+  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,FlipCard,Wheel}.svelte'
+  - src/lib/components/wheel-landing.ts
+  - src/lib/navigation/public-nav-items.ts
   - 'src/lib/components/{skeleton,modals}/**'
-  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack,input-capability,auth}.svelte.ts'
+  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
   - src/lib/utils/cache-sync.ts
   - src/lib/utils/app-version.ts
-  - 'src/routes/(protected)/dashboard/teacher/{wheel,recherche,documents}/**'
+  - 'src/routes/(protected)/dashboard/teacher/{recherche,documents}/**'
 ---
 
 # Coquille de l'application et caches des tableaux de bord
@@ -58,7 +60,7 @@ Déjà documenté ailleurs, et seulement cité ici :
   copyright, version.
 
 **Partout** : une barre fine en haut de l'écran pendant une navigation, les toasts en haut à
-droite (cinq visibles au plus), et les modales de la pile (cartes VIP, historiques, Démineur).
+droite (cinq visibles au plus ; une seule, la plus récente, au téléphone : `AppToaster`), et les modales de la pile (cartes VIP, historiques, Démineur).
 
 **Dans le tableau de bord** : l'en-tête et la barre latérale du tableau de bord remplacent ceux du
 layout racine. En plus, selon le rôle :
@@ -94,7 +96,7 @@ facteur 7/6. Un petit script inline de `app.html` pose la classe avant le premie
 | Fichier                                          | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/routes/+layout.svelte`                      | CSS globales, analytics Vercel (import dynamique, échec silencieux sous Brave ; `beforeSend` masque le jeton des adresses `/carnet/…`, `src/lib/utils/analytics-redact.ts`), `ModeWatcher`, `Toaster`, `ModalStackRenderer`, `MathKeyboardClose` (bouton « Fermer le clavier » au-dessus du clavier MathLive, voir [questions.md](questions.md)), catalogue des cartes VIP (`initializeTemplates`), niveau du lecteur pour les mots cliquables (`provideReaderGrade`, voir [dictionnaire.md](dictionnaire.md)), Palotin de l'élève connecté (`PalotinPresence`, import dynamique, voir [buddy-palotins.md](buddy-palotins.md#maison-et-passages-2026-11-11)), route de la page affichée notée pour les mesures de performance (`afterNavigate` → `noteWebVitalsRoute`, identifiant de route et jamais l'adresse, voir [surveillance-des-erreurs.md](surveillance-des-erreurs.md)). |
-| `src/routes/(protected)/+layout.svelte`          | Aucun habillage. Monte `PomodoroEffects` (sonnerie et annonce des changements de phase du pomodoro) pour tout utilisateur connecté.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `src/routes/(protected)/+layout.svelte`          | Aucun habillage. Monte `PomodoroEffects` (sonnerie et annonce des changements de phase du pomodoro) pour tout utilisateur connecté. Remplit le magasin `consent` (boutons grisés sans consentement parental) à partir de `data.consentStatus`, pour toutes les pages protégées.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `dashboard/+layout.svelte`                       | Habillage du tableau de bord : [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `dashboard/student/+layout.server.ts`            | Refuse tout autre rôle que `student` (403). Lit les classes actives, les récompenses (`gidouilles`, `bonus`, `vip_cards`), le Palotin (pour le cache). La Constance perdue et le retour à fêter sont lus après l'affichage par `GET /api/student/buddy/presence`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `dashboard/student/+layout.svelte`               | Remplit le cache élève au montage ; consentement, question d'âge.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -116,6 +118,10 @@ tableau de bord, il rend `Header` et `Sidebar`, son `<main>` défile et porte l'
 layout du tableau de bord et ne masque plus la page pendant une navigation : c'est ce layout-là qui
 pose son propre squelette.
 
+Les liens publics vivent dans une seule liste, `#lib/navigation/public-nav-items.ts` : `Sidebar`
+(barre, grand écran) et le tiroir mobile de `Header` la lisent toutes les deux. Un lien s'ajoute
+là, jamais dans un des deux composants.
+
 Le lien « Aller au contenu » (`+layout.svelte:109-113`, WCAG 2.4.1) est le premier élément
 focusable. Il est caché par une translation (`-translate-y-[200%]`, `focus:translate-y-0`), pas
 par `sr-only focus:not-sr-only` : choix fait quand `app.css` redéfinissait `.sr-only` hors couche,
@@ -131,10 +137,10 @@ recouvre, choisi par `getSkeletonType` (`src/lib/utils/skeleton-detector.ts`) : 
 
 Deux singletons en mémoire, un par rôle :
 
-| Cache                                    | Entrées et durée de vie                                                                                               | Clé                                       |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| `studentCache` (`studentDashboardCache`) | profil + classes (2 h), récompenses (10 min), avertissements (10 min), Palotin (10 min)                               | unique, sauf avertissements : `periodId`  |
-| `teacherCache` (`teacherDashboardCache`) | élèves d'une classe (2 h), récompenses (10 min), avertissements (10 min), classe (24 h), école (24 h), périodes (1 h) | `classId`, `classId:periodId`, `schoolId` |
+| Cache                                    | Entrées et durée de vie                                                                                 | Clé                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `studentCache` (`studentDashboardCache`) | récompenses (10 min), avertissements (10 min), Palotin (10 min)                                         | unique, sauf avertissements : `periodId`  |
+| `teacherCache` (`teacherDashboardCache`) | élèves d'une classe (2 h), récompenses (10 min), avertissements (10 min), classe (24 h), périodes (1 h) | `classId`, `classId:periodId`, `schoolId` |
 
 Les types sont dans `src/lib/types/student-cache.ts` et `teacher-cache.ts`. Ils vivent en mémoire de
 l'onglet, rien dans `localStorage`. Les entrées sont des `$state` ou des `SvelteMap` : une page qui
@@ -142,11 +148,16 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
 **Remplissage**, trois voies :
 
-1. **Hydratation par le layout**, dans `onMount` : `hydrateProfile`, `hydrateRewards`,
-   `hydrateBuddy` (élève, `student/+layout.svelte`) ; `hydrateAllClasses`, `setPeriods`
-   (prof, `teacher/+layout.svelte:21-43`). D'autres pages hydratent aussi : `TeacherDashboard`
-   (classes lues dans `/api/teacher/classes` si le cache est vide), `teacher/classes` (classes et
-   école), `PalotinPresence`, `PalotinQuiz` et `ChangePalotinModal` (Palotin).
+1. **Hydratation par le layout**, dans un `$effect` qui se rejoue quand les données du layout
+   sont relues (`refreshAll()` après une action de formulaire) : `hydrateRewards`, `hydrateBuddy`
+   (élève, `student/+layout.svelte`) ; `hydrateAllClasses`, `setPeriods` (prof,
+   `teacher/+layout.svelte`). Seule une donnée **neuve** (autre référence que la dernière versée)
+   est réécrite : `data` change aussi quand un layout parent est relu, et réécrire l'ancienne
+   lecture effacerait les mises à jour optimistes faites depuis. Test :
+   `src/lib/components/__tests__/ecarts-coquille.svelte.test.ts` (« une classe ajoutée »). D'autres
+   pages hydratent aussi : `TeacherDashboard` (classes lues dans `/api/teacher/classes` si le cache
+   est vide), `teacher/classes` (classes), `PalotinPresence`, `PalotinQuiz` et
+   `ChangePalotinModal` (Palotin).
 2. **Lecture paresseuse** : `getRewards()`, `getWarnings(periodId)`, `getStudentBasic(classId)`,
    `getStudentRewards(classId)`, `getStudentWarnings(classId, periodId)` rendent l'entrée si elle a
    moins que son TTL, sinon appellent l'API (`/api/student/*`, `/api/classes/[id]/{students,gidouilles,warnings}`)
@@ -155,7 +166,7 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
    **Un échec de lecture n'est jamais stocké** (réseau coupé, réponse HTTP en erreur). Les
    `fetch*` privés rendent alors `null` ; le getter rend la dernière valeur en cache si elle existe,
-   **même expirée**, sinon la valeur vide (`[]`, `SvelteMap` vide, 0 gidouille, profil vide), sans
+   **même expirée**, sinon la valeur vide (`[]`, `SvelteMap` vide, 0 gidouille), sans
    écrire le cache ni rafraîchir l'horodatage : l'accès suivant relit l'API. Une réponse réussie
    mais vide (0 gidouille, classe sans élève) est stockée normalement. Tests :
    `src/lib/stores/__tests__/teacherDashboardCache.test.ts` (« Échec réseau : jamais stocké ») et
@@ -163,10 +174,26 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
 3. **Mise à jour optimiste** : `update{Gidouilles,Bonus,VipCards,Warnings}Optimistic`,
    `updateBuddyXpOptimistic`, `updateBuddyConstanceOptimistic` (semaine et jours travaillés de la
-   Constance Royale). Elles modifient l'entrée sans toucher à son horodatage.
+   Constance Royale). Celles des récompenses (`update{Gidouilles,Bonus,VipCards}Optimistic`,
+   `addVipCardOptimistic`) font repartir l'échéance de l'entrée (`fetchedAt` à maintenant) : sinon
+   le gain disparaîtrait avec l'ancienne lecture. Chez le prof, c'est l'entrée de toute la classe
+   qui repart. Les autres gardent leur horodatage. Test :
+   `src/lib/stores/__tests__/cache-optimiste-echeance.test.ts`.
 
 **Lecture synchrone** pour l'affichage : `get*Sync()` rend l'entrée si elle est encore fraîche,
 sinon `null` (ou `[]`). `getRewardsMapReactive(classId)` rend la `SvelteMap` sans contrôle de TTL.
+Exception, le cache élève : `getRewardsSync()` et `getWarningsSync(periodId)` rendent la
+**dernière valeur connue**, même arrivée à échéance (`null` seulement si rien n'a été lu).
+
+**Relecture à l'échéance (cache élève)** : à la fin de leurs 10 minutes, les récompenses et les
+avertissements déjà lus sont relus tout seuls (`armRefresh`, une minuterie par entrée, réarmée à
+chaque écriture). L'écran garde l'ancienne valeur jusqu'à l'arrivée de la nouvelle ; une relecture
+en échec ne touche pas au cache et réessaie une minute plus tard. Une relecture dont l'entrée a
+changé pendant qu'elle était en route (gain optimiste, hydratation, lecture refaite) est jetée. Un onglet caché ne relit pas : il relit, au retour sur l'onglet
+(`visibilitychange`), les entrées arrivées à échéance pendant l'absence. Une invalidation annule la
+relecture programmée. Navigateur seulement. Comportement suivi par David le 2026-11-28 (écart L43) ;
+le Palotin, sans lecture d'API dans ce cache, n'est pas relu. Test :
+`src/lib/stores/__tests__/studentDashboardCache-relecture.svelte.test.ts`.
 
 **Purge des classes** : `hydrateAllClasses(classes)` reçoit la liste **complète** des classes du
 prof et retire du cache celles qui n'y sont plus (supprimées, désactivées) ; une liste vide vide le
@@ -176,7 +203,7 @@ lecture réussie de `/api/teacher/classes`.
 **Invalidation** : `invalidate*()` vide une entrée ; la lecture suivante relit l'API. Appels réels :
 `invalidateRewards` après une action sur les cartes VIP ou au marché (`marketplace.svelte.ts`,
 `StudentVipCardsModal`, `VipCardUseDialog`, `marketplace/trade/[id]`). Personne n'appelle
-`invalidateAll`, `invalidateClass`, `invalidateSchool` ni `invalidatePeriods`.
+`invalidateAll`, `invalidateClass` ni `invalidatePeriods`.
 
 **Ce qui vide vraiment un cache, c'est le rechargement de la page.** La déconnexion soumet un vrai
 formulaire `POST /auth/logout` (`submitLogoutForm`, `src/lib/utils/auth.ts`) et la bascule du mode
@@ -198,13 +225,13 @@ l'élève ou pour le prof sur un élève. Il reçoit un `CacheContext`
 `selectedClass.svelte.ts` et `selectedPeriod.svelte.ts` : un identifiant en `$state`, recopié dans
 `localStorage` (`teacher_selected_class_id`, `teacher_selected_period_id`) et relu au premier
 appel. Le layout prof choisit la **période en cours** si aucune n'est retenue. Pour la classe, il
-appelle `reconcileSelectedClass(ids)` dans `onMount` quand `classesLoaded` : un identifiant retenu
+appelle `reconcileSelectedClass(ids)` à chaque liste neuve quand `classesLoaded` : un identifiant retenu
 qui figure dans la liste est gardé ; sinon (aucun, ou classe supprimée) il est remplacé par la
-**première classe**, ou vidé (`localStorage` compris) si le prof n'en a aucune. `onMount` est
+**première classe**, ou vidé (`localStorage` compris) si le prof n'en a aucune. Cet effet est
 déclaré avant les `$effect` de préchargement : la correction a lieu avant qu'ils lisent la classe.
 Test : `src/lib/stores/__tests__/selectedClass-verification.test.ts`. `TeacherDashboard` (page
-`/dashboard`, hors layout prof) garde sa propre logique : première classe si aucune n'est retenue,
-sans vérifier un identifiant déjà retenu.
+`/dashboard`, hors layout prof) fait de même après une lecture réussie de `/api/teacher/classes`,
+et recopie la classe corrigée dans sa copie locale (celle du sélecteur).
 
 ### La pile de modales
 
@@ -226,8 +253,6 @@ aussi par le Démineur (`minesweeper.svelte.ts`), `RewardsBlock` et la page
 - `mobileStore` (`mobile.svelte.ts`) : largeur de fenêtre suivie par un écouteur `resize`,
   `isMobile` (< 768), `isTablet`, `isDesktop` (≥ 1024). Côté serveur, largeur supposée 1024. Seul
   utilisateur : `MinesweeperBoard`.
-- `inputCapability` (`input-capability.svelte.ts`) : `hasTouch`, `hasMouse`, `canHover`,
-  `primaryIsTouch`, par `matchMedia`. Aucun composant ne l'importe.
 
 La navigation elle-même choisit entre barre et tiroir par CSS (`md:hidden`, `hidden md:block`), pas
 par ces stores.
@@ -245,23 +270,25 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
   `?tags=`), formulaire `GET`, aucune lecture côté client. Moins de 2 caractères et aucun tag :
   pas de recherche. 50 résultats au plus, 10 tags au plus, 100 caractères au plus. Les liens
   viennent du registre `#lib/resources/index.ts`. Moteur : `searchResources` ([serveur.md](serveur.md)).
-- **`/dashboard/teacher/wheel`** : roue de la fortune plein écran. Classes actives avec leurs
-  élèves (`getTeacherClassesWithStudents`), choix de la classe, gidouilles offertes au gagnant
-  (10 par défaut) par `/api/teacher/rewards/update-student`, puis `refreshAll()`.
+  Les filtres (types, tags) suivent l'adresse à chaque navigation, retour arrière compris (L41) ;
+  sans résultat, le message cite le texte et les tags cherchés (« Aucun résultat pour le tag
+  #fractions. », V74). Tests : `src/lib/components/__tests__/recherche-prof.svelte.test.ts`.
 - **`/dashboard/teacher/documents`** : documents du tuteur IA (`DocumentManager`, RAG).
 
 `Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `/dev/roue`. Les
 prénoms en double sont départagés par le plus court préfixe du nom (« Léa M. », « Léa P. »). Avec
 `addJokerIfOdd`, une case « Joker » complète un nombre impair : si elle sort, aucun gagnant n'est
-annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`).
+annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`). L'angle d'arrêt
+vient de `wheel-landing.ts` : il tombe à au moins 2° d'une frontière de case, calculé sur l'angle
+final (départ + tirage) et pas sur le seul tirage, pour que la case affichée soit bien celle
+annoncée.
 
 ### Petits composants
 
 - `FlipCard` : carte à deux faces de même hauteur (grille CSS), face cachée `inert`. Utilisée par
   `FlashCard` et `/demo`.
-- `ExerciseSkeleton` : squelette de `student/exercises`.
-- `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` sont utilisés
-  (layouts, marché) ; `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem` non.
+- `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` (layouts,
+  marché).
 
 ### Onglet resté ouvert pendant un déploiement
 
@@ -286,75 +313,16 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 
 ## Pièges
 
-- **Les getters `*Sync` ne réagissent pas au temps.** Ils comparent `Date.now()` au TTL, mais
-  `Date.now()` n'est pas réactif : un `$derived` ne se recalcule pas à l'expiration. Il rend
-  `null` au prochain recalcul déclenché par autre chose, et rien ne relit l'API tant qu'un getter
-  asynchrone n'est pas appelé.
-- **Une mise à jour optimiste ne prolonge pas l'entrée** : sans `fetchedAt` neuf, une entrée
-  presque expirée qui vient d'être corrigée disparaîtra quand même à son TTL.
-- **`teacherCache.getClassInfo` et `getSchoolInfo` lèvent toujours** quand l'entrée manque :
-  `fetchClassInfo` et `fetchSchoolInfo` ne sont pas écrits (`teacherDashboardCache.svelte.ts:753-767`).
-  Les classes ne viennent que de l'hydratation. Aucun appelant aujourd'hui.
-- **L'hydratation des layouts est dans `onMount`** : elle ne se rejoue pas quand les `load`
-  repassent (`refreshAll()`). Les données neuves du layout n'atteignent pas le cache.
+- **Les getters `*Sync` du cache prof et `getBuddySync` ne suivent pas leur échéance** : écart
+  L141 au [registre](../ecarts/registre.md).
+- **Les classes du cache prof ne viennent que de l'hydratation** : aucune lecture d'API ne
+  remplit une classe seule (`getAllClassesSync` lit ce que les pages ont versé).
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
-  `/dashboard/teacher` (`wheel/+page.server.ts:14`, `documents/+page.server.ts:25`) ne rend pas la
-  page accessible à l'admin : le 403 du layout passe avant.
-- **Deux listes de liens publics** : `Header.svelte` (tiroir mobile) et `Sidebar.svelte` (barre)
-  ont chacun leur copie. Une entrée ajoutée à l'une manque à l'autre.
+  `/dashboard/teacher` ne rendrait pas la page accessible à l'admin : le 403 du layout passe
+  avant. Mais le load d'une page tourne **en parallèle** de celui du layout : il ne lit rien de
+  sensible sans `await parent()` ou sa propre garde de rôle (`documents/+page.server.ts` ne rend
+  rien et ne relit plus le rôle, M32).
 
 ## Écarts connus
 
-- **Classe retenue non vérifiée sur `/dashboard`** : `TeacherDashboard` (hors layout prof) ne
-  confronte pas un `teacher_selected_class_id` déjà retenu aux classes lues ; seul le layout prof
-  appelle `reconcileSelectedClass`.
-- **`depends('teacher:classes')` sans effet** (`teacher/+layout.server.ts:56`) : aucun
-  `invalidate('teacher:classes')` dans `src/`.
-- **Cache école mal rempli et jamais lu** : `teacher/classes/+page.svelte:126` appelle
-  `hydrateSchoolInfo(data.school, data.school.current_period)`, l'objet école en guise
-  d'identifiant (masqué par `as never` et `@ts-expect-error`). `getSchoolInfo` n'a aucun appelant.
-- **Profil élève en cache jamais lu** : `hydrateProfile` le remplit à chaque montage, mais ni
-  `getProfile` ni `getProfileSync` n'ont d'appelant hors de `cache-sync.ts`, et `refetchProfile`,
-  `refetchRewards`, `refetchWarnings`, `syncWarnings` ne servent qu'aux tests.
-- **Écriture dans une lecture** : `GET /api/student/buddy/presence` (`loadBuddyPresence`,
-  `src/lib/server/buddy-presence.ts`, jusqu'au 2026-11-11 le layout élève) remet la Constance Royale du Palotin
-  à 0 quand la dernière semaine enregistrée est finie sous 3 jours travaillés, ou sautée (règle
-  pure `constanceReset`, `src/lib/utils/buddy-constance.ts`). L'écriture passe par
-  `resetLostConstance` (`src/lib/server/buddy-queries.ts`) : client service, verrou sur
-  `updated_at`, règle réévaluée sur la ligne relue ; la lecture rend la ligne écrite, sans rien
-  annoncer : la Constance perdue n'a plus de réplique depuis le 2026-11-12 (chantier `regularite`)
-  ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)). Reste une écriture dans une
-  lecture (GET), rejouée à chaque chargement complet d'une page où le Palotin apparaît.
-- **Pile de modales peu accessible** : le dialogue est rendu **dans** un `<button>` (le fond,
-  `ModalStackRenderer.svelte:73-93`), donc des boutons dans un bouton (HTML invalide) ; le focus
-  n'est ni déplacé dans la modale ni piégé. Le conteneur arrête la propagation des touches
-  (`:86`) : Échap tapé avec le focus dans la modale ne devrait plus atteindre l'écouteur de
-  `svelte:window` (lu dans le code, pas mesuré dans un navigateur).
-- **`modalStack.popTo`** appelle l'`onReturn` de la modale qui **reste**, pas de celles qu'il
-  retire, à l'inverse de `pop`. Aucun appelant. `ModalEntry.component` est typé
-  `Component<any, any, any>` (`modalStack.svelte.ts:44`).
-- **Code sans importeur** : `auth.svelte.ts` (store `auth`),
-  `input-capability.svelte.ts`, `LoadingDashboard`, `LoadingTable`, `FontSelector`,
-  `modals/ExampleModal`, `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem`.
-- **Pages sans entrée** : aucun lien dans `src/` vers `/dashboard/teacher/wheel` ni
-  `/dashboard/teacher/documents` ; on n'y arrive que par l'adresse.
-- **`teacher/wheel`** : `<select>` natif pour la classe (règle MySelect), sélection propre à la
-  page (pas le store `selectedClass`), et le gain de gidouilles ne touche pas `teacherCache`
-  (récompenses affichées périmées jusqu'à 10 min ailleurs).
-- **`teacher/documents/+page.server.ts`** relit le rôle dans `profiles` au lieu de
-  `locals.profile`, déjà garanti par le layout.
-- **`teacher/recherche`** : une recherche par tag seul sans résultat affiche « Aucun résultat pour
-  « ». » (requête vide). Les filtres (`selectedKinds`, `selectedTags`) sont figés à la création du
-  composant (`untrack`) : une navigation vers la même page avec d'autres paramètres (précédent,
-  suivant) garde les anciens dans les champs cachés.
-- **Surlignage différent entre barre et tiroir publics** : `Sidebar.isActive` exige l'adresse
-  exacte, `Header.isActive` accepte les sous-pages. Sur `/shtam/<article>`, le tiroir surligne
-  « Le Shtam », la barre non.
-- **`Wheel`** : la prop `spinDuration` est ignorée (durée écrite dans le style), et l'évitement des
-  frontières de case utilise `Math.floor(360 / n)`, faux dès que 360 n'est pas multiple de `n`.
-- **Commentaires périmés** : l'en-tête de `Header.svelte` décrit un menu déroulant et une
-  déconnexion par `invalidate('supabase:auth')`, remplacés par un lien et un formulaire ; celui de
-  `student/+layout.svelte` promet « zéro appel API » et une expiration automatique.
-- **Effet vide** dans le layout racine (`+layout.svelte:81-85`) : il lit `theme.dark` et
-  `fontSize.size` et `easyReading.enabled` sans rien en faire ; les stores appliquent eux-mêmes
-  leurs changements au DOM.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

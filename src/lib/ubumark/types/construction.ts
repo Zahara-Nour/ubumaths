@@ -82,6 +82,45 @@ export function bissectriceOf(expression: string): [string, string, string] | nu
 	return match ? [match[1], match[2], match[3]] : null;
 }
 
+/** `mediatrice(A, B)` / `milieu(A, B)` : deux points nommés */
+const RULER_MIDPOINT_REGEX = {
+	droite: /^m[eé]diatrice\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/,
+	point: /^milieu\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/
+} as const;
+
+/**
+ * Outil n° 38 (chantier `outil-equerre-uni`) : une vérification dont le milieu peut se
+ * marquer à la règle graduée, `droite m = mediatrice(A, B)` ou `point M = milieu(A, B)` :
+ * ses deux points ; null sinon
+ */
+export function rulerMidpointOf(check: ConstructionCheck): [string, string] | null {
+	if (check.kind !== 'droite' && check.kind !== 'point') return null;
+	const match = RULER_MIDPOINT_REGEX[check.kind].exec(check.expression.trim());
+	return match ? [match[1], match[2]] : null;
+}
+
+/**
+ * Perpendiculaire ou parallèle à un trait droit par un point (outil n° 40, chantier
+ * `outil-equerre-uni`) : `perpendiculaire(A, d)`, `parallele(A, d)` ; à l'équerre
+ * sur papier uni
+ */
+export interface ThroughLine {
+	kind: 'perpendiculaire' | 'parallele';
+	point: string;
+	line: string;
+}
+
+const THROUGH_LINE_REGEX =
+	/^(perpendiculaire|parall[eè]le)\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_']*)\s*\)$/;
+
+/** Le point et le trait d'une perpendiculaire ou d'une parallèle ; null pour une autre expression */
+export function throughLineOf(expression: string): ThroughLine | null {
+	const match = THROUGH_LINE_REGEX.exec(expression.trim());
+	if (!match) return null;
+	const kind = match[1] === 'perpendiculaire' ? 'perpendiculaire' : 'parallele';
+	return { kind, point: match[2], line: match[3] };
+}
+
 /**
  * Cercle de centre donné (chantier `cercle-triangle-rectangle`, n° 19, 2026-11-08) :
  * `cercle(O, passant=A)` (centre O passant par A) ou `cercle(O, rayon=distance(D, E))`
@@ -141,9 +180,11 @@ export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas
  * Compas avec l'angle
  */
 export function triangleTools(
-	check: Pick<TriangleCheck, 'angles' | 'lengths'>,
+	check: Pick<TriangleCheck, 'angles' | 'lengths' | 'model'>,
 	grid = false
 ): ConstructionTool[] {
+	// Triangle à reproduire (n° 47) : sur quadrillage, au segment seul
+	if (check.model) return ['segment'];
 	// Triangle rectangle (n° 20) : l'équerre et le Report sur papier uni, le segment seul sur quadrillage
 	if (rightAngleOf(check)) {
 		if (grid) return ['segment'];
@@ -377,12 +418,16 @@ export interface TriangleAngle {
  * Triangle rectangle (n° 20) : un angle de 90° (construit à l'équerre), seul ou
  * avec la longueur du côté qui le porte (`CAB = 90 ; AC = u`, `AC = 3 carreaux`,
  * ou `AC = 4 cm` à la règle graduée, PR 4 de `regle-graduee`).
+ * À reproduire sur quadrillage (outil n° 47) : `reproduit DEF`, le modèle, seule
+ * donnée (`lengths` et `angles` vides) ; l'élève trace ABC, DEF déplacé.
  */
 export interface TriangleCheck {
 	kind: 'triangle';
 	points: [string, string, string];
 	lengths: TriangleLength[];
 	angles: TriangleAngle[];
+	/** Outil n° 47 : le triangle modèle à reproduire (A ↔ D, B ↔ E, C ↔ F) */
+	model?: [string, string, string];
 	line: number;
 }
 

@@ -1,0 +1,643 @@
+{
+	"id": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
+	"title": "Contrôler par un ordre de grandeur",
+	"description": "Choisir le bon résultat d'un produit ou d'une somme de décimaux (mêmes chiffres, virgule déplacée) ; choisir un ordre de grandeur d'un produit",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Sans poser le calcul, quel est le résultat de ${{a}} \\times {{b}}$ ?\n\n```choix\n- ${{eval:P/1000;d}}$\n- ${{eval:P/100;d}}$\n- ${{eval:P/10;d}}$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "101..999"
+				},
+				{
+					"name": "B",
+					"expression": "11..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:B/10;d"
+				},
+				{
+					"name": "P",
+					"expression": "eval:A*B"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(P,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+					"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/10)}}$, donc ${{a}} \\times {{b}} \\approx {{eval:round(A/10)*round(B/10)}}$.",
+					"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:P/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Sans poser le calcul, quel est le résultat de ${{a}} + {{b}}$ ?\n\n```choix\n- ${{eval:S/1000;d}}$\n- ${{eval:S/100;d}}$\n- ${{eval:S/10;d}}$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "B",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:B/100;d"
+				},
+				{
+					"name": "S",
+					"expression": "eval:10*A+B"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(S,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+					"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/100)}}$, donc ${{a}} + {{b}} \\approx {{eval:round(A/10)+round(B/100)}}$.",
+					"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:S/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Quel est un ordre de grandeur de ${{a}} \\times {{n}}$ ?\n\n```choix\n- ${{eval:10*p*q}}$\n- ${{eval:100*p*q}}$\n- ${{eval:1000*p*q}}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "dl",
+					"expression": "-9..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:100*p+dl"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "el",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*q+el"
+				}
+			],
+			"conditions": ["dl!=0", "el!=0"],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+					"${{a}} \\approx {{eval:10*p}}$ et ${{n}} \\approx {{eval:10*q}}$, donc ${{a}} \\times {{n}} \\approx {{eval:10*p}} \\times {{eval:10*q}} = \\textcolor{{{color:primary.0}}}{{{eval:100*p*q}}}$."
+				]
+			}
+		},
+		{
+			"hint": "Pour arrondir à la dizaine, regarde le chiffre des unités ; à l'unité, le chiffre des dixièmes. Puis multiplie les deux arrondis.",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*p}}",
+					"expectedErrors": [
+						{
+							"label": "Troncature",
+							"answer": "{{eval:10*floor((100*p+dl)/100)}}",
+							"message": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : ${{x}}$ est plus près de la dizaine supérieure."
+						},
+						{
+							"label": "Arrondi à l'unité",
+							"answer": "{{eval:round((100*p+dl)/10)}}",
+							"message": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"label": "Troncature",
+							"answer": "{{eval:floor((10*q+t)/10)}}",
+							"message": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : ${{y}}$ est plus près de l'unité supérieure."
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:10*p*q}}",
+					"expectedErrors": [
+						{
+							"label": "Produit exact arrondi",
+							"answer": "{{eval:round((100*p+dl)*(10*q+t)/100)}}",
+							"message": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+						}
+					]
+				}
+			],
+			"statement": "On cherche un ordre de grandeur de ${{x}} \\times {{y}}$.\n\nArrondi de ${{x}}$ à la dizaine : $?$\n\nArrondi de ${{y}}$ à l'unité : $?$\n\nOrdre de grandeur du produit : $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "dl",
+					"expression": "-29..29"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(100*p+dl)/10;d"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(10*q+t)/10;d"
+				}
+			],
+			"conditions": ["mod(dl,10)!=0", "t!=0"],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque facteur par un nombre proche, simple à calculer de tête.",
+					"${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:10*p}}}$ (à la dizaine) et ${{y}} \\approx \\textcolor{{{color:primary.0}}}{{{q}}}$ (à l'unité).",
+					"${{x}} \\times {{y}} \\approx {{eval:10*p}} \\times {{q}} = \\textcolor{{{color:primary.0}}}{{{eval:10*p*q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:t==0|Un verger compte ${{R}}$ rangées de ${{A}}$ arbres. Sans poser le calcul, environ combien d'arbres y a-t-il dans ce verger ?|Une salle rectangulaire mesure ${{eval:L/10;d}}~\\unit{m}$ sur ${{eval:l/10;d}}~\\unit{m}$. On la couvre de carreaux de $1~\\unit{m^2}$. Sans poser le calcul, environ combien de carreaux faut-il ?}}\n\n```choix\n- environ ${{eval:r1*r2}}$\n- environ ${{eval:r1+r2}}$\n- environ ${{eval:10*r1*r2}}$\n- environ ${{z}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "R",
+					"expression": "16..30"
+				},
+				{
+					"name": "A",
+					"expression": "18..39"
+				},
+				{
+					"name": "L",
+					"expression": "81..149"
+				},
+				{
+					"name": "l",
+					"expression": "61..139"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:(1-t)*10*round(R/10)+t*round(L/10)"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:(1-t)*10*round(A/10)+t*round(l/10)"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-t)*r1*r2/10+t*2*(r1+r2)"
+				}
+			],
+			"conditions": [
+				"mod(R,10)!=5",
+				"mod(A,10)!=5",
+				"mod(R,10)!=0",
+				"mod(A,10)!=0",
+				"mod(L,10)!=5",
+				"mod(l,10)!=5",
+				"L>l",
+				"r1*r2!=r1+r2",
+				"z!=r1+r2",
+				"z!=r1*r2"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Quelle opération ?** {{if:t==0|Il y a ${{R}}$ rangées de ${{A}}$ arbres : on multiplie, ${{R}} \\times {{A}}$.|Le nombre de carreaux de $1~\\unit{m^2}$, c'est l'aire de la salle : longueur $\\times$ largeur (le périmètre ne compte que le tour).}}",
+					"**Ordre de grandeur.** {{if:t==0|${{R}} \\approx {{r1}}$ et ${{A}} \\approx {{r2}}$, donc ${{R}} \\times {{A}} \\approx {{r1}} \\times {{r2}} = \\textcolor{{{color:primary.0}}}{{{eval:r1*r2}}}$.|${{eval:L/10;d}} \\approx {{r1}}$ et ${{eval:l/10;d}} \\approx {{r2}}$, donc il faut environ ${{r1}} \\times {{r2}} = \\textcolor{{{color:primary.0}}}{{{eval:r1*r2}}}$ carreaux.}}"
+				]
+			},
+			"hint": "Quelle opération faut-il faire ? Remplace ensuite chaque nombre par un nombre rond proche."
+		},
+		{
+			"statement": "Pour une fête, on achète ${{n}}$ packs de ${{b}}$ bouteilles. Chaque bouteille contient ${{eval:v;d}}~\\unit{L}$. Sans poser le calcul, quel volume de boisson a-t-on acheté, environ ?\n\n```choix\n- environ ${{o}}~\\unit{L}$\n- environ ${{eval:10*o}}~\\unit{L}$\n- environ ${{eval:o/10;d}}~\\unit{L}$\n- environ ${{eval:round(n+b+v)}}~\\unit{L}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				},
+				{
+					"name": "b",
+					"expression": "4..8"
+				},
+				{
+					"name": "cv",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "eval:0.5*(1-min(abs(cv-0),1))+0.75*(1-min(abs(cv-1),1))+1.5*(1-min(abs(cv-2),1));d"
+				},
+				{
+					"name": "o",
+					"expression": "eval:round(n*b*v)"
+				}
+			],
+			"conditions": ["round(n+b+v)!=o", "round(n+b+v)!=round(o/10)"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Quelle opération ?** Il y a ${{n}} \\times {{b}} = {{eval:n*b}}$ bouteilles, de ${{eval:v;d}}~\\unit{L}$ chacune : on multiplie encore par ${{eval:v;d}}$.",
+					"**Ordre de grandeur.** {{if:cv==0|$0.5~\\unit{L}$, c'est la moitié d'un litre : la moitié de ${{eval:n*b}}$, environ $\\textcolor{{{color:primary.0}}}{{{o}}~\\unit{L}}$.|{{if:cv==1|$0.75~\\unit{L}$, c'est un peu moins d'un litre : ${{eval:n*b}} \\times 0.75 \\approx \\textcolor{{{color:primary.0}}}{{{o}}~\\unit{L}}$, un peu moins que ${{eval:n*b}}~\\unit{L}$.|$1.5~\\unit{L}$, c'est un litre et demi : ${{eval:n*b}} + {{eval:n*b/2;d}} \\approx \\textcolor{{{color:primary.0}}}{{{o}}~\\unit{L}}$.}}}}"
+				]
+			},
+			"hint": "Combien y a-t-il de bouteilles ? Une bouteille contient-elle plus ou moins d'un litre ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "487",
+				"B": "31",
+				"P": "15097",
+				"a": "48.7",
+				"b": "3.1"
+			},
+			"description": "48,7 × 3,1 = 150,97",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "487",
+				"B": "31",
+				"P": "15097",
+				"a": "48.7",
+				"b": "3.1"
+			},
+			"description": "Erreur : 15,097",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "3986",
+				"B": "5125",
+				"S": "44985",
+				"a": "398.6",
+				"b": "51.25"
+			},
+			"description": "398,6 + 51,25 = 449,85",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "3986",
+				"B": "5125",
+				"S": "44985",
+				"a": "398.6",
+				"b": "51.25"
+			},
+			"description": "Erreur : 4 498,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "498",
+				"a": "49.8",
+				"n": "21",
+				"p": "5",
+				"q": "2",
+				"dl": "-2",
+				"el": "1"
+			},
+			"description": "49,8 × 21 ≈ 1 000",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "498",
+				"a": "49.8",
+				"n": "21",
+				"p": "5",
+				"q": "2",
+				"dl": "-2",
+				"el": "1"
+			},
+			"description": "Erreur : 10 000",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["20", "5", "100"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"t": "1",
+				"dl": "-2"
+			},
+			"description": "F10 : 19,8 × 5,1",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["20", "5", "101"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"t": "1",
+				"dl": "-2"
+			},
+			"description": "F10 : produit exact arrondi",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["10", "5", "100"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : $19.8$ est plus près de la dizaine supérieure."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"t": "1",
+				"dl": "-2"
+			},
+			"description": "F10 : troncature de 19,8",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["30", "5", "150"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "3",
+				"q": "5",
+				"t": "-2",
+				"dl": "17"
+			},
+			"description": "F10 : 31,7 × 4,8",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["32", "5", "150"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+			},
+			"variables": {
+				"p": "3",
+				"q": "5",
+				"t": "-2",
+				"dl": "17"
+			},
+			"description": "F10 : arrondi à l'unité (32)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["30", "4", "150"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : $4.8$ est plus près de l'unité supérieure."
+			},
+			"variables": {
+				"p": "3",
+				"q": "5",
+				"t": "-2",
+				"dl": "17"
+			},
+			"description": "F10 : troncature de 4,8",
+			"variationIndex": 3
+		},
+		{
+			"description": "F4 verger : 23 × 38 ≈ 800",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"R": "23",
+				"A": "38",
+				"L": "100",
+				"l": "80",
+				"r1": "20",
+				"r2": "40",
+				"z": "80"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F4 verger : somme (60) refusée",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"R": "23",
+				"A": "38",
+				"L": "100",
+				"l": "80",
+				"r1": "20",
+				"r2": "40",
+				"z": "80"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F4 verger : × 10 (8 000) refusé",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"R": "23",
+				"A": "38",
+				"L": "100",
+				"l": "80",
+				"r1": "20",
+				"r2": "40",
+				"z": "80"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F4 verger : ÷ 10 (80) refusé",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"R": "23",
+				"A": "38",
+				"L": "100",
+				"l": "80",
+				"r1": "20",
+				"r2": "40",
+				"z": "80"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F4 carrelage : 12,4 × 9,8 ≈ 120",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"R": "20",
+				"A": "20",
+				"L": "124",
+				"l": "98",
+				"r1": "12",
+				"r2": "10",
+				"z": "44"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F4 carrelage : périmètre (44) refusé",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"R": "20",
+				"A": "20",
+				"L": "124",
+				"l": "98",
+				"r1": "12",
+				"r2": "10",
+				"z": "44"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F4 packs : 6 × 6 × 0,75 ≈ 27 L",
+			"variationIndex": 5,
+			"variables": {
+				"n": "6",
+				"b": "6",
+				"cv": "1",
+				"v": "0.75",
+				"o": "27"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F4 packs : × 10 refusé",
+			"variationIndex": 5,
+			"variables": {
+				"n": "6",
+				"b": "6",
+				"cv": "1",
+				"v": "0.75",
+				"o": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F4 packs : somme refusée",
+			"variationIndex": 5,
+			"variables": {
+				"n": "6",
+				"b": "6",
+				"cv": "1",
+				"v": "0.75",
+				"o": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

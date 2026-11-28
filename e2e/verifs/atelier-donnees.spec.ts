@@ -1,5 +1,16 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
-import { calc, card, cardLocator, normalizeLatex, openAtelier } from './helpers/atelier';
+import {
+	calc,
+	card,
+	cardAction,
+	cardLocator,
+	normalizeLatex,
+	openAtelier,
+	allowClipboard,
+	readClipboard,
+	showCards
+} from './helpers/atelier';
 import {
 	cellLocator,
 	hintWhileTyping,
@@ -29,6 +40,20 @@ test.beforeEach(async ({ page }) => {
 	await openAtelier(page);
 	await openView(page, 'Données');
 });
+
+/** Met `text` dans le presse-papiers comme un logiciel : champ provisoire, tout sélectionner, ⌘C */
+async function copyText(page: Page, text: string): Promise<void> {
+	await page.evaluate((value) => {
+		const field = document.createElement('textarea');
+		field.id = 'verifs-presse-papiers';
+		field.value = value;
+		document.body.append(field);
+	}, text);
+	await page.locator('#verifs-presse-papiers').focus();
+	await page.keyboard.press('ControlOrMeta+A');
+	await page.keyboard.press('ControlOrMeta+C');
+	await page.evaluate(() => document.getElementById('verifs-presse-papiers')?.remove());
+}
 
 /** Sélectionne la zone de `from` à `to` (clic, puis Maj + clic) */
 async function selectZone(page: Page, from: string, to: string): Promise<void> {
@@ -86,6 +111,23 @@ test('#1421 — formules : cases, objets de l’atelier, case vide, erreur', asy
 	await expect.poll(() => shownIn(page, 'D16')).toMatch(/^≈ 33,/);
 });
 
+test('#1421 — colonne de formules nommée : la carte refuse d’être modifiée', async ({ page }) => {
+	await typeCell(page, 'A1', '1');
+	await typeCell(page, 'A2', '=A1*2');
+	await typeCell(page, 'A3', '=A2*2');
+	await nameColumn(page, 'A', 'L');
+	// La carte dit que la liste est calculée dans la grille
+	await expect(cardLocator(page, 'L')).toContainText('calculée dans la grille');
+	// Aucun champ pour la modifier sur sa carte (une liste se modifie dans Données)
+	await expect(cardLocator(page, 'L').locator('math-field, input, textarea')).toHaveCount(0);
+	// La modifier tout de même (console) : refusée, les formules restent
+	const refused = await calc(page, 'L = 5 ; 6 ; 7');
+	expect(refused.refused).toBe(true);
+	expect(refused.text).toContain('L est calculée dans la grille');
+	await expect.poll(() => shownIn(page, 'A3')).toBe('4');
+	expect((await readCell(page, 'A3')).bar).toBe('=A2*2');
+});
+
 test('#1422 — valeur exacte sous la barre, π écrit en maths', async ({ page }) => {
 	await typeCell(page, 'A1', '=sqrt(8)');
 	const root = await readCell(page, 'A1');
@@ -100,32 +142,96 @@ test('#1422 — valeur exacte sous la barre, π écrit en maths', async ({ page 
 	// Une fraction s'écrit en texte, pas en maths (elle débordait de la ligne)
 	await typeCell(page, 'A4', '=2/3');
 	expect(await readCell(page, 'A4')).toMatchObject({ shown: '2/3', latex: null });
+	// Le nom lu par VoiceOver / TalkBack : la case et sa valeur
+	await expect(cellLocator(page, 'A4')).toHaveAttribute('aria-label', 'A4 : 2/3');
+	// Une formule en maths reste dans la hauteur de sa ligne
+	for (const address of ['A1', 'A2']) {
+		const overflow = await cellLocator(page, address).evaluate(
+			(cell) => cell.scrollHeight - cell.clientHeight
+		);
+		expect(overflow, address).toBeLessThanOrEqual(1);
+	}
 });
 
-test('#1424 — recopier vers le bas : Ctrl+D, « Recopier vers le bas… », annuler, rechargement', async ({
+test('#1422 — liste à formules : sa carte, et sa suppression quand la grille la cite', async ({
 	page
 }) => {
+	await typeColumn(page, 'A1', ['=1/3', '=2/3', '1']);
+	await nameColumn(page, 'A', 'L');
+	await expect(cardLocator(page, 'L')).toContainText('1/3 ;');
+	await typeCell(page, 'B1', '=A1*2');
+	await cardAction(page, 'L', 'Supprimer');
+	await expect(page.getByRole('alertdialog').or(page.getByRole('dialog'))).toContainText(
+		'1 cellule de la grille la cite'
+	);
+});
+
+test(
+	'#1424 — recopier vers le bas : Ctrl+D, « Recopier vers le bas… », annuler, rechargement',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		await typeCell(page, 'A1', '1');
+		await typeCell(page, 'A2', '=A1*2');
+		await selectZone(page, 'A2', 'A6');
+		await page.keyboard.press('ControlOrMeta+D');
+		await expect.poll(() => shownIn(page, 'A6')).toBe('32');
+
+		await selectCell(page, 'A2');
+		await fillDownTo(page, 10);
+		expect((await readCell(page, 'A10')).bar).toBe('=A9*2');
+		await expect.poll(() => shownIn(page, 'A10')).toBe('512');
+		// Ctrl+Z annule la recopie d'un coup
+		await selectCell(page, 'A2');
+		await page.keyboard.press('ControlOrMeta+Z');
+		await expect.poll(() => shownIn(page, 'A10')).toBe('vide');
+		await expect.poll(() => shownIn(page, 'A6')).toBe('32');
+
+		// Recharger la page : la formule est toujours là
+		await typeCell(page, 'B1', '=max(1;2)');
+		await page.reload();
+		await showCards(page, { afterLoad: true });
+		await openView(page, 'Données');
+		expect(await readCell(page, 'B1')).toMatchObject({ shown: '2', bar: '=MAX(1;2)' });
+	}
+);
+
+test('#1424 — poignée tirée jusqu’à A8, copier-coller en C5, lien partagé', async ({ page }) => {
 	await typeCell(page, 'A1', '1');
 	await typeCell(page, 'A2', '=A1*2');
-	await selectZone(page, 'A2', 'A6');
-	await page.keyboard.press('ControlOrMeta+D');
-	await expect.poll(() => shownIn(page, 'A6')).toBe('32');
-
 	await selectCell(page, 'A2');
-	await fillDownTo(page, 10);
-	expect((await readCell(page, 'A10')).bar).toBe('=A9*2');
-	await expect.poll(() => shownIn(page, 'A10')).toBe('512');
-	// Ctrl+Z annule la recopie d'un coup
-	await selectCell(page, 'A2');
-	await page.keyboard.press('ControlOrMeta+Z');
-	await expect.poll(() => shownIn(page, 'A10')).toBe('vide');
-	await expect.poll(() => shownIn(page, 'A6')).toBe('32');
+	// Tirer la poignée (coin bas-droit de A2) jusqu'à A8, au vrai pointeur
+	const handle = cellLocator(page, 'A2').locator('.poignee');
+	await expect(handle).toBeVisible();
+	// A8 à l'écran avant de mesurer : au téléphone, la vue défile. Au plus court :
+	// Firefox centre A8 avec `scrollIntoViewIfNeeded`, A2 et sa poignée sortent de la grille
+	await cellLocator(page, 'A8').evaluate((cell) => cell.scrollIntoView({ block: 'nearest' }));
+	const from = await handle.boundingBox();
+	const to = await cellLocator(page, 'A8').boundingBox();
+	if (from === null || to === null) throw new Error('poignée ou case A8 sans boîte');
+	await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+	await page.mouse.down();
+	await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 12 });
+	await page.mouse.up();
+	expect((await readCell(page, 'A8')).bar).toBe('=A7*2');
+	await expect.poll(() => shownIn(page, 'A8')).toBe('128');
 
-	// Recharger la page : la formule est toujours là
-	await typeCell(page, 'B1', '=max(1;2)');
-	await page.reload();
-	await openView(page, 'Données');
-	expect(await readCell(page, 'B1')).toMatchObject({ shown: '2', bar: '=MAX(1;2)' });
+	// Copier A2, coller en C5 : la formule suit (=C4*2)
+	await selectCell(page, 'A2');
+	await page.keyboard.press('ControlOrMeta+C');
+	await selectCell(page, 'C5');
+	await page.keyboard.press('ControlOrMeta+V');
+	expect((await readCell(page, 'C5')).bar).toBe('=C4*2');
+
+	// Partager le lien, l'ouvrir : mêmes formules
+	const link = await shareLink(page);
+	const other = await page.context().newPage();
+	await other.goto(link);
+	await showCards(other, { afterLoad: true });
+	await openView(other, 'Données');
+	expect((await readCell(other, 'A8')).bar).toBe('=A7*2');
+	expect((await readCell(other, 'C5')).bar).toBe('=C4*2');
+	await expect.poll(() => shownIn(other, 'A8')).toBe('128');
+	await other.close();
 });
 
 test('#1426 — .tabuler : colonnes A et B, valeurs décimales, la colonne suit f', async ({
@@ -151,6 +257,26 @@ test('#1426 — .tabuler : colonnes A et B, valeurs décimales, la colonne suit 
 	await typeCell(page, 'D1', '=1/3');
 	await expect.poll(() => shownIn(page, 'D1')).toBe('1/3');
 });
+
+test(
+	'#1426 — Ctrl+Z après .tabuler efface tout le tableau',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		await calc(page, 'f(x) = x^2-3x');
+		await calc(page, '.tabuler f de -2 à 3 pas 0,5');
+		await setConsole(page, false);
+		await expect.poll(() => shownIn(page, 'B11')).toBe('0');
+		await expect.poll(() => shownIn(page, 'A11')).toBe('3');
+		await page.locator('body').click({ position: { x: 5, y: 5 } });
+		await page.keyboard.press('ControlOrMeta+Z');
+		// Tout le tableau part : ses deux colonnes, du haut en bas (la grille vide n'affiche
+		// que dix lignes : la onzième n'y est plus du tout)
+		for (const address of ['A1', 'A2', 'A10', 'B1', 'B2', 'B6', 'B10']) {
+			await expect.poll(() => shownIn(page, address), address).toBe('vide');
+		}
+		await expect(cellLocator(page, 'A11')).toHaveCount(0);
+	}
+);
 
 test('#1430 — SOMME, MOYENNE, MEDIANE, ECARTYPE, plages, listes nommées', async ({ page }) => {
 	await typeColumn(page, 'A1', ['12', '15', '9', '14']);
@@ -265,6 +391,7 @@ test('#1437 — ALEA.ENTRE.BORNES, ALEA, gardés au rechargement', async ({ page
 	const before = await Promise.all(['A1', 'A2', 'A3', 'B1'].map((at) => shownIn(page, at)));
 	await typeCell(page, 'C1', 'ailleurs');
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await openView(page, 'Données');
 	const after = await Promise.all(['A1', 'A2', 'A3', 'B1'].map((at) => shownIn(page, at)));
 	expect(after).toEqual(before);
@@ -275,6 +402,27 @@ test('#1437 — ALEA.ENTRE.BORNES, ALEA, gardés au rechargement', async ({ page
 	expect(draw).toBeLessThan(1);
 	await typeCell(page, 'C3', '=ALEA.ENTRE.BORNES(6;1)');
 	expect((await readCell(page, 'C3')).error).toBe(true);
+});
+
+test('#1437 — dés ALEA.ENTRE.BORNES : le lien partagé rouvre les mêmes valeurs', async ({
+	page
+}) => {
+	await typeCell(page, 'A1', '=ALEA.ENTRE.BORNES(1;6)');
+	await selectCell(page, 'A1');
+	await fillDownTo(page, 30);
+	const rows = Array.from({ length: 30 }, (_, index) => `A${index + 1}`);
+	const dice = await Promise.all(rows.map((at) => shownIn(page, at)));
+	for (const die of dice) expect(['1', '2', '3', '4', '5', '6']).toContain(die);
+
+	const link = await shareLink(page);
+	const other = await page.context().newPage();
+	await other.goto(link);
+	await showCards(other, { afterLoad: true });
+	await openView(other, 'Données');
+	await expect.poll(() => shownIn(other, 'A30')).not.toBe('vide');
+	const sameDice = await Promise.all(rows.map((at) => shownIn(other, at)));
+	expect(sameDice).toEqual(dice);
+	await other.close();
 });
 
 test('#1444 — fonction nommée f_1 : Calcul, grille, refus sans valeur', async ({ page }) => {
@@ -360,6 +508,8 @@ test('#1410 — la grille : saisie répartie, colonne nommée en liste, nom reti
 	}
 
 	await nameColumn(page, 'A', 'L');
+	// Au téléphone, « Mes objets » replié : l'élève le déplie pour voir la carte
+	await showCards(page);
 	await expect(cardLocator(page, 'L')).toBeVisible();
 	await expect(page.locator('tr.apercus')).toContainText('n = 4');
 
@@ -391,6 +541,7 @@ test('#1413 — lignes incomplètes écartées : ajustement, nuage, .stats, .cro
 	await nameColumn(page, 'B', 'M');
 
 	const withM = async (action: string) => {
+		await showCards(page);
 		await cardLocator(page, 'L').getByRole('button', { name: 'Options de L' }).click();
 		await page.getByRole('menuitem', { name: 'Avec une autre liste' }).click();
 		await page.getByRole('menuitem', { name: action }).click();
@@ -489,13 +640,13 @@ async function shownText(page: Page, address: string): Promise<string> {
 
 /** Choisit un format de nombre (« Nombre », « Pourcentage », « Monnaie ») pour la sélection */
 async function chooseFormat(page: Page, format: string): Promise<void> {
-	await page.getByRole('button', { name: /^Format de nombre/ }).click();
+	await page.getByRole('combobox', { name: /^Format de nombre/ }).click();
 	await page.getByRole('option', { name: new RegExp(`^${format}`) }).click();
 }
 
 /** Le lien de « Partager », lu dans sa fenêtre (une grille seule se partage) */
 async function shareLink(page: Page): Promise<string> {
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await allowClipboard(page);
 	await page.getByRole('button', { name: 'Partager', exact: true }).click();
 	const field = page.getByLabel('Lien de partage');
 	await expect(field).toHaveValue(/\?/);
@@ -530,7 +681,7 @@ test('#1469 — gras, formats Nombre / Pourcentage / Monnaie, copier-coller, rec
 	await chooseFormat(page, 'Pourcentage');
 	// Le format pose une espace insécable fine avant % et € : comparée en espace simple
 	await expect.poll(() => shownText(page, 'A2')).toBe('13 %');
-	await page.getByRole('button', { name: /^Décimales/ }).click();
+	await page.getByRole('combobox', { name: /^Décimales/ }).click();
 	await page.getByRole('option', { name: /^1\b/ }).click();
 	await expect.poll(() => shownText(page, 'A2')).toBe('12,5 %');
 	// « Monnaie » sur 12,5 → 12,50 €
@@ -547,130 +698,139 @@ test('#1469 — gras, formats Nombre / Pourcentage / Monnaie, copier-coller, rec
 
 	// Recharger : la mise en forme est gardée ; un lien de partage la transporte
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await openView(page, 'Données');
 	await expect.poll(() => shownText(page, 'A2')).toBe('12,5 %');
 	await expect.poll(() => shownText(page, 'A3')).toBe('12,50 €');
 	const link = await shareLink(page);
 	const other = await page.context().newPage();
 	await other.goto(link);
+	await showCards(other, { afterLoad: true });
 	await openView(other, 'Données');
 	await expect.poll(() => shownIn(other, 'A1')).toBe('0,33');
 	await expect.poll(() => shownText(other, 'A3')).toBe('12,50 €');
 	await other.close();
 });
 
-test('#1412 — Ctrl+Z / Ctrl+Maj+Z dans la grille, boutons grisés, carte rendue', async ({
-	page
-}) => {
-	const undo = page.getByRole('button', { name: /^Annuler/ });
-	const redo = page.getByRole('button', { name: /^Rétablir/ });
-	await expect(undo).toHaveAttribute('aria-disabled', 'true');
-	await expect(redo).toHaveAttribute('aria-disabled', 'true');
+test(
+	'#1412 — Ctrl+Z / Ctrl+Maj+Z dans la grille, boutons grisés, carte rendue',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		const undo = page.getByRole('button', { name: /^Annuler/ });
+		const redo = page.getByRole('button', { name: /^Rétablir/ });
+		await expect(undo).toHaveAttribute('aria-disabled', 'true');
+		await expect(redo).toHaveAttribute('aria-disabled', 'true');
 
-	// Taper, coller un tableau (titres compris), effacer une zone
-	await typeCell(page, 'A1', '5');
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-	await page.evaluate(() => navigator.clipboard.writeText('taille\tmasse\n150\t40\n160\t52'));
-	await selectCell(page, 'C1');
-	await page.keyboard.press('ControlOrMeta+V');
-	// Les titres vont en tête des colonnes : C1 = 150, D2 = 52
-	await expect.poll(() => shownIn(page, 'D2')).toBe('52');
-	await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('taille');
-	await selectZone(page, 'C1', 'C2');
-	await page.keyboard.press('Delete');
-	await expect.poll(() => columnShown(page, 'C1', 'C2')).toEqual(['vide', 'vide']);
+		// Taper, coller un tableau (titres compris), effacer une zone
+		await typeCell(page, 'A1', '5');
+		await allowClipboard(page);
+		await page.evaluate(() => navigator.clipboard.writeText('taille\tmasse\n150\t40\n160\t52'));
+		await selectCell(page, 'C1');
+		await page.keyboard.press('ControlOrMeta+V');
+		// Les titres vont en tête des colonnes : C1 = 150, D2 = 52
+		await expect.poll(() => shownIn(page, 'D2')).toBe('52');
+		await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('taille');
+		await selectZone(page, 'C1', 'C2');
+		await page.keyboard.press('Delete');
+		await expect.poll(() => columnShown(page, 'C1', 'C2')).toEqual(['vide', 'vide']);
 
-	// Chaque geste se défait, le collage d'un coup — Ctrl+Z comme ⌘Z
-	await page.keyboard.press('Control+Z');
-	await expect.poll(() => columnShown(page, 'C1', 'C2')).toEqual(['150', '160']);
-	await page.keyboard.press('Meta+Z');
-	await expect.poll(() => shownIn(page, 'D2')).toBe('vide');
-	await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('');
-	await expect.poll(() => shownIn(page, 'A1')).toBe('5');
-	await page.keyboard.press('ControlOrMeta+Z');
-	await expect.poll(() => shownIn(page, 'A1')).toBe('vide');
-	await expect(undo).toHaveAttribute('aria-disabled', 'true');
-	// Ctrl+Maj+Z refait
-	await page.keyboard.press('ControlOrMeta+Shift+Z');
-	await expect.poll(() => shownIn(page, 'A1')).toBe('5');
-	await page.keyboard.press('ControlOrMeta+Shift+Z');
-	await expect.poll(() => shownIn(page, 'D2')).toBe('52');
-	await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('taille');
+		// Chaque geste se défait, le collage d'un coup — Ctrl+Z comme ⌘Z
+		await page.keyboard.press('Control+Z');
+		await expect.poll(() => columnShown(page, 'C1', 'C2')).toEqual(['150', '160']);
+		await page.keyboard.press('Meta+Z');
+		await expect.poll(() => shownIn(page, 'D2')).toBe('vide');
+		await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('');
+		await expect.poll(() => shownIn(page, 'A1')).toBe('5');
+		await page.keyboard.press('ControlOrMeta+Z');
+		await expect.poll(() => shownIn(page, 'A1')).toBe('vide');
+		await expect(undo).toHaveAttribute('aria-disabled', 'true');
+		// Ctrl+Maj+Z refait
+		await page.keyboard.press('ControlOrMeta+Shift+Z');
+		await expect.poll(() => shownIn(page, 'A1')).toBe('5');
+		await page.keyboard.press('ControlOrMeta+Shift+Z');
+		await expect.poll(() => shownIn(page, 'D2')).toBe('52');
+		await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('taille');
 
-	// Supprimer une carte, puis Ctrl+Z sur une case : la carte revient (pas la dernière saisie)
-	await calc(page, 'f(x) = 2x');
-	await cardLocator(page, 'f').getByRole('button', { name: 'Options de f', exact: true }).click();
-	await page.getByRole('menuitem', { name: 'Supprimer', exact: true }).click();
-	await expect(cardLocator(page, 'f')).toHaveCount(0);
-	await selectCell(page, 'B5');
-	await page.keyboard.press('ControlOrMeta+Z');
-	await expect(cardLocator(page, 'f')).toBeVisible();
-	await expect.poll(() => shownIn(page, 'D2')).toBe('52');
-});
+		// Supprimer une carte, puis Ctrl+Z sur une case : la carte revient (pas la dernière saisie)
+		await calc(page, 'f(x) = 2x');
+		await cardLocator(page, 'f').getByRole('button', { name: 'Options de f', exact: true }).click();
+		await page.getByRole('menuitem', { name: 'Supprimer', exact: true }).click();
+		await expect(cardLocator(page, 'f')).toHaveCount(0);
+		await selectCell(page, 'B5');
+		await page.keyboard.press('ControlOrMeta+Z');
+		await expect(cardLocator(page, 'f')).toBeVisible();
+		await expect.poll(() => shownIn(page, 'D2')).toBe('52');
+	}
+);
 
-test('#1439 — « Relancer », F9, Ctrl+Z / Ctrl+Y des tirages, annonce, lien gardé', async ({
-	page
-}) => {
-	const relaunch = page.getByRole('button', { name: 'Relancer', exact: true });
-	await typeCell(page, 'A1', '5');
-	await expect(relaunch).toHaveCount(0);
+test(
+	'#1439 — « Relancer », F9, Ctrl+Z / Ctrl+Y des tirages, annonce, lien gardé',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		const relaunch = page.getByRole('button', { name: 'Relancer', exact: true });
+		await typeCell(page, 'A1', '5');
+		await expect(relaunch).toHaveCount(0);
 
-	// A1:A10 `=ALEA.ENTRE.BORNES(1;6)`, C1 `=NB.SI(A1:A10;6)` : « Relancer » apparaît
-	await typeCell(page, 'A1', '=ALEA.ENTRE.BORNES(1;6)');
-	await selectZone(page, 'A1', 'A10');
-	await page.keyboard.press('ControlOrMeta+D');
-	await typeCell(page, 'C1', '=NB.SI(A1:A10;6)');
-	await expect(relaunch).toBeVisible();
-	const sixes = async () =>
-		String((await columnShown(page, 'A1', 'A10')).filter((die) => die === '6').length);
-	const first = await columnShown(page, 'A1', 'A10');
-	expect(first.every((die) => /^[1-6]$/.test(die))).toBe(true);
-	await expect.poll(() => shownIn(page, 'C1')).toBe(await sixes());
+		// A1:A10 `=ALEA.ENTRE.BORNES(1;6)`, C1 `=NB.SI(A1:A10;6)` : « Relancer » apparaît
+		await typeCell(page, 'A1', '=ALEA.ENTRE.BORNES(1;6)');
+		await selectZone(page, 'A1', 'A10');
+		await page.keyboard.press('ControlOrMeta+D');
+		await typeCell(page, 'C1', '=NB.SI(A1:A10;6)');
+		await expect(relaunch).toBeVisible();
+		const sixes = async () =>
+			String((await columnShown(page, 'A1', 'A10')).filter((die) => die === '6').length);
+		const first = await columnShown(page, 'A1', 'A10');
+		expect(first.every((die) => /^[1-6]$/.test(die))).toBe(true);
+		await expect.poll(() => shownIn(page, 'C1')).toBe(await sixes());
 
-	// Un clic : nouveaux dés, C1 suit ; l'annonce dit combien de cases
-	await relaunch.click();
-	await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(first);
-	const second = await columnShown(page, 'A1', 'A10');
-	await expect.poll(() => shownIn(page, 'C1')).toBe(await sixes());
-	await expect(page.getByText('Nouveaux tirages : 10 cases.')).toBeAttached();
-	// Ctrl+Z aussitôt (sans cliquer une case) → les dés d'avant ; Ctrl+Y → ceux d'après.
-	// Ctrl, pas ⌘ : sur Mac ⌘Y ne rétablit pas (⌘⇧Z, oui) — écart signalé à David
-	await page.keyboard.press('ControlOrMeta+Z');
-	await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(first);
-	await page.keyboard.press('Control+Y');
-	await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(second);
+		// Un clic : nouveaux dés, C1 suit ; l'annonce dit combien de cases
+		await relaunch.click();
+		await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(first);
+		const second = await columnShown(page, 'A1', 'A10');
+		await expect.poll(() => shownIn(page, 'C1')).toBe(await sixes());
+		await expect(page.getByText('Nouveaux tirages : 10 cases.')).toBeAttached();
+		// Ctrl+Z aussitôt (sans cliquer une case) → les dés d'avant ; Ctrl+Y → ceux d'après.
+		// Ctrl, pas ⌘ : sur Mac ⌘Y ne rétablit pas (⌘⇧Z, oui) — écart signalé à David
+		await page.keyboard.press('ControlOrMeta+Z');
+		await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(first);
+		await page.keyboard.press('Control+Y');
+		await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(second);
 
-	// F9 dans une case → nouveaux dés ; F9 maintenu → une seule relance
-	await selectCell(page, 'E5');
-	await page.keyboard.press('F9');
-	await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(second);
-	const third = await columnShown(page, 'A1', 'A10');
-	// Maintenu : les appuis suivants arrivent avec `repeat` (Playwright le pose tant que la
-	// touche n'est pas relâchée)
-	await page.keyboard.down('F9');
-	await page.keyboard.down('F9');
-	await page.keyboard.down('F9');
-	await page.keyboard.up('F9');
-	await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(third);
-	await page.keyboard.press('ControlOrMeta+Z');
-	await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(third);
+		// F9 dans une case → nouveaux dés ; F9 maintenu → une seule relance
+		await selectCell(page, 'E5');
+		await page.keyboard.press('F9');
+		await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(second);
+		const third = await columnShown(page, 'A1', 'A10');
+		// Maintenu : les appuis suivants arrivent avec `repeat` (Playwright le pose tant que la
+		// touche n'est pas relâchée)
+		await page.keyboard.down('F9');
+		await page.keyboard.down('F9');
+		await page.keyboard.down('F9');
+		await page.keyboard.up('F9');
+		await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(third);
+		await page.keyboard.press('ControlOrMeta+Z');
+		await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(third);
 
-	// Le lien d'un atelier à dés, puis « Garder dans mon atelier » : les tirages sont refaits
-	const link = await shareLink(page);
-	const other = await page.context().newPage();
-	await other.goto(link);
-	await other.getByRole('button', { name: 'Garder dans mon atelier' }).click();
-	await expect(
-		other.getByText(/les tirages au hasard sont refaits dans ton atelier/)
-	).toBeVisible();
-	await other.close();
-});
+		// Le lien d'un atelier à dés, puis « Garder dans mon atelier » : les tirages sont refaits
+		const link = await shareLink(page);
+		const other = await page.context().newPage();
+		await other.goto(link);
+		await showCards(other, { afterLoad: true });
+		await other.getByRole('button', { name: 'Garder dans mon atelier' }).click();
+		await expect(
+			other.getByText(/les tirages au hasard sont refaits dans ton atelier/)
+		).toBeVisible();
+		await other.close();
+	}
+);
 
 /** Un fichier choisi par « Ouvrir un CSV… » */
 async function openCsv(
 	page: Page,
 	file: string | { name: string; mimeType: string; buffer: Buffer }
 ): Promise<void> {
+	// Au téléphone, la console ouverte couvre la vue et ce bouton
+	await setConsole(page, false);
 	const chooser = page.waitForEvent('filechooser');
 	await page.getByRole('button', { name: 'Ouvrir un CSV…' }).click();
 	await (await chooser).setFiles(file);
@@ -773,3 +933,87 @@ test('#1473 — « Ouvrir un CSV… » : Excel, LibreOffice, Google Sheets, alle
 	await expect(page.getByText('Ce fichier n’est pas un tableau CSV')).toBeVisible();
 	await expect.poll(() => shownIn(page, 'B1')).toBe('2.25');
 });
+
+/** Les cases de la grille qu'un doigt atteint : visibles, et rien par-dessus leur milieu */
+function touchableCells(page: Page): Promise<number> {
+	return page.locator('td[role="gridcell"]').evaluateAll(
+		(cells) =>
+			cells.filter((cell) => {
+				const box = cell.getBoundingClientRect();
+				if (box.width === 0 || box.height === 0) return false;
+				const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+				return hit !== null && (hit === cell || cell.contains(hit));
+			}).length
+	);
+}
+
+test('grille de Données au téléphone (390 × 659) : des cases à toucher, la vue défile', async ({
+	page
+}) => {
+	// La hauteur visible d'un iPhone 15 dans Safari (barres comprises)
+	await page.setViewportSize({ width: 390, height: 659 });
+	await setConsole(page, false);
+	// Sans la place réservée, la grille tombait à 2 px de haut (en prod le 2026-11-23)
+	const zone = page.locator('.donnees .defilement');
+	await zone.scrollIntoViewIfNeeded();
+	expect((await zone.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(150);
+	await expect.poll(() => touchableCells(page)).toBeGreaterThanOrEqual(10);
+	// Une case se touche et se remplit, comme sur ordinateur
+	expect(await typeCell(page, 'A1', '12')).toBe('');
+	expect((await readCell(page, 'A1')).shown).toBe('12');
+});
+
+test(
+	'#1411 — coller un tableau de LibreOffice, copier vers un tableur, CSV pour Excel',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		await allowClipboard(page);
+		// Un tableau copié dans LibreOffice ou Excel : texte à tabulations, titres en tête
+		// Mis dans le presse-papiers par un vrai ⌘C (un `ClipboardEvent` fabriqué perd ses données
+		// sous Firefox : `getData` y rend une chaîne vide), puis collé par ⌘V dans la case
+		await copyText(page, 'Taille\tMasse\n152\t41,5\n160\t48\n');
+		await selectCell(page, 'B1');
+		await page.keyboard.press('ControlOrMeta+V');
+		await expect.poll(() => shownIn(page, 'B2')).toBe('160');
+		await expect.poll(() => shownIn(page, 'C1')).toBe('41,5');
+		await expect(page.locator('input.titre').nth(1)).toHaveValue('Taille');
+
+		// Vers un tableur : décimaux à virgule
+		await typeCell(page, 'E1', '=1/4');
+		await typeCell(page, 'E2', '=1/3');
+		await selectZone(page, 'C1', 'C2');
+		await page.keyboard.press('ControlOrMeta+C');
+		await expect.poll(() => readClipboard(page)).toBe('41,5\n48');
+		// Après ⌘C, les flèches marchent encore
+		await selectCell(page, 'C1');
+		await page.keyboard.press('ControlOrMeta+C');
+		await page.keyboard.press('ArrowDown');
+		await expect(cellLocator(page, 'C2')).toHaveClass(/\bactive\b/);
+
+		// Dans la grille, ⌘C puis ⌘V garde la valeur exacte
+		await selectCell(page, 'E2');
+		await page.keyboard.press('ControlOrMeta+C');
+		await selectCell(page, 'F2');
+		await page.keyboard.press('ControlOrMeta+V');
+		await expect.poll(() => shownIn(page, 'F2')).toBe(await shownIn(page, 'E2'));
+		expect((await readCell(page, 'F2')).bar).toBe('=1/3');
+
+		// Taper dans une case puis cliquer ailleurs garde la valeur
+		await selectCell(page, 'G1');
+		await page.locator('#atelier-barre-cellule').fill('7');
+		await cellLocator(page, 'H3').click();
+		await expect.poll(() => shownIn(page, 'G1')).toBe('7');
+
+		// « Télécharger en CSV » : BOM (accents dans Excel), « ; », virgule décimale
+		const [download] = await Promise.all([
+			page.waitForEvent('download'),
+			page.getByRole('button', { name: 'Télécharger en CSV' }).click()
+		]);
+		const path = await download.path();
+		const bytes = await readFile(path);
+		expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+		const text = bytes.subarray(3).toString('utf8');
+		expect(text.split(/\r?\n/)[0]).toContain('Taille;Masse');
+		expect(text).toContain('41,5');
+	}
+);

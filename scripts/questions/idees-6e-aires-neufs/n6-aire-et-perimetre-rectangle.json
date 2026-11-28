@@ -1,0 +1,373 @@
+{
+	"id": "7a8294a4-fdfc-4528-a65d-eb6e7da4b85f",
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Aires > rectangle",
+		"point": "6-201"
+	},
+	"title": "Aire et périmètre d'un rectangle",
+	"description": "Calculer le périmètre et l'aire d'un même rectangle ou carré ; deux rectangles de même périmètre n'ont pas la même aire ; pièges : aire et périmètre échangés, aire en cm, demi-périmètre",
+	"grades": ["6"],
+	"level": 5,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un rectangle mesure ${{L}}$ cm de longueur et ${{l}}$ cm de largeur.\n\nCalcule son périmètre et son aire.\n\nPérimètre : $?$\n\nAire : $?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "3..11"
+				},
+				{
+					"name": "l",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["L>l"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(L+l)}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L*l}}\\unit{cm}",
+							"message": "Ça, c'est l'aire. Le périmètre est le tour : deux longueurs et deux largeurs.",
+							"label": "Aire au lieu du périmètre"
+						},
+						{
+							"answer": "{{eval:L+l}}\\unit{cm}",
+							"message": "Le tour compte deux longueurs **et** deux largeurs, pas une seule de chaque.",
+							"label": "Demi-périmètre"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:L*l}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*(L+l)}}\\unit{cm^2}",
+							"message": "Ça, c'est le périmètre. L'aire est la longueur multipliée par la largeur.",
+							"label": "Périmètre au lieu de l'aire"
+						},
+						{
+							"answer": "{{eval:L*l}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						},
+						{
+							"answer": "{{eval:L+l}}\\unit{cm^2}",
+							"message": "L'aire n'est pas une somme : c'est la longueur **multipliée** par la largeur.",
+							"label": "Somme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre** (le tour) : $2 \\times ({{L}} + {{l}}) = \\textcolor{{{color:primary.0}}}{{{eval:2*(L+l)}}~\\unit{cm}}$.",
+					"**Aire** (la surface) : ${{L}} \\times {{l}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l}}~\\unit{cm^2}}$.",
+					"Le périmètre est une longueur (en cm), l'aire une surface (en cm²)."
+				]
+			},
+			"hint": "Le périmètre fait le tour de la figure ; l'aire mesure ce qu'il y a à l'intérieur."
+		},
+		{
+			"statement": "Un carré a des côtés de ${{c}}$ cm.\n\nCalcule son périmètre et son aire.\n\nPérimètre : $?$\n\nAire : $?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*c}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c*c}}\\unit{cm}",
+							"message": "Ça, c'est l'aire. Le périmètre est le tour : quatre côtés.",
+							"label": "Aire au lieu du périmètre"
+						},
+						{
+							"answer": "{{eval:2*c}}\\unit{cm}",
+							"message": "Le carré a quatre côtés, pas deux.",
+							"label": "Deux côtés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:c*c}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:4*c}}\\unit{cm^2}",
+							"message": "Ça, c'est le périmètre. L'aire est le côté multiplié par lui-même.",
+							"label": "Périmètre au lieu de l'aire"
+						},
+						{
+							"answer": "{{eval:c*c}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						},
+						{
+							"answer": "{{eval:2*c}}\\unit{cm^2}",
+							"message": "$2 \\times {{c}}$, c'est ${{c}} + {{c}}$ : l'aire est le côté multiplié par lui-même.",
+							"label": "Double du côté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre** : $4 \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:4*c}}~\\unit{cm}}$.",
+					"**Aire** : ${{c}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:c*c}}~\\unit{cm^2}}$."
+				]
+			},
+			"hint": "Le périmètre fait le tour des quatre côtés ; l'aire multiplie le côté par lui-même."
+		},
+		{
+			"statement": "Le rectangle A mesure ${{La}}$ cm sur ${{la}}$ cm. Le rectangle B mesure ${{Lb}}$ cm sur ${{lb}}$ cm.\n\nIls ont le même périmètre. Lequel a la plus grande aire ?\n\n```choix\nmelanger: non\n- Le rectangle A.\n- Le rectangle B.\n- Ils ont la même aire.\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..4"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "L1",
+					"expression": "eval:(6)*(1-min(abs(j-0),1))+(7)*(1-min(abs(j-1),1))+(9)*(1-min(abs(j-2),1))+(10)*(1-min(abs(j-3),1))+(8)*(1-min(abs(j-4),1))"
+				},
+				{
+					"name": "l1",
+					"expression": "eval:(2)*(1-min(abs(j-0),1))+(1)*(1-min(abs(j-1),1))+(3)*(1-min(abs(j-2),1))+(2)*(1-min(abs(j-3),1))+(4)*(1-min(abs(j-4),1))"
+				},
+				{
+					"name": "L2",
+					"expression": "eval:(4)*(1-min(abs(j-0),1))+(5)*(1-min(abs(j-1),1))+(7)*(1-min(abs(j-2),1))+(7)*(1-min(abs(j-3),1))+(7)*(1-min(abs(j-4),1))"
+				},
+				{
+					"name": "l2",
+					"expression": "eval:(4)*(1-min(abs(j-0),1))+(3)*(1-min(abs(j-1),1))+(5)*(1-min(abs(j-2),1))+(5)*(1-min(abs(j-3),1))+(5)*(1-min(abs(j-4),1))"
+				},
+				{
+					"name": "La",
+					"expression": "eval:(1-s)*L1+s*L2"
+				},
+				{
+					"name": "la",
+					"expression": "eval:(1-s)*l1+s*l2"
+				},
+				{
+					"name": "Lb",
+					"expression": "eval:s*L1+(1-s)*L2"
+				},
+				{
+					"name": "lb",
+					"expression": "eval:s*l1+(1-s)*l2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Périmètres : $2 \\times ({{La}} + {{la}}) = {{eval:2*(La+la)}}$ cm et $2 \\times ({{Lb}} + {{lb}}) = {{eval:2*(Lb+lb)}}$ cm : ils sont égaux.",
+					"Aires : ${{La}} \\times {{la}} = {{eval:La*la}}~\\unit{cm^2}$ et ${{Lb}} \\times {{lb}} = {{eval:Lb*lb}}~\\unit{cm^2}$.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Le rectangle {{if:s==0|B|A}}}}$ a la plus grande aire : un même périmètre ne donne pas la même aire."
+				]
+			},
+			"hint": "Calcule l'aire de chacun."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 × 4 : 22 cm et 28 cm²",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["22\\unit{cm}", "28\\unit{cm^2}"]
+		},
+		{
+			"description": "Périmètre : 28 cm (l'aire)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est l'aire. Le périmètre est le tour : deux longueurs et deux largeurs."
+			},
+			"answers": ["28\\unit{cm}", "28\\unit{cm^2}"]
+		},
+		{
+			"description": "Périmètre : 11 cm",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le tour compte deux longueurs **et** deux largeurs, pas une seule de chaque."
+			},
+			"answers": ["11\\unit{cm}", "28\\unit{cm^2}"]
+		},
+		{
+			"description": "Aire : 22 cm²",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre. L'aire est la longueur multipliée par la largeur."
+			},
+			"answers": ["22\\unit{cm}", "22\\unit{cm^2}"]
+		},
+		{
+			"description": "Aire : 28 cm",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+			},
+			"answers": ["22\\unit{cm}", "28\\unit{cm}"]
+		},
+		{
+			"description": "Aire : 11 cm²",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas une somme : c'est la longueur **multipliée** par la largeur."
+			},
+			"answers": ["22\\unit{cm}", "11\\unit{cm^2}"]
+		},
+		{
+			"description": "Carré de 5 : 20 cm et 25 cm²",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["20\\unit{cm}", "25\\unit{cm^2}"]
+		},
+		{
+			"description": "Carré de 5 : périmètre 10 cm",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré a quatre côtés, pas deux."
+			},
+			"answers": ["10\\unit{cm}", "25\\unit{cm^2}"]
+		},
+		{
+			"description": "Carré de 5 : aire 20 cm²",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre. L'aire est le côté multiplié par lui-même."
+			},
+			"answers": ["20\\unit{cm}", "20\\unit{cm^2}"]
+		},
+		{
+			"description": "6 × 2 et 4 × 4 : B",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0",
+				"s": "0",
+				"L1": "6",
+				"l1": "2",
+				"L2": "4",
+				"l2": "4",
+				"La": "6",
+				"la": "2",
+				"Lb": "4",
+				"lb": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "6 × 2 et 4 × 4 : même aire refusée",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0",
+				"s": "0",
+				"L1": "6",
+				"l1": "2",
+				"L2": "4",
+				"l2": "4",
+				"La": "6",
+				"la": "2",
+				"Lb": "4",
+				"lb": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Ordre inversé : A",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"s": "1",
+				"L1": "7",
+				"l1": "1",
+				"L2": "5",
+				"l2": "3",
+				"La": "5",
+				"la": "3",
+				"Lb": "7",
+				"lb": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		}
+	]
+}

@@ -1,0 +1,245 @@
+{
+	"id": "1e018c93-0969-475d-a7b4-f2d4b0e8b5a2",
+	"rangement": {
+		"noeud": "Géométrie > Trigonométrie du triangle rectangle > calcul de longueurs",
+		"point": "3-061"
+	},
+	"title": "Quel calcul donne la longueur ? (trigonométrie)",
+	"description": "Choisir le calcul (× ou ÷ cos, sin, tan) qui donne une longueur d'un triangle rectangle, sans calculer : longueur cherchée au numérateur ou au dénominateur du rapport",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = {{b}}^{\\circ}$ et ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}} = {{k}}~\\unit{cm}$. Quel calcul donne la longueur ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8.8\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}}|10 - ({{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1+7*sin((b)*\\pi/180)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n```choix\n- ${{k}} \\times \\cos({{b}}^{\\circ})$\n- ${{k}} \\times \\sin({{b}}^{\\circ})$\n- ${{k}} \\times \\tan({{b}}^{\\circ})$\n- $\\dfrac{ {{k}} }{\\cos({{b}}^{\\circ})}$\n- $\\dfrac{ {{k}} }{\\sin({{b}}^{\\circ})}$\n- $\\dfrac{ {{k}} }{\\tan({{b}}^{\\circ})}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "20..70"
+				},
+				{
+					"name": "k",
+					"expression": "3..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour l'angle $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ : l'**hypoténuse** est ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, le **côté adjacent** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$, le **côté opposé** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.",
+					"Le rapport qui contient ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ et ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ : $${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}}{{{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}}$$",
+					"La longueur cherchée ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ est au **numérateur** : on **multiplie** la longueur connue par ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})$. $$\\textcolor{{{color:primary.0}}}{{{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}} = {{k}} \\times {{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})}$$",
+					"Les calculs qui divisent par ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})$ placent ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ au dénominateur ; les autres rapports ne contiennent pas les deux longueurs ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ et ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$."
+				]
+			},
+			"hint": "Écris le rapport ({{if:f==0|cosinus|}}{{if:f==1|sinus|}}{{if:f==2|tangente|}} ou un autre) qui contient la longueur connue et la longueur cherchée. Si la longueur cherchée est en haut du quotient, on multiplie ; si elle est en bas, on divise."
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = {{b}}^{\\circ}$ et ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}} = {{k}}~\\unit{cm}$. Quel calcul donne la longueur ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8.8\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}}|10 - ({{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1+7*sin((b)*\\pi/180)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n```choix\n- ${{k}} \\times \\cos({{b}}^{\\circ})$\n- ${{k}} \\times \\sin({{b}}^{\\circ})$\n- ${{k}} \\times \\tan({{b}}^{\\circ})$\n- $\\dfrac{ {{k}} }{\\cos({{b}}^{\\circ})}$\n- $\\dfrac{ {{k}} }{\\sin({{b}}^{\\circ})}$\n- $\\dfrac{ {{k}} }{\\tan({{b}}^{\\circ})}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "20..70"
+				},
+				{
+					"name": "k",
+					"expression": "3..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:f+3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour l'angle $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ : l'**hypoténuse** est ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, le **côté adjacent** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$, le **côté opposé** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.",
+					"Le rapport qui contient ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ et ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ : $${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}}{{{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}}$$",
+					"La longueur cherchée ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ est au **dénominateur** : on **divise** la longueur connue par ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})$. $$\\textcolor{{{color:primary.0}}}{{{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}} = \\dfrac{ {{k}} }{{{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})}}$$",
+					"Les calculs qui multiplient par ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})$ placent ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ au numérateur ; les autres rapports ne contiennent pas les deux longueurs ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$ et ${{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$."
+				]
+			},
+			"hint": "Écris le rapport ({{if:f==0|cosinus|}}{{if:f==1|sinus|}}{{if:f==2|tangente|}} ou un autre) qui contient la longueur connue et la longueur cherchée. Si la longueur cherchée est en haut du quotient, on multiplie ; si elle est en bas, on divise."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 cos : AB = 12 × cos 40°",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v0 cos : division au lieu de multiplication",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v0 cos : sinus au lieu du cosinus",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v0 tan : AC = 12 × tan 40°",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"o": "1",
+				"b": "40",
+				"k": "12",
+				"f": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v0 tan : division par la tangente",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"o": "1",
+				"b": "40",
+				"k": "12",
+				"f": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "v1 sin : BC = 12 ÷ sin 40°",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "v1 sin : multiplication au lieu de division",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v1 sin : cosinus au lieu du sinus",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v1 tan : AB = 12 ÷ tan 40°",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "v1 cos : BC = 12 ÷ cos 40°",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"k": "12",
+				"f": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		}
+	]
+}

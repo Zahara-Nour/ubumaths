@@ -9,6 +9,9 @@
  * Noir sur blanc : la petite aiguille se distingue par sa forme (courte,
  * épaisse), la trotteuse aussi (fine, avec un contrepoids), pas par la couleur — une photocopie reste lisible.
  *
+ * Corrigé (`solution: oui`, V109) : l'horloge à placer reçoit ses aiguilles,
+ * en vert (couleur des corrections ; la forme les distingue toujours).
+ *
  * Légendes en chaînes Typst littérales : rien n'y est lu comme du balisage.
  * Un bloc en erreur devient le cadre neutre « Horloge indisponible » — jamais
  * une erreur de compilation (une seule erreur Typst fait échouer toute la fiche).
@@ -29,6 +32,7 @@ import {
 	type HorlogeSpec,
 	type HorlogeTime
 } from '../types/horloge';
+import { namedColorTypst } from '#lib/theme/named-colors.ts';
 
 // ============================================================================
 // CONSTANTES
@@ -42,6 +46,9 @@ const ROW_MAX_CM = 16;
 /** Espace entre deux cadrans (cm) */
 const GAP_CM = 0.6;
 
+/** Aiguilles d'un corrigé (`solution: oui`) : le vert des corrections */
+const SOLVED_HANDS = namedColorTypst('vert');
+
 // ============================================================================
 // FONCTIONS
 // ============================================================================
@@ -53,9 +60,18 @@ function typstString(text: string): string {
 
 const cm = (value: number) => `${Number(value.toFixed(4))}cm`;
 
-/** Typst d'un cadran de `sizeCm` de côté */
-function clockTypst(spec: HorlogeSpec, time: HorlogeTime | null, sizeCm: number): string {
+/**
+ * Typst d'un cadran de `sizeCm` de côté ; `solved` : les aiguilles sont la réponse
+ * attendue d'une horloge à placer, en vert
+ */
+function clockTypst(
+	spec: HorlogeSpec,
+	time: HorlogeTime | null,
+	sizeCm: number,
+	solved = false
+): string {
 	const scene = buildHorlogeScene(spec, time);
+	const hands = solved ? SOLVED_HANDS : 'black';
 	const k = sizeCm / (2 * HORLOGE_VIEW.half);
 	/** Scène (centre 0, 0) → coin haut gauche du cadran */
 	const at = (v: number) => cm((v + HORLOGE_VIEW.half) * k);
@@ -90,6 +106,7 @@ function clockTypst(spec: HorlogeSpec, time: HorlogeTime | null, sizeCm: number)
 			`  #place(top + left, dx: ${cm((n.x + HORLOGE_VIEW.half) * k - w / 2)}, dy: ${cm((n.y + HORLOGE_VIEW.half) * k - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(font)}, fill: ${n.inner ? 'luma(80)' : 'black'})[${n.text}])))`
 		);
 	}
+	if (solved) parts.push('  // solution');
 	if (scene.minuteHand !== null) {
 		parts.push(
 			segment(
@@ -97,13 +114,13 @@ function clockTypst(spec: HorlogeSpec, time: HorlogeTime | null, sizeCm: number)
 				0,
 				scene.minuteHand.x,
 				scene.minuteHand.y,
-				stroke(HORLOGE_STROKE.minuteHand, 'black')
+				stroke(HORLOGE_STROKE.minuteHand, hands)
 			)
 		);
 	}
 	if (scene.hourHand !== null) {
 		parts.push(
-			segment(0, 0, scene.hourHand.x, scene.hourHand.y, stroke(HORLOGE_STROKE.hourHand, 'black'))
+			segment(0, 0, scene.hourHand.x, scene.hourHand.y, stroke(HORLOGE_STROKE.hourHand, hands))
 		);
 	}
 	// Trotteuse : fine, par-dessus, avec son contrepoids
@@ -114,7 +131,7 @@ function clockTypst(spec: HorlogeSpec, time: HorlogeTime | null, sizeCm: number)
 				scene.secondTail.y,
 				scene.secondHand.x,
 				scene.secondHand.y,
-				stroke(HORLOGE_STROKE.secondHand, 'black')
+				stroke(HORLOGE_STROKE.secondHand, hands)
 			)
 		);
 	}
@@ -131,15 +148,17 @@ export function generateHorlogeTypst(node: HorlogeNode): string {
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
 
-	// Horloge à placer : un cadran sans aiguilles, l'enfant les dessine
-	const times: (HorlogeTime | null)[] = spec.placer ? [null] : spec.times;
+	// Horloge à placer : un cadran sans aiguilles, l'enfant les dessine ; au corrigé
+	// (`solution: oui`), les aiguilles attendues
+	const solved = spec.placer !== undefined && spec.solution === true;
+	const times: (HorlogeTime | null)[] = spec.placer ? [solved ? spec.placer : null] : spec.times;
 	const count = times.length;
 	const wanted = spec.sizeCm ?? (spec.placer ? HORLOGE_SIZE_CM.placer : HORLOGE_SIZE_CM.default);
 	// Plusieurs cadrans : jamais plus larges que la page
 	const sizeCm = Math.min(wanted, (ROW_MAX_CM - GAP_CM * (count - 1)) / count);
 
 	const cells = times.map((time, i) => {
-		const clock = clockTypst(spec, time, sizeCm);
+		const clock = clockTypst(spec, time, sizeCm, solved);
 		const caption = spec.captions?.[i];
 		if (caption === undefined || caption === '') return `[${clock}]`;
 		return `[#stack(dir: ttb, spacing: 4pt, [${clock}], align(center, text(size: 9pt, ${typstString(caption)})))]`;

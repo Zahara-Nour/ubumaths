@@ -56,7 +56,15 @@ export type CubesSideView = (typeof CUBES_SIDE_VIEWS)[number];
  * `case:` posée par le générateur de questions ; `vues:` écrite par le serveur dans
  * l'énoncé masqué d'une évaluation, jamais par un auteur — chantier `fuite-enonce`)
  */
-export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case', 'vues'] as const;
+export const CUBES_KEYS = [
+	'hauteurs',
+	'vue',
+	'dessiner',
+	'retrouver',
+	'tourner',
+	'case',
+	'vues'
+] as const;
 
 /** Les clés du bloc ```solide */
 export const SOLIDE_KEYS = [
@@ -68,13 +76,29 @@ export const SOLIDE_KEYS = [
 	'section',
 	'points',
 	'vecteurs',
+	'droites',
+	'segments',
+	'angles-droits',
+	'plans',
+	'repere',
 	'tracer',
+	'tourner',
 	'case'
 ] as const;
 
 /** Points déclarés (`points:`) et vecteurs donnés (`vecteurs:`) d'un ```solide : au plus */
 export const SOLIDE_MAX_POINTS = 8;
 export const SOLIDE_MAX_VECTORS = 8;
+
+/** Droites données (`droites:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
+export const SOLIDE_MAX_DROITES = 4;
+
+/** Segments donnés (`segments:`) et angles droits codés (`angles-droits:`) d'un ```solide : au plus */
+export const SOLIDE_MAX_SEGMENTS = 6;
+export const SOLIDE_MAX_RIGHT_ANGLES = 3;
+
+/** Plans donnés (`plans:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
+export const SOLIDE_MAX_PLANS = 2;
 
 /** Vecteurs de la combinaison de `tracer:` : au plus */
 export const SOLIDE_MAX_TERMS = 6;
@@ -176,6 +200,11 @@ export interface CubesSpec {
 	/** Geste de l'élève (lot 2) ; absent : affichage seul */
 	task?: CubesTask;
 	/**
+	 * `tourner: oui` : l'élève peut faire tourner l'assemblage à l'écran (chantier
+	 * `solides-3d`, lot 6) ; perspective sans geste seulement ; absent : dessin fixe
+	 */
+	rotate?: true;
+	/**
 	 * Énoncé masqué d'une évaluation (`hauteurs: ? 0 ?` + `vues:`, chantier
 	 * `fuite-enonce`) : les vues données, une hauteur par colonne de la vue
 	 * (`sideColumns`) ; `heights` ne vaut alors que par son empreinte (1 sur un
@@ -213,8 +242,39 @@ export interface SolideSpec {
 	points: SolidePoint[];
 	/** Vecteurs donnés (`vecteurs:`), dessinés en flèches */
 	vectors: SolideVector[];
+	/**
+	 * Droites données (`droites:`, chantier `solides-3d`, lot 7a), dessinées en
+	 * couleur ; absent : aucune (la figure reste celle d'avant)
+	 */
+	droites?: SolideDroite[];
+	/**
+	 * Segments donnés (`segments:`, outil n° 72 de `outils-manquants.md`), dessinés
+	 * en couleur d'un point à l'autre ; absent : aucun (la figure reste celle d'avant)
+	 */
+	segments?: SolideSegment[];
+	/**
+	 * Angles droits codés (`angles-droits: AEG`, outil n° 72) : un petit carré au
+	 * sommet du milieu ; absent : aucun (la figure reste celle d'avant)
+	 */
+	rightAngles?: SolideRightAngle[];
+	/**
+	 * Plans donnés (`plans:`, chantier `solides-3d`, lot 7b) : la partie du plan
+	 * dans le solide, teintée ; absent : aucun (la figure reste celle d'avant)
+	 */
+	plans?: SolidePlan[];
+	/**
+	 * Repère du solide (`repere: A ; AB, AD, AE`, chantier `solides-3d`, lot 7c) :
+	 * ses trois vecteurs sont dessinés depuis l'origine ; absent : aucun (la figure
+	 * reste celle d'avant)
+	 */
+	repere?: SolideRepere;
 	/** Geste de l'élève (`tracer:`, chantier `solide-vecteur`, lot 2) ; absent : affichage seul */
 	task?: SolideTask;
+	/**
+	 * `tourner: oui` : l'élève peut faire tourner la figure à l'écran (chantier
+	 * `solides-3d`, ADR 0045) ; absent : figure fixe. Le PDF n'en tient pas compte.
+	 */
+	rotate?: true;
 }
 
 /**
@@ -334,12 +394,32 @@ export type SolideSection =
 /**
  * Un point déclaré d'un ```solide (`points: I milieu AE, O centre ABCD`) :
  * l'isobarycentre des points `of` (sommets, puis points déclarés avant lui) ;
- * `label` : sa lecture (« milieu de [AE] », « centre de ABCD », « centre du cube »)
+ * `label` : sa lecture (« milieu de [AE] », « centre de ABCD », « centre du cube »).
+ *
+ * Point donné par ses coordonnées (`M (1 ; 0,5 ; 1)`, lot 7c) : `of` est vide et
+ * `coords` porte le repère où elles se lisent ; `label` : « de coordonnées (1 ; 0,5 ; 1) ».
+ *
+ * Point d'intersection (`K intersection (IG) (BDE)`, lot 7e) : `of` est vide et
+ * `meet` porte la droite `line` (deux points) et ce qu'elle coupe, `other` : un plan
+ * (trois points) ou une autre droite (deux points) — indices des points : sommets,
+ * puis points déclarés avant lui ; `label` : « intersection de la droite (IG) et du plan (BDE) »
  */
 export interface SolidePoint {
 	name: string;
 	of: number[];
 	label: string;
+	coords?: SolideRepere & { values: [number, number, number] };
+	meet?: { line: [number, number]; other: number[] };
+}
+
+/**
+ * Le repère d'un ```solide (`repere: A ; AB, AD, AE`) : l'origine et le bout de
+ * chacun des trois vecteurs, qui partent tous de l'origine (indices des points :
+ * sommets, puis points déclarés sans coordonnées) ; jamais dans un même plan
+ */
+export interface SolideRepere {
+	origin: number;
+	axes: [number, number, number];
 }
 
 /** Un vecteur donné (`vecteurs: AB, u = AE`) : indices des points (sommets, puis points déclarés) */
@@ -347,6 +427,38 @@ export interface SolideVector {
 	from: number;
 	to: number;
 	/** `u = AB` : u ; null : nommé par ses extrémités */
+	name: string | null;
+}
+
+/** Une droite donnée (`droites: (AG), d = (IJ)`) : indices de deux points (sommets, puis points déclarés) */
+export interface SolideDroite {
+	from: number;
+	to: number;
+	/** `d = (AG)` : d ; null : nommée par ses deux points */
+	name: string | null;
+}
+
+/** Un segment donné (`segments: [AG]`) : indices de ses deux bouts (sommets, puis points déclarés) */
+export interface SolideSegment {
+	from: number;
+	to: number;
+}
+
+/**
+ * Un angle droit codé (`angles-droits: AEG`) : `at`, le sommet de l'angle (la
+ * lettre du milieu), `from` et `to`, un point sur chacun de ses côtés (indices
+ * des points : sommets, puis points déclarés)
+ */
+export interface SolideRightAngle {
+	from: number;
+	at: number;
+	to: number;
+}
+
+/** Un plan donné (`plans: (BDE), P = (ACG)`) : indices de trois points non alignés (sommets, puis points déclarés) */
+export interface SolidePlan {
+	through: [number, number, number];
+	/** `P = (BDE)` : P ; null : nommé par ses trois points */
 	name: string | null;
 }
 
@@ -375,6 +487,12 @@ export interface EspaceNode extends BaseNode {
 	spec: EspaceSpec | null;
 	/** Phrases pour l'AUTEUR (jamais montrées à l'élève), « Ligne N : … » */
 	errors: string[];
+	/**
+	 * Phrases pour l'AUTEUR sur `tourner:` (valeur mal écrite ; assemblage de
+	 * cubes : vue à plat ou geste) : le bloc n'est PAS en erreur, la figure se
+	 * dessine, fixe (chantier `solides-3d`, lots 2 et 6)
+	 */
+	rotationErrors?: string[];
 	/** Geste dans une question : sa case, posée par le générateur (`case: N`) */
 	caseIndex?: number;
 }

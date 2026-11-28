@@ -1,0 +1,317 @@
+{
+	"id": "878d57c5-e401-42c1-a8ff-28edae170834",
+	"title": "Se ramener à une inéquation du second degré",
+	"description": "Position d'une parabole par rapport à une droite, ensemble de définition de √f(x) et de 1/f(x), f du second degré",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère, on considère la parabole $\\mathcal{P}$ d'équation $y={{eval:x^2+B*x+C}}$ et la droite $D$ d'équation $y={{eval:mm*x+n}}$.\n\nSur quel ensemble la parabole est-elle strictement au-dessus de la droite ?\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-5..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				},
+				{
+					"name": "mm",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "-5..5"
+				},
+				{
+					"name": "B",
+					"expression": "eval:mm-(r+s)"
+				},
+				{
+					"name": "C",
+					"expression": "eval:n+r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{r}}[\\cup]{{s}};+\\infty[",
+					"expectedErrors": [
+						{
+							"answer": "]{{r}};{{s}}[",
+							"message": "Entre ${{r}}$ et ${{s}}$, la différence est négative : la parabole y est en dessous de la droite.",
+							"label": "Intérieur des racines"
+						},
+						{
+							"answer": "]-\\infty;{{r}}]\\cup[{{s}};+\\infty[",
+							"message": "Aux points d'intersection, la parabole n'est pas strictement au-dessus : les bornes sont exclues.",
+							"label": "Bornes incluses"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{P}$ est au-dessus de $D$ quand ${{eval:x^2+B*x+C}}>{{eval:mm*x+n}}$, soit ${{eval:x^2-(r+s)*x+r*s}}>0$.",
+					"Ce trinôme a pour racines ${{r}}$ et ${{s}}$ ; de coefficient $1>0$, il est positif à l'extérieur des racines.",
+					"L'ensemble cherché est $\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{r}}\\right[\\cup\\left]{{s}}\\,;+\\infty\\right[}$."
+				]
+			},
+			"hint": "Traduis la question par une inéquation, puis étudie le signe du trinôme obtenu."
+		},
+		{
+			"statement": "Soit $g$ la fonction définie par $g(x)=\\sqrt{ {{eval:a*x^2-a*(r+s)*x+a*r*s}} }$.\n\nDonne son ensemble de définition (intervalles).\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-5..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["r < s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|]-\\infty;{{r}}]\\cup[{{s}};+\\infty[|[{{r}};{{s}}]}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:a>0|]-\\infty;{{r}}[\\cup]{{s}};+\\infty[|]{{r}};{{s}}[}}",
+							"message": "La racine carrée de $0$ existe : les valeurs où le trinôme s'annule sont dans l'ensemble.",
+							"label": "Racines exclues"
+						},
+						{
+							"answer": "{{if:a>0|[{{r}};{{s}}]|]-\\infty;{{r}}]\\cup[{{s}};+\\infty[}}",
+							"message": "Le trinôme est du signe de $a={{a}}$ à l'extérieur de ses racines : vérifie où il est positif.",
+							"label": "Signe du trinôme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g(x)$ existe quand ${{eval:a*x^2-a*(r+s)*x+a*r*s}}\\geqslant0$.",
+					"Ce trinôme vaut ${{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}(x{{eval:-r;+}})(x{{eval:-s;+}})$ : racines ${{r}}$ et ${{s}}$, du signe de $a={{a}}$ à l'extérieur.",
+					"L'ensemble de définition est $\\textcolor{{{color:primary.0}}}{ {{if:a>0|\\left]-\\infty;{{r}}]\\cup[{{s}};+\\infty\\right[|[{{r}};{{s}}]}} }$."
+				]
+			},
+			"hint": "Une racine carrée n'existe que pour un nombre positif ou nul : écris l'inéquation à résoudre."
+		},
+		{
+			"statement": "Soit $h$ la fonction définie par $h(x)=\\dfrac{1}{ {{eval:a*x^2-a*(r+s)*x+a*r*s}} }$.\n\nDonne son ensemble de définition (intervalles, ou $\\mathbb{R}$ privé de valeurs).\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-5..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["r < s", "r != -s"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\{ {{r}} ; {{s}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\mathbb{R}",
+							"message": "Le dénominateur s'annule en ${{r}}$ et en ${{s}}$ : ces deux valeurs sont interdites.",
+							"label": "Valeurs interdites oubliées"
+						},
+						{
+							"answer": "\\mathbb{R}\\setminus\\{ {{eval:-r}} ; {{eval:-s}} \\}",
+							"message": "Les valeurs interdites sont les racines du dénominateur, ${{r}}$ et ${{s}}$ : attention au signe.",
+							"label": "Signe des racines"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h(x)$ existe quand ${{eval:a*x^2-a*(r+s)*x+a*r*s}}\\neq0$.",
+					"Ce trinôme s'annule en ${{r}}$ et en ${{s}}$ (son discriminant vaut ${{eval:a^2*(r-s)^2}}$).",
+					"L'ensemble de définition est $\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{ {{r}} ; {{s}} \\}}$."
+				]
+			},
+			"hint": "Un quotient n'existe que si son dénominateur n'est pas nul : cherche les valeurs qui l'annulent."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² − 2 au-dessus de 2x + 1",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"s": "3",
+				"mm": "2",
+				"n": "1",
+				"B": "0",
+				"C": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;-1[\\cup]3;+\\infty["]
+		},
+		{
+			"description": "Intérieur",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"s": "3",
+				"mm": "2",
+				"n": "1",
+				"B": "0",
+				"C": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $-1$ et $3$, la différence est négative : la parabole y est en dessous de la droite."
+			},
+			"answers": ["]-1;3["]
+		},
+		{
+			"description": "Bornes incluses",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"s": "3",
+				"mm": "2",
+				"n": "1",
+				"B": "0",
+				"C": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Aux points d'intersection, la parabole n'est pas strictement au-dessus : les bornes sont exclues."
+			},
+			"answers": ["]-\\infty;-1]\\cup[3;+\\infty["]
+		},
+		{
+			"description": "√(−x² + 4) : [−2 ; 2]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"s": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[-2;2]"]
+		},
+		{
+			"description": "Racines exclues",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La racine carrée de $0$ existe : les valeurs où le trinôme s'annule sont dans l'ensemble."
+			},
+			"answers": ["]-2;2["]
+		},
+		{
+			"description": "Signe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le trinôme est du signe de $a = -1$ à l'extérieur de ses racines : vérifie où il est positif."
+			},
+			"answers": ["]-\\infty;-2]\\cup[2;+\\infty["]
+		},
+		{
+			"description": "1/(x² − 2x − 3)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-1",
+				"s": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{-1;3\\}"]
+		},
+		{
+			"description": "En intervalles",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-1",
+				"s": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;-1[\\cup]-1;3[\\cup]3;+\\infty["]
+		},
+		{
+			"description": "ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-1",
+				"s": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur s'annule en $-1$ et en $3$ : ces deux valeurs sont interdites."
+			},
+			"answers": ["\\mathbb{R}"]
+		},
+		{
+			"description": "Signes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-1",
+				"s": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les valeurs interdites sont les racines du dénominateur, $-1$ et $3$ : attention au signe."
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{1;-3\\}"]
+		}
+	]
+}

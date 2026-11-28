@@ -13,7 +13,7 @@
  */
 
 import type { QuestionTemplate, QuestionVariation } from '../types';
-import { assignBlankIndices } from '../generator/assign-blank-indices';
+import { assignBlankIndices, variationCasesUnresolved } from '../generator/assign-blank-indices';
 import { parseChoiceBody } from '#lib/ubumark/parser/choix-parser.ts';
 import { readExpectedChoices } from '../choice-case';
 
@@ -45,6 +45,10 @@ function choiceCaseErrors(
 			error.startsWith('Case ') ? `${prefix}, c${error.slice(1)}` : `${prefix} : ${error}`
 		);
 	}
+	// Tableau à compléter à variables : rang des cases inconnu avant le tirage. Les
+	// erreurs du bloc restent signalées (sans numéro de case) ; la bonne réponse,
+	// lue par son rang, n'est contrôlée qu'au tirage (générateur, énoncé résolu)
+	const unresolved = variationCasesUnresolved(result);
 	// Cases de blocs ```operation / ```figure-a-completer / ```figure-de-travail, d'un
 	// tableau de signes à compléter : `blanks[]` peut les omettre
 	const blockCases = new Set([
@@ -67,7 +71,9 @@ function choiceCaseErrors(
 	const errors: string[] = [];
 	for (const [key, body] of Object.entries(result.choiceBlanks ?? {})) {
 		const caseIndex = Number(key);
-		const casePrefix = `${prefix}, case ${caseIndex + 1} (bloc choix) :`;
+		const casePrefix = unresolved
+			? `${prefix}, case choix :`
+			: `${prefix}, case ${caseIndex + 1} (bloc choix) :`;
 		const spec = parseChoiceBody(body.split('\n'));
 		const blockErrors = [
 			...(spec.caseIndex !== undefined
@@ -83,6 +89,7 @@ function choiceCaseErrors(
 			errors.push(`${casePrefix} ${blockErrors.join(' ; ')}`);
 			continue;
 		}
+		if (unresolved) continue;
 		const expected = blankAt(caseIndex)?.expectedAnswer ?? '';
 		// Bonne réponse dynamique : vérifiée au tirage seulement
 		if (expected.includes('{{')) continue;

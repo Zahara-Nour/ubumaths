@@ -26,7 +26,6 @@ vi.mock('#lib/server/errorMonitoring.ts', async (importActual) => ({
 import * as modele from '../questions/templates/[id]/+server';
 import * as modeles from '../questions/templates/+server';
 import * as lot from '../questions/templates/bulk-status/+server';
-import * as approbation from '../messages/templates/[id]/approve/+server';
 import * as signalements from '../bug-reports/config/+server';
 import * as resoudre from '../errors/bulk-resolve/+server';
 import * as purger from '../errors/delete-resolved/+server';
@@ -41,13 +40,12 @@ const MODELE_ID = '22222222-2222-4222-8222-222222222222';
 
 type Handler = (event: RequestEvent) => Promise<Response>;
 
-/** Les 8 routes, chacune avec un corps invalide (la garde passe, Zod refuse). */
+/** Les 7 routes, chacune avec un corps invalide (la garde passe, Zod refuse). */
 const ROUTES: { nom: string; handler: Handler; corpsInvalide: boolean }[] = [
 	{ nom: 'PUT modèle', handler: modele.PUT as unknown as Handler, corpsInvalide: true },
 	{ nom: 'DELETE modèle', handler: modele.DELETE as unknown as Handler, corpsInvalide: false },
 	{ nom: 'POST modèles', handler: modeles.POST as unknown as Handler, corpsInvalide: true },
 	{ nom: 'POST bulk-status', handler: lot.POST as unknown as Handler, corpsInvalide: true },
-	{ nom: 'POST approve', handler: approbation.POST as unknown as Handler, corpsInvalide: true },
 	{
 		nom: 'PATCH bug-reports/config',
 		handler: signalements.PATCH as unknown as Handler,

@@ -1,0 +1,15 @@
+{
+	"migration": "supabase/migrations/20261123163955_questions_idees_tle_limites_f3_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "d6eaa761-e8ff-4c08-a8c8-c3de1c4bbd83",
+			"title": "Compléter les limites dans le tableau de variations d'une fonction homographique",
+			"fichier": "f03-limites-tableau-homographique.json",
+			"branche": "Fonctions",
+			"notion": "Limites de fonctions",
+			"sousNotion": "limite en un point",
+			"point": "TSPE-415"
+		}
+	],
+	"niveaux": []
+}

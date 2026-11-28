@@ -135,6 +135,17 @@ describe('rewards, messages, notifications validation schemas', () => {
 	// ============================================================================
 
 	describe('sendMessageSchema', () => {
+		/** Le document de l'éditeur riche pour un paragraphe de texte (ce que la page envoie). */
+		const doc = (text: string) => ({
+			type: 'doc',
+			content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
+		});
+
+		it('refuse une chaîne à la place du document (écart V130)', () => {
+			const result = sendMessageSchema.safeParse({ subject: 'Test', content: 'Bonjour' });
+			expect(result.success).toBe(false);
+		});
+
 		it('should accept valid message', () => {
 			const data = {
 				recipientIds: [
@@ -142,7 +153,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 					'6ba7b810-9dad-11d1-80b4-00c04fd430c8'
 				],
 				subject: 'Important Update',
-				content: 'This is the message content.',
+				content: doc('This is the message content.'),
 				isGroupMessage: false,
 				classId: null,
 				parentMessageId: null
@@ -155,7 +166,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should use default isGroupMessage', () => {
 			const data = {
 				subject: 'Test',
-				content: 'Content'
+				content: doc('Content')
 			};
 
 			const result = sendMessageSchema.safeParse(data);
@@ -168,7 +179,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should accept group message with classId', () => {
 			const data = {
 				subject: 'Class Announcement',
-				content: 'Message to entire class',
+				content: doc('Message to entire class'),
 				isGroupMessage: true,
 				classId: '550e8400-e29b-41d4-a716-446655440000'
 			};
@@ -181,7 +192,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 			const data = {
 				recipientIds: ['550e8400-e29b-41d4-a716-446655440000'],
 				subject: 'Re: Original Subject',
-				content: 'Reply content',
+				content: doc('Reply content'),
 				parentMessageId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
 			};
 
@@ -192,7 +203,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should reject empty subject', () => {
 			const data = {
 				subject: '   ',
-				content: 'Content'
+				content: doc('Content')
 			};
 
 			const result = sendMessageSchema.safeParse(data);
@@ -202,7 +213,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should reject subject exceeding max length', () => {
 			const data = {
 				subject: 'a'.repeat(201),
-				content: 'Content'
+				content: doc('Content')
 			};
 
 			const result = sendMessageSchema.safeParse(data);
@@ -212,7 +223,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should reject empty content', () => {
 			const data = {
 				subject: 'Subject',
-				content: ''
+				content: doc('')
 			};
 
 			const result = sendMessageSchema.safeParse(data);
@@ -222,7 +233,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should reject content exceeding max length', () => {
 			const data = {
 				subject: 'Subject',
-				content: 'a'.repeat(10001)
+				content: doc('a'.repeat(10001))
 			};
 
 			const result = sendMessageSchema.safeParse(data);
@@ -236,7 +247,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 					(_, i) => `550e8400-e29b-41d4-a716-44665544${String(i).padStart(4, '0')}`
 				),
 				subject: 'Subject',
-				content: 'Content'
+				content: doc('Content')
 			};
 
 			const result = sendMessageSchema.safeParse(data);
@@ -247,7 +258,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 			const data = {
 				recipientIds: ['not-a-uuid'],
 				subject: 'Subject',
-				content: 'Content'
+				content: doc('Content')
 			};
 
 			const result = sendMessageSchema.safeParse(data);
@@ -989,8 +1000,8 @@ describe('rewards, messages, notifications validation schemas', () => {
 			};
 
 			const result = sentMessagesQuerySchema.safeParse(data);
-			// Should still parse successfully (no max constraint on offset)
-			expect(result.success).toBe(true);
+			// Borné à 100 000 : au-delà d'un entier Postgres, la RPC échouerait en 500
+			expect(result.success).toBe(false);
 		});
 	});
 

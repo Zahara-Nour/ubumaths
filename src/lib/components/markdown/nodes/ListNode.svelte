@@ -34,9 +34,11 @@
 	import VariationTable from './VariationTable.svelte';
 	import ProbabilityTree from './ProbabilityTree.svelte';
 	import TrigCircle from './TrigCircle.svelte';
+	import NumberLine from './NumberLine.svelte';
 	import Courbe from './Courbe.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import StatChart from './StatChart.svelte';
+	import RangerPlacer from './RangerPlacer.svelte';
 	import QrBlock from './QrBlock.svelte';
 	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
@@ -51,6 +53,7 @@
 	import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 	import type { ProbabilityTreeNode } from '#lib/ubumark/types/probability-tree.ts';
 	import type { TrigCircleNode } from '#lib/ubumark/types/trig-circle.ts';
+	import type { NumberLineNode } from '#lib/ubumark/types/number-line.ts';
 	import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
 	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
 	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
@@ -237,6 +240,13 @@
 	}
 
 	/**
+	 * Droite graduée (```line en retrait dans un item de liste)
+	 */
+	function isNumberLineNode(node: ASTNode): node is NumberLineNode {
+		return node.type === 'number-line';
+	}
+
+	/**
 	 * Bloc ```courbe en retrait dans un item de liste
 	 */
 	function isCourbeNode(node: ASTNode): node is CourbeNode {
@@ -335,6 +345,7 @@
 			'variation-table',
 			'probability-tree',
 			'trig-circle',
+			'number-line',
 			'courbe',
 			'figure',
 			'stat-chart',
@@ -346,7 +357,8 @@
 			'operation',
 			'collection',
 			'monnaie',
-			'schema-barres'
+			'schema-barres',
+			'ranger'
 		].includes(node.type);
 	}
 
@@ -479,6 +491,8 @@
 						<ProbabilityTree node={child} />
 					{:else if isTrigCircleNode(child)}
 						<TrigCircle node={child} />
+					{:else if isNumberLineNode(child)}
+						<NumberLine node={child} />
 					{:else if isCourbeNode(child)}
 						<Courbe node={child} />
 					{:else if isFigureNode(child)}
@@ -503,6 +517,9 @@
 						<Monnaie node={child} />
 					{:else if isSchemaBarresNode(child)}
 						<SchemaBarres node={child} />
+					{:else if child.type === 'ranger'}
+						<!-- Étiquettes à ranger dans un item de liste de cours (écart L89) -->
+						<RangerPlacer node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -593,6 +610,8 @@
 						<ProbabilityTree node={child} />
 					{:else if isTrigCircleNode(child)}
 						<TrigCircle node={child} />
+					{:else if isNumberLineNode(child)}
+						<NumberLine node={child} />
 					{:else if isCourbeNode(child)}
 						<Courbe node={child} />
 					{:else if isFigureNode(child)}
@@ -617,6 +636,9 @@
 						<Monnaie node={child} />
 					{:else if isSchemaBarresNode(child)}
 						<SchemaBarres node={child} />
+					{:else if child.type === 'ranger'}
+						<!-- Étiquettes à ranger dans un item de liste de cours (écart L89) -->
+						<RangerPlacer node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

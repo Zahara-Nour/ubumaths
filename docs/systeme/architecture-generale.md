@@ -27,7 +27,7 @@ document n'en redécrit aucun. Vocabulaire : [CONTEXT.md](../../CONTEXT.md). Rè
 ```
 src/
 ├── hooks.server.ts     # handle = sequence(...) : peuple event.locals, une fois par requête
-├── hooks.client.ts     # surveillance d'erreurs, Web Vitals, détection de gel (navigateur)
+├── hooks.client.ts     # surveillance d'erreurs, Web Vitals, détection de gel, lecture des formules (navigateur)
 ├── app.d.ts            # App.Locals : supabase, safeGetSession, user, profile, requestId, adminSupabase… ; App.Error.detail
 ├── routes/
 │   ├── +error.svelte       # page d'erreur de tout le site, préchargée partout (cf. page-erreur.md)
@@ -181,5 +181,4 @@ commandes : [commandes.md](../pratiques/commandes.md).
 
 ## Écarts connus
 
-- L'en-tête de `src/routes/(protected)/+layout.server.ts` documente `/login` et conseille
-  `await parent()` ; la redirection réelle va vers `/auth/login`, et `locals` suffit.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

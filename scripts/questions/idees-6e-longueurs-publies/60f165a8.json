@@ -1,0 +1,596 @@
+{
+	"id": "60f165a8-3aba-4983-95c0-6b92b0cc6257",
+	"title": "Périmètres de figures composées",
+	"description": "Décomposer le contour d'une figure en segments et en portions de cercle, additionner leurs longueurs ; un demi-cercle de diamètre D mesure π × D ÷ 2 (π ≈ 3,14)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 150,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(L+H)}}"
+				}
+			],
+			"statement": "Calcule le périmètre de cette figure.\n\n```figure\nfenetre: -1.5 ; 12 ; -1.2 ; 8.5\ndescription: Une figure en forme de L : un rectangle de {{L}} cm sur {{H}} cm dont on a retiré, en haut à droite, un rectangle de {{w}} cm sur {{h}} cm ; les six côtés ont leur longueur écrite.\n---\nP1 = point(0, 0, visible=faux)\nP2 = point({{L}}, 0, visible=faux)\nP3 = point({{L}}, {{eval:H-h}}, visible=faux)\nP4 = point({{eval:L-w}}, {{eval:H-h}}, visible=faux)\nP5 = point({{eval:L-w}}, {{H}}, visible=faux)\nP6 = point(0, {{H}}, visible=faux)\npolygone(P1, P2, P3, P4, P5, P6, couleur=\"noir\", epaisseur=2)\ntexte({{eval:L/2;d}}, -0.6, \"{{L}} cm\")\ntexte({{eval:L+0.9;d}}, {{eval:(H-h)/2;d}}, \"{{eval:H-h}} cm\")\ntexte({{eval:L-w/2;d}}, {{eval:H-h-0.6;d}}, \"{{w}} cm\")\ntexte({{eval:L-w+0.9;d}}, {{eval:H-h/2;d}}, \"{{h}} cm\")\ntexte({{eval:(L-w)/2;d}}, {{eval:H+0.6;d}}, \"{{eval:L-w}} cm\")\ntexte(-0.9, {{eval:H/2;d}}, \"{{H}} cm\")\n```\n\nPérimètre $= ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "6..10"
+				},
+				{
+					"name": "H",
+					"expression": "4..7"
+				},
+				{
+					"name": "w",
+					"expression": "2..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["h<H-1"],
+			"correction": {
+				"steps": [
+					"**Le périmètre** est la longueur du contour : on additionne les longueurs des six côtés.",
+					"${{L}} + {{eval:H-h}} + {{w}} + {{h}} + {{eval:L-w}} + {{H}} = \\textcolor{{{color:primary.0}}}{{{eval:2*(L+H)}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(10*(2*L+l+1.57*l)+0.5)/10;d}}"
+				}
+			],
+			"statement": "Calcule le périmètre de cette figure. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: -1.8 ; {{eval:L+l/2+1;d}} ; -1.2 ; {{eval:l+1}}\ndescription: Un rectangle de {{L}} cm sur {{l}} cm dont le côté de droite est remplacé par un demi-cercle de diamètre {{l}} cm.\n---\nP1 = point(0, 0, visible=faux)\nP2 = point({{eval:L+0;d}}, 0, visible=faux)\nP3 = point({{eval:L+0;d}}, {{l}}, visible=faux)\nP4 = point(0, {{l}}, visible=faux)\nsegment(P1, P2, couleur=\"noir\", epaisseur=2)\nsegment(P4, P3, couleur=\"noir\", epaisseur=2)\nO1 = point({{eval:L+0;d}}, {{eval:l/2;d}}, visible=faux)\narc(O1, rayon={{eval:l/2;d}}, debut=-90, fin=90, couleur=\"noir\", epaisseur=2)\ntexte({{eval:L/2;d}}, -0.6, \"{{L}} cm\")\nsegment(P1, P4, couleur=\"noir\", epaisseur=2)\ntexte(-0.9, {{eval:l/2;d}}, \"{{l}} cm\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "l",
+					"expression": "eval:2*m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : trois côtés du rectangle (${{L}}~\\unit{cm}$, ${{l}}~\\unit{cm}$, ${{L}}~\\unit{cm}$) et un **demi-cercle** de diamètre ${{l}}~\\unit{cm}$ (le côté de droite n'est pas sur le contour).",
+					"Demi-cercle : $3{,}14 \\times {{l}} \\div 2 = {{eval:1.57*l;d}}$. Périmètre : ${{L}} + {{l}} + {{L}} + {{eval:1.57*l;d}} = {{eval:2*L+l+1.57*l;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor(10*(2*L+l+1.57*l)+0.5)/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(10*(2*L+3.14*l)+0.5)/10;d}}"
+				}
+			],
+			"statement": "Calcule le périmètre de cette piste. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: -1 ; {{eval:L+l+1}} ; -1.2 ; {{eval:l+1}}\ndescription: Une piste : deux segments de {{L}} cm et deux demi-cercles de diamètre {{l}} cm, un à chaque bout.\n---\nP1 = point({{eval:l/2;d}}, 0, visible=faux)\nP2 = point({{eval:L+l/2;d}}, 0, visible=faux)\nP3 = point({{eval:L+l/2;d}}, {{l}}, visible=faux)\nP4 = point({{eval:l/2;d}}, {{l}}, visible=faux)\nsegment(P1, P2, couleur=\"noir\", epaisseur=2)\nsegment(P4, P3, couleur=\"noir\", epaisseur=2)\nO1 = point({{eval:L+l/2;d}}, {{eval:l/2;d}}, visible=faux)\narc(O1, rayon={{eval:l/2;d}}, debut=-90, fin=90, couleur=\"noir\", epaisseur=2)\ntexte({{eval:l/2+L/2;d}}, -0.6, \"{{L}} cm\")\nO2 = point({{eval:l/2;d}}, {{eval:l/2;d}}, visible=faux)\narc(O2, rayon={{eval:l/2;d}}, debut=90, fin=270, couleur=\"noir\", epaisseur=2)\nsegment(P1, P4, trait=\"tirets\")\ntexte({{eval:l/2+0.25;d}}, {{eval:l/2;d}}, \"{{l}} cm\", ancre=\"gauche\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "l",
+					"expression": "eval:2*m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : deux segments de ${{L}}~\\unit{cm}$ et deux demi-cercles de diamètre ${{l}}~\\unit{cm}$, qui font ensemble **un cercle entier** de diamètre ${{l}}~\\unit{cm}$ (le pointillé n'est pas sur le contour).",
+					"Cercle : $3{,}14 \\times {{l}} = {{eval:3.14*l;d}}$. Périmètre : ${{L}} + {{L}} + {{eval:3.14*l;d}} = {{eval:2*L+3.14*l;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor(10*(2*L+3.14*l)+0.5)/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule le périmètre de cette figure. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: -1.8 ; {{eval:(2*a+b)/20+1;d}} ; -1.2 ; {{eval:b/10+1;d}}\ndescription: Un rectangle de {{eval:floor(a/10)}},{{eval:mod(a,10)}} cm sur {{eval:floor(b/10)}},{{eval:mod(b,10)}} cm dont le côté de droite est remplacé par un demi-cercle de diamètre {{eval:floor(b/10)}},{{eval:mod(b,10)}} cm.\n---\nP1 = point(0, 0, visible=faux)\nP2 = point({{eval:a/10;d}}, 0, visible=faux)\nP3 = point({{eval:a/10;d}}, {{eval:b/10;d}}, visible=faux)\nP4 = point(0, {{eval:b/10;d}}, visible=faux)\nsegment(P1, P2, couleur=\"noir\", epaisseur=2)\nsegment(P4, P3, couleur=\"noir\", epaisseur=2)\nsegment(P1, P4, couleur=\"noir\", epaisseur=2)\nO1 = point({{eval:a/10;d}}, {{eval:b/20;d}}, visible=faux)\narc(O1, rayon={{eval:b/20;d}}, debut=-90, fin=90, couleur=\"noir\", epaisseur=2)\ntexte({{eval:a/20;d}}, -0.6, \"{{eval:floor(a/10)}},{{eval:mod(a,10)}} cm\")\ntexte(-0.9, {{eval:b/20;d}}, \"{{eval:floor(b/10)}},{{eval:mod(b,10)}} cm\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "41..89"
+				},
+				{
+					"name": "b",
+					"expression": "32..78"
+				}
+			],
+			"conditions": ["mod(a,10)!=0", "mod(b,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(((200*a+257*b)/10+5)/10)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(((200*a+357*b)/10+5)/10)/10;d}}",
+							"message": "Le côté de droite est remplacé par le demi-cercle : il n'est plus sur le contour.",
+							"label": "Côté de droite compté"
+						},
+						{
+							"answer": "{{eval:floor(((200*a+414*b)/10+5)/10)/10;d}}",
+							"message": "Il n'y a qu'un demi-cercle : sa longueur est la moitié de $3{,}14 \\times$ diamètre.",
+							"label": "Cercle entier"
+						},
+						{
+							"answer": "{{eval:floor(((100*a+257*b)/10+5)/10)/10;d}}",
+							"message": "Il y a deux longueurs sur le contour : en haut et en bas.",
+							"label": "Une longueur oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : trois côtés du rectangle (${{eval:a/10;d}}~\\unit{cm}$, ${{eval:b/10;d}}~\\unit{cm}$, ${{eval:a/10;d}}~\\unit{cm}$) et un **demi-cercle** de diamètre ${{eval:b/10;d}}~\\unit{cm}$ (le côté de droite n'est pas sur le contour).",
+					"Demi-cercle : $3{,}14 \\times {{eval:b/10;d}} \\div 2 = {{eval:157*b/1000;d}}$.",
+					"Périmètre : ${{eval:a/10;d}} + {{eval:b/10;d}} + {{eval:a/10;d}} + {{eval:157*b/1000;d}} = {{eval:(200*a+257*b)/1000;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor(((200*a+257*b)/10+5)/10)/10;d}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Fais le tour de la figure : le côté de droite est-il encore sur le contour ?"
+		},
+		{
+			"statement": "Calcule le périmètre de cette figure. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: {{eval:-t-1.5;d}} ; {{eval:L+l/2+1;d}} ; -1.2 ; {{eval:l+1}}\ndescription: Une figure faite d'un triangle rectangle à gauche (côtés {{t}} cm, {{l}} cm et {{h}} cm), d'un rectangle de {{L}} cm sur {{l}} cm au milieu et d'un demi-cercle de diamètre {{l}} cm à droite ; le côté commun au triangle et au rectangle est en pointillé.\n---\nT = point({{eval:-t}}, 0, visible=faux)\nP1 = point(0, 0, visible=faux)\nP2 = point({{L}}, 0, visible=faux)\nP3 = point({{L}}, {{l}}, visible=faux)\nP4 = point(0, {{l}}, visible=faux)\nsegment(T, P2, couleur=\"noir\", epaisseur=2)\nsegment(P4, P3, couleur=\"noir\", epaisseur=2)\nsegment(T, P4, couleur=\"noir\", epaisseur=2)\nsegment(P1, P4, trait=\"tirets\")\nangle(T, P1, P4, marque=\"carre\")\nO1 = point({{L}}, {{eval:l/2;d}}, visible=faux)\narc(O1, rayon={{eval:l/2;d}}, debut=-90, fin=90, couleur=\"noir\", epaisseur=2)\ntexte({{eval:-t/2;d}}, -0.6, \"{{t}} cm\")\ntexte({{eval:L/2;d}}, -0.6, \"{{L}} cm\")\ntexte({{eval:-t/2-0.4;d}}, {{eval:l/2+0.4;d}}, \"{{h}} cm\", ancre=\"droite\")\ntexte(0.25, {{eval:l/2;d}}, \"{{l}} cm\", ancre=\"gauche\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..9"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "l",
+					"expression": "eval:s*(3+w)"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s*(4-w)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:5*s"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((100*t+200*L+100*h+157*l+5)/10)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((100*t+200*L+100*h+157*l+100*l+5)/10)/10;d}}",
+							"message": "Le trait en pointillé est à l'intérieur de la figure : il n'est pas sur le contour.",
+							"label": "Diamètre compté"
+						},
+						{
+							"answer": "{{eval:floor((100*t+200*L+100*h+157*l+157*l+5)/10)/10;d}}",
+							"message": "Il n'y a qu'un demi-cercle : sa longueur est la moitié de $3{,}14 \\times$ diamètre.",
+							"label": "Cercle entier"
+						},
+						{
+							"answer": "{{eval:floor((100*t+200*L+100*h+157*l-100*t+5)/10)/10;d}}",
+							"message": "Le bas du contour passe aussi sous le triangle : compte le côté de ${{t}}~\\unit{cm}$.",
+							"label": "Côté du triangle oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : en bas, ${{t}}~\\unit{cm}$ et ${{L}}~\\unit{cm}$ ; le **demi-cercle** de diamètre ${{l}}~\\unit{cm}$ ; en haut, ${{L}}~\\unit{cm}$ ; le grand côté du triangle, ${{h}}~\\unit{cm}$ (le pointillé n'est pas sur le contour).",
+					"Demi-cercle : $3{,}14 \\times {{l}} \\div 2 = {{eval:157*l/100;d}}$.",
+					"Périmètre : ${{t}} + {{L}} + {{eval:157*l/100;d}} + {{L}} + {{h}} = {{eval:(100*t+200*L+100*h+157*l)/100;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor((100*t+200*L+100*h+157*l+5)/10)/10;d}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Fais le tour de la figure en comptant chaque morceau du contour une fois ; les traits intérieurs ne comptent pas."
+		},
+		{
+			"statement": "Calcule le périmètre de cette figure. On prend $\\pi \\approx 3{,}14$ ; donne le résultat arrondi au dixième.\n\n```figure\nfenetre: -1.8 ; {{eval:L+1}} ; -1.2 ; {{eval:l+1.2;d}}\ndescription: Un rectangle de {{L}} cm sur {{l}} cm dont on a creusé, au milieu du côté du haut, un demi-disque de diamètre {{d}} cm ; il reste en haut deux segments de {{eval:(L-d)/2;d}} cm.\n---\nP1 = point(0, 0, visible=faux)\nP2 = point({{L}}, 0, visible=faux)\nP3 = point({{L}}, {{l}}, visible=faux)\nP4 = point(0, {{l}}, visible=faux)\nQ1 = point({{eval:(L-d)/2;d}}, {{l}}, visible=faux)\nQ2 = point({{eval:(L+d)/2;d}}, {{l}}, visible=faux)\nsegment(P1, P2, couleur=\"noir\", epaisseur=2)\nsegment(P2, P3, couleur=\"noir\", epaisseur=2)\nsegment(P1, P4, couleur=\"noir\", epaisseur=2)\nsegment(P4, Q1, couleur=\"noir\", epaisseur=2)\nsegment(Q2, P3, couleur=\"noir\", epaisseur=2)\nsegment(Q1, Q2, trait=\"tirets\")\nO1 = point({{eval:L/2;d}}, {{l}}, visible=faux)\narc(O1, rayon={{m}}, debut=180, fin=360, couleur=\"noir\", epaisseur=2)\ntexte({{eval:L/2;d}}, -0.6, \"{{L}} cm\")\ntexte(-0.9, {{eval:l/2;d}}, \"{{l}} cm\")\ntexte({{eval:L/2;d}}, {{eval:l+0.5;d}}, \"{{d}} cm\")\ntexte({{eval:(L-d)/4;d}}, {{eval:l+0.5;d}}, \"{{eval:(L-d)/2;d}} cm\")\ntexte({{eval:(3*L+d)/4;d}}, {{eval:l+0.5;d}}, \"{{eval:(L-d)/2;d}} cm\")\n```\n\nPérimètre $\\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "L",
+					"expression": "eval:2*n"
+				},
+				{
+					"name": "l",
+					"expression": "4..7"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*m"
+				}
+			],
+			"conditions": ["d<L-1", "m<l"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((200*L+200*l+57*d+5)/10)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((200*L+200*l+57*d+100*d+5)/10)/10;d}}",
+							"message": "Le trait en pointillé est à l'intérieur de la figure : il n'est pas sur le contour.",
+							"label": "Diamètre compté"
+						},
+						{
+							"answer": "{{eval:floor((200*L+200*l+57*d+157*d+5)/10)/10;d}}",
+							"message": "Il n'y a qu'un demi-cercle : sa longueur est la moitié de $3{,}14 \\times$ diamètre.",
+							"label": "Cercle entier"
+						},
+						{
+							"answer": "{{eval:floor((200*L+200*l+57*d-100*l+5)/10)/10;d}}",
+							"message": "Il y a deux côtés de ${{l}}~\\unit{cm}$ sur le contour : à gauche et à droite.",
+							"label": "Un côté oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le contour** : le côté du bas (${{L}}~\\unit{cm}$), les côtés de gauche et de droite (${{l}}~\\unit{cm}$ chacun), les deux morceaux du haut (${{eval:(L-d)/2;d}}~\\unit{cm}$ chacun) et le **demi-cercle** creusé, de diamètre ${{d}}~\\unit{cm}$ (le pointillé n'est pas sur le contour).",
+					"Demi-cercle : $3{,}14 \\times {{d}} \\div 2 = {{eval:157*d/100;d}}$.",
+					"Périmètre : ${{L}} + {{l}} + {{l}} + {{eval:(L-d)/2;d}} + {{eval:(L-d)/2;d}} + {{eval:157*d/100;d}} = {{eval:(200*L+200*l+57*d)/100;d}}$, soit environ $\\textcolor{{{color:primary.0}}}{{{eval:floor((200*L+200*l+57*d+5)/10)/10;d}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Le demi-cercle creusé fait partie du contour ; le pointillé, non."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"H": "6",
+				"L": "8",
+				"h": "2",
+				"w": "3"
+			},
+			"description": "L : 2 × (8 + 6) = 28",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"H": "6",
+				"L": "8",
+				"h": "2",
+				"w": "3"
+			},
+			"description": "Erreur : 23 (côtés du creux oubliés)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"H": "6",
+				"L": "8",
+				"h": "2",
+				"w": "3"
+			},
+			"description": "Erreur : 48 (aire)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["22,3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "6",
+				"l": "4",
+				"m": "2"
+			},
+			"description": "Demi-cercle : 6 + 4 + 6 + 6,28 ≈ 22,3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["28,6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "6",
+				"l": "4",
+				"m": "2"
+			},
+			"description": "Erreur : 28,6 (cercle entier)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["26,3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "6",
+				"l": "4",
+				"m": "2"
+			},
+			"description": "Erreur : 26,3 (côté de droite compté)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["28,8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "5",
+				"l": "6",
+				"m": "3"
+			},
+			"description": "Piste : 5 + 5 + 18,84 ≈ 28,8",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["34,8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "5",
+				"l": "6",
+				"m": "3"
+			},
+			"description": "Erreur : 34,8 (pointillé compté)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["19,4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "5",
+				"l": "6",
+				"m": "3"
+			},
+			"description": "Erreur : 19,4 (un seul demi-cercle)",
+			"variationIndex": 2
+		},
+		{
+			"description": "Décimaux 6,3 × 4,6 : 24,4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "63",
+				"b": "46"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24{,}4"]
+		},
+		{
+			"description": "Décimaux 6,3 × 4,6 : 24.4 (point) accepté",
+			"variationIndex": 3,
+			"variables": {
+				"a": "63",
+				"b": "46"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24.4"]
+		},
+		{
+			"description": "Décimaux : 29 (côté de droite compté)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "63",
+				"b": "46"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le côté de droite est remplacé par le demi-cercle : il n'est plus sur le contour."
+			},
+			"answers": ["29"]
+		},
+		{
+			"description": "Décimaux : 31,6 (cercle entier)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "63",
+				"b": "46"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a qu'un demi-cercle : sa longueur est la moitié de $3{,}14 \\times$ diamètre."
+			},
+			"answers": ["31{,}6"]
+		},
+		{
+			"description": "Décimaux : 18,1 (une longueur oubliée)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "63",
+				"b": "46"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a deux longueurs sur le contour : en haut et en bas."
+			},
+			"answers": ["18{,}1"]
+		},
+		{
+			"description": "Triangle 4-3-5, L = 6 : 25,7",
+			"variationIndex": 4,
+			"variables": {
+				"L": "6",
+				"s": "1",
+				"w": "0",
+				"l": "3",
+				"t": "4",
+				"h": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25{,}7"]
+		},
+		{
+			"description": "Triangle : 28,7 (diamètre compté)",
+			"variationIndex": 4,
+			"variables": {
+				"L": "6",
+				"s": "1",
+				"w": "0",
+				"l": "3",
+				"t": "4",
+				"h": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le trait en pointillé est à l'intérieur de la figure : il n'est pas sur le contour."
+			},
+			"answers": ["28{,}7"]
+		},
+		{
+			"description": "Triangle : 30,4 (cercle entier)",
+			"variationIndex": 4,
+			"variables": {
+				"L": "6",
+				"s": "1",
+				"w": "0",
+				"l": "3",
+				"t": "4",
+				"h": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a qu'un demi-cercle : sa longueur est la moitié de $3{,}14 \\times$ diamètre."
+			},
+			"answers": ["30{,}4"]
+		},
+		{
+			"description": "Triangle : 21,7 (côté du triangle oublié)",
+			"variationIndex": 4,
+			"variables": {
+				"L": "6",
+				"s": "1",
+				"w": "0",
+				"l": "3",
+				"t": "4",
+				"h": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le bas du contour passe aussi sous le triangle : compte le côté de $4~\\unit{cm}$."
+			},
+			"answers": ["21{,}7"]
+		},
+		{
+			"description": "Triangle 6-8-10, L = 5 : 38,6",
+			"variationIndex": 4,
+			"variables": {
+				"L": "5",
+				"s": "2",
+				"w": "1",
+				"l": "8",
+				"t": "6",
+				"h": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["38{,}6"]
+		},
+		{
+			"description": "Creusé 8 × 5, d = 4 : 28,3",
+			"variationIndex": 5,
+			"variables": {
+				"n": "4",
+				"L": "8",
+				"l": "5",
+				"m": "2",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28{,}3"]
+		},
+		{
+			"description": "Creusé : 32,3 (diamètre compté)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "4",
+				"L": "8",
+				"l": "5",
+				"m": "2",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le trait en pointillé est à l'intérieur de la figure : il n'est pas sur le contour."
+			},
+			"answers": ["32{,}3"]
+		},
+		{
+			"description": "Creusé : 34,6 (cercle entier)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "4",
+				"L": "8",
+				"l": "5",
+				"m": "2",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a qu'un demi-cercle : sa longueur est la moitié de $3{,}14 \\times$ diamètre."
+			},
+			"answers": ["34{,}6"]
+		},
+		{
+			"description": "Creusé : 23,3 (un côté oublié)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "4",
+				"L": "8",
+				"l": "5",
+				"m": "2",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a deux côtés de $5~\\unit{cm}$ sur le contour : à gauche et à droite."
+			},
+			"answers": ["23{,}3"]
+		}
+	]
+}

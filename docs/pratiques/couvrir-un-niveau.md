@@ -12,6 +12,9 @@ couvre:
   - scripts/lib/lot-questions.ts
   - scripts/lib/migration-contenu.ts
   - scripts/questions/migration-contenu.ts
+  - scripts/lib/migration-rangement.ts
+  - scripts/questions/migration-rangement.ts
+  - scripts/lib/template-file.ts
   - scripts/lib/niveaux-des-tags.ts
   - scripts/questions/garde-niveaux-tags.ts
   - scripts/series/creer-serie.ts
@@ -228,8 +231,31 @@ d'additionner.", "label": "Soustraction au lieu d'addition"}]`. `answer` s'écri
    a sa spec `incorrect` qui nomme son message (`"expected": {"status": "incorrect",
 "expectedErrorMessage": "Tu as soustrait au lieu d'additionner."}`, message tel que résolu
    pour les variables de la spec). Le rejeu de `checkTemplate` répond chaque erreur prévue sur
-   ses tirages et refuse le modèle si elle ne déclenche pas son message. ⚠️ La prod ne lit ce
-   champ qu'après le `deploy:prod` qui le livre.
+   ses tirages et refuse le modèle si elle ne déclenche pas son message.
+   Viser **trois** erreurs prévues par case (jusqu'à cinq), de vraies erreurs d'élèves : une
+   variation à une seule case qui en a trois peut se poser en QCM (le prof coche « en QCM »,
+   idée 4) ; ne pas inventer une valeur au hasard pour atteindre trois. Le juge compare la
+   **valeur** : une écriture fausse de même valeur (`2^3` pour `8`) n'est pas une erreur prévue.
+   ⚠️ Le message est réécrit à la résolution (`$10^{3}$` → `$10^3$`, `$b-a$` → `$b - a$`) :
+   l'écrire, et l'écrire dans la spec, sous sa forme réécrite, sinon la spec est rouge.
+   **Coup de pouce** (idée 5, décision de David du 2026-11-22) : chaque variation en a un.
+   `"hint"` (gabarit markdown, variables du tirage permises, jamais `{{solution}}`) donne une
+   piste, une méthode ou un rappel de propriété, en une ou deux phrases, **sans donner ni calculer
+   la réponse** ; ou `"hintFromFirstStep": true` quand la première étape de la correction est
+   une vraie piste (jamais si elle affiche ou calcule la réponse). L'élève l'ouvre en Saisie,
+   Flash-cards et révision, jamais en évaluation. La prod lit `hint` et `expectedErrors` depuis
+   la 0.101.0 (2026-11-22).
+   **Forme** (revue du lot de Seconde, 2026-11-22, faits vérifiés) : un motif de `requiredForm`
+   sait comparer deux de ses parties (`e:integer + p:integer & gte(0) & lt(w) / w:integer` exige
+   une fraction plus petite que 1 ; `{{b}}*k:integer + r:integer & gte(0) & lt({{b}})` un reste
+   plus petit que le diviseur) ; une case unique vaut souvent mieux que deux (écriture plus
+   naturelle, QCM possible) ; pas de Oui / Non qui laisse une chance sur deux au hasard (choix
+   multiple « coche les… » ou une saisie) ; la consigne dit ce que la forme exigée refuse
+   (« une puissance de $(-3)$ », « en écriture décimale ») : une bonne réponse refusée sans que
+   la consigne l'ait demandé est un défaut. **Régler le modèle entier dès sa création** (espaces
+   des grands nombres, remarque « produits », zéros). Sur un modèle publié, `migration-contenu.ts`
+   change aussi les `options` (depuis le 2026-11-23), mais elles jugent **toutes** ses variations,
+   celles déjà en prod comprises : ses specs d'origine doivent rester vertes.
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
    `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
    Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire
@@ -274,20 +300,58 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    cet id que page à cocher, publication et corrections retrouvent le modèle ; relancer ne crée
    rien. Un fichier sans id dont le titre et le niveau existent déjà en base **bloque le lot**
    avant toute écriture (`--malgre-homonyme` pour un homonyme voulu).
-3. Migration nœud + tag : gabarit `supabase/migrations/20261026210000_questions_cp_c_rangement_tags.sql`
-   (garde « encore sans nœud ni tag », nœud résolu par son chemin et égal à celui du point,
-   tout ou rien, `updated_at` préservé, rollback en commentaire) et son test
-   `tests/integration/questions-cp-c-rangement-tags.test.ts` (copies des vrais identifiants, la
-   migration rejouée depuis son fichier). Test **rouge sans la migration**, puis vert. Garder la
-   mention `@migration-de-donnees` de l'en-tête du gabarit : une fois la PR mergée, le test ne
-   tourne plus que la nuit (`scripts/ci-integration-exclusions.sh`).
-   Nom du fichier : l'heure réelle, `pnpm migration:horodatage` (jamais « max + 1 », collision du
-   2026-11-01).
-   **PR de rangement courte** : si elle ne contient que la migration **ajoutée**, son test
-   d'intégration, les JSON du lot et la doc, la CI d'intégration ne lance que ce test (~1 min au lieu
-   de ~19 min de suite complète, `scripts/ci-integration-ciblee.sh`) ; la suite complète repasse
-   chaque nuit. Tout autre fichier (un `.ts`, une migration modifiée, un helper) relance la suite
-   complète : ne rien glisser d'autre dans cette PR.
+3. Migration nœud + tag : **générée** pour tout le lot, jamais écrite à la main (depuis le
+   2026-11-22). Écrire dans chaque fichier du lot le champ `rangement` (le nœud et le point
+   restent une décision de la session, prise en phase 0 du lot), puis lancer :
+
+   ```bash
+   pnpm tsx scripts/questions/migration-rangement.ts --dir scripts/questions/<lot>   # lit la PROD (.env)
+   ```
+
+   ```json
+   "rangement": { "noeud": "Nombres et calculs > Décimaux : calculs > multiplication", "point": "6-115" }
+   "rangement": { "noeud": "Probabilités > Variables aléatoires > loi", "point": ["1SPE-355", "1TECHNO-095"] }
+   "rangement": { "niveauxAjoutes": ["6"] }
+   "rangement": { "niveauxAjoutes": ["1_TECHNO"], "pointsAjoutes": ["1TECHNO-095"] }
+   ```
+
+   Modèle neuf : `noeud` + `point` (la sous-notion du chemin est facultative ; `"point": null` =
+   rangé sans tag, à écrire en clair ; une liste = **un point par programme**, pour un modèle
+   rangé dans plusieurs programmes). Modèle déjà rangé : `niveauxAjoutes`, `pointsAjoutes`, ou
+   les deux (le niveau et le tag d'un programme gagnés ensemble). Chaque point doit être d'un
+   niveau du modèle (ses niveaux en prod, plus ceux du même fichier). Le
+   champ n'est pas un champ du modèle : `create-questions` l'ignore et ne l'écrit jamais en base.
+   Plusieurs `--dir` = une seule migration (modèles neufs et publiés d'un même chantier) ; le
+   lot porte le nom du premier dossier, ou `--nom <lot>`.
+   Le script relève en prod (lecture seule) chaque modèle du lot, apparié par l'`id` de son
+   fichier (titre et niveau concordants), l'arbre des notions et les points. Modèle neuf sans
+   nœud ni tag → rangé ; déjà exactement sur ce nœud avec ces points → ignoré (relancer ne
+   refait rien) ; point ajouté déjà posé → ignoré ; fichier sans `rangement` d'un modèle déjà rangé → ignoré. **Un refus refuse
+   tout le lot, rien n'est écrit** : fichier sans id, id absent de la prod, titre ou niveau
+   différents, `rangement` illisible, chemin ou point introuvable, nœud archivé, point ni sur le
+   nœud ni sur sa notion, deux points du même programme (tags déjà posés compris), point d'un
+   niveau que le modèle n'a pas, modèle déjà rangé ou tagué autrement, modèle sans nœud dont le
+   fichier n'a pas de `rangement` (modèle oublié), `niveauxAjoutes` ou `pointsAjoutes` sur un
+   modèle sans nœud, niveau inconnu, deux fichiers de même nom dans le lot.
+   Sortie : `supabase/migrations/<horodatage>_questions_<lot>_rangement_tags.sql` (l'heure
+   réelle, prise par le script ; réponse à la question d'accès écrite en en-tête ; nœud résolu
+   strictement par son chemin, gardes « encore sans nœud ni tag », « niveaux exactement ceux
+   du relevé » et « tags exactement ceux du relevé », tout ou rien, `updated_at` préservé, modèle absent toléré, rollback en
+   commentaire, gardé lui aussi : il ne retire le nœud et ne rend les niveaux que s'ils sont
+   encore ceux posés par la migration, il ne retire que les tags qu'elle a posés) et sa fixture `tests/integration/fixtures/rangement-tags/<même nom>.json`,
+   rejouée par `tests/integration/migrations-rangement-tags.test.ts` : **aucun test à écrire**.
+   Règles : `scripts/lib/migration-rangement.ts`.
+   **PR de rangement courte** : si elle ne contient que la migration **ajoutée**, sa fixture
+   **ajoutée** du même nom, les JSON du lot et la doc, la CI d'intégration ne lance que ce test
+   (~1 min au lieu de ~19 min de suite complète, `scripts/ci-integration-ciblee.sh`) ; la suite
+   complète repasse chaque nuit. Tout autre fichier (un `.ts`, une migration ou une fixture
+   modifiée, une fixture sans sa migration, un helper) relance la suite complète : ne rien
+   glisser d'autre dans cette PR.
+   Les migrations de rangement écrites à la main avant le générateur gardent leur test propre
+   (`tests/integration/questions-*-rangement-tags.test.ts`, mention `@migration-de-donnees`).
+   Cas que le générateur ne couvre pas (retrait de tag, changement de nœud, statut) : migration à
+   la main, § 7.
+
 4. `security-auditor` (sans finding bloquant), CI verte, `pnpm check:migrations --pr <n>`, merge,
    `pnpm db:migrate` depuis le dépôt
    principal (les 4 conditions de `CLAUDE.md`), puis vérifier en prod : nœud, un tag, brouillon.
@@ -298,7 +362,7 @@ Relevé MCP (contenu complet, md5, nœuds, points, tags, **0 donnée d'élève**
 `docs/wip/<chantier>/etat-prod-<date>/` (ses md5 = prod) ; nouveau contenu écrit par le script
 de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --mettre-a-jour`
 (remplace contenu, description et délai). Le script de lot réécrit les fichiers **sans leur `id`** :
-le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Retrait de tag ou niveaux seuls → migration à la main.
+le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Niveau ou tag **ajouté** à un modèle déjà rangé → `rangement: { niveauxAjoutes, pointsAjoutes }` et la migration générée du § 6 ; retrait de tag ou de niveau → migration à la main.
 
 Modèle **publié** (`--mettre-a-jour` ne le touche pas) : **contenu** (variations, specs,
 description) → migration **générée** pour tout le lot, jamais écrite à la main :
@@ -312,14 +376,18 @@ lancer. Le script relève chaque modèle du dossier en prod (apparié par l'`id`
 niveau concordants) : brouillon → ignoré ; publié identique → rien ; publié qui diffère → migré.
 Variation **ajoutée à la fin** ou **corrigée** (signalée en en-tête) : acceptée ; variation
 **retirée ou déplacée** : refus (les réponses des élèves gardent l'indice de leur variation) ;
-autre champ différent de la prod, `checkTemplate` rouge : refus, rien n'est écrit. Sortie :
+**options** changées : écrites et gardées comme le reste, signalées « ⚠️ options modifiées »
+(elles jugent aussi les variations déjà en prod ; `checkTemplate` rejoue leurs specs) ; options
+absentes du fichier mais présentes en prod : refus ; autre champ différent de la prod (niveaux,
+délai, `shared`…), `checkTemplate` rouge : refus, rien n'est écrit. Sortie :
 `supabase/migrations/<horodatage>_questions_<lot>_contenu.sql` (un seul bloc, tout ou rien ;
-garde = contenu exact relevé ; modèle absent → rien ; rollback gardé en commentaire) et sa
+garde = contenu exact relevé ; modèle absent → sauté et nommé par un notice « <id> absent, saute »
+dans la sortie de `db:migrate`, attendu en local, jamais en prod ; rollback gardé en commentaire) et sa
 fixture `tests/integration/fixtures/contenu-publie/`, rejouée par
 `tests/integration/migrations-contenu-publie.test.ts` (la CI ciblée ne lance que lui). Règles :
 `scripts/lib/migration-contenu.ts`.
 
-Rangement, tags, niveaux, statut d'un publié → migration à la main, gabarit du lot 0 du CE1
+Changement de nœud, retrait de tag ou de niveau, statut d'un publié (ce que la migration générée du § 6 ne fait pas) → migration à la main, gabarit du lot 0 du CE1
 (`20261027000100_questions_ce1_rangement_tags.sql` et son test). Le
 rollback écrit **garde l'état laissé par la migration** (nœud, niveaux, statut, tags) : sans
 cette garde, une saisie faite depuis serait écrasée en silence. Copies de test publiées : un

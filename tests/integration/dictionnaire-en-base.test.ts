@@ -24,6 +24,7 @@ import { REFERENCE_DICTIONARY } from '../fixtures/lexique/dictionnaire-reference
 import { READING_WORDS_2026_10_11 } from '../fixtures/lexique/mots-lecture-2026-10-11';
 import { withConsigneVerbs } from '../fixtures/lexique/verbes-consigne-2026-11-16';
 import { withSeoExamples } from '../fixtures/lexique/exemples-seo-2026-11-21';
+import { withSeoExamplesLot2 } from '../fixtures/lexique/exemples-seo-2026-11-23';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
@@ -154,9 +155,9 @@ describe('Dictionnaire en base (dictionary_entries, dictionary_entry_versions)',
 
 	// La reprise du fichier (20261012153000), puis les ajouts par migration (20261016090300),
 	// puis les verbes de consigne jamais soulignés (20261116205041),
-	// puis les 14 exemples du chantier seo (20261121221131)
-	const EXPECTED = withSeoExamples(
-		withConsigneVerbs([...REFERENCE_DICTIONARY, ...READING_WORDS_2026_10_11])
+	// puis les 14 exemples du chantier seo (20261121221131), puis les 42 du lot 2 (20261123093203)
+	const EXPECTED = withSeoExamplesLot2(
+		withSeoExamples(withConsigneVerbs([...REFERENCE_DICTIONARY, ...READING_WORDS_2026_10_11]))
 	);
 
 	it('reprend les entrées du fichier puis les ajouts, une à une, dans le même ordre', async () => {

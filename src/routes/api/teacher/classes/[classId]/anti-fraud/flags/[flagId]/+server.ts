@@ -49,7 +49,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		.maybeSingle();
 
 	if (flagErr) {
-		return Response.json({ error: flagErr.message }, { status: 500 });
+		// Le message de la base reste dans le journal du serveur.
+		logger.error('Signalement illisible :', flagErr);
+		return Response.json({ error: 'Impossible de lire le signalement' }, { status: 500 });
 	}
 	if (!flagRow) {
 		// Volontairement 404 pour ne pas révéler l'existence d'un flag d'une autre classe.
@@ -81,17 +83,20 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	const nowIso = new Date().toISOString();
-	const { error: updateErr } = await locals.supabase
+	const { data: updatedRows, error: updateErr } = await locals.supabase
 		.from('srs_anti_fraud_flags')
 		.update({
 			resolved: true,
 			resolved_by: user.id,
 			resolved_at: nowIso
 		})
-		.eq('id', flagId);
+		.eq('id', flagId)
+		.select('id');
 
-	if (updateErr) {
-		return Response.json({ error: updateErr.message }, { status: 500 });
+	// Un refus des règles d'accès rend zéro ligne, sans erreur : on vérifie la ligne écrite.
+	if (updateErr || (updatedRows ?? []).length === 0) {
+		logger.error('Signalement non mis à jour :', updateErr ?? 'aucune ligne écrite');
+		return Response.json({ error: 'Impossible de marquer le signalement' }, { status: 500 });
 	}
 
 	return Response.json({ id: flagId, resolved: true, resolved_by: user.id, resolved_at: nowIso });

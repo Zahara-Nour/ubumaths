@@ -16,6 +16,7 @@
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
  *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
  *   droite à représenter (```line, `representer: [2, +inf[`) → une case (texte),
+ *   droite à graduer (```line, `graduer: 3`) → une case pour les parts puis une par point,
  *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
  *   une case par barre, de même ; repère à points à placer (```courbe, `placer: A=(2 ; 3)`)
  *   → une case par point, de même (refusé aussi comme option d'un bloc choix)
@@ -57,6 +58,8 @@ import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.t
 import { findTortuesToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
 import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { findLabyrinthesAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { findYohakusARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
 import { findVariationsToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import { NESTED_PREFIX } from '#lib/ubumark/parser/nested-line.ts';
 import { buildCaseCount } from './build-answer';
@@ -147,6 +150,20 @@ export interface AssignBlankIndicesResult {
 export interface VariationBlank {
 	source: string;
 	cell: number;
+}
+
+/**
+ * Un tableau à compléter de l'énoncé porte-t-il une variable (`{{al}}`) ou une
+ * expression ? Sur l'énoncé brut, il ne se lit alors souvent pas et compte pour une
+ * case : le nombre de ses cases, et le rang des cases qui le suivent, ne se savent
+ * qu'au tirage (outil 63, `docs/wip/outil-tableau-variation-progress.md`).
+ */
+export function variationCasesUnresolved(
+	result: Pick<AssignBlankIndicesResult, 'variationBlanks'>
+): boolean {
+	return Object.values(result.variationBlanks ?? {}).some(({ source }) =>
+		/\{\{|<<expr:/.test(source)
+	);
 }
 
 /** Marque d'un bloc ```choix mis à l'abri : début, rang du bloc, fin */
@@ -286,6 +303,12 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	if (findRobotsToProduce(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${buildNestedMessage('robot')}`);
 	}
+	if (findLabyrinthesAParcourir(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('labyrinthe')}`);
+	}
+	if (findYohakusARemplir(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('yohaku')}`);
+	}
 	if (findVariationsToFill(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${VARIATION_NESTED_MESSAGE}`);
 	}
@@ -406,7 +429,9 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	solide: 'Un solide à geste',
 	tortue: 'Un programme tortue',
 	calcul: 'Un programme de calcul',
-	robot: 'Un robot à produire'
+	robot: 'Un robot à produire',
+	labyrinthe: 'Un labyrinthe à parcourir',
+	yohaku: 'Une grille à remplir'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -541,7 +566,9 @@ function markBuildBlocks(statement: string): {
 		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
 		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const })),
 		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
-		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const }))
+		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const })),
+		...findLabyrinthesAParcourir(statement).map((b) => ({ ...b, kind: 'labyrinthe' as const })),
+		...findYohakusARemplir(statement).map((b) => ({ ...b, kind: 'yohaku' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	// Courbe dans un élément d'un bloc fermé par ``` : même message que l'aperçu
@@ -800,7 +827,9 @@ export function assignBlankIndices(
 								build.kind === 'solide' ||
 								build.kind === 'tortue' ||
 								build.kind === 'calcul' ||
-								build.kind === 'robot'
+								build.kind === 'robot' ||
+								build.kind === 'labyrinthe' ||
+								build.kind === 'yohaku'
 								? 'text'
 								: 'math'
 						);

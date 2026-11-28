@@ -21,6 +21,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { toStoredAddress } from '#lib/utils/supabase-address.ts';
 
 // ============================================================================
 // CONSTANTS
@@ -331,7 +332,7 @@ async function attemptUpload(
 
 		return {
 			success: true,
-			url: publicUrl,
+			url: toStoredAddress(publicUrl),
 			storagePath
 		};
 	} catch (error) {
@@ -560,7 +561,7 @@ export async function listExerciseImages(
 				images.push({
 					name: file.name,
 					storagePath,
-					url: publicUrl,
+					url: toStoredAddress(publicUrl),
 					size: file.metadata?.size || 0,
 					imageNumber: parseInt(match[1], 10),
 					createdAt: file.created_at || ''

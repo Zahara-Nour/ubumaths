@@ -14,6 +14,13 @@
  * espaces. Le mot se reconnaît donc à ce qui le SUIT (un ensemble), pas à un
  * blanc devant : `surface` ou `s·u·r·x` ne sont pas coupés.
  *
+ * « pour » suivi d'une condition (`f(x) = x pour 2 < x < 4`, chantier
+ * `fonctions-domaines`, phase 0 validée par David le 2026-11-28) vaut « sur »
+ * suivi de l'ensemble. L'objet range la condition écrite, et la carte la
+ * réaffiche après « pour » : c'est l'écriture qui dit le mot (`isConditionWritten`).
+ * Une seconde formule (`x pour x > 2, x² pour x ≤ 2`) est refusée : la place
+ * reste libre pour les fonctions par morceaux.
+ *
  * @module atelier/interval
  */
 
@@ -48,6 +55,7 @@ import {
 	readNumber,
 	referencesOf,
 	variablesOf,
+	withIndexedNames,
 	type ReadingMode
 } from './parse';
 import type { Provenance } from './parse';
@@ -69,6 +77,13 @@ export type ReadInterval =
 	| { readonly ok: true; readonly domain: Domain | null }
 	| { readonly ok: false; readonly message: string };
 
+/**
+ * Les valeurs d'un intervalle à paramètre (`[k;5]`, chantier fonctions-morceaux) :
+ * l'arbre de chaque nom cité, déjà substitué (`k` → `6`). Le refus dit avec
+ * quelles valeurs l'ensemble est impossible (« (k = 6) »).
+ */
+export type IntervalValues = ReadonlyMap<string, MathNode>;
+
 /** L'écriture à ranger (`undefined` pour ℝ), ou le refus. */
 export type CheckedInterval =
 	| { readonly ok: true; readonly interval: string | undefined }
@@ -80,6 +95,16 @@ export type CheckedInterval =
 
 export const UNREADABLE_INTERVAL =
 	"Je n'ai pas su lire l'intervalle : écris par exemple sur [0;+∞[.";
+
+/**
+ * Une condition illisible : une autre lettre que celle de la fonction, ou une
+ * borne qui cite un objet (`pour x > k` ; `sur [k;5]` le permet, pas encore « pour »).
+ */
+export const UNREADABLE_CONDITION =
+	"Je n'ai pas su lire la condition : elle compare la lettre de la fonction à des nombres, par exemple pour x > 2.";
+
+export const ONE_FORMULA =
+	'Une seule formule par fonction : les fonctions par morceaux ne s’écrivent pas encore.';
 
 export const ONLY_FUNCTIONS = 'Seule une fonction se définit sur un intervalle.';
 
@@ -93,6 +118,26 @@ const SUR_AS_TEXT = /\\(?:text|textrm|mathrm|operatorname)\s*\{\s*sur\s*\}/g;
  */
 const SUR_IN_LATEX = /(?<!\\)sur/g;
 const SUR_IN_TEXT = /(?<![A-Za-z\\])sur(?![A-Za-z])/g;
+
+/** « pour », mêmes règles que « sur » : c'est une comparaison derrière qui décide (`COMPARISON`). */
+const POUR_AS_TEXT = /\\(?:text|textrm|mathrm|operatorname)\s*\{\s*pour\s*\}/g;
+const POUR_IN_LATEX = /(?<!\\)pour/g;
+const POUR_IN_TEXT = /(?<![A-Za-z\\])pour(?![A-Za-z])/g;
+
+/** Une comparaison, en texte ou en LaTeX : ce qui fait d'une écriture une condition. */
+const COMPARISON = /[<>≤≥≠⩽⩾]|\\(?:lt|gt|leq?|geq?|leqslant|geqslant|neq?)(?![A-Za-z])/;
+
+/** « ou », « et » d'une condition, écrits en mot par MathLive (`\text{ ou }`). */
+const JOIN_AS_TEXT = /\\(?:text|textrm|mathrm)\s*\{\s*(ou|et)\s*\}/g;
+
+/**
+ * « ou », « et » collés par MathLive (`x<0oux>1`) : seulement derrière un
+ * chiffre, une accolade ou une espace — `\theta` n'est pas coupé.
+ */
+const JOIN_GLUED = /(?<=[0-9}\s])(ou|et)(?=\s*[A-Za-z0-9\\-])/g;
+
+/** « ou », « et » d'une condition écrite en texte, entre deux comparaisons. */
+const JOIN_IN_TEXT = /\s+(ou|et)\s+/;
 
 /**
  * Le début d'un ensemble que `parseStudentDomain` lit : un crochet (aussi en
@@ -140,14 +185,29 @@ export function intervalWord(
 	mode: ReadingMode,
 	typing = false
 ): { readonly before: string; readonly after: string } | null {
-	const text = typed.replace(SUR_AS_TEXT, ' sur ');
+	const text = typed.replace(SUR_AS_TEXT, ' sur ').replace(POUR_AS_TEXT, ' pour ');
 	for (const match of text.matchAll(mode === 'latex' ? SUR_IN_LATEX : SUR_IN_TEXT)) {
 		const after = text.slice(match.index + match[0].length);
 		if (SET_START.test(after) || (typing && NOTHING_YET.test(after))) {
 			return { before: text.slice(0, match.index), after };
 		}
 	}
+	// « pour » : une condition derrière (`x > 2`), sinon le mot reste dans la saisie
+	for (const match of text.matchAll(mode === 'latex' ? POUR_IN_LATEX : POUR_IN_TEXT)) {
+		const after = text.slice(match.index + match[0].length);
+		if (isConditionWritten(after)) return { before: text.slice(0, match.index), after };
+	}
 	return null;
+}
+
+/** L'écriture rangée est une condition (`x > 2`, écrite après « pour »), pas un ensemble. */
+export function isConditionWritten(written: string): boolean {
+	return !SET_START.test(written) && COMPARISON.test(written);
+}
+
+/** Le mot qui précède l'écriture rangée, dans le champ de la carte. */
+export function intervalKeyword(written: string): 'sur' | 'pour' {
+	return isConditionWritten(written) ? 'pour' : 'sur';
 }
 
 /** Couper une saisie au mot « sur » suivi d'un ensemble ; sinon la saisie reste entière. */
@@ -157,13 +217,80 @@ export function splitInterval(typed: string, mode: ReadingMode): SplitDefinition
 	return { body: word.before.trim(), written: word.after.trim() };
 }
 
-/** Lire l'ensemble écrit après « sur ». */
-export function readInterval(written: string, letter: string = INTERNAL_LETTER): ReadInterval {
-	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) {
-		return { ok: false, message: UNREADABLE_INTERVAL };
+/** L'écriture lue par `parseStudentDomain` : `ℝ\{1}` collé devient une différence. */
+function domainText(written: string): string {
+	if (isConditionWritten(written)) {
+		return written.replace(JOIN_AS_TEXT, ' $1 ').replace(JOIN_GLUED, ' $1 ');
 	}
-	const read = parseStudentDomain(written.replace(GLUED_SETMINUS, '$1 \\ {$2}'), letter);
-	if (!read.success) return { ok: false, message: UNREADABLE_INTERVAL };
+	return written.replace(GLUED_SETMINUS, '$1 \\ {$2}');
+}
+
+/**
+ * Les noms d'objets cités dans les BORNES d'un ensemble (`[k;5]` → `k`, `[-a;2b]`
+ * → `a`, `b`), dans l'ordre ; vide pour un ensemble numérique. Ni la lettre de
+ * la fonction (`[t;5]` dans `f(t)`) ni `x` : une borne ne dépend pas de
+ * l'inconnue, l'ensemble reste illisible.
+ */
+export function intervalNamesOf(written: string, letter: string = INTERNAL_LETTER): string[] {
+	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) return [];
+	const names: string[] = [];
+	// Chaque borne lue rend ses lettres, puis vaut 1 : la lecture va jusqu'au bout
+	const collect = (node: MathNode): MathNode => {
+		const indexed = withIndexedNames(node, undefined);
+		const found = [...variablesOf(node, undefined)];
+		for (const name of found) if (!names.includes(name)) names.push(name);
+		return substitute(indexed, Object.fromEntries(found.map((name) => [name, number('1')])));
+	};
+	const read = parseStudentDomain(domainText(written), letter, { bound: collect });
+	if (!read.success) return [];
+	return names.filter((name) => name !== letter && name !== INTERNAL_LETTER);
+}
+
+/**
+ * L'ensemble écrit, la valeur `from` renommée en `to` dans ses bornes
+ * (`[k;5]` → `[m;5]`) ; tel quel s'il ne la cite pas.
+ */
+export function renamedInInterval(
+	written: string,
+	from: string,
+	to: string,
+	letter: string = INTERNAL_LETTER
+): string {
+	if (!intervalNamesOf(written, letter).includes(from)) return written;
+	const shape = /^([A-Za-z])(?:_(\d+))?$/.exec(from);
+	if (shape === null) return written;
+	const [, base, index] = shape;
+	const pattern =
+		index === undefined
+			? new RegExp(`(?<![A-Za-z\\\\])${base}(?![A-Za-z_])`, 'g')
+			: new RegExp(`(?<![A-Za-z\\\\])${base}_(?:\\{${index}\\}|${index})(?![0-9])`, 'g');
+	const renamed = written.replace(pattern, to);
+	return intervalNamesOf(renamed, letter).includes(to) ? renamed : written;
+}
+
+/** Lire l'ensemble écrit après « sur », bornes à paramètre remplacées par `values`. */
+export function readInterval(
+	written: string,
+	letter: string = INTERNAL_LETTER,
+	values?: IntervalValues
+): ReadInterval {
+	const condition = isConditionWritten(written);
+	const unreadable = condition ? UNREADABLE_CONDITION : UNREADABLE_INTERVAL;
+	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) {
+		return { ok: false, message: unreadable };
+	}
+	// `x pour x > 2, x² pour x ≤ 2` : une seconde formule, la place des fonctions par morceaux
+	// (la lecture LaTeX trouve aussi le « pour » d'un texte)
+	if (condition && splitInterval(written, 'latex').written !== null) {
+		return { ok: false, message: ONE_FORMULA };
+	}
+	const bound =
+		values === undefined || values.size === 0
+			? undefined
+			: (node: MathNode) =>
+					substitute(withIndexedNames(node, undefined), Object.fromEntries(values));
+	const read = parseStudentDomain(domainText(written), letter, bound && { bound });
+	if (!read.success) return { ok: false, message: unreadable };
 	const domain = read.domain;
 	if (isUniversal(domain)) return { ok: true, domain: null };
 	if (isEmpty(domain)) return { ok: false, message: "L'intervalle est vide." };
@@ -185,9 +312,40 @@ export function checkInterval(
 	definition: string,
 	provenance: Provenance,
 	functionNames: readonly string[],
-	letter: string = INTERNAL_LETTER
+	letter: string = INTERNAL_LETTER,
+	values?: IntervalValues
 ): CheckedInterval {
-	const read = readInterval(written, letter);
+	const checked = checkReadInterval(written, definition, provenance, functionNames, letter, values);
+	if (checked.ok || values === undefined || values.size === 0) return checked;
+	// Illisible avec des valeurs : la lettre n'est pas le souci, le refus reste celui d'avant
+	if (checked.message === UNREADABLE_INTERVAL) return checked;
+	return { ok: false, message: withValues(checked.message, values) };
+}
+
+/** « L'intervalle est vide. » → « L'intervalle est vide (k = 6). » */
+function withValues(message: string, values: IntervalValues): string {
+	const shown = [...values].map(([name, value]) => `${name} = ${valueText(value)}`).join(', ');
+	return `${message.replace(/\.$/, '')} (${shown}).`;
+}
+
+/** La valeur d'un paramètre à l'écran : `6`, `5,5`, `−1` (au plus 4 décimales). */
+function valueText(value: MathNode): string {
+	const numeric = computeNumericValue(value);
+	if (numeric === null || !Number.isFinite(numeric)) return toCustom(value).replace(/-/g, '−');
+	return String(Number(numeric.toFixed(4)))
+		.replace('.', ',')
+		.replace(/-/g, '−');
+}
+
+function checkReadInterval(
+	written: string,
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[],
+	letter: string,
+	values: IntervalValues | undefined
+): CheckedInterval {
+	const read = readInterval(written, letter, values);
 	if (!read.ok) return read;
 	if (read.domain === null) return { ok: true, interval: undefined };
 
@@ -224,7 +382,8 @@ export function intervalDomainOf(object: AtelierObject | undefined): Domain | nu
 		object.interval === undefined
 			? null
 			: readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
-	const own = read?.ok ? read.domain : null;
+	// Un ensemble à paramètre (`[k;5]`) : celui que le dernier recalcul a lu avec les valeurs
+	const own = object.parameterInterval ?? (read?.ok ? read.domain : null);
 	const inherited = object.inheritedInterval ?? null;
 	if (own === null || inherited === null) return own ?? inherited;
 	return intersect(own, inherited);
@@ -442,6 +601,22 @@ export function intervalLabelOf(object: AtelierObject): string | null {
 export function intervalFieldLatex(object: AtelierObject): string | null {
 	if (object.kind !== 'function' || object.interval === undefined) return null;
 	if (readingMode(object.provenance ?? 'url') === 'latex') return object.interval;
+	// Une condition (`x > 2`) : réécrite telle quelle en LaTeX, jamais en intervalle
+	if (isConditionWritten(object.interval)) return conditionLatex(object.interval);
+	// À paramètre (`[k;5]`) : l'écriture, jamais les valeurs du moment (le champ relu les figerait)
+	if (intervalNamesOf(object.interval, object.letter ?? INTERNAL_LETTER).length > 0) {
+		// Mêmes réécritures que l'ensemble numérique ci-dessous : `]0;k] \ {1}` se relit
+		return object.interval
+			.replace(/∞/g, '\\infty ')
+			.replace(/−/g, '-')
+			.replace(/ℝ/g, '\\R ')
+			.replace(/∪/g, '\\cup ')
+			.replace(/π/g, '\\pi ')
+			.replace(/\s*\\(?=\s|\{)/g, '\\setminus ')
+			.replace(/\{/g, '\\{')
+			.replace(/\}/g, '\\}')
+			.replace(/\s+/g, '');
+	}
 	// L'ensemble PROPRE, jamais l'héritage (décision d) : le champ relu le rangerait
 	const read = readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
 	const domain = read.ok ? read.domain : null;
@@ -455,6 +630,27 @@ export function intervalFieldLatex(object: AtelierObject): string | null {
 		.replace(/\{/g, '\\{')
 		.replace(/\}/g, '\\}')
 		.replace(/\s+/g, '');
+}
+
+/** Une condition tapée en texte (`2 ≤ x < 4 ou x ≠ 7`), en LaTeX que le champ relit. */
+function conditionLatex(written: string): string {
+	return written
+		.split(JOIN_IN_TEXT)
+		.map((part, i) =>
+			i % 2 === 1
+				? `\\text{ ${part} }`
+				: part
+						.replace(/[≤⩽]/g, '\\le ')
+						.replace(/[≥⩾]/g, '\\ge ')
+						.replace(/≠/g, '\\ne ')
+						.replace(/−/g, '-')
+						.replace(/∞/g, '\\infty ')
+						.replace(/π/g, '\\pi ')
+						// Les espaces tombent, sauf celle qui finit une commande (`\le x`)
+						.replace(/(?<!\\[A-Za-z]+)\s+/g, '')
+						.trim()
+		)
+		.join('');
 }
 
 /**

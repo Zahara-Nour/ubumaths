@@ -1,0 +1,467 @@
+{
+	"id": "2aae946c-e511-40e9-8a15-59967181590b",
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : calculs",
+		"point": "5-001"
+	},
+	"title": "Problèmes avec des données inutiles",
+	"description": "Résoudre un problème dont l'énoncé donne aussi des informations qui ne servent pas : masse des livres d'un élève, monnaie rendue sur un manga, masse d'un conteneur (tonnes en kilogrammes), colis du second arrêt ; pièges : calcul fait avec une donnée inutile, conversion oubliée",
+	"grades": ["6", "5"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans la classe de 6e A, il y a ${{E}}$ élèves de $11$ ans. Chaque élève porte ${{L}}$ livres dans son sac, et chaque livre pèse ${{G}}~\\unit{g}$.\n\nQuelle masse de livres chaque élève porte-t-il ? Écris l'unité dans ta réponse.\n\nChaque élève porte $?$ de livres.",
+			"variables": [
+				{
+					"name": "E",
+					"expression": "17..35"
+				},
+				{
+					"name": "L",
+					"expression": "3..10"
+				},
+				{
+					"name": "q",
+					"expression": "4..12"
+				},
+				{
+					"name": "G",
+					"expression": "eval:50*q"
+				}
+			],
+			"conditions": ["E!=L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(L*G)[g]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(E*G)[g]}}",
+							"message": "Tu as pris le nombre d'élèves : chaque élève porte ${{L}}$ livres.",
+							"label": "Nombre d'élèves au lieu du nombre de livres"
+						},
+						{
+							"answer": "{{eval:(E*L*G)[g]}}",
+							"message": "C'est la masse des livres de toute la classe : la question parle d'un seul élève.",
+							"label": "Toute la classe"
+						},
+						{
+							"answer": "{{eval:(G)[g]}}",
+							"message": "C'est la masse d'un seul livre : chaque élève en porte ${{L}}$.",
+							"label": "Un seul livre"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce qui sert.** La question parle d'un élève : le nombre d'élèves et leur âge ne servent pas.",
+					"${{L}} \\times {{G}} = \\textcolor{{{color:primary.0}}}{{{eval:L*G}}~\\unit{g}}$."
+				]
+			},
+			"hint": "La question parle d'un seul élève : quelles informations faut-il ?"
+		},
+		{
+			"statement": "Un manga de ${{N}}$ pages a ${{C}}$ cases par page. Il coûte ${{eval:((P)/100)[€]}}$. Inès le paie avec un billet de ${{B}}~\\unit{€}$.\n\nCombien lui rend-on ? Écris l'unité dans ta réponse.\n\nOn lui rend $?$.",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "48..96"
+				},
+				{
+					"name": "C",
+					"expression": "5..9"
+				},
+				{
+					"name": "P",
+					"expression": "500..999"
+				},
+				{
+					"name": "B",
+					"expression": "10|20"
+				}
+			],
+			"conditions": ["mod(P,5)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((100*B-P)/100)[€]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((P)/100)[€]}}",
+							"message": "C'est le prix du manga : on demande ce qu'on lui rend.",
+							"label": "Prix du manga"
+						},
+						{
+							"answer": "{{eval:((100*B+P)/100)[€]}}",
+							"message": "Tu as ajouté le prix au billet : la marchande garde le prix du manga, elle rend le reste.",
+							"label": "Addition au lieu de soustraction"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce qui sert.** Le nombre de pages et de cases ne change rien au prix : seuls le prix et le billet servent.",
+					"${{B}} - {{if:mod(P,100)==0|{{eval:(P)/100;d}}|{{eval:(P)/100;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:((100*B-P)/100)[€]}}}$."
+				]
+			},
+			"hint": "Quelles informations parlent d'argent ?"
+		},
+		{
+			"statement": "Un cargo de ${{Lm}}~\\unit{m}$ de long transporte $3$ grands conteneurs et ${{K}}$ petits conteneurs identiques. Les petits conteneurs pèsent ${{eval:K*q/20;d}}~\\unit{t}$ en tout.\n\nQuelle est la masse d'un petit conteneur, en kilogrammes ? Écris l'unité dans ta réponse.\n\nUn petit conteneur pèse $?$.",
+			"variables": [
+				{
+					"name": "Lm",
+					"expression": "85..153"
+				},
+				{
+					"name": "K",
+					"expression": "8..25"
+				},
+				{
+					"name": "q",
+					"expression": "10..18"
+				}
+			],
+			"conditions": ["K*q>=280", "K*q<=420", "mod(K*q,2)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(50*q)[kg]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(50*q/1000)[kg]}}",
+							"message": "Tu as gardé des tonnes en écrivant des kilogrammes : $1~\\unit{t} = 1\\,000~\\unit{kg}$.",
+							"label": "Tonnes non converties"
+						},
+						{
+							"answer": "{{eval:(50*q*K)[kg]}}",
+							"message": "C'est la masse de tous les petits conteneurs : partage-la entre les ${{K}}$.",
+							"label": "Masse non partagée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce qui sert.** La longueur du cargo et les grands conteneurs ne servent pas : la masse donnée est celle des ${{K}}$ petits.",
+					"**Convertir.** ${{eval:K*q/20;d}}~\\unit{t} = {{eval:50*q*K}}~\\unit{kg}$.",
+					"**Partager.** ${{eval:50*q*K}} \\div {{K}} = \\textcolor{{{color:primary.0}}}{{{eval:50*q}}~\\unit{kg}}$."
+				]
+			},
+			"hint": "Combien de kilogrammes font ${{eval:K*q/20;d}}~\\unit{t}$ ? Entre combien de conteneurs les partager ?"
+		},
+		{
+			"statement": "Un livreur part à $8$ h avec ${{C}}$ colis. Il roule ${{d1}}~\\unit{km}$ jusqu'au premier arrêt, où il dépose ${{D}}$ colis. Puis il roule ${{d2}}~\\unit{km}$ jusqu'au second arrêt, où il dépose tous les autres.\n\nCombien de colis dépose-t-il au second arrêt ?\n\nIl dépose $?$ colis.",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "21..39"
+				},
+				{
+					"name": "D",
+					"expression": "7..18"
+				},
+				{
+					"name": "d1",
+					"expression": "7..15"
+				},
+				{
+					"name": "d2",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["C-D>=5", "C-D!=D", "C-D-d1>0", "d1!=D"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:C-D}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:C+D}}",
+							"message": "Tu as ajouté : au premier arrêt, les colis déposés quittent le camion.",
+							"label": "Addition au lieu de soustraction"
+						},
+						{
+							"answer": "{{D}}",
+							"message": "C'est ce qu'il dépose au premier arrêt : au second, il dépose tous les autres.",
+							"label": "Colis du premier arrêt"
+						},
+						{
+							"answer": "{{eval:C-D-d1}}",
+							"message": "Tu as retiré des kilomètres à des colis : les distances ne servent pas ici.",
+							"label": "Distance utilisée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce qui sert.** L'heure de départ et les distances ne servent pas : on compte des colis.",
+					"${{C}} - {{D}} = \\textcolor{{{color:primary.0}}}{{{eval:C-D}}}$ colis."
+				]
+			},
+			"hint": "La question compte des colis : quelles informations parlent de colis ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Livres : 6 × 350 g = 2 100 g",
+			"variationIndex": 0,
+			"variables": {
+				"E": "24",
+				"L": "6",
+				"q": "7",
+				"G": "350"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\,100\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Livres : 2,1 kg accepté",
+			"variationIndex": 0,
+			"variables": {
+				"E": "24",
+				"L": "6",
+				"q": "7",
+				"G": "350"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}1\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Livres : sans unité refusé",
+			"variationIndex": 0,
+			"variables": {
+				"E": "24",
+				"L": "6",
+				"q": "7",
+				"G": "350"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2100"]
+		},
+		{
+			"description": "Livres : élèves × masse (8 400 g)",
+			"variationIndex": 0,
+			"variables": {
+				"E": "24",
+				"L": "6",
+				"q": "7",
+				"G": "350"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le nombre d'élèves : chaque élève porte $6$ livres."
+			},
+			"answers": ["8\\,400\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Livres : toute la classe (50 400 g)",
+			"variationIndex": 0,
+			"variables": {
+				"E": "24",
+				"L": "6",
+				"q": "7",
+				"G": "350"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse des livres de toute la classe : la question parle d'un seul élève."
+			},
+			"answers": ["50\\,400\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Livres : un livre (350 g)",
+			"variationIndex": 0,
+			"variables": {
+				"E": "24",
+				"L": "6",
+				"q": "7",
+				"G": "350"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse d'un seul livre : chaque élève en porte $6$."
+			},
+			"answers": ["350\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Manga : 20 − 7,85 = 12,15 €",
+			"variationIndex": 1,
+			"variables": {
+				"N": "64",
+				"C": "6",
+				"P": "785",
+				"B": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12{,}15\\,€"]
+		},
+		{
+			"description": "Manga : prix (7,85 €)",
+			"variationIndex": 1,
+			"variables": {
+				"N": "64",
+				"C": "6",
+				"P": "785",
+				"B": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix du manga : on demande ce qu'on lui rend."
+			},
+			"answers": ["7{,}85\\,€"]
+		},
+		{
+			"description": "Manga : 27,85 €",
+			"variationIndex": 1,
+			"variables": {
+				"N": "64",
+				"C": "6",
+				"P": "785",
+				"B": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté le prix au billet : la marchande garde le prix du manga, elle rend le reste."
+			},
+			"answers": ["27{,}85\\,€"]
+		},
+		{
+			"description": "Cargo : 20 conteneurs, 15 t → 750 kg",
+			"variationIndex": 2,
+			"variables": {
+				"Lm": "120",
+				"K": "20",
+				"q": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["750\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Cargo : 0,75 t accepté",
+			"variationIndex": 2,
+			"variables": {
+				"Lm": "120",
+				"K": "20",
+				"q": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}75\\,\\mathrm{t}"]
+		},
+		{
+			"description": "Cargo : tonnes gardées (0,75 kg)",
+			"variationIndex": 2,
+			"variables": {
+				"Lm": "120",
+				"K": "20",
+				"q": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé des tonnes en écrivant des kilogrammes : $1~\\unit{t} = 1\\,000~\\unit{kg}$."
+			},
+			"answers": ["0{,}75\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Cargo : non partagé (15 000 kg)",
+			"variationIndex": 2,
+			"variables": {
+				"Lm": "120",
+				"K": "20",
+				"q": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la masse de tous les petits conteneurs : partage-la entre les $20$."
+			},
+			"answers": ["15\\,000\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Livreur : 32 − 11 = 21",
+			"variationIndex": 3,
+			"variables": {
+				"C": "32",
+				"D": "11",
+				"d1": "9",
+				"d2": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["21"]
+		},
+		{
+			"description": "Livreur : addition (43)",
+			"variationIndex": 3,
+			"variables": {
+				"C": "32",
+				"D": "11",
+				"d1": "9",
+				"d2": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté : au premier arrêt, les colis déposés quittent le camion."
+			},
+			"answers": ["43"]
+		},
+		{
+			"description": "Livreur : premier arrêt (11)",
+			"variationIndex": 3,
+			"variables": {
+				"C": "32",
+				"D": "11",
+				"d1": "9",
+				"d2": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est ce qu'il dépose au premier arrêt : au second, il dépose tous les autres."
+			},
+			"answers": ["11"]
+		},
+		{
+			"description": "Livreur : km retirés (12)",
+			"variationIndex": 3,
+			"variables": {
+				"C": "32",
+				"D": "11",
+				"d1": "9",
+				"d2": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré des kilomètres à des colis : les distances ne servent pas ici."
+			},
+			"answers": ["12"]
+		}
+	]
+}

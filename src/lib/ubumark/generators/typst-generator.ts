@@ -74,6 +74,8 @@ import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generateTortueTypst } from './tortue-typst';
 import { generateRobotTypst } from './robot-typst';
+import { generateLabyrintheTypst } from './labyrinthe-typst';
+import { generateYohakuTypst } from './yohaku-typst';
 import { generateCalculTypst } from './calcul-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
@@ -578,6 +580,12 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'robot':
 			// Robot : le quadrillage ; à produire, « Écris le code : » et 15 cases vides
 			return generateRobotTypst(node);
+		case 'labyrinthe':
+			// Labyrinthe : la grille, l'entrée et les sorties ; en solution, le bon chemin teinté
+			return generateLabyrintheTypst(node);
+		case 'yohaku':
+			// Grille yohaku : cases à remplir vides, totaux au bord ; en solution, la solution écrite
+			return generateYohakuTypst(node);
 
 		default:
 			return '';
@@ -3699,7 +3707,13 @@ export function escapeTypst(text: string): string {
 		'>': '\\>'
 	};
 
-	return text.replace(/[\\#$@*_`<>]/g, (match) => replacements[match] || match);
+	return (
+		text
+			.replace(/[\\#$@*_`<>]/g, (match) => replacements[match] || match)
+			// `//` et `/*` ouvrent un commentaire Typst : la fin de la ligne disparaissait (L85).
+			// Sauf après `:` : `https://…` est un lien pour Typst, pas un commentaire
+			.replace(/(?<!:)\/(?=[/*\\])/g, '\\/')
+	);
 }
 
 /** Formule réduite à une case en pointillés : `\text{……}` (points de suspension ou points) */
@@ -4023,7 +4037,9 @@ function generateAssocierTypst(
 		const item = items[k];
 		const label = labels[k];
 		cells.push(
-			item === undefined ? '[]' : `[${item}]`,
+			// Rangée insécable : sans cela, une courbe qui ne tient plus en bas de page passe
+			// à la suivante en laissant son numéro et son point derrière elle
+			item === undefined ? '[]' : `grid.cell(breakable: false)[${item}]`,
 			item === undefined ? '[]' : '[•]',
 			'[]',
 			label === undefined ? '[]' : '[•]',

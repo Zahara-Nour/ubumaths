@@ -25,7 +25,11 @@ import {
 	unknownUnitMessage,
 	wrongMagnitudeMessage
 } from './feedback';
-import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
+import {
+	malformedNumberQuantity,
+	normalizeStudentQuantity,
+	studentNumericLatex
+} from './student-input';
 import { readStudentCalculation, type StudentCalculation } from './student-calculation';
 import {
 	readCompositeDuration,
@@ -66,6 +70,11 @@ export interface ValidationResult {
 	 * l'unité (« 2,5 h 15 min ») : `feedback` porte un message destiné à l'élève.
 	 */
 	durationWritingAtFault?: boolean;
+	/**
+	 * Vrai quand seule l'ÉCRITURE DU NOMBRE est en cause, devant l'unité
+	 * (`36, mm`, `,036 m`), la valeur relue étant juste : l'appelant donne le message de forme.
+	 */
+	numberWritingAtFault?: boolean;
 	/**
 	 * Vrai quand c'est l'ARRONDI qui est en cause (trop de décimales ou de
 	 * chiffres significatifs) : `feedback` porte un message destiné à l'élève
@@ -237,7 +246,7 @@ const HOUSE_QUANTITY_REGEX = /^(-?\d+(?:\.\d+)?)\[([^[\]]+)\]$/;
  * d'un `{{eval:4*a}}`) → `28\unit{mm}`, la forme que lit `parseLatexQuantity`.
  * Toute autre écriture est rendue telle quelle.
  */
-function houseQuantityToLatex(expected: string): string {
+export function houseQuantityToLatex(expected: string): string {
 	// Écriture de `;()` (`(-3[m])`) et de `;+` (`+3[m]`) : même grandeur ; une durée
 	// en h-min-s (`{2[h]}{30[min]}`) : UNE grandeur, `150[min]`
 	const bare = singleExpectedDuration(expected)
@@ -330,6 +339,35 @@ export function validateQuantityAnswer(
 
 	// Check for parse failures
 	if (!userQuantity) {
+		// Nombre mal écrit devant l'unité (`36, mm`, `,036 m`) : relu pour juger la valeur
+		// et l'unité. Valeur juste → la forme est en cause ; valeur fausse → faux, comme
+		// la même saisie bien écrite ; unité illisible → son message (`36, xyz`)
+		const repaired = malformedNumberQuantity(userAnswer);
+		if (repaired !== null) {
+			if (parseLatexQuantity(repaired)) {
+				const verdict = validateQuantityAnswer(repaired, expectedAnswer, precision, requiredUnit);
+				if (!verdict.isCorrect) return verdict;
+				return {
+					isCorrect: false,
+					feedback: DEFAULT_MESSAGES.invalidInput,
+					errorType: 'invalid_input',
+					numberWritingAtFault: true,
+					parsed: null,
+					expected: expectedDisplay
+				};
+			}
+			const repairedUnitMessage = unitWritingFeedback(repaired);
+			if (repairedUnitMessage) {
+				return {
+					isCorrect: false,
+					feedback: repairedUnitMessage,
+					errorType: 'invalid_input',
+					unitAtFault: true,
+					parsed: null,
+					expected: expectedDisplay
+				};
+			}
+		}
 		// Un calcul avec des unités (`2\times3\,m`, `3m+2m`) : seconde lecture en arbre,
 		// la grandeur calculée est jugée comme une réponse (la forme l'est à part)
 		// Une écriture d'unité ambiguë (`kg/m.s`) garde son message : rien n'y est deviné

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { definitionHint, INTERVAL_MODEL } from '../draft-hint';
+import { CONDITION_MODEL, definitionHint, INTERVAL_MODEL } from '../draft-hint';
 import { draftTextOf } from '../natural-input';
 
 describe('le modèle d’une définition de fonction', () => {
@@ -84,5 +84,17 @@ describe('le modèle d’une définition de fonction', () => {
 		it('rien pour un calcul', () => {
 			expect(definitionHint(draft('3+4'), 'math')).toBeNull();
 		});
+	});
+});
+
+// Chantier fonctions-domaines : « pour » suivi d'une condition, le modèle d'une condition
+describe('« pour » tapé', () => {
+	it('le modèle d’une condition, dans la lettre de la définition', () => {
+		expect(definitionHint('f(x) = x pour x >', 'text')?.model).toBe(CONDITION_MODEL);
+		expect(definitionHint('g(t) = t pour t<', 'text')?.model).toBe('t > 2, 2 < t < 4, t ≠ 0');
+	});
+
+	it('« sur » garde le modèle d’un intervalle', () => {
+		expect(definitionHint('f(x) = x sur [', 'text')?.model).toBe(INTERVAL_MODEL);
 	});
 });

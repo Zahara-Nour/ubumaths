@@ -1,0 +1,5710 @@
+{
+	"migration": "supabase/migrations/20261125064801_questions_idees_1re_trigo_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "4b3c1d88-c064-45da-8976-820dff5be28e",
+			"title": "Convertir des degrés en radians",
+			"fichier": "4b3c1d88.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+							},
+							{
+								"name": "d",
+								"expression": "eval:r*180/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$180^\\circ$ correspondent à $\\pi$ radians : pour passer des degrés aux radians, on multiplie par $\\dfrac{\\pi}{180}$.",
+								"${{d}}^\\circ=\\dfrac{ {{d}} }{180}\\times\\pi$ rad et $\\dfrac{ {{d}} }{180}={{eval:d/180}}$.",
+								"Donc ${{d}}^\\circ=\\textcolor{{{color:primary.0}}}{{{r}} }$ rad."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{d}}"
+							}
+						],
+						"statement": "Convertis en degrés un angle de ${{r}}$ radians.\n\n${{r}}\\text{ rad}=?\\,^\\circ$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+							},
+							{
+								"name": "d",
+								"expression": "eval:r*180/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\pi$ radians correspondent à $180^\\circ$ : on remplace $\\pi$ par $180^\\circ$.",
+								"${{r}}={{eval:r/\\pi}}\\times\\pi$, donc ${{r}}\\text{ rad}={{eval:r/\\pi}}\\times180^\\circ=\\textcolor{{{color:primary.0}}}{{{d}}^\\circ }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{12}|\\frac{5\\pi}{12}|\\frac{7\\pi}{12}|\\frac{\\pi}{10}|\\frac{\\pi}{5}|\\frac{2\\pi}{5}|\\frac{3\\pi}{5}|\\frac{\\pi}{9}|\\frac{2\\pi}{9}|\\frac{\\pi}{18}"
+							},
+							{
+								"name": "d",
+								"expression": "eval:r*180/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$180^\\circ$ correspondent à $\\pi$ radians : pour passer des degrés aux radians, on multiplie par $\\dfrac{\\pi}{180}$.",
+								"${{d}}^\\circ=\\dfrac{ {{d}} }{180}\\times\\pi$ rad et $\\dfrac{ {{d}} }{180}={{eval:d/180}}$.",
+								"Donc ${{d}}^\\circ=\\textcolor{{{color:primary.0}}}{{{r}} }$ rad."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "150° = 5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{150\\pi}{180}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "fraction non réduite 150π/180",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{6\\pi}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "fraction renversée 6π/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["150"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "degrés recopiés : 150",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\pi"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\pi"
+						},
+						"description": "180° = π",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2\\pi"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "2\\pi"
+						},
+						"description": "360° = 2π",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{4}"
+						},
+						"description": "45° : π/4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4\\pi"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{4}"
+						},
+						"description": "45° : 4π refusé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["150"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 rad = 150°",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2{,}617"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "π remplacé par 3,14 : 2,617",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["30"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "30 au lieu de 150 (numérateur oublié)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["270"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{2}"
+						},
+						"description": "3π/2 rad = 270°",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{5\\times180}{6}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["reducedFractions", "form"]
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "calcul non effectué 5×180/6",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{5\\pi}{12}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{12}"
+						},
+						"description": "75° = 5π/12",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{75\\pi}{180}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{12}"
+						},
+						"description": "75° : 75π/180 non réduit",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{12\\pi}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{12}"
+						},
+						"description": "75° : 12π/5 renversé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\pi}{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{5}"
+						},
+						"description": "36° = π/5",
+						"variationIndex": 2
+					}
+				],
+				"description": "Degrés ↔ radians pour les angles usuels (30°, 45°, 60°, 90°… et leurs multiples), fraction de π réduite"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+							},
+							{
+								"name": "d",
+								"expression": "eval:r*180/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$180^\\circ$ correspondent à $\\pi$ radians : pour passer des degrés aux radians, on multiplie par $\\dfrac{\\pi}{180}$.",
+								"${{d}}^\\circ=\\dfrac{ {{d}} }{180}\\times\\pi$ rad et $\\dfrac{ {{d}} }{180}={{eval:d/180}}$.",
+								"Donc ${{d}}^\\circ=\\textcolor{{{color:primary.0}}}{{{r}} }$ rad."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{d}}"
+							}
+						],
+						"statement": "Convertis en degrés un angle de ${{r}}$ radians.\n\n${{r}}\\text{ rad}=?\\,^\\circ$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+							},
+							{
+								"name": "d",
+								"expression": "eval:r*180/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\pi$ radians correspondent à $180^\\circ$ : on remplace $\\pi$ par $180^\\circ$.",
+								"${{r}}={{eval:r/\\pi}}\\times\\pi$, donc ${{r}}\\text{ rad}={{eval:r/\\pi}}\\times180^\\circ=\\textcolor{{{color:primary.0}}}{{{d}}^\\circ }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{12}|\\frac{5\\pi}{12}|\\frac{7\\pi}{12}|\\frac{\\pi}{10}|\\frac{\\pi}{5}|\\frac{2\\pi}{5}|\\frac{3\\pi}{5}|\\frac{\\pi}{9}|\\frac{2\\pi}{9}|\\frac{\\pi}{18}"
+							},
+							{
+								"name": "d",
+								"expression": "eval:r*180/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$180^\\circ$ correspondent à $\\pi$ radians : pour passer des degrés aux radians, on multiplie par $\\dfrac{\\pi}{180}$.",
+								"${{d}}^\\circ=\\dfrac{ {{d}} }{180}\\times\\pi$ rad et $\\dfrac{ {{d}} }{180}={{eval:d/180}}$.",
+								"Donc ${{d}}^\\circ=\\textcolor{{{color:primary.0}}}{{{r}} }$ rad."
+							]
+						}
+					},
+					{
+						"statement": "Convertis en degrés un angle de ${{r}}$ radians.\n\n${{r}}\\text{ rad}=?\\,^\\circ$",
+						"variables": [
+							{
+								"name": "q",
+								"expression": "5|9|10|12|18"
+							},
+							{
+								"name": "n",
+								"expression": "1..17"
+							},
+							{
+								"name": "r",
+								"expression": "eval:n*\\pi/q"
+							},
+							{
+								"name": "d",
+								"expression": "eval:180*n/q"
+							}
+						],
+						"conditions": ["n<q", "gcd(n,q)=1"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:180/q}}",
+										"message": "Tu as divisé $180$ par le dénominateur : multiplie aussi par le numérateur.",
+										"label": "Numérateur oublié"
+									},
+									{
+										"answer": "{{eval:360*n/q}}",
+										"message": "$\\pi$ radians correspondent à $180^\\circ$, pas à $360^\\circ$.",
+										"label": "π lu 360°"
+									},
+									{
+										"answer": "{{eval:180*q/n}}",
+										"message": "Le rapport est à l'envers : remplace $\\pi$ par $180^\\circ$.",
+										"label": "Rapport à l'envers"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\pi$ radians correspondent à $180^\\circ$ : on remplace $\\pi$ par $180^\\circ$.",
+								"${{r}}\\text{ rad}=\\dfrac{ {{n}}\\times180^\\circ}{ {{q}} }=\\textcolor{{{color:primary.0}}}{ {{d}}^\\circ }$."
+							]
+						},
+						"hint": "$\\pi$ rad $=180^\\circ$ : remplace $\\pi$ par $180$, puis calcule."
+					},
+					{
+						"statement": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+						"variables": [
+							{
+								"name": "d",
+								"expression": "10|20|25|35|40|50|70|80|100|110|140|160|200|250|320"
+							},
+							{
+								"name": "r",
+								"expression": "eval:d*\\pi/180"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:d/180}}",
+										"message": "N'oublie pas $\\pi$ : $1^\\circ=\\dfrac{\\pi}{180}$ rad.",
+										"label": "π oublié"
+									},
+									{
+										"answer": "{{eval:180*\\pi/d}}",
+										"message": "Le rapport est à l'envers : on multiplie par $\\dfrac{\\pi}{180}$.",
+										"label": "Rapport à l'envers"
+									},
+									{
+										"answer": "{{eval:d*\\pi/360}}",
+										"message": "$\\pi$ radians correspondent à $180^\\circ$, pas à $360^\\circ$.",
+										"label": "π lu 360°"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$180^\\circ$ correspondent à $\\pi$ radians : pour passer des degrés aux radians, on multiplie par $\\dfrac{\\pi}{180}$.",
+								"${{d}}^\\circ=\\dfrac{ {{d}} }{180}\\times\\pi$ rad et $\\dfrac{ {{d}} }{180}={{eval:d/180}}$.",
+								"Donc ${{d}}^\\circ=\\textcolor{{{color:primary.0}}}{ {{r}} }$ rad."
+							]
+						},
+						"hint": "$1^\\circ=\\dfrac{\\pi}{180}$ rad : multiplie par $\\dfrac{\\pi}{180}$, puis simplifie la fraction."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "150° = 5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{150\\pi}{180}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "fraction non réduite 150π/180",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{6\\pi}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "fraction renversée 6π/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["150"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "degrés recopiés : 150",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\pi"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\pi"
+						},
+						"description": "180° = π",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2\\pi"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "2\\pi"
+						},
+						"description": "360° = 2π",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{4}"
+						},
+						"description": "45° : π/4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4\\pi"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{4}"
+						},
+						"description": "45° : 4π refusé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["150"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 rad = 150°",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2{,}617"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "π remplacé par 3,14 : 2,617",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["30"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "30 au lieu de 150 (numérateur oublié)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["270"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{2}"
+						},
+						"description": "3π/2 rad = 270°",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{5\\times180}{6}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["reducedFractions", "form"]
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "calcul non effectué 5×180/6",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{5\\pi}{12}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{12}"
+						},
+						"description": "75° = 5π/12",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{75\\pi}{180}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{12}"
+						},
+						"description": "75° : 75π/180 non réduit",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{12\\pi}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{12}"
+						},
+						"description": "75° : 12π/5 renversé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\pi}{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{5}"
+						},
+						"description": "36° = π/5",
+						"variationIndex": 2
+					},
+					{
+						"description": "5π/12 rad = 75°",
+						"variationIndex": 3,
+						"variables": {
+							"q": "12",
+							"n": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["75"]
+					},
+					{
+						"description": "5π/12 : numérateur oublié 15",
+						"variationIndex": 3,
+						"variables": {
+							"q": "12",
+							"n": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as divisé $180$ par le dénominateur : multiplie aussi par le numérateur."
+						},
+						"answers": ["15"]
+					},
+					{
+						"description": "5π/12 : π lu 360°, 150",
+						"variationIndex": 3,
+						"variables": {
+							"q": "12",
+							"n": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\pi$ radians correspondent à $180^\\circ$, pas à $360^\\circ$."
+						},
+						"answers": ["150"]
+					},
+					{
+						"description": "5π/12 : rapport à l'envers 432",
+						"variationIndex": 3,
+						"variables": {
+							"q": "12",
+							"n": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le rapport est à l'envers : remplace $\\pi$ par $180^\\circ$."
+						},
+						"answers": ["432"]
+					},
+					{
+						"description": "2π/9 rad = 40°",
+						"variationIndex": 3,
+						"variables": {
+							"q": "9",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["40"]
+					},
+					{
+						"description": "50° = 5π/18",
+						"variationIndex": 4,
+						"variables": {
+							"d": "50"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{5\\pi}{18}"]
+					},
+					{
+						"description": "50° : non réduit 50π/180",
+						"variationIndex": 4,
+						"variables": {
+							"d": "50"
+						},
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"answers": ["\\frac{50\\pi}{180}"]
+					},
+					{
+						"description": "50° : π oublié 5/18",
+						"variationIndex": 4,
+						"variables": {
+							"d": "50"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "N'oublie pas $\\pi$ : $1^\\circ=\\dfrac{\\pi}{180}$ rad."
+						},
+						"answers": ["\\frac{5}{18}"]
+					},
+					{
+						"description": "50° : rapport à l'envers 18π/5",
+						"variationIndex": 4,
+						"variables": {
+							"d": "50"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le rapport est à l'envers : on multiplie par $\\dfrac{\\pi}{180}$."
+						},
+						"answers": ["\\frac{18\\pi}{5}"]
+					},
+					{
+						"description": "50° : π lu 360°, 5π/36",
+						"variationIndex": 4,
+						"variables": {
+							"d": "50"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$\\pi$ radians correspondent à $180^\\circ$, pas à $360^\\circ$."
+						},
+						"answers": ["\\frac{5\\pi}{36}"]
+					},
+					{
+						"description": "140° = 7π/9",
+						"variationIndex": 4,
+						"variables": {
+							"d": "140"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{7\\pi}{9}"]
+					}
+				],
+				"description": "Degrés ↔ radians pour les angles usuels (30°, 45°, 60°, 90°… et leurs multiples), fraction de π réduite"
+			},
+			"changements": {
+				"ajoutees": [4, 5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "679a2e3e-d034-4c9f-8c8f-5e0b6f545d1a",
+			"title": "Cosinus et sinus d'angles associés",
+			"fichier": "679a2e3e.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+							},
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+							}
+						],
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{5\\pi}{6}|\\frac{3\\pi}{4}|\\frac{2\\pi}{3}|-\\frac{7\\pi}{6}|-\\frac{5\\pi}{4}|-\\frac{4\\pi}{3}"
+							},
+							{
+								"name": "n",
+								"expression": "eval:12*r/\\pi"
+							},
+							{
+								"name": "m",
+								"expression": "eval:abs(12-abs(n))"
+							},
+							{
+								"name": "d",
+								"expression": "eval:12/m"
+							},
+							{
+								"name": "c",
+								"expression": "eval:n/gcd(abs(n),12)"
+							},
+							{
+								"name": "q",
+								"expression": "eval:12/gcd(abs(n),12)"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des ordonnées du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même sinus et des cosinus opposés.",
+								"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+								"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+							},
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+							}
+						],
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "-\\frac{\\pi}{6}|-\\frac{\\pi}{4}|-\\frac{\\pi}{3}|\\frac{11\\pi}{6}|\\frac{7\\pi}{4}|\\frac{5\\pi}{3}"
+							},
+							{
+								"name": "n",
+								"expression": "eval:12*r/\\pi"
+							},
+							{
+								"name": "m",
+								"expression": "eval:12-abs(12-abs(n))"
+							},
+							{
+								"name": "d",
+								"expression": "eval:12/m"
+							},
+							{
+								"name": "c",
+								"expression": "eval:n/gcd(abs(n),12)"
+							},
+							{
+								"name": "q",
+								"expression": "eval:12/gcd(abs(n),12)"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des abscisses du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même cosinus et des sinus opposés.",
+								"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+								"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+							},
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+							}
+						],
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "-\\frac{5\\pi}{6}|-\\frac{3\\pi}{4}|-\\frac{2\\pi}{3}|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}"
+							},
+							{
+								"name": "n",
+								"expression": "eval:12*r/\\pi"
+							},
+							{
+								"name": "m",
+								"expression": "eval:abs(12-abs(n))"
+							},
+							{
+								"name": "d",
+								"expression": "eval:12/m"
+							},
+							{
+								"name": "c",
+								"expression": "eval:n/gcd(abs(n),12)"
+							},
+							{
+								"name": "q",
+								"expression": "eval:12/gcd(abs(n),12)"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'origine $O$ du point associé à $\\frac{\\pi}{ {{d}} }$ : leurs cosinus sont opposés, et leurs sinus aussi.",
+								"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+								"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : cos et sin justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{7\\pi}{6}"
+						},
+						"description": "-7π/6 : même point, mêmes valeurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : erreur de signe sur le cosinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : erreur de signe sur le sinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : cos et sin intervertis",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "3π/4 : cos et sin justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{5\\pi}{4}"
+						},
+						"description": "-5π/4 : même point, mêmes valeurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "3π/4 : erreur de signe sur le cosinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "3π/4 : erreur de signe sur le sinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : cos et sin justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{4\\pi}{3}"
+						},
+						"description": "-4π/3 : même point, mêmes valeurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : erreur de signe sur le cosinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : erreur de signe sur le sinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : cos et sin intervertis",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "0{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : sin = 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{4}"
+						},
+						"description": "-π/4 : cos et sin justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{4}"
+						},
+						"description": "7π/4 : même point, mêmes valeurs",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{4}"
+						},
+						"description": "-π/4 : erreur de signe sur le cosinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{4}"
+						},
+						"description": "-π/4 : erreur de signe sur le sinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : cos et sin justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{3}"
+						},
+						"description": "5π/3 : même point, mêmes valeurs",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : erreur de signe sur le cosinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : erreur de signe sur le sinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : cos et sin intervertis",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : cos et sin justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{11\\pi}{6}"
+						},
+						"description": "11π/6 : même point, mêmes valeurs",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : erreur de signe sur le cosinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : erreur de signe sur le sinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : cos et sin intervertis",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : cos et sin justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{2\\pi}{3}"
+						},
+						"description": "-2π/3 : même point, mêmes valeurs",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : erreur de signe sur le cosinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : erreur de signe sur le sinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : cos et sin intervertis",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : cos et sin justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "-5π/6 : même point, mêmes valeurs",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : erreur de signe sur le cosinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : erreur de signe sur le sinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : cos et sin intervertis",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{4}"
+						},
+						"description": "5π/4 : cos et sin justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "-3π/4 : même point, mêmes valeurs",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{4}"
+						},
+						"description": "5π/4 : erreur de signe sur le cosinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{4}"
+						},
+						"description": "5π/4 : erreur de signe sur le sinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-0{,}5", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : cos = −0,5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-0{,}87"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : valeur approchée −0,87",
+						"variationIndex": 2
+					}
+				],
+				"description": "cos et sin de 5π/6, −π/4, 4π/3, 7π/6… par symétrie sur le cercle à partir de π/6, π/4 ou π/3"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+							},
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+							}
+						],
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{5\\pi}{6}|\\frac{3\\pi}{4}|\\frac{2\\pi}{3}|-\\frac{7\\pi}{6}|-\\frac{5\\pi}{4}|-\\frac{4\\pi}{3}"
+							},
+							{
+								"name": "n",
+								"expression": "eval:12*r/\\pi"
+							},
+							{
+								"name": "m",
+								"expression": "eval:abs(12-abs(n))"
+							},
+							{
+								"name": "d",
+								"expression": "eval:12/m"
+							},
+							{
+								"name": "c",
+								"expression": "eval:n/gcd(abs(n),12)"
+							},
+							{
+								"name": "q",
+								"expression": "eval:12/gcd(abs(n),12)"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des ordonnées du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même sinus et des cosinus opposés.",
+								"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+								"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+							},
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+							}
+						],
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "-\\frac{\\pi}{6}|-\\frac{\\pi}{4}|-\\frac{\\pi}{3}|\\frac{11\\pi}{6}|\\frac{7\\pi}{4}|\\frac{5\\pi}{3}"
+							},
+							{
+								"name": "n",
+								"expression": "eval:12*r/\\pi"
+							},
+							{
+								"name": "m",
+								"expression": "eval:12-abs(12-abs(n))"
+							},
+							{
+								"name": "d",
+								"expression": "eval:12/m"
+							},
+							{
+								"name": "c",
+								"expression": "eval:n/gcd(abs(n),12)"
+							},
+							{
+								"name": "q",
+								"expression": "eval:12/gcd(abs(n),12)"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des abscisses du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même cosinus et des sinus opposés.",
+								"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+								"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+							},
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+							}
+						],
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "-\\frac{5\\pi}{6}|-\\frac{3\\pi}{4}|-\\frac{2\\pi}{3}|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}"
+							},
+							{
+								"name": "n",
+								"expression": "eval:12*r/\\pi"
+							},
+							{
+								"name": "m",
+								"expression": "eval:abs(12-abs(n))"
+							},
+							{
+								"name": "d",
+								"expression": "eval:12/m"
+							},
+							{
+								"name": "c",
+								"expression": "eval:n/gcd(abs(n),12)"
+							},
+							{
+								"name": "q",
+								"expression": "eval:12/gcd(abs(n),12)"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'origine $O$ du point associé à $\\frac{\\pi}{ {{d}} }$ : leurs cosinus sont opposés, et leurs sinus aussi.",
+								"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+								"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						}
+					},
+					{
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "2|3|4|8|9|10|-2|-3|-4|-8|-9|-10"
+							},
+							{
+								"name": "k",
+								"expression": "1..4;±"
+							},
+							{
+								"name": "n",
+								"expression": "eval:m+24*k"
+							},
+							{
+								"name": "r",
+								"expression": "eval:n*\\pi/12"
+							},
+							{
+								"name": "r0",
+								"expression": "eval:m*\\pi/12"
+							}
+						],
+						"conditions": ["abs(n)>24"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}",
+								"acceptDecimal": true,
+								"expectedErrors": [
+									{
+										"answer": "{{eval:-cos(n*\\pi/12)}}",
+										"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+										"label": "Signe du cosinus"
+									},
+									{
+										"answer": "{{eval:sin(n*\\pi/12)}}",
+										"message": "Tu as donné le sinus : le cosinus est l'abscisse du point.",
+										"label": "Sinus à la place"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}",
+								"acceptDecimal": true,
+								"expectedErrors": [
+									{
+										"answer": "{{eval:-sin(n*\\pi/12)}}",
+										"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+										"label": "Signe du sinus"
+									},
+									{
+										"answer": "{{eval:cos(n*\\pi/12)}}",
+										"message": "Tu as donné le cosinus : le sinus est l'ordonnée du point.",
+										"label": "Cosinus à la place"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"On {{if:k>0|retire|ajoute}} des tours complets ($2\\pi$) : ${{r}}={{r0}}{{eval:2*k;+}}\\pi$. Les deux réels ont le même point sur le cercle, donc le même cosinus et le même sinus.",
+								"```trig\npreset: custom\nangles: {{m}}*pi/12\nprojections: true\n```",
+								"Donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						},
+						"hint": "Retire d'abord des tours complets ($2\\pi$) pour te ramener entre $-\\pi$ et $\\pi$."
+					},
+					{
+						"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "12|18|-6|-18|-12|30|36|-30|42|24"
+							},
+							{
+								"name": "r",
+								"expression": "eval:n*\\pi/12"
+							},
+							{
+								"name": "m",
+								"expression": "eval:mod(n,24)"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:cos(n*\\pi/12)}}",
+								"acceptDecimal": true,
+								"expectedErrors": [
+									{
+										"answer": "{{eval:-cos(n*\\pi/12)}}",
+										"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+										"label": "Signe du cosinus"
+									},
+									{
+										"answer": "{{eval:sin(n*\\pi/12)}}",
+										"message": "Tu as donné le sinus : le cosinus est l'abscisse du point.",
+										"label": "Sinus à la place"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:sin(n*\\pi/12)}}",
+								"acceptDecimal": true,
+								"expectedErrors": [
+									{
+										"answer": "{{eval:-sin(n*\\pi/12)}}",
+										"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+										"label": "Signe du sinus"
+									},
+									{
+										"answer": "{{eval:cos(n*\\pi/12)}}",
+										"message": "Tu as donné le cosinus : le sinus est l'ordonnée du point.",
+										"label": "Cosinus à la place"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le point associé à ${{r}}$ est sur un axe : on retire des tours complets ($2\\pi$) pour le placer.",
+								"```trig\npreset: custom\nangles: {{m}}*pi/12\nprojections: true\n```",
+								"Ses coordonnées valent $0$, $1$ ou $-1$. Donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+							]
+						},
+						"hint": "Place le point sur le cercle : le cosinus est son abscisse, le sinus son ordonnée."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : cos et sin justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{7\\pi}{6}"
+						},
+						"description": "-7π/6 : même point, mêmes valeurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : erreur de signe sur le cosinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : erreur de signe sur le sinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : cos et sin intervertis",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "3π/4 : cos et sin justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{5\\pi}{4}"
+						},
+						"description": "-5π/4 : même point, mêmes valeurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "3π/4 : erreur de signe sur le cosinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "3π/4 : erreur de signe sur le sinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : cos et sin justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{4\\pi}{3}"
+						},
+						"description": "-4π/3 : même point, mêmes valeurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : erreur de signe sur le cosinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : erreur de signe sur le sinus",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}"
+						},
+						"description": "2π/3 : cos et sin intervertis",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "0{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "5π/6 : sin = 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{4}"
+						},
+						"description": "-π/4 : cos et sin justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{4}"
+						},
+						"description": "7π/4 : même point, mêmes valeurs",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{4}"
+						},
+						"description": "-π/4 : erreur de signe sur le cosinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{4}"
+						},
+						"description": "-π/4 : erreur de signe sur le sinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : cos et sin justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{3}"
+						},
+						"description": "5π/3 : même point, mêmes valeurs",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : erreur de signe sur le cosinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : erreur de signe sur le sinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "-π/3 : cos et sin intervertis",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : cos et sin justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{11\\pi}{6}"
+						},
+						"description": "11π/6 : même point, mêmes valeurs",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : erreur de signe sur le cosinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : erreur de signe sur le sinus",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{6}"
+						},
+						"description": "-π/6 : cos et sin intervertis",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : cos et sin justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{2\\pi}{3}"
+						},
+						"description": "-2π/3 : même point, mêmes valeurs",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : erreur de signe sur le cosinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : erreur de signe sur le sinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : cos et sin intervertis",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : cos et sin justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "-5π/6 : même point, mêmes valeurs",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : erreur de signe sur le cosinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : erreur de signe sur le sinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{7\\pi}{6}"
+						},
+						"description": "7π/6 : cos et sin intervertis",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{4}"
+						},
+						"description": "5π/4 : cos et sin justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "-3π/4 : même point, mêmes valeurs",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{4}"
+						},
+						"description": "5π/4 : erreur de signe sur le cosinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{4}"
+						},
+						"description": "5π/4 : erreur de signe sur le sinus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-0{,}5", "-\\frac{\\sqrt{3}}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : cos = −0,5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{1}{2}", "-0{,}87"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{4\\pi}{3}"
+						},
+						"description": "4π/3 : valeur approchée −0,87",
+						"variationIndex": 2
+					},
+					{
+						"description": "25π/6 : √3/2 et 1/2",
+						"variationIndex": 3,
+						"variables": {
+							"m": "2",
+							"k": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"]
+					},
+					{
+						"description": "25π/6 : sin = 0,5",
+						"variationIndex": 3,
+						"variables": {
+							"m": "2",
+							"k": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{\\sqrt{3}}{2}", "0{,}5"]
+					},
+					{
+						"description": "25π/6 : signe du cosinus",
+						"variationIndex": 3,
+						"variables": {
+							"m": "2",
+							"k": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+						},
+						"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"]
+					},
+					{
+						"description": "25π/6 : cos et sin échangés",
+						"variationIndex": 3,
+						"variables": {
+							"m": "2",
+							"k": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné le sinus : le cosinus est l'abscisse du point."
+						},
+						"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"]
+					},
+					{
+						"description": "−17π/4 : √2/2 et −√2/2",
+						"variationIndex": 3,
+						"variables": {
+							"m": "-3",
+							"k": "-2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"]
+					},
+					{
+						"description": "−17π/4 : signe du sinus",
+						"variationIndex": 3,
+						"variables": {
+							"m": "-3",
+							"k": "-2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+						},
+						"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"]
+					},
+					{
+						"description": "23π/3 : 1/2 et −√3/2",
+						"variationIndex": 3,
+						"variables": {
+							"m": "-4",
+							"k": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"]
+					},
+					{
+						"description": "3π/2 : 0 et −1",
+						"variationIndex": 4,
+						"variables": {
+							"n": "18"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0", "-1"]
+					},
+					{
+						"description": "3π/2 : sin = 1, signe",
+						"variationIndex": 4,
+						"variables": {
+							"n": "18"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+						},
+						"answers": ["0", "1"]
+					},
+					{
+						"description": "3π/2 : cos et sin échangés",
+						"variationIndex": 4,
+						"variables": {
+							"n": "18"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné le sinus : le cosinus est l'abscisse du point."
+						},
+						"answers": ["-1", "0"]
+					},
+					{
+						"description": "3π : −1 et 0",
+						"variationIndex": 4,
+						"variables": {
+							"n": "36"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-1", "0"]
+					},
+					{
+						"description": "3π : cos = 1, signe",
+						"variationIndex": 4,
+						"variables": {
+							"n": "36"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+						},
+						"answers": ["1", "0"]
+					}
+				],
+				"description": "cos et sin de 5π/6, −π/4, 4π/3, 7π/6… par symétrie sur le cercle à partir de π/6, π/4 ou π/3"
+			},
+			"changements": {
+				"ajoutees": [4, 5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "aad6c700-242c-40a4-bd13-f24b016a8a59",
+			"title": "Lire le réel associé à un point du cercle",
+			"fichier": "aad6c700.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/6\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/4\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:4*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/4\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/3\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/2\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{2}|-\\frac{\\pi}{2}|\\pi|0"
+							},
+							{
+								"name": "p",
+								"expression": "eval:2*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/2\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							},
+							{
+								"expectedAnswer": "{{s}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé à chacun des points $M$ et $N$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/6, N = {{q}}*pi/4\n```\n\nPoint $M$ : $?$\n\nPoint $N$ : $?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							},
+							{
+								"name": "s",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "q",
+								"expression": "eval:4*s/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6, {{q}}*pi/4\nmesures: principales\n```",
+								"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							},
+							{
+								"expectedAnswer": "{{s}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé à chacun des points $M$ et $N$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/3, N = {{q}}*pi/4\n```\n\nPoint $M$ : $?$\n\nPoint $N$ : $?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							},
+							{
+								"name": "s",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "q",
+								"expression": "eval:4*s/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3, {{q}}*pi/4\nmesures: principales\n```",
+								"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "M en 5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "M en 5π/6 : symétrique lu −5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "M en 5π/6 : π/6 (lu depuis le mauvais axe)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{7\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "M en −5π/6 : 7π/6 n'est pas la mesure principale",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4 : 5π/4 n'est pas la mesure principale",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4 : erreur de signe",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{6\\pi}{8}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4 : fraction non réduite −6π/8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{3}\\pi"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : écrit (1/3)π (#628)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\pi/3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : écrit π/3 en ligne (#628)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : π/6 (un cran de trop peu)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["60"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : 60 (degrés)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\pi}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{2}"
+						},
+						"description": "M en −π/2",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{3\\pi}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{2}"
+						},
+						"description": "M en −π/2 : 3π/2 n'est pas la mesure principale",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\pi}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{2}"
+						},
+						"description": "M en −π/2 : erreur de signe",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}", "-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{6}",
+							"s": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en π/6, N en −3π/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}", "\\frac{\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{6}",
+							"s": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M et N intervertis",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}", "\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{6}",
+							"s": "-\\frac{3\\pi}{4}"
+						},
+						"description": "N : 5π/4 n'est pas la mesure principale",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{2\\pi}{3}", "-\\frac{\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}",
+							"s": "-\\frac{\\pi}{4}"
+						},
+						"description": "M en 2π/3, N en −π/4",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{2\\pi}{3}", "-\\frac{\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}",
+							"s": "-\\frac{\\pi}{4}"
+						},
+						"description": "M en 2π/3 : erreur de signe",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{2\\pi}{3}", "\\frac{7\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}",
+							"s": "-\\frac{\\pi}{4}"
+						},
+						"description": "N en −π/4 : 7π/4 n'est pas la mesure principale",
+						"variationIndex": 5
+					}
+				],
+				"description": "Mesure principale dans ]−π ; π] d'un ou deux points nommés sur le cercle trigonométrique (multiples de π/6 et de π/4)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/6\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/4\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:4*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/4\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/3\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/2\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{2}|-\\frac{\\pi}{2}|\\pi|0"
+							},
+							{
+								"name": "p",
+								"expression": "eval:2*r/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/2\nmesures: principales\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							},
+							{
+								"expectedAnswer": "{{s}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé à chacun des points $M$ et $N$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/6, N = {{q}}*pi/4\n```\n\nPoint $M$ : $?$\n\nPoint $N$ : $?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							},
+							{
+								"name": "s",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "q",
+								"expression": "eval:4*s/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6, {{q}}*pi/4\nmesures: principales\n```",
+								"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							},
+							{
+								"expectedAnswer": "{{s}}"
+							}
+						],
+						"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé à chacun des points $M$ et $N$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/3, N = {{q}}*pi/4\n```\n\nPoint $M$ : $?$\n\nPoint $N$ : $?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							},
+							{
+								"name": "s",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "q",
+								"expression": "eval:4*s/\\pi"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3, {{q}}*pi/4\nmesures: principales\n```",
+								"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
+							]
+						}
+					},
+					{
+						"statement": "Donne le réel de $\\left[0\\,;2\\pi\\right[$ associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/{{q}}\n```\n\n$?$",
+						"variables": [
+							{
+								"name": "q",
+								"expression": "2|3|4|6"
+							},
+							{
+								"name": "p",
+								"expression": "1..11"
+							},
+							{
+								"name": "r",
+								"expression": "eval:p*\\pi/q"
+							}
+						],
+						"conditions": ["p>q", "p<2*q", "gcd(p,q)=1"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(p-2*q)*\\pi/q}}",
+										"message": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il est positif. Tourne dans le sens direct depuis $I$.",
+										"label": "Mesure principale"
+									},
+									{
+										"answer": "{{eval:(2*q-p)*\\pi/q}}",
+										"message": "Ce réel est celui du point symétrique par rapport à l'axe des abscisses : compte les crans dans le sens direct.",
+										"label": "Symétrique (axe des abscisses)"
+									},
+									{
+										"answer": "{{eval:(p-q)*\\pi/q}}",
+										"message": "Ce réel est celui du point diamétralement opposé : compte les crans depuis $I$.",
+										"label": "Point opposé"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Dans $\\left[0\\,;2\\pi\\right[$, on part de $I$ et on tourne dans le sens direct : un point du demi-cercle inférieur a un réel compris entre $\\pi$ et $2\\pi$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/{{q}}\nmesures: 0-2pi\n```",
+								"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{ {{r}} }$, qui appartient bien à $\\left[0\\,;2\\pi\\right[$."
+							]
+						},
+						"hint": "Pars du point $I$ et tourne dans le sens direct (sens inverse des aiguilles d'une montre) jusqu'à $M$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "M en 5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "M en 5π/6 : symétrique lu −5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "M en 5π/6 : π/6 (lu depuis le mauvais axe)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{7\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "M en −5π/6 : 7π/6 n'est pas la mesure principale",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4 : 5π/4 n'est pas la mesure principale",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4 : erreur de signe",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{6\\pi}{8}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en −3π/4 : fraction non réduite −6π/8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{3}\\pi"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : écrit (1/3)π (#628)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\pi/3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : écrit π/3 en ligne (#628)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : π/6 (un cran de trop peu)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["60"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "M en π/3 : 60 (degrés)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\pi}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{2}"
+						},
+						"description": "M en −π/2",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{3\\pi}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{2}"
+						},
+						"description": "M en −π/2 : 3π/2 n'est pas la mesure principale",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\pi}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "-\\frac{\\pi}{2}"
+						},
+						"description": "M en −π/2 : erreur de signe",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}", "-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{6}",
+							"s": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M en π/6, N en −3π/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}", "\\frac{\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{6}",
+							"s": "-\\frac{3\\pi}{4}"
+						},
+						"description": "M et N intervertis",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{\\pi}{6}", "\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{\\pi}{6}",
+							"s": "-\\frac{3\\pi}{4}"
+						},
+						"description": "N : 5π/4 n'est pas la mesure principale",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{2\\pi}{3}", "-\\frac{\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}",
+							"s": "-\\frac{\\pi}{4}"
+						},
+						"description": "M en 2π/3, N en −π/4",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{2\\pi}{3}", "-\\frac{\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}",
+							"s": "-\\frac{\\pi}{4}"
+						},
+						"description": "M en 2π/3 : erreur de signe",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{2\\pi}{3}", "\\frac{7\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"r": "\\frac{2\\pi}{3}",
+							"s": "-\\frac{\\pi}{4}"
+						},
+						"description": "N en −π/4 : 7π/4 n'est pas la mesure principale",
+						"variationIndex": 5
+					},
+					{
+						"description": "M en 5π/3",
+						"variationIndex": 6,
+						"variables": {
+							"q": "3",
+							"p": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{5\\pi}{3}"]
+					},
+					{
+						"description": "M en 5π/3 : −π/3 (mesure principale)",
+						"variationIndex": 6,
+						"variables": {
+							"q": "3",
+							"p": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il est positif. Tourne dans le sens direct depuis $I$."
+						},
+						"answers": ["-\\frac{\\pi}{3}"]
+					},
+					{
+						"description": "M en 5π/3 : π/3 (symétrique)",
+						"variationIndex": 6,
+						"variables": {
+							"q": "3",
+							"p": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce réel est celui du point symétrique par rapport à l'axe des abscisses : compte les crans dans le sens direct."
+						},
+						"answers": ["\\frac{\\pi}{3}"]
+					},
+					{
+						"description": "M en 5π/3 : 2π/3 (opposé)",
+						"variationIndex": 6,
+						"variables": {
+							"q": "3",
+							"p": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce réel est celui du point diamétralement opposé : compte les crans depuis $I$."
+						},
+						"answers": ["\\frac{2\\pi}{3}"]
+					},
+					{
+						"description": "M en 3π/2",
+						"variationIndex": 6,
+						"variables": {
+							"q": "2",
+							"p": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{3\\pi}{2}"]
+					},
+					{
+						"description": "M en 3π/2 : −π/2",
+						"variationIndex": 6,
+						"variables": {
+							"q": "2",
+							"p": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il est positif. Tourne dans le sens direct depuis $I$."
+						},
+						"answers": ["-\\frac{\\pi}{2}"]
+					}
+				],
+				"description": "Mesure principale dans ]−π ; π] d'un ou deux points nommés sur le cercle trigonométrique (multiples de π/6 et de π/4), puis réel de [0 ; 2π[ associé à un point"
+			},
+			"changements": {
+				"ajoutees": [7],
+				"corrigees": [],
+				"specs": true,
+				"description": true,
+				"options": false
+			}
+		},
+		{
+			"id": "ee4e2ac6-c683-47ec-91bd-524409ef241e",
+			"title": "Calculer cos x connaissant sin x",
+			"fichier": "ee4e2ac6.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "\\frac{ {{c}} }{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "5|13|17|25"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:sqrt(d)"
+							}
+						],
+						"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{ {{c}} }{ {{b}} }$ ou $\\cos x=-\\frac{ {{c}} }{ {{b}} }$.",
+								"Comme $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$, $\\cos x\\geqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{\\frac{ {{c}} }{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{ {{c}} }{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "5|13|17|25"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:sqrt(d)"
+							}
+						],
+						"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{ {{c}} }{ {{b}} }$ ou $\\cos x=-\\frac{ {{c}} }{ {{b}} }$.",
+								"Comme $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{ {{c}} }{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{ {{c}} }{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=-\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[-\\pi\\,;-\\frac{\\pi}{2}\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "5|13|17|25"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:sqrt(d)"
+							}
+						],
+						"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(-\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{ {{c}} }{ {{b}} }$ ou $\\cos x=-\\frac{ {{c}} }{ {{b}} }$.",
+								"Comme $x\\in\\left[-\\pi\\,;-\\frac{\\pi}{2}\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{ {{c}} }{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "\\frac{\\sqrt{ {{d}} }}{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3..9"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"conditions": ["mod(d,4)!=0", "mod(d,9)!=0", "mod(d,25)!=0", "mod(d,49)!=0"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{\\sqrt{ {{d}} }}{ {{b}} }$ ou $\\cos x=-\\frac{\\sqrt{ {{d}} }}{ {{b}} }$.",
+								"Comme $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$, $\\cos x\\geqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{ {{d}} }}{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{\\sqrt{ {{d}} }}{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3..9"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"conditions": ["mod(d,4)!=0", "mod(d,9)!=0", "mod(d,25)!=0", "mod(d,49)!=0"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{\\sqrt{ {{d}} }}{ {{b}} }$ ou $\\cos x=-\\frac{\\sqrt{ {{d}} }}{ {{b}} }$.",
+								"Comme $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{ {{d}} }}{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "\\frac{\\sqrt{ {{d}} }}{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=-\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[-\\frac{\\pi}{2}\\,;0\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3..9"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"conditions": ["mod(d,4)!=0", "mod(d,9)!=0", "mod(d,25)!=0", "mod(d,49)!=0"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(-\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{\\sqrt{ {{d}} }}{ {{b}} }$ ou $\\cos x=-\\frac{\\sqrt{ {{d}} }}{ {{b}} }$.",
+								"Comme $x\\in\\left[-\\frac{\\pi}{2}\\,;0\\right]$, $\\cos x\\geqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{ {{d}} }}{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{2\\sqrt{2}}{3}"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1"
+							},
+							{
+								"name": "b",
+								"expression": "3"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{8}{9}}=\\frac{\\sqrt{8}}{3}=\\frac{\\sqrt{4}\\times\\sqrt{2}}{3}=\\frac{2\\sqrt{2}}{3}$ ou $\\cos x=-\\frac{2\\sqrt{2}}{3}$.",
+								"Comme $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{2\\sqrt{2}}{3} }$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{4}{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "sin x = 3/5, x ∈ [0 ; π/2] : cos x = 4/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "décimal exact 0,8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{4}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "erreur de signe −4/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{16}{25}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "racine oubliée : 16/25",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\sqrt{\\frac{16}{25}}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "racine non calculée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{12}{13}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "13"
+						},
+						"description": "sin x = 5/13, x ∈ [π/2 ; π] : cos x = −12/13",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{12}{13}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "13"
+						},
+						"description": "signe oublié : 12/13",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{8}{13}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "13"
+						},
+						"description": "1 − sin x au lieu de 1 − sin²x : −8/13",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{15}{17}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "17"
+						},
+						"description": "sin x = −8/17, x ∈ [−π ; −π/2] : cos x = −15/17",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{15}{17}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "8",
+							"b": "17"
+						},
+						"description": "erreur de signe : 15/17",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{8}{17}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "8",
+							"b": "17"
+						},
+						"description": "sin et cos confondus : −8/17",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\sqrt{5}}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "sin x = 2/3, x ∈ [0 ; π/2] : cos x = √5/3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\sqrt5}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "√5/3 sans accolades",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{5}}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "erreur de signe −√5/3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{5}{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "racine oubliée : 5/9",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0{,}75"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "valeur approchée 0,75",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\sqrt{5}}{\\sqrt{9}}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedRadicals"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "racine du dénominateur non calculée √5/√9",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{7}}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "sin x = 3/4, x ∈ [π/2 ; π] : cos x = −√7/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{\\sqrt{7}}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "signe oublié √7/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-\\frac{7}{16}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "racine oubliée −7/16",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{\\sqrt{15}}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "sin x = −1/4, x ∈ [−π/2 ; 0] : cos x = √15/4",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{15}}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "signe de sin x recopié −√15/4",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{\\sqrt{5}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1 − sin x : √5/2",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{2\\sqrt{2}}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "sin x = 1/3, x ∈ [π/2 ; π] : cos x = −2√2/3",
+						"variationIndex": 6
+					},
+					{
+						"answers": ["\\frac{2\\sqrt{2}}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "signe oublié 2√2/3",
+						"variationIndex": 6
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{8}}{3}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedRadicals"]
+						},
+						"variables": {},
+						"description": "racine non simplifiée −√8/3",
+						"variationIndex": 6
+					},
+					{
+						"answers": ["-\\frac{8}{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "racine oubliée −8/9",
+						"variationIndex": 6
+					}
+				],
+				"description": "cos²x + sin²x = 1 : sin x donné (3/5, 2/3…) et un intervalle pour le signe de cos x ; fraction réduite, avec une racine si besoin"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "\\frac{ {{c}} }{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "5|13|17|25"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:sqrt(d)"
+							}
+						],
+						"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{ {{c}} }{ {{b}} }$ ou $\\cos x=-\\frac{ {{c}} }{ {{b}} }$.",
+								"Comme $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$, $\\cos x\\geqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{\\frac{ {{c}} }{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{ {{c}} }{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "5|13|17|25"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:sqrt(d)"
+							}
+						],
+						"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{ {{c}} }{ {{b}} }$ ou $\\cos x=-\\frac{ {{c}} }{ {{b}} }$.",
+								"Comme $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{ {{c}} }{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{ {{c}} }{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=-\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[-\\pi\\,;-\\frac{\\pi}{2}\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "5|13|17|25"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:sqrt(d)"
+							}
+						],
+						"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(-\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{ {{c}} }{ {{b}} }$ ou $\\cos x=-\\frac{ {{c}} }{ {{b}} }$.",
+								"Comme $x\\in\\left[-\\pi\\,;-\\frac{\\pi}{2}\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{ {{c}} }{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "\\frac{\\sqrt{ {{d}} }}{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3..9"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"conditions": ["mod(d,4)!=0", "mod(d,9)!=0", "mod(d,25)!=0", "mod(d,49)!=0"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{\\sqrt{ {{d}} }}{ {{b}} }$ ou $\\cos x=-\\frac{\\sqrt{ {{d}} }}{ {{b}} }$.",
+								"Comme $x\\in\\left[0\\,;\\frac{\\pi}{2}\\right]$, $\\cos x\\geqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{ {{d}} }}{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{\\sqrt{ {{d}} }}{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3..9"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"conditions": ["mod(d,4)!=0", "mod(d,9)!=0", "mod(d,25)!=0", "mod(d,49)!=0"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{\\sqrt{ {{d}} }}{ {{b}} }$ ou $\\cos x=-\\frac{\\sqrt{ {{d}} }}{ {{b}} }$.",
+								"Comme $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{ {{d}} }}{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "\\frac{\\sqrt{ {{d}} }}{ {{b}} }"
+							}
+						],
+						"statement": "On sait que $\\sin x=-\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[-\\frac{\\pi}{2}\\,;0\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "3..9"
+							},
+							{
+								"name": "a",
+								"expression": "1..b!cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"conditions": ["mod(d,4)!=0", "mod(d,9)!=0", "mod(d,25)!=0", "mod(d,49)!=0"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(-\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{ {{d}} }{ {{eval:b^2}} }}=\\frac{\\sqrt{ {{d}} }}{ {{b}} }$ ou $\\cos x=-\\frac{\\sqrt{ {{d}} }}{ {{b}} }$.",
+								"Comme $x\\in\\left[-\\frac{\\pi}{2}\\,;0\\right]$, $\\cos x\\geqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{ {{d}} }}{ {{b}} } }$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "-\\frac{2\\sqrt{2}}{3}"
+							}
+						],
+						"statement": "On sait que $\\sin x=\\frac{ {{a}} }{ {{b}} }$ et que $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$.\n\nCalcule la valeur exacte de $\\cos x$.\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1"
+							},
+							{
+								"name": "b",
+								"expression": "3"
+							},
+							{
+								"name": "d",
+								"expression": "eval:b^2-a^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
+								"Donc $\\cos x=\\sqrt{\\frac{8}{9}}=\\frac{\\sqrt{8}}{3}=\\frac{\\sqrt{4}\\times\\sqrt{2}}{3}=\\frac{2\\sqrt{2}}{3}$ ou $\\cos x=-\\frac{2\\sqrt{2}}{3}$.",
+								"Comme $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{2\\sqrt{2}}{3} }$."
+							]
+						}
+					},
+					{
+						"statement": "On sait que $\\sin x={{if:s<0|-|}}0{,}{{a}}$ et que $x\\in{{if:w==0|\\left[-\\frac{\\pi}{2}\\,;\\frac{\\pi}{2}\\right]|\\left[\\frac{\\pi}{2}\\,;\\frac{3\\pi}{2}\\right]}}$.\n\nCalcule la valeur exacte de $\\cos x$, sans racine d'un nombre décimal ($\\frac{\\sqrt{91}}{10}$ plutôt que $\\sqrt{0{,}91}$).\n\n$\\cos x=?$",
+						"variables": [
+							{
+								"name": "w",
+								"expression": "0|1"
+							},
+							{
+								"name": "s",
+								"expression": "1|-1"
+							},
+							{
+								"name": "a",
+								"expression": "3|6|7|8|9"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(1-2*w)*sqrt(1-(a/10)^2)}}",
+								"acceptDecimal": true,
+								"expectedErrors": [
+									{
+										"answer": "{{eval:-(1-2*w)*sqrt(1-(a/10)^2)}}",
+										"message": "Attention au signe : regarde de quel côté de l'axe des ordonnées se trouve $x$.",
+										"label": "Mauvais signe"
+									},
+									{
+										"answer": "{{eval:(1-2*w)*(1-(a/10)^2)}}",
+										"message": "Tu as calculé le carré : il reste à prendre la racine carrée.",
+										"label": "Racine oubliée"
+									},
+									{
+										"answer": "{{eval:(1-2*w)*(1-s*a/10)}}",
+										"message": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$.",
+										"label": "1 − sin x"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
+								"$$\\cos^2x=1-\\left({{if:s<0|-|}}0{,}{{a}}\\right)^2={{eval:1-(a/10)^2}}$$",
+								"Donc $\\cos x=\\sqrt{ {{eval:1-(a/10)^2}} }$ ou $\\cos x=-\\sqrt{ {{eval:1-(a/10)^2}} }$.",
+								"Comme $x\\in{{if:w==0|\\left[-\\frac{\\pi}{2}\\,;\\frac{\\pi}{2}\\right]|\\left[\\frac{\\pi}{2}\\,;\\frac{3\\pi}{2}\\right]}}$, $\\cos x{{if:w==0|\\geqslant|\\leqslant}}0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{ {{eval:(1-2*w)*sqrt(1-(a/10)^2)}} }$."
+							]
+						},
+						"hint": "Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$. Le signe de $\\cos x$ se lit sur le demi-cercle où se trouve $x$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{4}{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "sin x = 3/5, x ∈ [0 ; π/2] : cos x = 4/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "décimal exact 0,8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{4}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "erreur de signe −4/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{16}{25}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "racine oubliée : 16/25",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\sqrt{\\frac{16}{25}}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "racine non calculée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{12}{13}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "13"
+						},
+						"description": "sin x = 5/13, x ∈ [π/2 ; π] : cos x = −12/13",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{12}{13}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "13"
+						},
+						"description": "signe oublié : 12/13",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{8}{13}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "13"
+						},
+						"description": "1 − sin x au lieu de 1 − sin²x : −8/13",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{15}{17}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "8",
+							"b": "17"
+						},
+						"description": "sin x = −8/17, x ∈ [−π ; −π/2] : cos x = −15/17",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{15}{17}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "8",
+							"b": "17"
+						},
+						"description": "erreur de signe : 15/17",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{8}{17}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "8",
+							"b": "17"
+						},
+						"description": "sin et cos confondus : −8/17",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{\\sqrt{5}}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "sin x = 2/3, x ∈ [0 ; π/2] : cos x = √5/3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\sqrt5}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "√5/3 sans accolades",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{5}}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "erreur de signe −√5/3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{5}{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "racine oubliée : 5/9",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0{,}75"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "valeur approchée 0,75",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{\\sqrt{5}}{\\sqrt{9}}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedRadicals"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "racine du dénominateur non calculée √5/√9",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{7}}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "sin x = 3/4, x ∈ [π/2 ; π] : cos x = −√7/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{\\sqrt{7}}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "signe oublié √7/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-\\frac{7}{16}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "racine oubliée −7/16",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{\\sqrt{15}}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "sin x = −1/4, x ∈ [−π/2 ; 0] : cos x = √15/4",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{15}}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "signe de sin x recopié −√15/4",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{\\sqrt{5}}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1 − sin x : √5/2",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{2\\sqrt{2}}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "sin x = 1/3, x ∈ [π/2 ; π] : cos x = −2√2/3",
+						"variationIndex": 6
+					},
+					{
+						"answers": ["\\frac{2\\sqrt{2}}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "signe oublié 2√2/3",
+						"variationIndex": 6
+					},
+					{
+						"answers": ["-\\frac{\\sqrt{8}}{3}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedRadicals"]
+						},
+						"variables": {},
+						"description": "racine non simplifiée −√8/3",
+						"variationIndex": 6
+					},
+					{
+						"answers": ["-\\frac{8}{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "racine oubliée −8/9",
+						"variationIndex": 6
+					},
+					{
+						"description": "sin x = 0,6, x ∈ [−π/2 ; π/2] : cos x = 0,8",
+						"variationIndex": 7,
+						"variables": {
+							"w": "0",
+							"s": "1",
+							"a": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}8"]
+					},
+					{
+						"description": "fraction 4/5",
+						"variationIndex": 7,
+						"variables": {
+							"w": "0",
+							"s": "1",
+							"a": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{4}{5}"]
+					},
+					{
+						"description": "mauvais signe −0,8",
+						"variationIndex": 7,
+						"variables": {
+							"w": "0",
+							"s": "1",
+							"a": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention au signe : regarde de quel côté de l'axe des ordonnées se trouve $x$."
+						},
+						"answers": ["-0{,}8"]
+					},
+					{
+						"description": "racine oubliée 0,64",
+						"variationIndex": 7,
+						"variables": {
+							"w": "0",
+							"s": "1",
+							"a": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as calculé le carré : il reste à prendre la racine carrée."
+						},
+						"answers": ["0{,}64"]
+					},
+					{
+						"description": "1 − sin x : 0,4",
+						"variationIndex": 7,
+						"variables": {
+							"w": "0",
+							"s": "1",
+							"a": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$."
+						},
+						"answers": ["0{,}4"]
+					},
+					{
+						"description": "sin x = −0,7, x ∈ [π/2 ; 3π/2] : cos x = −√51/10",
+						"variationIndex": 7,
+						"variables": {
+							"w": "1",
+							"s": "-1",
+							"a": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\frac{\\sqrt{51}}{10}"]
+					},
+					{
+						"description": "signe oublié √51/10",
+						"variationIndex": 7,
+						"variables": {
+							"w": "1",
+							"s": "-1",
+							"a": "7"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention au signe : regarde de quel côté de l'axe des ordonnées se trouve $x$."
+						},
+						"answers": ["\\frac{\\sqrt{51}}{10}"]
+					},
+					{
+						"description": "−√0,51 refusé (forme, annoncé)",
+						"variationIndex": 7,
+						"variables": {
+							"w": "1",
+							"s": "-1",
+							"a": "7"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["-\\sqrt{0{,}51}"]
+					}
+				],
+				"description": "cos²x + sin²x = 1 : sin x donné (3/5, 2/3…) et un intervalle pour le signe de cos x ; fraction réduite, avec une racine si besoin"
+			},
+			"changements": {
+				"ajoutees": [8],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "f7194c9d-5056-4444-8a66-78205d1dde32",
+			"title": "Ramener un réel dans ]−π ; π]",
+			"fichier": "f7194c9d.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{6}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:p+12*k"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On retire des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$\\frac{ {{a}}\\pi}{6}={{r}}+\\frac{ {{eval:12*k}}\\pi}{6}={{r}}+{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{4}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:4*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:8*k-p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On ajoute des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$-\\frac{ {{a}}\\pi}{4}={{r}}-\\frac{ {{eval:8*k}}\\pi}{4}={{r}}-{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{3}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..4"
+							},
+							{
+								"name": "a",
+								"expression": "eval:p+6*k"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On retire des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$\\frac{ {{a}}\\pi}{3}={{r}}+\\frac{ {{eval:6*k}}\\pi}{3}={{r}}+{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{6}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:12*k-p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On ajoute des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$-\\frac{ {{a}}\\pi}{6}={{r}}-\\frac{ {{eval:12*k}}\\pi}{6}={{r}}-{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{4}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:4*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:p+8*k"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On retire des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$\\frac{ {{a}}\\pi}{4}={{r}}+\\frac{ {{eval:8*k}}\\pi}{4}={{r}}+{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{3}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..4"
+							},
+							{
+								"name": "a",
+								"expression": "eval:6*k-p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On ajoute des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$-\\frac{ {{a}}\\pi}{3}={{r}}-\\frac{ {{eval:6*k}}\\pi}{3}={{r}}-{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 → 5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{17\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : le réel de l'énoncé n'est pas dans ]−π ; π]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : erreur de signe −5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{11\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : retrait de π au lieu de 2π, 11π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{10\\pi}{12}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : fraction non réduite 10π/12",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "−13π/4 → 3π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "−13π/4 : erreur de signe −3π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "−13π/4 : un seul tour ajouté, −5π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "25π/3 → π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "25π/3 : erreur de signe −π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{7\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "25π/3 : un seul tour retiré, 7π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "−17π/6 → −5π/6",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "−17π/6 : erreur de signe 5π/6",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{7\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "−17π/6 : 7π/6 hors de ]−π ; π]",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "13π/4 → −3π/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "13π/4 : 5π/4 hors de ]−π ; π]",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "13π/4 : erreur de signe 3π/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 → −π/3",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 : erreur de signe π/3",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{5\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 : 5π/3 hors de ]−π ; π]",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{2\\pi}{6}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 : fraction non réduite −2π/6",
+						"variationIndex": 5
+					}
+				],
+				"description": "Trouver le réel de ]−π ; π] associé au même point du cercle trigonométrique qu'un réel donné (17π/6, −13π/4, 25π/3…), en retirant ou en ajoutant des tours"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{6}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:p+12*k"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On retire des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$\\frac{ {{a}}\\pi}{6}={{r}}+\\frac{ {{eval:12*k}}\\pi}{6}={{r}}+{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{4}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:4*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:8*k-p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On ajoute des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$-\\frac{ {{a}}\\pi}{4}={{r}}-\\frac{ {{eval:8*k}}\\pi}{4}={{r}}-{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{3}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..4"
+							},
+							{
+								"name": "a",
+								"expression": "eval:p+6*k"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On retire des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$\\frac{ {{a}}\\pi}{3}={{r}}+\\frac{ {{eval:6*k}}\\pi}{3}={{r}}+{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{6}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:6*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:12*k-p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On ajoute des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$-\\frac{ {{a}}\\pi}{6}={{r}}-\\frac{ {{eval:12*k}}\\pi}{6}={{r}}-{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{4}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:4*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:p+8*k"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On retire des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$\\frac{ {{a}}\\pi}{4}={{r}}+\\frac{ {{eval:8*k}}\\pi}{4}={{r}}+{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{3}$.\n\n$?$",
+						"variables": [
+							{
+								"name": "r",
+								"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+							},
+							{
+								"name": "p",
+								"expression": "eval:3*r/\\pi"
+							},
+							{
+								"name": "k",
+								"expression": "1..4"
+							},
+							{
+								"name": "a",
+								"expression": "eval:6*k-p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On ajoute des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$-\\frac{ {{a}}\\pi}{3}={{r}}-\\frac{ {{eval:6*k}}\\pi}{3}={{r}}-{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+							]
+						}
+					},
+					{
+						"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{ {{q}} }$.\n\n$?$",
+						"variables": [
+							{
+								"name": "q",
+								"expression": "5|12"
+							},
+							{
+								"name": "p",
+								"expression": "1..11;±"
+							},
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "a",
+								"expression": "eval:p+2*q*k"
+							},
+							{
+								"name": "r",
+								"expression": "eval:p*\\pi/q"
+							}
+						],
+						"conditions": ["abs(p)<q", "gcd(abs(p),q)=1"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{r}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:-p*\\pi/q}}",
+										"message": "Ce réel est celui du point symétrique : ajouter ou retirer des tours ne change pas le point, changer de signe le change.",
+										"label": "Symétrique"
+									},
+									{
+										"answer": "{{eval:(p+2*q)*\\pi/q}}",
+										"message": "Ce réel est plus grand que $\\pi$ : retire encore un tour.",
+										"label": "Un tour de moins"
+									},
+									{
+										"answer": "{{eval:(p-2*q)*\\pi/q}}",
+										"message": "Tu as retiré un tour de trop : ce réel est plus petit que $-\\pi$.",
+										"label": "Un tour de trop"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"On retire des tours complets ($2\\pi=\\frac{ {{eval:2*q}}\\pi}{ {{q}} }$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+								"$$\\frac{ {{a}}\\pi}{ {{q}} }={{r}}+\\frac{ {{eval:2*q*k}}\\pi}{ {{q}} }={{r}}+{{eval:2*k}}\\pi$$",
+								"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{ {{r}} }$.",
+								"```trig\npreset: custom\nangles: {{p}}*pi/{{q}}\n```"
+							]
+						},
+						"hint": "Retire des tours complets, avec $2\\pi=\\frac{ {{eval:2*q}}\\pi}{ {{q}} }$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 → 5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{17\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : le réel de l'énoncé n'est pas dans ]−π ; π]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : erreur de signe −5π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{11\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : retrait de π au lieu de 2π, 11π/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{10\\pi}{12}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"k": "1",
+							"r": "\\frac{5\\pi}{6}"
+						},
+						"description": "17π/6 : fraction non réduite 10π/12",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "−13π/4 → 3π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "−13π/4 : erreur de signe −3π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "\\frac{3\\pi}{4}"
+						},
+						"description": "−13π/4 : un seul tour ajouté, −5π/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "25π/3 → π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "25π/3 : erreur de signe −π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{7\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"r": "\\frac{\\pi}{3}"
+						},
+						"description": "25π/3 : un seul tour retiré, 7π/3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "−17π/6 → −5π/6",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{5\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "−17π/6 : erreur de signe 5π/6",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{7\\pi}{6}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{5\\pi}{6}"
+						},
+						"description": "−17π/6 : 7π/6 hors de ]−π ; π]",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["-\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "13π/4 → −3π/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{5\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "13π/4 : 5π/4 hors de ]−π ; π]",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["\\frac{3\\pi}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"r": "-\\frac{3\\pi}{4}"
+						},
+						"description": "13π/4 : erreur de signe 3π/4",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["-\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 → −π/3",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 : erreur de signe π/3",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["\\frac{5\\pi}{3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 : 5π/3 hors de ]−π ; π]",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["-\\frac{2\\pi}{6}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"k": "1",
+							"r": "-\\frac{\\pi}{3}"
+						},
+						"description": "−7π/3 : fraction non réduite −2π/6",
+						"variationIndex": 5
+					},
+					{
+						"description": "23π/12 → −π/12",
+						"variationIndex": 6,
+						"variables": {
+							"q": "12",
+							"p": "-1",
+							"k": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\frac{\\pi}{12}"]
+					},
+					{
+						"description": "23π/12 : symétrique π/12",
+						"variationIndex": 6,
+						"variables": {
+							"q": "12",
+							"p": "-1",
+							"k": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce réel est celui du point symétrique : ajouter ou retirer des tours ne change pas le point, changer de signe le change."
+						},
+						"answers": ["\\frac{\\pi}{12}"]
+					},
+					{
+						"description": "23π/12 : gardé tel quel",
+						"variationIndex": 6,
+						"variables": {
+							"q": "12",
+							"p": "-1",
+							"k": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce réel est plus grand que $\\pi$ : retire encore un tour."
+						},
+						"answers": ["\\frac{23\\pi}{12}"]
+					},
+					{
+						"description": "23π/12 : −25π/12, un tour de trop",
+						"variationIndex": 6,
+						"variables": {
+							"q": "12",
+							"p": "-1",
+							"k": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as retiré un tour de trop : ce réel est plus petit que $-\\pi$."
+						},
+						"answers": ["-\\frac{25\\pi}{12}"]
+					},
+					{
+						"description": "17π/5 → −3π/5",
+						"variationIndex": 6,
+						"variables": {
+							"q": "5",
+							"p": "-3",
+							"k": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\frac{3\\pi}{5}"]
+					},
+					{
+						"description": "17π/5 : 7π/5, un tour de moins",
+						"variationIndex": 6,
+						"variables": {
+							"q": "5",
+							"p": "-3",
+							"k": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce réel est plus grand que $\\pi$ : retire encore un tour."
+						},
+						"answers": ["\\frac{7\\pi}{5}"]
+					}
+				],
+				"description": "Trouver le réel de ]−π ; π] associé au même point du cercle trigonométrique qu'un réel donné (17π/6, −13π/4, 25π/3…), en retirant ou en ajoutant des tours"
+			},
+			"changements": {
+				"ajoutees": [7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

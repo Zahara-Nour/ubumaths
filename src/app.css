@@ -77,7 +77,7 @@
 	/* Font scaling - default 100% */
 	--font-scale: 1;
 
-	/* Exercise font family - default Inter */
+	/* Police du texte des exercices (règle .exercise-content plus bas) */
 	--exercise-font-family: 'Inter', sans-serif;
 
 	/* Touch-friendly sizing tokens */
@@ -555,8 +555,9 @@ html.lecture-facilitee .dashboard-content :is(p, li).text-xl {
  * Exercise Font Family
  * ====================
  *
- * Applies user-selected font family to exercise content.
- * Controlled by exerciseFont store (exerciseFont.svelte.ts).
+ * Police du texte des exercices (Inter, cf. --exercise-font-family) : elle
+ * l'emporte sur le Lora que ExerciseDisplay.svelte donne au bloc, pour les
+ * paragraphes, listes, tableaux et titres.
  */
 .exercise-content {
 	font-family: var(--exercise-font-family);

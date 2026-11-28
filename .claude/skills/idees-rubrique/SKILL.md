@@ -119,8 +119,12 @@ Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lo
   Chaque modèle et chaque variation ajoutée a ses **`testSpecs`** : des réponses justes sous
   plusieurs écritures (acceptées) **et** les erreurs typiques des élèves (refusées), comme dans
   `couvrir-un-niveau.md` § 5, et ces erreurs typiques deviennent des **erreurs prévues** de la
-  case (réponse + message à l'élève, même §), que le prof complète ensuite. Une variation sans
-  spec ne part pas. `create-questions` en
+  case (réponse + message à l'élève, même §), que le prof complète ensuite : **trois par case**
+  visées (QCM possible), message écrit sous sa forme réécrite (`$10^3$`, `$b - a$`). Chaque
+  variation a son **coup de pouce** (`hint`, ou `hintFromFirstStep`), qui ne donne jamais la
+  réponse (lu par la prod depuis la 0.101.0, 2026-11-22). Forme : faits vérifiés du même § (motif qui compare
+  deux parties, case unique, pas de Oui / Non au hasard, consigne qui dit ce qu'elle refuse,
+  réglages du modèle fixés dès la création). Une variation sans spec ne part pas. `create-questions` en
   simulation, `question:specs`, puis essai dans la base **locale**, modèle joué dans l'aperçu
   (réponse juste acceptée, erreur typique refusée).
   ⚠️ `--publier` en local écrit les ids locaux dans les fichiers : les restaurer (`git restore`)
@@ -139,8 +143,12 @@ Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lo
 
 1. David lance `create-questions --publier` (brouillons). Je commite les ids écrits en tête des
    fichiers.
-2. Migrations de rangement (nœud + tag) et de contenu, chacune avec son test d'intégration (rouge
-   sans la migration, mention `@migration-de-donnees` en tête, copiée du gabarit) et `security-auditor`.
+2. Migrations de rangement (nœud + tag) et de contenu, **générées** toutes les deux, avec leur
+   fixture (aucun test à écrire) : champ `rangement` dans les fichiers puis
+   `scripts/questions/migration-rangement.ts --dir …` (modèle neuf : `{ noeud, point }` ; modèle
+   publié qui gagne un niveau ou un tag : `{ niveauxAjoutes, pointsAjoutes }` ; un point par
+   programme : `"point": ["1SPE-…", "1TECHNO-…"]`), et `migration-contenu.ts --dir …`.
+   `security-auditor` sur la PR.
 3. `db:migrate` selon les 4 conditions de `CLAUDE.md`. ⚠️ Avec plusieurs sessions,
    `migration list --linked` d'abord : si **une autre** migration est en attente, stop.
 

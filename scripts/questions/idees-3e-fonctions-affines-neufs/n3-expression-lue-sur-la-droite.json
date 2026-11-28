@@ -1,0 +1,387 @@
+{
+	"id": "51a8db37-292e-4e12-8688-a71cddecc576",
+	"rangement": {
+		"noeud": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+		"point": "3-067"
+	},
+	"title": "Lire l'expression d'une fonction affine sur sa droite",
+	"description": "Expression f(x) = ax + b lue sur la droite : coefficient directeur entier, fonction linéaire, coefficient directeur en demis (pièges : a et b inversés, signe, coefficient directeur renversé)",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,b,a+b)-3}} ; {{eval:max(1,b,a+b)+3}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b*x+a}}",
+							"message": "Tu as échangé le coefficient directeur et l'ordonnée à l'origine : l'ordonnée à l'origine se lit sur l'axe des ordonnées.",
+							"label": "a et b inversés"
+						},
+						{
+							"answer": "{{eval:-a*x+b}}",
+							"message": "Vérifie le signe du coefficient directeur : il est positif si la droite monte, négatif si elle descend.",
+							"label": "Signe du coefficient directeur"
+						},
+						{
+							"answer": "{{eval:x/a+b}}",
+							"message": "Le coefficient directeur, c'est le déplacement vertical divisé par le déplacement horizontal, pas l'inverse.",
+							"label": "Coefficient directeur renversé (1/a)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit deux points de la droite sur des nœuds du quadrillage :",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,b,a+b)-3}} ; {{eval:max(1,b,a+b)+3}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{b}}), B(1 ; {{eval:a+b}})\ntaille: moyenne\ndescription: Droite D et deux de ses points, A sur l'axe des ordonnées et B.\n```",
+					"$\\mathcal{D}$ coupe l'axe des ordonnées en $A(0\\,;{{b}})$ : $b=\\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"De $A$ à $B$, on avance de $1$ et on {{if:a>0|monte|descend}} de ${{eval:abs(a+b-b)}}$ : $a=\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+					"Donc $f(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x|}}{{if:a==-1|-x|}}{{if:a*a>1|{{a}}x|}}{{b;+}}}$."
+				]
+			},
+			"hint": "L'ordonnée à l'origine se lit là où la droite coupe l'axe des ordonnées. Pour le coefficient directeur, avance vers la droite d'un nombre entier de carreaux et regarde de combien la droite monte ou descend."
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,b,a)-3}} ; {{eval:max(1,b,a)+3}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "0"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a*x}}",
+							"message": "Vérifie le signe du coefficient directeur : il est positif si la droite monte, négatif si elle descend.",
+							"label": "Signe du coefficient directeur"
+						},
+						{
+							"answer": "{{eval:x/a}}",
+							"message": "Le coefficient directeur, c'est le déplacement vertical divisé par le déplacement horizontal, pas l'inverse.",
+							"label": "Coefficient directeur renversé (1/a)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit deux points de la droite sur des nœuds du quadrillage :",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,b,a)-3}} ; {{eval:max(1,b,a)+3}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{b}}), B(1 ; {{eval:a}})\ntaille: moyenne\ndescription: Droite D et deux de ses points, A sur l'axe des ordonnées et B.\n```",
+					"$\\mathcal{D}$ coupe l'axe des ordonnées en $A(0\\,;{{b}})$ : $b=\\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"De $A$ à $B$, on avance de $1$ et on {{if:a>0|monte|descend}} de ${{eval:abs(a-b)}}$ : $a=\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+					"Donc $f(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x|}}{{if:a==-1|-x|}}{{if:a*a>1|{{a}}x|}}}$."
+				]
+			},
+			"hint": "L'ordonnée à l'origine se lit là où la droite coupe l'axe des ordonnées. Pour le coefficient directeur, avance vers la droite d'un nombre entier de carreaux et regarde de combien la droite monte ou descend."
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,b,n+b)-3}} ; {{eval:max(1,b,n+b)+3}}\ngrille: 1 ; 1\nf(x) = ({{n}})/2*x+({{b}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nDonne l'expression de $f(x)$, avec un coefficient directeur en écriture fractionnaire.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "n",
+					"expression": "1|3|-1|-3"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/2*x+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b*x+n/2}}",
+							"message": "Tu as échangé le coefficient directeur et l'ordonnée à l'origine : l'ordonnée à l'origine se lit sur l'axe des ordonnées.",
+							"label": "a et b inversés"
+						},
+						{
+							"answer": "{{eval:-n/2*x+b}}",
+							"message": "Vérifie le signe du coefficient directeur : il est positif si la droite monte, négatif si elle descend.",
+							"label": "Signe du coefficient directeur"
+						},
+						{
+							"answer": "{{eval:2/n*x+b}}",
+							"message": "Le coefficient directeur, c'est le déplacement vertical divisé par le déplacement horizontal, pas l'inverse.",
+							"label": "Coefficient directeur renversé (2 au lieu de 1/2)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit deux points de la droite sur des nœuds du quadrillage :",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,b,n+b)-3}} ; {{eval:max(1,b,n+b)+3}}\ngrille: 1 ; 1\nf(x) = ({{n}})/2*x+({{b}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{b}}), B(2 ; {{eval:n+b}})\ntaille: moyenne\ndescription: Droite D et deux de ses points, A sur l'axe des ordonnées et B.\n```",
+					"$\\mathcal{D}$ coupe l'axe des ordonnées en $A(0\\,;{{b}})$ : $b=\\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"De $A$ à $B$, on avance de $2$ et on {{if:n>0|monte|descend}} de ${{eval:abs(n+b-b)}}$ : $a=\\textcolor{{{color:primary.0}}}{{{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{2}}$.",
+					"Donc $f(x)=\\textcolor{{{color:primary.0}}}{{{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{2}x{{b;+}}}$."
+				]
+			},
+			"hint": "L'ordonnée à l'origine se lit là où la droite coupe l'axe des ordonnées. Pour le coefficient directeur, avance vers la droite d'un nombre entier de carreaux et regarde de combien la droite monte ou descend."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : f(x) = −2x + 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x+3"]
+		},
+		{
+			"description": "v0 : 3 − 2x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3-2x"]
+		},
+		{
+			"description": "v0 : inversés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé le coefficient directeur et l'ordonnée à l'origine : l'ordonnée à l'origine se lit sur l'axe des ordonnées."
+			},
+			"answers": ["3x-2"]
+		},
+		{
+			"description": "v0 : signe",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe du coefficient directeur : il est positif si la droite monte, négatif si elle descend."
+			},
+			"answers": ["2x+3"]
+		},
+		{
+			"description": "v0 : renversé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient directeur, c'est le déplacement vertical divisé par le déplacement horizontal, pas l'inverse."
+			},
+			"answers": ["-\\frac{1}{2}x+3"]
+		},
+		{
+			"description": "v0 : f(x) = x − 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x-4"]
+		},
+		{
+			"description": "v1 : f(x) = 3x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3x"]
+		},
+		{
+			"description": "v1 : signe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe du coefficient directeur : il est positif si la droite monte, négatif si elle descend."
+			},
+			"answers": ["-3x"]
+		},
+		{
+			"description": "v1 : renversé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient directeur, c'est le déplacement vertical divisé par le déplacement horizontal, pas l'inverse."
+			},
+			"answers": ["\\frac{1}{3}x"]
+		},
+		{
+			"description": "v1 : f(x) = −x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-x"]
+		},
+		{
+			"description": "v2 : f(x) = 1/2 x + 1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{2}x+1"]
+		},
+		{
+			"description": "v2 : x/2 + 1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{x}{2}+1"]
+		},
+		{
+			"description": "v2 : 1 + x/2",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1+\\frac{x}{2}"]
+		},
+		{
+			"description": "v2 : non réduite",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["x-\\frac{1}{2}x+1"]
+		},
+		{
+			"description": "v2 : inversés",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé le coefficient directeur et l'ordonnée à l'origine : l'ordonnée à l'origine se lit sur l'axe des ordonnées."
+			},
+			"answers": ["x+\\frac{1}{2}"]
+		},
+		{
+			"description": "v2 : signe",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe du coefficient directeur : il est positif si la droite monte, négatif si elle descend."
+			},
+			"answers": ["-\\frac{1}{2}x+1"]
+		},
+		{
+			"description": "v2 : 2 au lieu de 1/2",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient directeur, c'est le déplacement vertical divisé par le déplacement horizontal, pas l'inverse."
+			},
+			"answers": ["2x+1"]
+		},
+		{
+			"description": "v2 : f(x) = −3/2 x − 2",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"b": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{3}{2}x-2"]
+		}
+	]
+}

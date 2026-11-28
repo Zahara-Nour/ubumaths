@@ -36,6 +36,7 @@
 	import { cn } from '#lib/utils.ts';
 	import Badge from '#lib/components/ui/badge/badge.svelte';
 	import { Trash2, Sparkles, Clock, Zap, Coins } from '@lucide/svelte';
+	import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 	interface Props {
 		card: VipCard;
@@ -175,7 +176,12 @@
 			class="vip-card-face vip-card-front absolute h-full w-full overflow-hidden rounded-xl border-4 border-amber-400/50 shadow-2xl [backface-visibility:hidden]"
 		>
 			<!-- Card Image -->
-			<img src={card.imagePath} alt={card.name} class="h-full w-full object-cover" loading="lazy" />
+			<img
+				src={card.imagePath ? toBrowserAddress(card.imagePath) : undefined}
+				alt={card.name}
+				class="h-full w-full object-cover"
+				loading="lazy"
+			/>
 
 			<!-- Description Overlay (appears on hover) -->
 			<div

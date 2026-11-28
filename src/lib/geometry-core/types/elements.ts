@@ -626,7 +626,10 @@ export interface GeoScalar extends GeoElementBase {
 		| 'coordinate'
 		| 'arcLength'
 		| 'curvature';
-	/** Display unit ('rad' | 'deg') for angle_measure / vectors_angle_measure kinds. Default: 'rad'. */
+	/**
+	 * Display unit ('rad' | 'deg') for angle_measure / vectors_angle_measure kinds. Default: 'rad'.
+	 * Pour polar_angle : défaut 'deg' (figures enregistrées avant l'unité, bissectrice).
+	 */
 	readonly unite?: 'rad' | 'deg';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];

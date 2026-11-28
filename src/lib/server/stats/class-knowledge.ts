@@ -17,6 +17,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { readAllRows } from '#lib/server/read-all-rows.ts';
 import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
 import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
 import { placeOfNode, type ProgrammePointRow } from '#lib/utils/programme-tree.ts';
@@ -189,20 +190,28 @@ export async function getClassCurriculumPointGrid(
 	}
 	const classGrade = classRow?.grade ?? null;
 
-	const { data: attemptsRaw, error: attErr } = await supabase
-		.from('skill_attempts')
-		.select('student_id, template_id')
-		// `studentIds` est borné par la taille d'une classe (quelques dizaines) :
-		// pas de découpage nécessaire, contrairement aux listes de templates.
-		.in('student_id', studentIds)
-		.not('template_id', 'is', null);
-
-	if (attErr) {
+	// Lus page par page : une classe active dépasse vite le plafond de 1000
+	// lignes de PostgREST, qui tronque en silence (V123). `studentIds` est
+	// borné par la taille d'une classe : pas de découpage du `.in()`.
+	let attemptsRaw: { student_id: string; template_id: string | null }[];
+	try {
+		attemptsRaw = await readAllRows(
+			(from, to) =>
+				supabase
+					.from('skill_attempts')
+					.select('student_id, template_id')
+					.in('student_id', studentIds)
+					.not('template_id', 'is', null)
+					.order('id')
+					.range(from, to),
+			'des essais de la classe'
+		);
+	} catch (attErr) {
 		logger.error('[class-knowledge] skill_attempts lookup failed:', attErr);
 		return { students, points: [], cells: {}, columnStats: {} };
 	}
 
-	const templateIds = [...new Set((attemptsRaw ?? []).map((a) => a.template_id as string))];
+	const templateIds = [...new Set(attemptsRaw.map((a) => a.template_id as string))];
 
 	let points: ClassCurriculumPoint[] = [];
 	const templateToPointIds = new Map<string, string[]>();
@@ -304,7 +313,7 @@ export async function getClassCurriculumPointGrid(
 	}
 
 	const studentTemplateIds = new Map<string, Set<string>>();
-	for (const a of attemptsRaw ?? []) {
+	for (const a of attemptsRaw) {
 		const set = studentTemplateIds.get(a.student_id) ?? new Set();
 		set.add(a.template_id as string);
 		studentTemplateIds.set(a.student_id, set);

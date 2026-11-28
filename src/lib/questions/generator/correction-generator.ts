@@ -20,6 +20,7 @@
  */
 
 import { parseCustomSafe } from '#lib/mathAST/index.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
 import { templateGenericFunctions } from '../generic-functions';
 import { readingOf } from '../formula-reading';
 import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
@@ -1027,9 +1028,21 @@ function parseExpression(
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? [], undefined, {
 		durations: 'single'
 	});
-	const parseResult = parseCustomSafe(resolved.trim(), readingOf(instance));
-	if (!parseResult.ast) return null;
-	return cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
+	const ast = parseWithDecimalComma(resolved.trim(), instance);
+	if (!ast) return null;
+	return cleanCoefficients ? cleanCoefficientsAst(ast) : ast;
+}
+
+/**
+ * Lit la formule ; si le parseur la refuse et qu'aucune virgule n'y est séparatrice,
+ * relit ses virgules nues entre deux chiffres comme décimales (`0,6x^2-0,6`, écrit par
+ * l'auteur à la française). Une formule déjà lisible n'est jamais relue.
+ */
+function parseWithDecimalComma(formula: string, instance: QuestionInstance): MathNode | null {
+	const reading = readingOf(instance);
+	const parsed = parseCustomSafe(formula, reading).ast;
+	if (parsed || !formula.includes(',') || expectsSeparatorComma(formula)) return parsed ?? null;
+	return parseCustomSafe(bareDecimalCommaToPoint(formula), reading).ast ?? null;
 }
 
 /**

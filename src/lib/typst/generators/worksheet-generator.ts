@@ -261,7 +261,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	private printedTitle(worksheet: WorksheetRow): PrintedTitle {
 		const notions = [...(worksheet.classifications ?? [])]
 			.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'))
-			.map((notion) => ({ name: notion.name, branch: notion.branch }));
+			.map((notion) => ({
+				name: notion.name,
+				branch: notion.branch,
+				nameEn: notion.name_en,
+				branchEn: notion.branch_en
+			}));
 		return printedTitle({
 			type: worksheet.type,
 			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,
@@ -276,13 +281,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 * Les niveaux de la fiche, du plus petit au plus grand : noms complets et
 	 * courts séparés par « · » (gabarits des profs qui les impriment encore),
 	 * badges (forme courte, ADR 0041) en tête de la page 1 et au bas de page.
-	 * Fiche en anglais : aucun, faute de noms anglais des niveaux. Une vue sans
-	 * niveaux : aucun.
+	 * Fiche en anglais : les mêmes, noms français des niveaux — ceux que
+	 * connaissent les élèves (David, 2026-11-25). Une vue sans niveaux : aucun.
 	 */
 	private levels(worksheet: WorksheetRow): { full: string; short: string; badges: string } {
 		const grades: unknown[] = Array.isArray(worksheet.grades) ? worksheet.grades : [];
 		const known = grades.filter(isGradeCode);
-		if (this.locale !== 'fr' || known.length === 0) return { full: '', short: '', badges: '' };
+		if (known.length === 0) return { full: '', short: '', badges: '' };
 		const sorted = [...new Set(known)].sort((a, b) => GRADES[a].schoolYear - GRADES[b].schoolYear);
 		return {
 			full: sorted.map((grade) => GRADES[grade].displayName).join(' · '),

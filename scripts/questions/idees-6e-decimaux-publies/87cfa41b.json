@@ -1,0 +1,455 @@
+{
+	"id": "87cfa41b-cd8c-4b53-9150-78f91dd71702",
+	"title": "Problèmes de partage décimal",
+	"description": "Diviser de tête une somme, une longueur, un prix total par un entier d'un chiffre (7,50 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:j/10;d}}"
+				}
+			],
+			"statement": "${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$ en parts égales. Combien chacun reçoit-il ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "j",
+					"expression": "5..49"
+				},
+				{
+					"name": "C",
+					"expression": "eval:10*n*j"
+				}
+			],
+			"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
+					"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/10;d}}"
+				}
+			],
+			"statement": "On coupe un ruban de ${{L}}~\\unit{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la longueur d'un morceau ?\n\n$$?~\\text{m}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..15"
+				},
+				{
+					"name": "L",
+					"expression": "eval:n*q/10;d"
+				}
+			],
+			"conditions": ["mod(n*q,10)!=0", "n*q<=99", "mod(q,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Partager en parts égales**, c'est diviser : longueur d'un morceau $=$ longueur du ruban $\\div$ nombre de morceaux.",
+					"De tête : ${{eval:n*q}}$ dixièmes de mètre $\\div {{n}} = {{q}}$ dixièmes.",
+					"$${{L}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:j/10;d}}"
+				}
+			],
+			"statement": "${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "j",
+					"expression": "5..49"
+				},
+				{
+					"name": "C",
+					"expression": "eval:10*n*j"
+				}
+			],
+			"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Prix d'un objet** $=$ prix total $\\div$ nombre d'objets.",
+					"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On partage ${{eval:Lt/10;d}}~\\unit{L}$ de jus de fruits entre ${{n}}$ verres, de façon égale. Combien de centilitres y a-t-il dans chaque verre, arrondi au centilitre ?\n\n$$?~\\text{cL}$$",
+			"variables": [
+				{
+					"name": "Lt",
+					"expression": "10..25"
+				},
+				{
+					"name": "n",
+					"expression": "6..12"
+				}
+			],
+			"conditions": ["mod(20*Lt,n)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*Lt/n)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(10*Lt/n)}}",
+							"message": "Tu as gardé la partie entière : pour arrondir au centilitre, regarde le chiffre des dixièmes.",
+							"label": "Troncature"
+						},
+						{
+							"answer": "{{eval:round(10*Lt/n)/100;d}}",
+							"message": "Tu as donné la réponse en litres : on la demande en centilitres.",
+							"label": "Réponse en litres"
+						},
+						{
+							"answer": "{{eval:round(Lt/n)}}",
+							"message": "$1~\\unit{L} = 100~\\unit{cL}$ : convertis d'abord la quantité de jus en centilitres.",
+							"label": "Conversion fausse"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Partager en parts égales**, c'est diviser. On convertit d'abord : ${{eval:Lt/10;d}}~\\unit{L} = {{eval:10*Lt}}~\\unit{cL}$.",
+					"${{eval:10*Lt}} \\div {{n}} \\approx {{eval:floor(100*Lt/n)/10;d}}$ : le chiffre des dixièmes est ${{eval:mod(floor(100*Lt/n),10)}}$, on arrondit {{if:mod(floor(100*Lt/n),10)>=5|à l'unité supérieure|à l'unité inférieure}}.",
+					"Chaque verre contient environ $\\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{cL}$."
+				]
+			},
+			"hint": "Convertis d'abord la quantité de jus en centilitres, puis partage. Pour arrondir à l'unité, regarde le chiffre des dixièmes."
+		},
+		{
+			"statement": "${{n}}$ amis partagent ${{S}}~\\unit{€}$ en parts égales. Quelle est la part de chacun, arrondie au centime **par excès** ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "S",
+					"expression": "10..99"
+				},
+				{
+					"name": "n",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["mod(100*S,n)!=0", "S>=n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ceil(100*S/n)/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(100*S/n)/100;d}}",
+							"message": "Tu as arrondi par défaut : par excès, on prend le centime au-dessus.",
+							"label": "Arrondi par défaut"
+						},
+						{
+							"answer": "{{eval:floor(S/n)+mod(S,n)/10;d}}",
+							"message": "Le reste de la division euclidienne n'est pas la partie décimale : continue la division après la virgule.",
+							"label": "Reste écrit après la virgule"
+						},
+						{
+							"answer": "{{eval:floor(S/n)}}",
+							"message": "Tu as gardé la partie entière : continue la division jusqu'aux centimes.",
+							"label": "Partie entière seulement"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
+					"${{S}} \\div {{n}} = {{eval:floor(1000*S/n)/1000;d}}\\ldots$ : la division ne tombe pas juste.",
+					"Par excès, on prend le centime au-dessus : chacun reçoit $\\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{€}$."
+				]
+			},
+			"hint": "Pose la division jusqu'aux millièmes, puis arrondis au centime supérieur."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "750",
+				"j": "25",
+				"n": "3",
+				"o": "0"
+			},
+			"description": "7,50 € entre 3 : 2,5 €",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2,50"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "750",
+				"j": "25",
+				"n": "3",
+				"o": "0"
+			},
+			"description": "2,50 € accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["22,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "750",
+				"j": "25",
+				"n": "3",
+				"o": "0"
+			},
+			"description": "Erreur : multiplié (22,5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "750",
+				"j": "25",
+				"n": "3",
+				"o": "0"
+			},
+			"description": "Erreur : 25",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "4.2",
+				"n": "6",
+				"q": "7"
+			},
+			"description": "4,2 m en 6 : 0,7 m",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "4.2",
+				"n": "6",
+				"q": "7"
+			},
+			"description": "Erreur : 7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,07"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "4.2",
+				"n": "6",
+				"q": "7"
+			},
+			"description": "Erreur : 0,07",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1,90"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "760",
+				"j": "19",
+				"n": "4",
+				"o": "0"
+			},
+			"description": "7,60 € pour 4 : 1,90 €",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1,9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "760",
+				"j": "19",
+				"n": "4",
+				"o": "0"
+			},
+			"description": "1,9 € accepté",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1,15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "760",
+				"j": "19",
+				"n": "4",
+				"o": "0"
+			},
+			"description": "Erreur : 1,15 (7 ÷ 4 = 1 reste 3, puis 60 ÷ 4)",
+			"variationIndex": 2
+		},
+		{
+			"description": "F11b : 1,5 L entre 8 verres",
+			"variationIndex": 3,
+			"variables": {
+				"Lt": "15",
+				"n": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["19"]
+		},
+		{
+			"description": "F11b : troncature (18)",
+			"variationIndex": 3,
+			"variables": {
+				"Lt": "15",
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé la partie entière : pour arrondir au centilitre, regarde le chiffre des dixièmes."
+			},
+			"answers": ["18"]
+		},
+		{
+			"description": "F11b : en litres (0,19)",
+			"variationIndex": 3,
+			"variables": {
+				"Lt": "15",
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la réponse en litres : on la demande en centilitres."
+			},
+			"answers": ["0{,}19"]
+		},
+		{
+			"description": "F11b : 1 L = 10 cL (2)",
+			"variationIndex": 3,
+			"variables": {
+				"Lt": "15",
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$1~\\unit{L} = 100~\\unit{cL}$ : convertis d'abord la quantité de jus en centilitres."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F11b : 25 € entre 3",
+			"variationIndex": 4,
+			"variables": {
+				"S": "25",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8{,}34"]
+		},
+		{
+			"description": "F11b : par défaut (8,33)",
+			"variationIndex": 4,
+			"variables": {
+				"S": "25",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi par défaut : par excès, on prend le centime au-dessus."
+			},
+			"answers": ["8{,}33"]
+		},
+		{
+			"description": "F11b : reste après la virgule (8,1)",
+			"variationIndex": 4,
+			"variables": {
+				"S": "25",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le reste de la division euclidienne n'est pas la partie décimale : continue la division après la virgule."
+			},
+			"answers": ["8{,}1"]
+		},
+		{
+			"description": "F11b : partie entière (8)",
+			"variationIndex": 4,
+			"variables": {
+				"S": "25",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé la partie entière : continue la division jusqu'aux centimes."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "F11b : 50 € entre 6, 8,34",
+			"variationIndex": 4,
+			"variables": {
+				"S": "50",
+				"n": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8{,}34"]
+		}
+	]
+}

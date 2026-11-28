@@ -1,0 +1,431 @@
+{
+	"id": "ea76da91-df3e-400f-939c-172556169e87",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > identités remarquables",
+		"point": "3-016"
+	},
+	"title": "Calculer astucieusement avec une identité remarquable",
+	"description": "Calcul mental avec les trois identités remarquables : 103² = (100 + 3)², 98² = (100 − 2)², 302 × 298 = (300 + 2)(300 − 2) (pièges : double produit oublié, b² soustrait, b² ajouté au lieu d'être soustrait)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Sans calculatrice, calcule ${{N}}^2$ en écrivant ${{N}}={{A}}+{{b}}$.\n\n${{N}}^2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*10^n"
+				},
+				{
+					"name": "N",
+					"expression": "eval:A+b"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A^2+b^2}}",
+							"message": "Tu as oublié le double produit : $(a+b)^2$ n'est pas égal à $a^2+b^2$, il manque $2ab$.",
+							"label": "Double produit oublié"
+						},
+						{
+							"answer": "{{eval:A^2+A*b+b^2}}",
+							"message": "Dans le double produit $2ab$, n'oublie pas le facteur $2$.",
+							"label": "Double produit sans le 2"
+						},
+						{
+							"answer": "{{eval:2*N}}",
+							"message": "Tu as calculé le double de ${{N}}$ : élever au carré, c'est multiplier le nombre par lui-même.",
+							"label": "Carré pris pour le double"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$, avec $a={{A}}$ et $b={{b}}$.",
+					"$${{N}}^2=({{A}}+{{b}})^2={{A}}^2+2\\times{{A}}\\times{{b}}+{{b}}^2={{eval:A^2}}+{{eval:2*A*b}}+{{eval:b^2}}=\\textcolor{{{color:primary.0}}}{{{eval:N^2}}}$$"
+				]
+			},
+			"hint": "Utilise l'identité $(a+b)^2=a^2+2ab+b^2$ avec $a={{A}}$ et $b={{b}}$."
+		},
+		{
+			"statement": "Sans calculatrice, calcule ${{N}}^2$ en écrivant ${{N}}={{A}}-{{b}}$.\n\n${{N}}^2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*10^n"
+				},
+				{
+					"name": "N",
+					"expression": "eval:A-b"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A^2-2*A*b-b^2}}",
+							"message": "Dans $(a-b)^2=a^2-2ab+b^2$, le carré $b^2$ s'ajoute : il ne se soustrait pas.",
+							"label": "b² soustrait"
+						},
+						{
+							"answer": "{{eval:A^2-b^2}}",
+							"message": "Tu as oublié le double produit : $(a-b)^2$ n'est pas égal à $a^2-b^2$, il manque $-2ab$.",
+							"label": "Double produit oublié"
+						},
+						{
+							"answer": "{{eval:A^2-A*b+b^2}}",
+							"message": "Dans le double produit $-2ab$, n'oublie pas le facteur $2$.",
+							"label": "Double produit sans le 2"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$, avec $a={{A}}$ et $b={{b}}$.",
+					"$${{N}}^2=({{A}}-{{b}})^2={{A}}^2-2\\times{{A}}\\times{{b}}+{{b}}^2={{eval:A^2}}-{{eval:2*A*b}}+{{eval:b^2}}=\\textcolor{{{color:primary.0}}}{{{eval:N^2}}}$$"
+				]
+			},
+			"hint": "Utilise l'identité $(a-b)^2=a^2-2ab+b^2$ avec $a={{A}}$ et $b={{b}}$."
+		},
+		{
+			"statement": "Sans calculatrice, calcule ${{P}}\\times{{M}}$ en écrivant ${{P}}={{A}}+{{b}}$ et ${{M}}={{A}}-{{b}}$.\n\n${{P}}\\times{{M}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1|2"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*10^n"
+				},
+				{
+					"name": "P",
+					"expression": "eval:A+b"
+				},
+				{
+					"name": "M",
+					"expression": "eval:A-b"
+				}
+			],
+			"conditions": ["2*b<10^n", "b>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:A^2-b^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A^2+b^2}}",
+							"message": "$(a+b)(a-b)=a^2-b^2$ : le carré de ${{b}}$ se soustrait.",
+							"label": "b² ajouté"
+						},
+						{
+							"answer": "{{eval:A^2}}",
+							"message": "Tu as oublié de soustraire le carré de ${{b}}$ : $(a+b)(a-b)=a^2-b^2$.",
+							"label": "b² oublié"
+						},
+						{
+							"answer": "{{eval:A^2-b}}",
+							"message": "Dans $a^2-b^2$, c'est le carré de ${{b}}$ qu'on soustrait, pas ${{b}}$.",
+							"label": "b au lieu de b²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Produit d'une somme par une différence** : $(a+b)(a-b)=a^2-b^2$, avec $a={{A}}$ et $b={{b}}$.",
+					"$${{P}}\\times{{M}}=({{A}}+{{b}})({{A}}-{{b}})={{A}}^2-{{b}}^2={{eval:A^2}}-{{eval:b^2}}=\\textcolor{{{color:primary.0}}}{{{eval:A^2-b^2}}}$$"
+				]
+			},
+			"hint": "Utilise l'identité $(a+b)(a-b)=a^2-b^2$ avec $a={{A}}$ et $b={{b}}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 103² = 10 609",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "3",
+				"A": "100",
+				"N": "103"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10\\,609"]
+		},
+		{
+			"description": "v0 : calcul laissé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "3",
+				"A": "100",
+				"N": "103"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["10\\,000+600+9"]
+		},
+		{
+			"description": "v0 : double produit oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "3",
+				"A": "100",
+				"N": "103"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le double produit : $\\left( a + b \\right)^2$ n'est pas égal à $a^2 + b^2$, il manque $2 a b$."
+			},
+			"answers": ["10\\,009"]
+		},
+		{
+			"description": "v0 : sans le 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "3",
+				"A": "100",
+				"N": "103"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le double produit $2 a b$, n'oublie pas le facteur $2$."
+			},
+			"answers": ["10\\,309"]
+		},
+		{
+			"description": "v0 : double",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "3",
+				"A": "100",
+				"N": "103"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le double de $103$ : élever au carré, c'est multiplier le nombre par lui-même."
+			},
+			"answers": ["206"]
+		},
+		{
+			"description": "v0 : 1 003² = 1 006 009",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"n": "3",
+				"b": "3",
+				"A": "1000",
+				"N": "1003"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\,006\\,009"]
+		},
+		{
+			"description": "v1 : 98² = 9 604",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "2",
+				"A": "100",
+				"N": "98"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9\\,604"]
+		},
+		{
+			"description": "v1 : b² soustrait",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "2",
+				"A": "100",
+				"N": "98"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans $\\left( a - b \\right)^2 = a^2 - 2 a b + b^2$, le carré $b^2$ s'ajoute : il ne se soustrait pas."
+			},
+			"answers": ["9\\,596"]
+		},
+		{
+			"description": "v1 : double produit oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "2",
+				"A": "100",
+				"N": "98"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le double produit : $\\left( a - b \\right)^2$ n'est pas égal à $a^2 - b^2$, il manque $-2 a b$."
+			},
+			"answers": ["9\\,996"]
+		},
+		{
+			"description": "v1 : sans le 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"b": "2",
+				"A": "100",
+				"N": "98"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le double produit $-2 a b$, n'oublie pas le facteur $2$."
+			},
+			"answers": ["9\\,804"]
+		},
+		{
+			"description": "v2 : 302 × 298 = 89 996",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"n": "2",
+				"b": "2",
+				"A": "300",
+				"P": "302",
+				"M": "298"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["89\\,996"]
+		},
+		{
+			"description": "v2 : b² ajouté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"n": "2",
+				"b": "2",
+				"A": "300",
+				"P": "302",
+				"M": "298"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left( a + b \\right) \\left( a - b \\right) = a^2 - b^2$ : le carré de $2$ se soustrait."
+			},
+			"answers": ["90\\,004"]
+		},
+		{
+			"description": "v2 : b² oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"n": "2",
+				"b": "2",
+				"A": "300",
+				"P": "302",
+				"M": "298"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de soustraire le carré de $2$ : $\\left( a + b \\right) \\left( a - b \\right) = a^2 - b^2$."
+			},
+			"answers": ["90\\,000"]
+		},
+		{
+			"description": "v2 : b au lieu de b²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"n": "2",
+				"b": "2",
+				"A": "300",
+				"P": "302",
+				"M": "298"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans $a^2 - b^2$, c'est le carré de $2$ qu'on soustrait, pas $2$."
+			},
+			"answers": ["89\\,998"]
+		},
+		{
+			"description": "v2 : 53 × 47 = 2 491",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "1",
+				"b": "3",
+				"A": "50",
+				"P": "53",
+				"M": "47"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\,491"]
+		}
+	]
+}

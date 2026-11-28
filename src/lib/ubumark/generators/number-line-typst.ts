@@ -12,13 +12,25 @@
  * - Segments (intervals, demi-droites comprises) with bracket endpoints
  * - Linear and logarithmic scales
  * - LaTeX → Typst math conversion for labels
+ * - `unite: 6 cm` (outil n° 61) : un intervalle de `step` mesure vraiment 6 cm, droite
+ *   réduite seulement si la colonne est trop étroite ; droite à graduer (`graduer:`) : seules les graduations de `step`,
+ *   l'élève partage au guide-âne
+ * - Zooms (outil n° 54) : droites agrandies, chacune `ZOOM_GAP` cm sous la précédente,
+ *   reliées par deux pointillés ; les points sur toutes les droites où ils tombent
  *
  * @module ubumark/generators/number-line-typst
  */
 
-import type { NumberLineNode, NumberLinePoint, NumberLineSegment } from '../types/number-line';
+import type {
+	NumberLineConfig,
+	NumberLineNode,
+	NumberLinePoint,
+	NumberLineSegment
+} from '../types/number-line';
 import {
 	numVal,
+	pointsInside,
+	isLabeledAt,
 	computeGraduations,
 	mapValueToRange,
 	NL_DEFAULT_POINT_COLOR,
@@ -86,6 +98,12 @@ export function generateNumberLineTypst(
 	options: NumberLineTypstOptions = {}
 ): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
+	// Longueur réelle (`unite:`) : chaque intervalle de `step` mesure `unitCm` cm
+	const unitCm = node.unitCm;
+	if (unitCm !== undefined) {
+		const span = numVal(node.config.end) - numVal(node.config.start);
+		opts.lineWidth = (unitCm * span) / numVal(node.config.step);
+	}
 
 	try {
 		const startNum = numVal(node.config.start);
@@ -99,7 +117,7 @@ export function generateNumberLineTypst(
 		parts.push(generateAxis(startNum, endNum, node.config.arrows, opts));
 
 		// Graduations + labels
-		parts.push(generateGraduations(node, startNum, endNum, opts));
+		parts.push(generateGraduations(node.config, 0, opts));
 
 		const scale = node.config.scale ?? 'linear';
 
@@ -112,10 +130,19 @@ export function generateNumberLineTypst(
 
 		// Points
 		if (node.points.length > 0) {
-			parts.push(generatePoints(node.points, startNum, endNum, scale, opts));
+			parts.push(generatePoints(node.points, startNum, endNum, scale, 0, opts));
 		}
 
+		// Zooms : chacun sous la droite qu'il agrandit
+		let above = node.config;
+		(node.zooms ?? []).forEach((zoom, k) => {
+			parts.push(generateZoom(zoom, above, -(k + 1) * ZOOM_GAP, node.points, opts));
+			above = zoom;
+		});
+
 		const body = parts.join('\n');
+		// `unite:` aussi : vraie longueur quand elle tient, réduite dans une colonne trop étroite
+		// (12 cm dans une colonne de 8,7 cm débordaient sur la voisine).
 		// Échelle AJUSTÉE, comme l'arbre de probabilités : 12 cm de droite débordaient d'une
 		// colonne de fiche (~8,7 cm) sur la voisine. `layout` donne la largeur disponible,
 		// `measure` celle de la droite ; on ne réduit que si elle dépasse (jamais
@@ -147,7 +174,8 @@ function generateAxis(
 	startNum: number,
 	endNum: number,
 	arrows: boolean,
-	opts: Required<NumberLineTypstOptions>
+	opts: Required<NumberLineTypstOptions>,
+	y: number = 0
 ): string {
 	const lines: string[] = [];
 	lines.push('  // Main axis');
@@ -157,9 +185,11 @@ function generateAxis(
 	const x1 = opts.lineWidth + extension;
 
 	if (arrows) {
-		lines.push(`  line((${fmt(x0)}, 0), (${fmt(x1)}, 0), mark: (start: ">", end: ">"))`);
+		lines.push(
+			`  line((${fmt(x0)}, ${fmt(y)}), (${fmt(x1)}, ${fmt(y)}), mark: (start: ">", end: ">"))`
+		);
 	} else {
-		lines.push(`  line((${fmt(x0)}, 0), (${fmt(x1)}, 0))`);
+		lines.push(`  line((${fmt(x0)}, ${fmt(y)}), (${fmt(x1)}, ${fmt(y)}))`);
 	}
 	lines.push('');
 	return lines.join('\n');
@@ -170,16 +200,17 @@ function generateAxis(
 // ============================================================================
 
 function generateGraduations(
-	node: NumberLineNode,
-	startNum: number,
-	endNum: number,
+	config: NumberLineConfig,
+	y: number,
 	opts: Required<NumberLineTypstOptions>
 ): string {
 	const lines: string[] = [];
 	lines.push('  // Graduations');
 
-	const grads = computeGraduations(node.config);
-	const scale = node.config.scale ?? 'linear';
+	const startNum = numVal(config.start);
+	const endNum = numVal(config.end);
+	const grads = computeGraduations(config);
+	const scale = config.scale ?? 'linear';
 
 	for (const grad of grads) {
 		const x = mapValueToRange(grad.value, startNum, endNum, opts.lineWidth, scale);
@@ -187,12 +218,12 @@ function generateGraduations(
 		const halfH = tickH / 2;
 
 		// Tick mark
-		lines.push(`  line((${fmt(x)}, ${fmt(-halfH)}), (${fmt(x)}, ${fmt(halfH)}))`);
+		lines.push(`  line((${fmt(x)}, ${fmt(y - halfH)}), (${fmt(x)}, ${fmt(y + halfH)}))`);
 
 		// Label
 		if (grad.label !== null) {
 			const displayLabel = grad.hidden ? '?' : labelToTypst(grad.label, opts.language);
-			lines.push(`  content((${fmt(x)}, ${fmt(opts.labelOffset)}), [$${displayLabel}$])`);
+			lines.push(`  content((${fmt(x)}, ${fmt(y + opts.labelOffset)}), [$${displayLabel}$])`);
 		}
 	}
 
@@ -218,6 +249,7 @@ function generatePoints(
 	startNum: number,
 	endNum: number,
 	scale: 'linear' | 'log',
+	y: number,
 	opts: Required<NumberLineTypstOptions>
 ): string {
 	const lines: string[] = [];
@@ -229,17 +261,61 @@ function generatePoints(
 
 		// Circle
 		lines.push(
-			`  circle((${fmt(x)}, ${fmt(opts.pointOffset)}), radius: ${fmt(opts.pointRadius)}, fill: ${color}, stroke: ${color})`
+			`  circle((${fmt(x)}, ${fmt(y + opts.pointOffset)}), radius: ${fmt(opts.pointRadius)}, fill: ${color}, stroke: ${color})`
 		);
 
 		// Label above
 		lines.push(
-			`  content((${fmt(x)}, ${fmt(opts.pointLabelOffset)}), text(fill: ${color})[${p.label}])`
+			`  content((${fmt(x)}, ${fmt(y + opts.pointLabelOffset)}), text(fill: ${color})[${p.label}])`
 		);
 	}
 
 	lines.push('');
 	return lines.join('\n');
+}
+
+// ============================================================================
+// ZOOMS
+// ============================================================================
+
+/** Écart vertical (cm) entre une droite et son zoom */
+const ZOOM_GAP = 2;
+/** Départ d'un pointillé sous un nombre écrit (cm sous le centre de l'étiquette) */
+const LINK_BELOW_LABEL = 0.3;
+
+/**
+ * Un zoom à l'ordonnée `y` : son axe, ses graduations, les points qui y tombent, et
+ * deux pointillés depuis ses bouts sur la droite du dessus (`above`, `ZOOM_GAP` plus haut)
+ */
+function generateZoom(
+	zoom: NumberLineConfig,
+	above: NumberLineConfig,
+	y: number,
+	points: NumberLinePoint[],
+	opts: Required<NumberLineTypstOptions>
+): string {
+	const startNum = numVal(zoom.start);
+	const endNum = numVal(zoom.end);
+	const inside = pointsInside(points, startNum, endNum);
+	const aboveStart = numVal(above.start);
+	const aboveEnd = numVal(above.end);
+	const aboveY = y + ZOOM_GAP;
+	const halfTick = opts.majorTickHeight / 2;
+	const fromX = (v: number) => mapValueToRange(v, aboveStart, aboveEnd, opts.lineWidth, 'linear');
+	/** Sous la graduation, ou sous son nombre écrit s'il y en a un */
+	const topY = (v: number) =>
+		isLabeledAt(above, v) ? aboveY + opts.labelOffset - LINK_BELOW_LABEL : aboveY - halfTick;
+	const link = (value: number, xBottom: number) =>
+		`  line((${fmt(fromX(value))}, ${fmt(topY(value))}), (${fmt(xBottom)}, ${fmt(y + halfTick)}), stroke: (dash: "dashed", thickness: 0.5pt))`;
+
+	return [
+		'  // Zoom',
+		link(startNum, 0),
+		link(endNum, opts.lineWidth),
+		generateAxis(startNum, endNum, false, opts, y),
+		generateGraduations(zoom, y, opts),
+		inside.length > 0 ? generatePoints(inside, startNum, endNum, 'linear', y, opts) : ''
+	].join('\n');
 }
 
 // ============================================================================

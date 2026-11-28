@@ -24,6 +24,7 @@
  * `--modele-de-la-fiche` : le modèle de la fiche (comme en production) au lieu du
  * modèle « fiche élève » ; une fiche en échec de lecture est signalée, pas bloquante.
  */
+import { WORKSHEET_LINE_VERSION } from '#lib/server/exercise-versions.ts';
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -186,7 +187,8 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 			.eq('worksheet_id', id);
 		const { data: lignes, error: e3 } = await supabase
 			.from('worksheet_exercises')
-			.select('exercise_id, section_id, position, exercises(title, variations, generic_functions)')
+			// Contenu : la version choisie par la fiche (ADR 0044), pas la dernière
+			.select(`exercise_id, section_id, position, exercises(title), ${WORKSHEET_LINE_VERSION}`)
 			.eq('worksheet_id', id);
 		const erreur = e1 ?? e2 ?? e3;
 		if (erreur || !w) throw new Error(`Fiche ${prefixe} : ${erreur?.message ?? 'introuvable'}`);
@@ -200,7 +202,11 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 		for (const langue of langues) {
 			for (const mode of modes) {
 				const exercises = ordonnees.flatMap((ligne, i) => {
-					const ex = ligne.exercises as unknown as Exercice;
+					const ex = {
+						title: ligne.exercises.title,
+						variations: ligne.version.variations,
+						generic_functions: ligne.version.generic_functions
+					} as unknown as Exercice;
 					const gardees = variante
 						? ex.variations.filter((v) => v.label === variante)
 						: ex.variations;

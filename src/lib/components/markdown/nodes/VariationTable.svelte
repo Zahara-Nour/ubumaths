@@ -28,6 +28,7 @@
 	import type { Snippet } from 'svelte';
 	import type {
 		HiddenCell,
+		LimitSide,
 		VariationTableNode,
 		SignRow,
 		VariationRow,
@@ -40,6 +41,7 @@
 		variationRowForDisplay,
 		withImplicitEndpoints
 	} from '#lib/ubumark/parser/variation-table-parser.ts';
+	import { variationTableTitle } from '#lib/ubumark/utils/variation-table-title.ts';
 
 	interface Props {
 		node: VariationTableNode;
@@ -57,9 +59,17 @@
 
 	let { node, class: className = '', hiddenCells = 'blank', cell, answers }: Props = $props();
 
-	/** Cellules cachées, par ligne (`'domain'` ou rang dans `rows`) et clé */
+	/** La légende lue par les lecteurs d'écran : elle nomme la fonction (E15) */
+	const title = $derived(variationTableTitle(node));
+
+	/** Cellules cachées, par ligne (`'domain'` ou rang dans `rows`), clé et côté d'une limite */
 	let hiddenByKey = $derived(
-		new Map((node.cases ?? []).map((hidden) => [`${hidden.row}|${hidden.key}`, hidden]))
+		new Map(
+			(node.cases ?? []).map((hidden) => [
+				`${hidden.row}|${hidden.key}|${hidden.side ?? ''}`,
+				hidden
+			])
+		)
 	);
 
 	/** Du tableau reste caché à gauche / à droite : ombre sur ce bord */
@@ -88,9 +98,12 @@
 		};
 	}
 
-	/** La cellule cachée de cette ligne et de cette clé, s'il y en a une */
-	function hiddenAt(row: 'domain' | number, key: string): HiddenCell | undefined {
-		return hiddenByKey.get(`${row}|${key}`);
+	/**
+	 * La cellule cachée de cette ligne et de cette clé, s'il y en a une ; `side` : une
+	 * limite cachée autour d'une double barre (`||, ?-inf, +inf`)
+	 */
+	function hiddenAt(row: 'domain' | number, key: string, side?: LimitSide): HiddenCell | undefined {
+		return hiddenByKey.get(`${row}|${key}|${side ?? ''}`);
 	}
 
 	/**
@@ -361,8 +374,8 @@
 	data-deborde-droite={hiddenRight ? '' : undefined}
 >
 	<div class="vt-defilement" data-vt-defilement {@attach watchOverflow}>
-		<table class="vt-grid" aria-label="Tableau de variations de {node.variable}">
-			<caption class="sr-only">Tableau de variations de la fonction {node.variable}</caption>
+		<table class="vt-grid" aria-label={title}>
+			<caption class="sr-only">{title}</caption>
 			<!-- Header row with variable and domain points -->
 			<thead class="vt-header">
 				<tr>
@@ -478,33 +491,53 @@
 								{:else if value}
 									{#if value.marker === 'asymptote' && value.limits}
 										<!-- Asymptote with two limits -->
+										{@const hiddenLeft = hiddenAt(rowIndex, point.expression, 'left')}
+										{@const hiddenRight = hiddenAt(rowIndex, point.expression, 'right')}
 										<div class="vt-asymptote-limits">
 											<span
 												class="vt-limit vt-limit-left {getPositionClass(value.limits[0].position)}"
 											>
-												<math-span>{toLatex(value.limits[0].expression)}</math-span>
+												{#if hiddenLeft}
+													{@render hiddenCell(hiddenLeft)}
+												{:else}
+													<math-span>{toLatex(value.limits[0].expression)}</math-span>
+												{/if}
 											</span>
 											<span class="vt-asymptote-bar"></span>
 											<span
 												class="vt-limit vt-limit-right {getPositionClass(value.limits[1].position)}"
 											>
-												<math-span>{toLatex(value.limits[1].expression)}</math-span>
+												{#if hiddenRight}
+													{@render hiddenCell(hiddenRight)}
+												{:else}
+													<math-span>{toLatex(value.limits[1].expression)}</math-span>
+												{/if}
 											</span>
 										</div>
 									{:else if value.marker === 'asymptote' && value.limitSide === 'left'}
 										<!-- Asymptote with single limit on the left -->
+										{@const hiddenLimit = hiddenAt(rowIndex, point.expression, 'left')}
 										<div class="vt-asymptote-limits vt-asymptote-single-left">
 											<span class="vt-limit vt-limit-left {getPositionClass(value.position)}">
-												<math-span>{toLatex(value.expression)}</math-span>
+												{#if hiddenLimit}
+													{@render hiddenCell(hiddenLimit)}
+												{:else}
+													<math-span>{toLatex(value.expression)}</math-span>
+												{/if}
 											</span>
 											<span class="vt-asymptote-bar"></span>
 										</div>
 									{:else if value.marker === 'asymptote' && value.limitSide === 'right'}
+										{@const hiddenLimit = hiddenAt(rowIndex, point.expression, 'right')}
 										<!-- Asymptote with single limit on the right -->
 										<div class="vt-asymptote-limits vt-asymptote-single-right">
 											<span class="vt-asymptote-bar"></span>
 											<span class="vt-limit vt-limit-right {getPositionClass(value.position)}">
-												<math-span>{toLatex(value.expression)}</math-span>
+												{#if hiddenLimit}
+													{@render hiddenCell(hiddenLimit)}
+												{:else}
+													<math-span>{toLatex(value.expression)}</math-span>
+												{/if}
 											</span>
 										</div>
 									{:else if value.marker === 'forbidden'}

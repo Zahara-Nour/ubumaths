@@ -33,9 +33,10 @@
 	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
 	import {
 		buildStatChartScene,
-		SCATTER_LABEL_CHAR_PX,
-		scatterTick
+		scatterTick,
+		type BoxPlotScene
 	} from '#lib/ubumark/utils/stat-chart-scene.ts';
+	import { fitBoxPlotScene } from '#lib/ubumark/utils/stat-chart-fit.ts';
 	import {
 		BOX_TRAIT_BUTTONS,
 		BOX_TRAITS,
@@ -65,8 +66,6 @@
 
 	let { node, answers, showControls = true, class: className = '' }: Props = $props();
 
-	/** Marges : celles de `BoxPlotChart.svelte` */
-	const PAD_MIN = 12;
 	/** Boîte sans nom parmi plusieurs à construire (`placer: toutes`) : bouton et phrases */
 	const UNNAMED_BOX = 'sans nom';
 	const PAD_TOP = 4;
@@ -83,10 +82,18 @@
 	let plot = $derived(spec.boxPlot!);
 	// `placer:` exige `axe:` (le parseur refuse sinon)
 	let axis = $derived(plot.axis!);
-	let scene = $derived.by(() => {
-		const built = buildStatChartScene(spec, { locale: locale() });
-		return built.kind === 'boite-a-moustaches' ? built : null;
-	});
+	/** Le dessin de `taille:` ; dessiné : `scene`, à la largeur disponible */
+	let naturalScene = $derived(sceneFor());
+	/** Place disponible, mesurée une fois le composant monté */
+	let measured = $state<DOMRectReadOnly>();
+	let available = $derived(measured?.width);
+	/** Dessin recalculé à la largeur disponible, jamais rétréci (écart E46) */
+	let fit = $derived(
+		naturalScene
+			? fitBoxPlotScene(naturalScene, available, (w) => sceneFor(w) ?? naturalScene!)
+			: null
+	);
+	let scene = $derived(fit?.scene ?? null);
 	/** Les boîtes à construire, dans l'ordre des cases */
 	let targets = $derived(boxesToPlace(spec));
 	/** Rang dans `targets` de chaque boîte du bloc à construire */
@@ -143,16 +150,11 @@
 		)
 	);
 
-	let width = $derived(scene?.pixelSize.width ?? 0);
+	let width = $derived(fit?.plotWidth ?? 0);
 	let height = $derived(scene?.pixelSize.height ?? 0);
-	let padLeft = $derived(
-		Math.max(PAD_MIN, ((scene?.xTicks[0]?.label.length ?? 0) * SCATTER_LABEL_CHAR_PX) / 2 + 4)
-	);
-	let padRight = $derived(
-		Math.max(PAD_MIN, ((scene?.xTicks.at(-1)?.label.length ?? 0) * SCATTER_LABEL_CHAR_PX) / 2 + 4)
-	);
+	let padLeft = $derived(fit?.padLeft ?? 0);
 	let axisY = $derived(PAD_TOP + height);
-	let viewWidth = $derived(padLeft + width + padRight);
+	let viewWidth = $derived(fit?.viewWidth ?? 0);
 	let viewHeight = $derived(axisY + TICK_LABELS_PX + (scene?.axisTitle ? AXIS_TITLE_PX : 0));
 	let color = $derived(scene ? COLOR_VAR[scene.color] : '');
 
@@ -167,6 +169,12 @@
 	/** Une valeur écrite selon la langue (`12,5`) ; null : pas posée */
 	function labelOf(value: number | null | undefined): string | null {
 		return value === null || value === undefined ? null : scatterTick(value, locale()).label;
+	}
+
+	/** Le dessin, pour le cadre de `taille:` ou de cette largeur */
+	function sceneFor(plotWidth?: number): BoxPlotScene | null {
+		const built = buildStatChartScene(spec, { locale: locale(), plotWidth });
+		return built.kind === 'boite-a-moustaches' ? built : null;
 	}
 
 	/** Abscisse d'écran d'une valeur */
@@ -332,139 +340,145 @@
 			class:placer-juste={allRight}
 			class:placer-faux={judged && !allRight}
 		>
-			<svg
-				bind:this={svg}
-				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 {viewWidth} {viewHeight}"
-				style:max-width="{viewWidth}px"
-				class="stat-svg boite-dessin"
-				class:placer-verrouille={locked}
-				role="slider"
-				tabindex={locked ? -1 : 0}
-				aria-labelledby={titleId}
-				aria-valuemin={axis.min}
-				aria-valuemax={axis.max}
-				aria-valuenow={values[activeBox]?.[chosenTrait] ?? undefined}
-				aria-valuetext={valueText}
-				aria-disabled={locked}
-				onpointerdown={handlePointerDown}
-				onpointermove={handlePointerMove}
-				onpointerup={handlePointerUp}
-				onpointercancel={handlePointerUp}
-				onkeydown={handleKeyDown}
-			>
-				<title id={titleId}
-					>Boîte à moustaches à construire{targets[activeBox]?.name
-						? ` : boîte ${targets[activeBox].name}`
-						: ''}</title
+			<div class="stat-mesure" bind:contentRect={measured}>
+				<svg
+					bind:this={svg}
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 {viewWidth} {viewHeight}"
+					style:max-width="{viewWidth}px"
+					style:min-width={measured ? `${viewWidth}px` : undefined}
+					style:height={measured ? `${viewHeight}px` : undefined}
+					class="stat-svg boite-dessin"
+					class:placer-verrouille={locked}
+					role="slider"
+					tabindex={locked ? -1 : 0}
+					aria-labelledby={titleId}
+					aria-valuemin={axis.min}
+					aria-valuemax={axis.max}
+					aria-valuenow={values[activeBox]?.[chosenTrait] ?? undefined}
+					aria-valuetext={valueText}
+					aria-disabled={locked}
+					onpointerdown={handlePointerDown}
+					onpointermove={handlePointerMove}
+					onpointerup={handlePointerUp}
+					onpointercancel={handlePointerUp}
+					onkeydown={handleKeyDown}
 				>
+					<title id={titleId}
+						>Boîte à moustaches à construire{targets[activeBox]?.name
+							? ` : boîte ${targets[activeBox].name}`
+							: ''}</title
+					>
 
-				<!-- Quadrillage : un trait vertical léger à chaque graduation -->
-				<g aria-hidden="true">
-					{#each scene.xTicks as tick, i (i)}
-						<line
-							class="stat-grille"
-							x1={sx(tick.value)}
-							y1={PAD_TOP}
-							x2={sx(tick.value)}
-							y2={axisY}
-						/>
-					{/each}
-				</g>
-
-				{#each scene.boxes as box, i (i)}
-					{@const band = scene.bands[i]}
-					{@const top = PAD_TOP + band.top}
-					{@const bottom = PAD_TOP + band.bottom}
-					{@const middle = (top + bottom) / 2}
-					{@const cap = (bottom - top) / 4}
-					{@const k = rankOfBox.get(i)}
-					<!-- Boîte à lire : ses valeurs ; à construire : les traits posés par l'élève -->
-					{@const shown = k === undefined ? box.values : values[k]}
-					{@const [min, q1, , q3, max] = shown}
-					{@const active = k !== undefined && k === activeBox && showControls && !locked}
-					<g aria-hidden="true" style:stroke={color}>
-						{#if active}
-							<rect
-								class="boite-bande-active"
-								x={padLeft}
-								y={top - 4}
-								{width}
-								height={bottom - top + 8}
-							/>
-						{/if}
-						{#if box.name !== null && band.nameY !== null}
-							<text class="stat-nom-boite" x={padLeft} y={PAD_TOP + band.nameY}>{box.name}</text>
-						{/if}
-						{#if k !== undefined}
+					<!-- Quadrillage : un trait vertical léger à chaque graduation -->
+					<g aria-hidden="true">
+						{#each scene.xTicks as tick, i (i)}
 							<line
-								class="boite-attente"
-								x1={padLeft}
-								y1={middle}
-								x2={padLeft + width}
-								y2={middle}
+								class="stat-grille"
+								x1={sx(tick.value)}
+								y1={PAD_TOP}
+								x2={sx(tick.value)}
+								y2={axisY}
 							/>
-						{/if}
-						{#if min !== null && q1 !== null}
-							<line class="stat-moustache" x1={sx(min)} y1={middle} x2={sx(q1)} y2={middle} />
-						{/if}
-						{#if q3 !== null && max !== null}
-							<line class="stat-moustache" x1={sx(q3)} y1={middle} x2={sx(max)} y2={middle} />
-						{/if}
-						{#if q1 !== null && q3 !== null}
-							<rect
-								class="stat-boite"
-								x={sx(Math.min(q1, q3))}
-								y={top}
-								width={Math.abs(sx(q3) - sx(q1))}
-								height={bottom - top}
-								style:fill="color-mix(in oklab, {color} 22%, var(--color-background))"
-							/>
-						{/if}
-						<!-- Les traits : bouts des moustaches, bords de la boîte, médiane -->
-						{#each shown as value, j (j)}
-							{#if value !== null}
-								{@const edge = j === 0 || j === 4}
-								<line
-									class={j === 2 ? 'stat-mediane' : 'stat-moustache-bout'}
-									class:boite-trait-actif={active && j === chosenTrait}
-									x1={sx(value)}
-									y1={edge ? top + cap : top}
-									x2={sx(value)}
-									y2={edge ? bottom - cap : bottom}
+						{/each}
+					</g>
+
+					{#each scene.boxes as box, i (i)}
+						{@const band = scene.bands[i]}
+						{@const top = PAD_TOP + band.top}
+						{@const bottom = PAD_TOP + band.bottom}
+						{@const middle = (top + bottom) / 2}
+						{@const cap = (bottom - top) / 4}
+						{@const k = rankOfBox.get(i)}
+						<!-- Boîte à lire : ses valeurs ; à construire : les traits posés par l'élève -->
+						{@const shown = k === undefined ? box.values : values[k]}
+						{@const [min, q1, , q3, max] = shown}
+						{@const active = k !== undefined && k === activeBox && showControls && !locked}
+						<g aria-hidden="true" style:stroke={color}>
+							{#if active}
+								<rect
+									class="boite-bande-active"
+									x={padLeft}
+									y={top - 4}
+									{width}
+									height={bottom - top + 8}
 								/>
 							{/if}
+							{#if box.name !== null && band.nameY !== null}
+								<text class="stat-nom-boite" x={padLeft} y={PAD_TOP + band.nameY}>{box.name}</text>
+							{/if}
+							{#if k !== undefined}
+								<line
+									class="boite-attente"
+									x1={padLeft}
+									y1={middle}
+									x2={padLeft + width}
+									y2={middle}
+								/>
+							{/if}
+							{#if min !== null && q1 !== null}
+								<line class="stat-moustache" x1={sx(min)} y1={middle} x2={sx(q1)} y2={middle} />
+							{/if}
+							{#if q3 !== null && max !== null}
+								<line class="stat-moustache" x1={sx(q3)} y1={middle} x2={sx(max)} y2={middle} />
+							{/if}
+							{#if q1 !== null && q3 !== null}
+								<rect
+									class="stat-boite"
+									x={sx(Math.min(q1, q3))}
+									y={top}
+									width={Math.abs(sx(q3) - sx(q1))}
+									height={bottom - top}
+									style:fill="color-mix(in oklab, {color} 22%, var(--color-background))"
+								/>
+							{/if}
+							<!-- Les traits : bouts des moustaches, bords de la boîte, médiane -->
+							{#each shown as value, j (j)}
+								{#if value !== null}
+									{@const edge = j === 0 || j === 4}
+									<line
+										class={j === 2 ? 'stat-mediane' : 'stat-moustache-bout'}
+										class:boite-trait-actif={active && j === chosenTrait}
+										x1={sx(value)}
+										y1={edge ? top + cap : top}
+										x2={sx(value)}
+										y2={edge ? bottom - cap : bottom}
+									/>
+								{/if}
+							{/each}
+							{#if active && shown[chosenTrait] !== null}
+								<text
+									class="boite-trait-nom"
+									x={sx(shown[chosenTrait]!)}
+									y={top - 6}
+									text-anchor="middle">{BOX_TRAIT_BUTTONS[BOX_TRAITS[chosenTrait]]}</text
+								>
+							{/if}
+						</g>
+					{/each}
+
+					<!-- Axe gradué, en bas -->
+					<g class="stat-axes" aria-hidden="true">
+						<line x1={padLeft} y1={axisY} x2={padLeft + width} y2={axisY} />
+						{#each scene.xTicks as tick, i (i)}
+							<line x1={sx(tick.value)} y1={axisY} x2={sx(tick.value)} y2={axisY + 4} />
+							{#if i % (fit?.labelStride ?? 1) === 0}
+								<text class="stat-graduation" x={sx(tick.value)} y={axisY + 16} text-anchor="middle"
+									>{tick.label}</text
+								>
+							{/if}
 						{/each}
-						{#if active && shown[chosenTrait] !== null}
+						{#if scene.axisTitle}
 							<text
-								class="boite-trait-nom"
-								x={sx(shown[chosenTrait]!)}
-								y={top - 6}
-								text-anchor="middle">{BOX_TRAIT_BUTTONS[BOX_TRAITS[chosenTrait]]}</text
+								class="stat-titre-axe"
+								x={padLeft + width / 2}
+								y={viewHeight - 4}
+								text-anchor="middle">{scene.axisTitle}</text
 							>
 						{/if}
 					</g>
-				{/each}
-
-				<!-- Axe gradué, en bas -->
-				<g class="stat-axes" aria-hidden="true">
-					<line x1={padLeft} y1={axisY} x2={padLeft + width} y2={axisY} />
-					{#each scene.xTicks as tick, i (i)}
-						<line x1={sx(tick.value)} y1={axisY} x2={sx(tick.value)} y2={axisY + 4} />
-						<text class="stat-graduation" x={sx(tick.value)} y={axisY + 16} text-anchor="middle"
-							>{tick.label}</text
-						>
-					{/each}
-					{#if scene.axisTitle}
-						<text
-							class="stat-titre-axe"
-							x={padLeft + width / 2}
-							y={viewHeight - 4}
-							text-anchor="middle">{scene.axisTitle}</text
-						>
-					{/if}
-				</g>
-			</svg>
+				</svg>
+			</div>
 		</div>
 
 		{#if judged}
@@ -494,10 +508,15 @@
 		font-weight: 600;
 	}
 
+	/* Mesure la place disponible : jamais élargie par le dessin */
+	.stat-mesure {
+		width: 100%;
+	}
+
 	.stat-svg {
 		display: block;
 		width: 100%;
-		/* En dessous, le texte du SVG (11 px) deviendrait illisible : défiler plutôt */
+		/* En dessous, le dessin ne se resserre plus : il défile dans son cadre */
 		min-width: 300px;
 		height: auto;
 		margin: 0 auto;
@@ -524,7 +543,8 @@
 	.stat-svg text {
 		fill: var(--color-foreground);
 		stroke: none;
-		font-size: 11px;
+		/* Le dessin est à l'échelle 1 : 12 px à l'écran (écart E46) */
+		font-size: 12px;
 	}
 
 	.stat-grille {
@@ -544,13 +564,13 @@
 
 	/* Trait choisi : la couleur d'accent de l'interface */
 	.boite-trait-actif {
-		stroke: var(--color-primary);
+		/* Orange foncé en clair : l'accent n'a que 2,2 de contraste sur le fond clair */
+		stroke: light-dark(var(--color-fig-orange), var(--color-primary));
 		stroke-width: 3.5;
 	}
 
 	.stat-svg .boite-trait-nom {
-		fill: var(--color-primary);
-		font-size: 10px;
+		fill: light-dark(var(--color-fig-orange), var(--color-primary));
 		font-weight: 600;
 	}
 

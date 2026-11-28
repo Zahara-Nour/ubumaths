@@ -28,8 +28,8 @@ describe('milieu @mesure — déroulé', () => {
 		const { exec, steps } = subSteps(script);
 		expect(exec.totalSteps).toBe(2 + 3);
 		expect(steps.map((s) => s.kind)).toEqual([
-			'compass-measure',
-			'compass-measure',
+			'instrument-move',
+			'instrument-move',
 			'point-fade-in'
 		]);
 	});

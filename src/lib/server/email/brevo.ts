@@ -28,6 +28,8 @@ import { isChildAccountEmail } from '#lib/utils/child-account.ts';
 import { captureEmail, isEmailCaptureActive } from './capture';
 import type { ChildRegistrationEmailData } from '#lib/email-templates/child-registration.ts';
 import type { ChildPasswordResetEmailData } from '#lib/email-templates/child-password-reset.ts';
+import type { PrivateLessonInvitationEmailData } from '#lib/email-templates/private-lesson-invitation.ts';
+import type { PrivateLessonWelcomeEmailData } from '#lib/email-templates/private-lesson-welcome.ts';
 import type {
 	CarnetConfirmationEmailData,
 	CarnetExceptionEmailData,
@@ -276,6 +278,50 @@ export async function sendChildPasswordResetEmail(
 		getChildPasswordResetSubject(data),
 		getChildPasswordResetEmailHtml(data),
 		getChildPasswordResetEmailText(data)
+	);
+}
+
+/**
+ * Courriel au parent invité en cours particulier : le lien qui crée l'espace de l'enfant
+ * (chantier `invitation-cours-particulier`).
+ */
+export async function sendPrivateLessonInvitationEmail(
+	toEmail: string,
+	data: PrivateLessonInvitationEmailData
+): Promise<EmailSendResult> {
+	const {
+		getPrivateLessonInvitationSubject,
+		getPrivateLessonInvitationEmailHtml,
+		getPrivateLessonInvitationEmailText
+	} = await import('#lib/email-templates/private-lesson-invitation.ts');
+
+	return sendEmail(
+		toEmail,
+		getPrivateLessonInvitationSubject(data),
+		getPrivateLessonInvitationEmailHtml(data),
+		getPrivateLessonInvitationEmailText(data)
+	);
+}
+
+/**
+ * Courriel final au parent invité en cours particulier : identifiant et adresse de
+ * connexion de l'espace qu'il vient de créer (chantier `invitation-cours-particulier`).
+ */
+export async function sendPrivateLessonWelcomeEmail(
+	toEmail: string,
+	data: PrivateLessonWelcomeEmailData
+): Promise<EmailSendResult> {
+	const {
+		getPrivateLessonWelcomeSubject,
+		getPrivateLessonWelcomeEmailHtml,
+		getPrivateLessonWelcomeEmailText
+	} = await import('#lib/email-templates/private-lesson-welcome.ts');
+
+	return sendEmail(
+		toEmail,
+		getPrivateLessonWelcomeSubject(data),
+		getPrivateLessonWelcomeEmailHtml(data),
+		getPrivateLessonWelcomeEmailText(data)
 	);
 }
 

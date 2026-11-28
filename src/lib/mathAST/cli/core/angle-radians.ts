@@ -14,7 +14,8 @@
  */
 
 import type { MathNode } from '../../types';
-import { isUnit } from '../../guards';
+import { isPiConstant, isUnit } from '../../guards';
+import { getVariables } from '../../eval/substitute';
 import { format as formatUnit } from '../../units';
 import { divide, multiply, number as mathNumber, parentheses, piConstant } from '../../factory';
 import { transformAST } from '../../visitor';
@@ -102,6 +103,55 @@ function isTrigonometric(node: MathNode): boolean {
 /** Un angle en degrés : `20 °`. */
 function isDegreeAngle(node: MathNode): boolean {
 	return isUnit(node) && formatUnit(node.unit, 'original') === '°';
+}
+
+/** Une trace de radians : π, ou une grandeur en `rad`. */
+function isRadianMark(node: MathNode): boolean {
+	return isPiConstant(node) || (isUnit(node) && formatUnit(node.unit, 'original') === 'rad');
+}
+
+/** Une grandeur dont la mesure contient une lettre : `x°` (l'inconnue est un nombre de degrés). */
+function isMeasuredLetter(node: MathNode): boolean {
+	return isUnit(node) && getVariables(node.expression).size > 0;
+}
+
+/**
+ * Une famille de solutions s'écrit-elle en degrés ? (E54, David, 2026-11-24 :
+ * `cos(x) = cos(20°)` → −20° + k·360° ; 20° + k·360°.) Oui quand la ligne tapée
+ * mesure un angle en degrés dans un sin, cos, tan, et rien en radians : ni π,
+ * ni `rad` — un cas mêlé (`cos(x + π/3) = cos(20°)`) garde son écriture en
+ * radians, on n'invente pas d'unité. Pas non plus quand l'inconnue est déjà un
+ * nombre de degrés (`cos(x°)`) : ses solutions sont des nombres.
+ *
+ * @param typed - La ligne lue AVANT le calcul des valeurs remarquables
+ *   (`cos(60°)` y est encore un angle en degrés)
+ * @param solved - L'équation que reçoit le solveur (lettres posées remplacées)
+ */
+export function familyInDegrees(typed: MathNode, solved: MathNode): boolean {
+	const typedDegrees = findNodes(
+		typed,
+		(node) => isTrigonometric(node) && findNodes(node, isDegreeAngle).length > 0
+	);
+	if (typedDegrees.length === 0) return false;
+	return [typed, solved].every(
+		(tree) =>
+			findNodes(tree, isRadianMark).length === 0 && findNodes(tree, isMeasuredLetter).length === 0
+	);
+}
+
+/**
+ * Une borne d'intervalle lue en degrés, en nombre de radians : `360` → 2π,
+ * `360 °` aussi (V129). `null` si la borne porte une trace de radians (π,
+ * `rad`) : l'intervalle `[0 ; 2π]` garde sa lecture en radians.
+ */
+export function degreeBoundInRadians(bound: MathNode): MathNode | null {
+	if (findNodes(bound, isRadianMark).length > 0) return null;
+	const measure = transformAST(bound, {
+		enterUnit: (unit) => (isDegreeAngle(unit) ? { node: unit.expression, skip: true } : undefined)
+	});
+	return simplifyExact(
+		divide(multiply(measure, piConstant(), 'implicit'), mathNumber('180'), 'fraction')
+	);
 }
 
 /**

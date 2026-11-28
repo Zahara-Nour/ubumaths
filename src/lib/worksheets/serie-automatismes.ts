@@ -16,7 +16,8 @@
  * associer (deux colonnes à relier / la liste « élément → bonne étiquette », « 1 → étiquette »
  * quand un élément contient une courbe), texte à trous (la réserve et les trous numérotés /
  * « 1 → étiquette ; 2 → étiquette »), robot à produire (le quadrillage et 15 cases vides /
- * le quadrillage et « Un code juste : … »).
+ * le quadrillage et « Un code juste : … »), labyrinthe à parcourir (la grille / le bon chemin
+ * teinté et « Sortie 3 : 73 → 89 → … »).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -38,7 +39,11 @@ import { toLatex } from '#lib/mathAST/index.ts';
 import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 import { withDigitGrouping } from '#lib/utils/french-math.ts';
 import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '#lib/mathAST/digit-grouping.ts';
-import { withChoiceClockSize } from '#lib/ubumark/parser/horloge-parser.ts';
+import {
+	findHorlogesToPlace,
+	parseHorlogeContent,
+	withChoiceClockSize
+} from '#lib/ubumark/parser/horloge-parser.ts';
 import { withChoiceCollectionSize } from '#lib/ubumark/parser/collection-parser.ts';
 import { withChoiceMonnaieSize } from '#lib/ubumark/parser/monnaie-parser.ts';
 import { replaceChoiceBlocks, type ChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
@@ -50,10 +55,12 @@ import {
 } from '#lib/ubumark/parser/number-line-parser.ts';
 import { lineCoefficients } from '#lib/ubumark/utils/courbe-tracer.ts';
 import {
+	findBarsToPlace,
 	findBoxPlotsToPlace,
 	parseStatChartContent,
 	PLACER_LINE_REGEX
 } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { barsCaseCount } from '#lib/ubumark/utils/barres-placer.ts';
 import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
 import {
 	associerItemHasBlock,
@@ -65,6 +72,12 @@ import { findTrousToPlace, parseTrousContent } from '#lib/ubumark/parser/trous-p
 import { trousPlacedOf } from '#lib/ubumark/utils/trous.ts';
 import { findRobotsToProduce, parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
 import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+import {
+	findLabyrinthesAParcourir,
+	parseLabyrintheContent
+} from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { findYohakusARemplir, parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { cheminDit } from '#lib/ubumark/utils/labyrinthe-answer.ts';
 import {
 	findVariationsToFill,
 	revealVariationBody
@@ -188,6 +201,9 @@ function reponse(
 const CASE_LINE = /^\s*case\s*:/;
 /** `produire: oui` d'un robot : retirée au corrigé (le quadrillage seul) */
 const PRODUIRE_LINE = /^\s*produire\s*:/i;
+/** `parcourir: oui` d'un labyrinthe : `solution: oui` au corrigé (le bon chemin teinté) */
+const PARCOURIR_LINE = /^\s*parcourir\s*:/i;
+const SOLUTION_LINE = /^\s*solution\s*:/i;
 
 /**
  * Tableaux de signes à compléter (```variation à `?`) : leur corps réécrit par
@@ -282,12 +298,23 @@ function pointsDuRepere(
 }
 
 /**
+ * Vecteur à tracer, droite verticale : aucune ligne `f(x) = …` ne les dessine, le bloc
+ * dessine lui-même sa réponse (V108). À l'énoncé, le repère vide (lignes `tracer:` et
+ * `case:` retirées) ; au corrigé, `case:` retirée et `solution: oui` ajoutée : la flèche
+ * (avec les pointillés d'une somme) ou la droite, en vert.
+ */
+function dessineParLeBloc(corps: readonly string[], corrige: boolean): string[] {
+	if (!corrige) return corps.filter((ligne) => !CASE_LINE.test(ligne) && !TRACER_LINE.test(ligne));
+	return [...corps.filter((ligne) => !CASE_LINE.test(ligne)), 'solution: oui'];
+}
+
+/**
  * Repères à compléter (```courbe à `tracer:` ou `placer:`).
  *
  * Droite à tracer (`tracer: y = 2x - 1`) : à l'énoncé, le repère vide (lignes `tracer:`
  * et `case:` retirées) ; au corrigé (`corrige`), la ligne `tracer:` devient la droite
- * dessinée, en vert. Une case par droite. Seule une droite non verticale se dessine
- * (`f(x) = …`) : vecteur à tracer, droite masquée ou verticale → refus.
+ * dessinée, en vert. Une case par droite. Vecteur à tracer, droite verticale : cf.
+ * `dessineParLeBloc`. Droite ou vecteur masqués → refus.
  *
  * Points à placer : cf. `pointsDuRepere`. Repère en retrait ou cité → refus, message à
  * l'appui.
@@ -316,12 +343,29 @@ function droitesATracer(
 			cases += placer.length;
 			continue;
 		}
-		if (node.spec.vecteur) throw refus('vecteur à tracer non pris en charge');
+		if (node.spec.vecteur) {
+			if (!node.spec.vecteur.coords) throw refus('vecteur à tracer masqué');
+			lignes.splice(
+				repere.startIndex + 1,
+				repere.body.length,
+				...dessineParLeBloc(repere.body, corrige)
+			);
+			cases += 1;
+			continue;
+		}
 		const tracer = node.spec.tracer;
 		if (!tracer) throw refus('repère à compléter sans droite à tracer');
 		const droite = lineCoefficients(tracer.equation);
 		if (typeof droite === 'string') throw refus(`droite à tracer masquée ou illisible (${droite})`);
-		if (droite.b === 0) throw refus('droite verticale non prise en charge');
+		if (droite.b === 0) {
+			lignes.splice(
+				repere.startIndex + 1,
+				repere.body.length,
+				...dessineParLeBloc(repere.body, corrige)
+			);
+			cases += 1;
+			continue;
+		}
 
 		const pris = new Set(node.spec.functions.map((f) => f.name));
 		const nom = NOMS_DE_DROITE.find((n) => !pris.has(n));
@@ -352,7 +396,8 @@ const COULEUR_SOLUTION = 'vert';
  * (`corrige`), `placer:` devient la ligne `points:` des points attendus, en vert (le
  * parseur refuse `points:` avec `placer:` : il n'y en a pas d'autre). Un point sans nom
  * prend la première lettre libre. Une case par point. Droite à représenter
- * (`representer:`), droite en retrait ou citée, illisible → refus, message à l'appui.
+ * (`representer:`), à graduer (`graduer:`), droite en retrait ou citée, illisible → refus,
+ * message à l'appui.
  */
 function droitesAPlacer(
 	modele: string,
@@ -371,6 +416,7 @@ function droitesAPlacer(
 			throw refus(`droite à placer illisible (${errors.map((e) => e.message).join(' ; ')})`);
 		}
 		if (node.representer) throw refus('droite à représenter non prise en charge');
+		if (node.graduer) throw refus('droite à graduer non prise en charge');
 		const placer = node.placer ?? [];
 		if (placer.length === 0) throw refus('droite à placer sans point à placer');
 		cases += placer.length;
@@ -561,6 +607,142 @@ function robotsAFiger(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/**
+ * Labyrinthes à parcourir (```labyrinthe, `parcourir: oui`) : à l'énoncé, le bloc sans
+ * `case:` (la grille, le chemin se trace au crayon) ; au corrigé (`corrige`), `parcourir:`
+ * devient `solution: oui` (le bon chemin teinté) et « Sortie 3 : 73 → 89 → … » dessous. La
+ * graine reste : énoncé et corrigé montrent la même grille. Une case par labyrinthe. Bloc en
+ * retrait ou cité, sans fin ou illisible → refus.
+ */
+function labyrinthesAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findLabyrinthesAParcourir(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('labyrinthe à parcourir en retrait ou cité');
+		if (!bloc.closed) throw refus('labyrinthe à parcourir sans fin de bloc');
+		const node = parseLabyrintheContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.spec === null || node.caseIndex === undefined) {
+			throw refus(
+				`labyrinthe à parcourir illisible (${node.errors.map((e) => e.message).join(' ; ')})`
+			);
+		}
+		cases += 1;
+		const corps = bloc.body
+			// Au corrigé, une `solution:` écrite par l'auteur (`non`) ferait une clé en double
+			.filter((ligne) => !CASE_LINE.test(ligne) && !(corrige && SOLUTION_LINE.test(ligne)))
+			.map((ligne) => (corrige && PARCOURIR_LINE.test(ligne) ? 'solution: oui' : ligne));
+		const suite = corrige ? ['', `**${cheminDit(node.spec)}**`] : [];
+		const fin = bloc.startIndex + bloc.body.length + 1;
+		lignes.splice(bloc.startIndex + 1, bloc.body.length + 1, ...corps, lignes[fin], ...suite);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
+/** Un bloc à geste dont le corrigé dessine lui-même la réponse (`solution: oui`) */
+interface BlocDessine {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}
+
+/**
+ * Blocs qui dessinent eux-mêmes leur réponse au corrigé (V109, David le 2026-11-28) :
+ * à l'énoncé, le bloc sans `case:` (le geste se fait au crayon) ; au corrigé, `case:`
+ * retirée et `solution: oui` ajoutée (une `solution:` de l'auteur ferait une clé en
+ * double). `casesDu` lit le bloc et dit son nombre de cases, ou la raison du refus ;
+ * bloc en retrait ou cité, ou sans fin → refus.
+ */
+function reponsesDessinees(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	blocs: readonly BlocDessine[],
+	nom: string,
+	casesDu: (corps: string) => number | string
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		if (bloc.nested) throw new Error(`${modele} : ${nom} en retrait ou cité`);
+		if (!bloc.closed) throw new Error(`${modele} : ${nom} sans fin de bloc`);
+		const lu = casesDu(bloc.body.join('\n'));
+		if (typeof lu === 'string') throw new Error(`${modele} : ${nom} illisible (${lu})`);
+		cases += lu;
+		const corps = bloc.body.filter(
+			(ligne) => !CASE_LINE.test(ligne) && !(corrige && SOLUTION_LINE.test(ligne))
+		);
+		lignes.splice(
+			bloc.startIndex + 1,
+			bloc.body.length,
+			...(corrige ? [...corps, 'solution: oui'] : corps)
+		);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
+/** Grilles yohaku à remplir : cases vides à l'énoncé, `solution: oui` au corrigé (une case chacune) */
+function yohakusARemplir(modele: string, texte: string, corrige: boolean) {
+	return reponsesDessinees(
+		modele,
+		texte,
+		corrige,
+		findYohakusARemplir(texte),
+		'grille à remplir',
+		(corps) => {
+			const node = parseYohakuContent(corps);
+			return node.errors.length > 0 || node.spec === null
+				? node.errors.map((e) => e.message).join(' ; ')
+				: 1;
+		}
+	);
+}
+
+/** Horloges à régler (```horloge, `placer:`) : cadran vide à l'énoncé, aiguilles en vert au corrigé ; une case chacune */
+function horlogesARegler(modele: string, texte: string, corrige: boolean) {
+	return reponsesDessinees(
+		modele,
+		texte,
+		corrige,
+		findHorlogesToPlace(texte),
+		'horloge à régler',
+		(corps) => {
+			const node = parseHorlogeContent(corps);
+			return node.errors.length > 0 || node.spec === null
+				? node.errors.map((e) => e.message).join(' ; ')
+				: 1;
+		}
+	);
+}
+
+/**
+ * Barres à construire (```barres, `placer:`) : axe sans ces barres à l'énoncé, barres en
+ * vert au corrigé ; une case par barre, plus une pour l'échelle à choisir
+ */
+function barresAConstruire(modele: string, texte: string, corrige: boolean) {
+	return reponsesDessinees(
+		modele,
+		texte,
+		corrige,
+		findBarsToPlace(texte),
+		'diagramme à construire',
+		(corps) => {
+			const node = parseStatChartContent('barres', corps);
+			return node.spec === null
+				? node.errors.map((e) => e.message).join(' ; ')
+				: barsCaseCount(node.spec);
+		}
+	);
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -678,6 +860,20 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const robotsEnonce = robotsAFiger(template.id, trousEnonce.texte, false, instance);
 	const robotsCorrige = robotsAFiger(template.id, trousCorrige.texte, true, instance);
 
+	// Labyrinthe à parcourir : la grille à l'énoncé, le bon chemin teinté au corrigé
+	const labyrinthesEnonce = labyrinthesAFiger(template.id, robotsEnonce.texte, false);
+	const labyrinthesCorrige = labyrinthesAFiger(template.id, robotsCorrige.texte, true);
+
+	// Grille yohaku à remplir : cases vides à l'énoncé, la solution de l'auteur au corrigé
+	const yohakusEnonce = yohakusARemplir(template.id, labyrinthesEnonce.texte, false);
+	const yohakusCorrige = yohakusARemplir(template.id, labyrinthesCorrige.texte, true);
+
+	// Horloge à régler, barres à construire : vides à l'énoncé, réponse en vert au corrigé
+	const horlogesEnonce = horlogesARegler(template.id, yohakusEnonce.texte, false);
+	const horlogesCorrige = horlogesARegler(template.id, yohakusCorrige.texte, true);
+	const barresEnonce = barresAConstruire(template.id, horlogesEnonce.texte, false);
+	const barresCorrige = barresAConstruire(template.id, horlogesCorrige.texte, true);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -689,17 +885,21 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		graduationsEnonce.cases +
 		associerEnonce.cases +
 		trousEnonce.cases +
-		robotsEnonce.cases;
+		robotsEnonce.cases +
+		labyrinthesEnonce.cases +
+		yohakusEnonce.cases +
+		horlogesEnonce.cases +
+		barresEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = robotsEnonce.texte
+	const enonce = barresEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = robotsCorrige.texte
+	const corrige = barresCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

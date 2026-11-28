@@ -39,6 +39,7 @@ import {
 
 import { reconcileAutoCoverage } from '#lib/server/curriculum-coverage.ts';
 import { fetchWorksheetCitations } from '#lib/server/worksheets/citations.ts';
+import { latestTestVersionId } from '../helpers/database/trigger-test-helpers';
 import {
 	createServiceRoleClient,
 	createAuthenticatedClient,
@@ -102,6 +103,9 @@ async function cleanupCurriculum() {
 		const testPointIds = (testPoints ?? []).map((p) => p.id);
 		if (testPointIds.length > 0) {
 			await service.from('exercise_curriculum_points').delete().in('point_id', testPointIds);
+			// Supprimer un point travaillé ou couvert est refusé (L112) : son travail d'abord
+			await service.from('journal_entry_points').delete().in('point_id', testPointIds);
+			await service.from('student_point_state').delete().in('point_id', testPointIds);
 		}
 		await service.from('exercise_classifications').delete().in('node_id', createdNodeIds);
 		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
@@ -630,6 +634,7 @@ describe('Références dans le contenu de la séance', () => {
 		const { error } = await service.from('worksheet_exercises' as never).insert({
 			worksheet_id: worksheetId,
 			exercise_id: exerciseId,
+			exercise_version_id: await latestTestVersionId(exerciseId),
 			position: (count ?? 0) + 1
 		} as never);
 		if (error) throw new Error(`jonction : ${error.message}`);
@@ -654,6 +659,7 @@ describe('Références dans le contenu de la séance', () => {
 			.insert({
 				worksheet_id: (ws as { id: string }).id,
 				exercise_id: exerciseId,
+				exercise_version_id: await latestTestVersionId(exerciseId),
 				position: 3
 			} as never)
 			.select('id')

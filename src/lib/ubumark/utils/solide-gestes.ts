@@ -27,6 +27,7 @@
 
 import type { EspacePoint } from './espace-scene';
 import { solidePoints3, type Point3, type SolideScene } from './espace-solides';
+import { vueProjection, type EspaceVue } from './espace-vue';
 import type { SolideSpec, SolideTask, SolideVectorTerm } from '../types/espace';
 
 // Types
@@ -106,6 +107,52 @@ export function solidePointAt(scene: SolideScene, index: number): EspacePoint {
 	return index < scene.vertices.length
 		? scene.vertices[index]
 		: scene.points[index - scene.vertices.length];
+}
+
+/**
+ * Figure que l'on tourne : à quel point chaque point (sommets, puis points
+ * déclarés) est près de l'œil dans cette vue — plus grand = plus devant. Ne sert
+ * qu'à comparer deux points du même solide.
+ */
+export function solidePointNearness(spec: SolideGeometry, vue: EspaceVue): number[] {
+	// L'ordre ne dépend pas du pivot : tourner autour d'un autre point décale tout du même pas
+	const view = vueProjection(vue, { x: 0, y: 0, z: 0 });
+	return solidePoints3(spec.form, spec.dims, spec.points).map((p) => {
+		const r = view.rotate(p);
+		return r.x * view.toEye.x + r.y * view.toEye.y + r.z * view.toEye.z;
+	});
+}
+
+/** La zone de toucher d'un point : sa place à l'écran, et s'il est devant (`solidePointNearness`) */
+export interface SolideTouchZone {
+	index: number;
+	at: EspacePoint;
+	nearness: number;
+}
+
+/** Deux points à moins de cet écart (cm) du doigt l'un de l'autre : au même endroit pour lui */
+const SAME_PLACE = 0.1;
+
+/**
+ * Le point que pose un toucher sur une figure tournée : parmi ceux dont la zone
+ * (disque de rayon `radius`) contient le toucher, le plus près du doigt ; ceux
+ * qui en sont aussi près à 1 mm (`SAME_PLACE`) sont au même endroit de l'écran,
+ * et c'est alors celui de devant, le plus près de l'œil, qui se touche
+ * (chantier `solides-3d`, lot 5, question (a)). null : aucune zone sous le doigt.
+ */
+export function solideTouchedPoint(
+	zones: SolideTouchZone[],
+	touch: EspacePoint,
+	radius: number
+): number | null {
+	const under = zones
+		.map((zone) => ({ zone, far: Math.hypot(zone.at.x - touch.x, zone.at.y - touch.y) }))
+		.filter((z) => z.far <= radius);
+	if (under.length === 0) return null;
+	const nearest = Math.min(...under.map((z) => z.far));
+	return under
+		.filter((z) => z.far <= nearest + SAME_PLACE)
+		.reduce((front, z) => (z.zone.nearness > front.zone.nearness ? z : front)).zone.index;
 }
 
 /** Le vecteur de la combinaison, en 3D */

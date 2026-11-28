@@ -10,8 +10,8 @@
 	  quadrillage (`00000/01000/01110/00000`, `drawingAnswer`), jugé à une
 	  translation près.
 	- `retrouver: face, droite` : PAS de perspective (elle donnerait la réponse) ;
-	  les vues données, et la vue de dessus en grille de saisie : une case à nombre
-	  sur chaque carreau. Réponse : les hauteurs (`2 1 - / 1 0 1`, `heightsAnswer`),
+	  les vues données, et la vue de dessus en grille de saisie : une case à nombre,
+	  teintée, sur chaque carreau. Réponse : les hauteurs (`2 1 - / 1 0 1`, `heightsAnswer`),
 	  jugée « mêmes vues ».
 	- Faux : les phrases de la correction et la solution dessous.
 	- Sans `answer` (aperçu du prof, cours) : le même geste, rien de jugé.
@@ -41,6 +41,7 @@
 		viewGrid
 	} from '#lib/ubumark/utils/cubes-gestes.ts';
 	import Cubes from './Cubes.svelte';
+	import SolideRotationNote from './SolideRotationNote.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -52,6 +53,8 @@
 		solution?: boolean;
 		/** false : sans bouton « Tout effacer » (copie corrigée) */
 		showControls?: boolean;
+		/** Forcer l'affichage de la phrase sur `tourner:` ; sinon, contexte du renderer */
+		showErrors?: boolean;
 		class?: string;
 	}
 
@@ -60,6 +63,7 @@
 		answer,
 		solution = false,
 		showControls = true,
+		showErrors,
 		class: className = ''
 	}: Props = $props();
 
@@ -211,7 +215,7 @@
 						<div class="cubes-trou" aria-hidden="true"></div>
 					{:else if editable}
 						<input
-							class="cubes-saisie-entree h-full w-full border border-foreground bg-background text-center text-lg"
+							class="cubes-saisie-entree h-full w-full border border-foreground text-center text-lg"
 							inputmode="numeric"
 							maxlength="1"
 							autocomplete="off"
@@ -241,6 +245,8 @@
 	</figure>
 {/snippet}
 
+<!-- `tourner: oui` ne va pas avec un geste : phrase pour le prof, rien pour l'élève -->
+<SolideRotationNote {node} {showErrors} />
 <div class="cubes-geste my-2 flex flex-col items-center gap-2 {className}">
 	<div
 		class="placer-zone flex flex-wrap items-end justify-center gap-6 rounded-md border p-2"
@@ -376,6 +382,14 @@
 	.cubes-carreau:focus-visible {
 		stroke: var(--color-ring);
 		stroke-width: 0.08;
+	}
+
+	/*
+	 * Cases à remplir : une teinte légère de l'accent, pour les distinguer des
+	 * carreaux blancs des vues données (et de la correction, qui reste blanche)
+	 */
+	.cubes-saisie-entree {
+		background: color-mix(in srgb, var(--color-primary) 14%, var(--color-background));
 	}
 
 	.cubes-saisie-entree:focus-visible {

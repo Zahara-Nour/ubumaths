@@ -930,6 +930,10 @@
 						"vecteur normal et équation cartésienne"
 					],
 					"note": "dans l'espace"
+				},
+				{
+					"nom": "Agrandissement et réduction",
+					"sous_notions": []
 				}
 			]
 		},

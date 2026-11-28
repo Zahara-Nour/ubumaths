@@ -30,6 +30,22 @@ function withRow(...lines: string[]): string {
 	return [...HEAD, ...lines].join('\n');
 }
 
+/**
+ * Homographique décroissante, valeur interdite 2 : bornes sans valeur (forme de 1re), la ligne
+ * de la double barre et les flèches cachées sont données par le test
+ */
+function homo(...lines: string[]): string {
+	return [
+		'variable: x',
+		'domain: -inf, 2, +inf',
+		'',
+		'variation: f(x)',
+		'  -inf: , top',
+		'  +inf: , bottom',
+		...lines
+	].join('\n');
+}
+
 describe('valeur cachée dans une ligne variation:', () => {
 	it('range la vraie valeur et la numérote (case math)', () => {
 		const node = parseOk(withRow(ROW[0], '  -2: ?4, top', ROW[2], ROW[3]));
@@ -122,17 +138,25 @@ describe('ordre de lecture', () => {
 	});
 });
 
+// Refusées jusqu'au chantier `variation-limite-infinie` (phase 0 du 2026-11-23) : une
+// limite se cache aux bords et autour d'une double barre
+describe('limites cachées : acceptées', () => {
+	const acceptees: [string, string][] = [
+		['valeur cachée sur -inf', withRow('  -inf: ?-inf, bottom', ...ROW.slice(1))],
+		['valeur cachée sur +inf', withRow(...ROW.slice(0, 3), '  +inf: ?+inf, top')],
+		['valeur cachée sur -\\infty', withRow('  -inf: ?-\\infty, bottom', ...ROW.slice(1))],
+		['? sur une limite double', withRow(ROW[0], '  -2: ||, ?-inf, +inf', ROW[2], ROW[3])]
+	];
+	for (const [nom, texte] of acceptees) {
+		it(`lit : ${nom}`, () => {
+			expect(parseOk(texte).cases?.length).toBe(1);
+		});
+	}
+});
+
 describe('refus avec message en français', () => {
 	const refus: [string, string, RegExp][] = [
-		['valeur cachée sur -inf', withRow('  -inf: ?-inf, bottom', ...ROW.slice(1)), /infini/],
-		['valeur cachée sur +inf', withRow(...ROW.slice(0, 3), '  +inf: ?+inf, top'), /infini/],
-		['valeur cachée sur -\\infty', withRow('  -inf: ?-\\infty, bottom', ...ROW.slice(1)), /infini/],
 		['? sur une asymptote', withRow(ROW[0], '  -2: ?||, -inf, +inf', ROW[2], ROW[3]), /\|\|/],
-		[
-			'? sur une limite double',
-			withRow(ROW[0], '  -2: ||, ?-inf, +inf', ROW[2], ROW[3]),
-			/limite|\|\|/
-		],
 		['? sans valeur ni position', withRow(ROW[0], '  -2: ?', ROW[2], ROW[3]), /position/],
 		['flèche sur un point', withRow(...ROW, '  -2: ?flèche'), /intervalle/],
 		['flèche hors du domaine', withRow(...ROW, '  -2,7: ?flèche'), /domaine/],
@@ -148,8 +172,19 @@ describe('refus avec message en français', () => {
 			/flèche/
 		],
 		[
-			'flèche à côté d’une asymptote',
+			'flèche entre une limite et une valeur à la même hauteur',
 			withRow(ROW[0], '  -2: ||, +inf, -inf', ROW[2], ROW[3], '  -2,2: ?flèche'),
+			/flèche/
+		],
+		[
+			'flèche du côté vide d’une limite seule',
+			homo('  2: ||, left, -inf, bottom', '  2,+inf: ?flèche'),
+			/flèche/
+		],
+		['flèche à côté d’une zone interdite', homo('  2: |h|', '  -inf,2: ?flèche'), /flèche/],
+		[
+			'flèche à côté d’une discontinuité',
+			homo('  2: d, -inf, bottom, +inf, top', '  -inf,2: ?flèche'),
 			/flèche/
 		],
 		['flèche écrite deux fois', withRow(...ROW, '  -2,2: ?flèche', '  -2,2: ?flèche'), /deux fois/],
@@ -196,6 +231,97 @@ describe('affichage : rien ne dit la réponse', () => {
 		const shown = variationRowForDisplay(node, 0);
 		expect(shown.values.get('-inf')?.position).toBe('top');
 		expect(shown.values.get('+inf')?.position).toBe('top');
+	});
+});
+
+// Outil 59 (phase 0 du 2026-11-28) : la flèche lit le côté de la double barre qu'elle touche,
+// comme le tableau dessiné (limite de gauche en arrivant, de droite en repartant)
+describe('flèche cachée à côté d’une double barre', () => {
+	const FLECHES = ['  -inf,2: ?flèche', '  2,+inf: ?flèche'];
+
+	it('C1 : sans limites (1re), les deux flèches se cachent', () => {
+		const node = parseOk(homo('  2: ||, , bottom, , top', ...FLECHES));
+		expect(node.cases).toEqual([
+			{ index: 0, row: 0, key: '-inf,2', kind: 'fleche', answer: '↘' },
+			{ index: 1, row: 0, key: '2,+inf', kind: 'fleche', answer: '↘' }
+		]);
+	});
+
+	it('C1 : croissante des deux côtés', () => {
+		const node = parseOk(
+			[
+				'variable: x',
+				'domain: -inf, 2, +inf',
+				'',
+				'variation: f(x)',
+				'  -inf: , bottom',
+				'  2: ||, , top, , bottom',
+				'  +inf: , top',
+				...FLECHES
+			].join('\n')
+		);
+		expect(node.cases?.map((c) => c.answer)).toEqual(['↗', '↗']);
+	});
+
+	it('C2 : limites cachées, quatre cases dans l’ordre de lecture', () => {
+		const node = parseOk(homo('  2: ||, ?-inf, bottom, ?+inf, top', ...FLECHES));
+		expect(node.cases?.map((c) => [c.key, c.kind, c.side, c.answer])).toEqual([
+			['-inf,2', 'fleche', undefined, '↘'],
+			['2', 'valeur', 'left', '-\\infty'],
+			['2', 'valeur', 'right', '+\\infty'],
+			['2,+inf', 'fleche', undefined, '↘']
+		]);
+	});
+
+	it('C3 : limites écrites', () => {
+		const node = parseOk(homo('  2: ||, -inf, bottom, +inf, top', ...FLECHES));
+		expect(node.cases?.map((c) => c.answer)).toEqual(['↘', '↘']);
+	});
+
+	it('C3 : limites sans hauteur écrite (déduite de ±inf)', () => {
+		const node = parseOk(homo('  2: ||, -inf, +inf', ...FLECHES));
+		expect(node.cases?.map((c) => c.answer)).toEqual(['↘', '↘']);
+	});
+
+	it('C4 : limite seule, flèche cachée de son côté', () => {
+		const node = parseOk(homo('  2: ||, left, -inf, bottom', FLECHES[0]));
+		expect(node.cases?.map((c) => c.answer)).toEqual(['↘']);
+	});
+
+	it('C4 : limite seule à droite', () => {
+		const node = parseOk(homo('  2: ||, right, +inf, top', FLECHES[1]));
+		expect(node.cases?.map((c) => c.answer)).toEqual(['↘']);
+	});
+});
+
+describe('affichage d’une flèche cachée à côté d’une double barre', () => {
+	it('C2 : les limites qui touchent une flèche cachée passent au milieu', () => {
+		const node = parseOk(
+			homo('  2: ||, ?-inf, bottom, ?+inf, top', '  -inf,2: ?flèche', '  2,+inf: ?flèche')
+		);
+		const bar = variationRowForDisplay(node, 0).values.get('2');
+		expect(bar?.marker).toBe('asymptote');
+		expect(bar?.limits?.map((l) => l.position)).toEqual(['center', 'center']);
+		// L'arbre n'est pas touché (correction)
+		const vraie = (node.rows[0] as VariationRow).values.get('2');
+		expect(vraie?.limits?.map((l) => l.position)).toEqual(['bottom', 'top']);
+	});
+
+	it('C5 : cacher la flèche de gauche laisse le côté droit tel quel', () => {
+		const node = parseOk(homo('  2: ||, -inf, bottom, +inf, top', '  -inf,2: ?flèche'));
+		const shown = variationRowForDisplay(node, 0);
+		expect(shown.values.get('2')?.limits?.map((l) => [l.expression, l.position])).toEqual([
+			['-inf', 'center'],
+			['+inf', 'top']
+		]);
+		expect(shown.values.get('-inf')?.position).toBe('center');
+		expect(shown.values.get('+inf')?.position).toBe('bottom');
+	});
+
+	it('C4 : limite seule du côté de la flèche cachée, au milieu', () => {
+		const node = parseOk(homo('  2: ||, left, -inf, bottom', '  -inf,2: ?flèche'));
+		const bar = variationRowForDisplay(node, 0).values.get('2');
+		expect([bar?.limitSide, bar?.position]).toEqual(['left', 'center']);
 	});
 });
 

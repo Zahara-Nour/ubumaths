@@ -1,0 +1,333 @@
+{
+	"id": "29f4ca68-5c64-4d93-a311-b1e8e8e85f4a",
+	"title": "Nombre de solutions selon un paramètre",
+	"description": "Équation du second degré à paramètre m : valeurs de m pour deux solutions, une seule ou par le cas m = 0, d'après le signe du discriminant",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour quelles valeurs du réel $m$ l'équation $x^2{{eval:2*p;+}}x+m=0$ a-t-elle deux solutions réelles distinctes ?\n\nÉcris l'ensemble de ces valeurs de $m$ (intervalle).\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{eval:p^2}}[",
+					"expectedErrors": [
+						{
+							"answer": "]{{eval:p^2}};+\\infty[",
+							"message": "$\\Delta={{eval:4*p^2}}-4m$ doit être strictement positif : cela donne $m<{{eval:p^2}}$.",
+							"label": "Sens de l'inégalité"
+						},
+						{
+							"answer": "]-\\infty;{{eval:4*p^2}}[",
+							"message": "$\\Delta={{eval:4*p^2}}-4m>0$ donne $4m<{{eval:4*p^2}}$ : divise aussi par $4$.",
+							"label": "Division par 4 oubliée"
+						},
+						{
+							"answer": "]-\\infty;{{eval:p^2}}]",
+							"message": "Pour $m={{eval:p^2}}$, $\\Delta=0$ : une seule solution, la borne est exclue.",
+							"label": "Borne incluse"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a=1$, $b={{eval:2*p}}$, $c=m$ : $\\Delta={{eval:2*p;()}}^2-4\\times1\\times m={{eval:4*p^2}}-4m$.",
+					"Deux solutions distinctes $\\iff \\Delta>0 \\iff {{eval:4*p^2}}-4m>0 \\iff m<{{eval:p^2}}$.",
+					"L'ensemble cherché est $\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{eval:p^2}}\\right[}$."
+				]
+			},
+			"hint": "Exprime le discriminant en fonction de $m$, puis traduis la condition sur le nombre de solutions par une condition sur le signe de $\\Delta$."
+		},
+		{
+			"statement": "Pour quelles valeurs du réel $m$ l'équation $x^2{{eval:2*p;+}}x+m=0$ a-t-elle exactement une solution réelle ?\n\nÉcris l'ensemble de ces valeurs de $m$, entre accolades.\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:p^2}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:4*p^2}} \\}",
+							"message": "$\\Delta={{eval:4*p^2}}-4m=0$ donne $m=\\dfrac{ {{eval:4*p^2}} }{4}$.",
+							"label": "Division par 4 oubliée"
+						},
+						{
+							"answer": "\\{ {{eval:-p^2}} \\}",
+							"message": "$\\Delta={{eval:4*p^2}}-4m=0$ donne $4m={{eval:4*p^2}}$ : attention au signe.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\Delta={{eval:2*p;()}}^2-4m={{eval:4*p^2}}-4m$.",
+					"Une seule solution $\\iff \\Delta=0 \\iff m={{eval:p^2}}$.",
+					"L'ensemble cherché est $\\textcolor{{{color:primary.0}}}{\\{ {{eval:p^2}} \\}}$."
+				]
+			},
+			"hint": "Exprime le discriminant en fonction de $m$, puis traduis la condition sur le nombre de solutions par une condition sur le signe de $\\Delta$."
+		},
+		{
+			"statement": "Pour quelles valeurs du réel $m$ l'équation $x^2+mx+{{eval:k^2}}=0$ a-t-elle deux solutions réelles distinctes ?\n\nÉcris l'ensemble de ces valeurs de $m$ (intervalles).\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{eval:-2*k}}[\\cup]{{eval:2*k}};+\\infty[",
+					"expectedErrors": [
+						{
+							"answer": "]{{eval:-2*k}};{{eval:2*k}}[",
+							"message": "Entre $-{{eval:2*k}}$ et ${{eval:2*k}}$, $\\Delta<0$ : aucune solution. $\\Delta=m^2-{{eval:4*k^2}}$ est positif à l'extérieur de ses racines.",
+							"label": "Intérieur des racines"
+						},
+						{
+							"answer": "]{{eval:2*k}};+\\infty[",
+							"message": "$m^2>{{eval:4*k^2}}$ a aussi des solutions négatives : $m<-{{eval:2*k}}$.",
+							"label": "Solutions négatives oubliées"
+						},
+						{
+							"answer": "]-\\infty;{{eval:-k}}[\\cup]{{k}};+\\infty[",
+							"message": "$\\Delta=m^2-4\\times{{eval:k^2}}$ s'annule en $\\pm{{eval:2*k}}$, pas en $\\pm{{k}}$.",
+							"label": "Racine de 4k² fausse"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\Delta=m^2-4\\times1\\times{{eval:k^2}}=m^2-{{eval:4*k^2}}=(m-{{eval:2*k}})(m+{{eval:2*k}})$.",
+					"Deux solutions distinctes $\\iff \\Delta>0$ : un trinôme en $m$ de coefficient $1>0$ est positif à l'extérieur de ses racines $-{{eval:2*k}}$ et ${{eval:2*k}}$.",
+					"L'ensemble cherché est $\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;-{{eval:2*k}}\\right[\\cup\\left]{{eval:2*k}}\\,;+\\infty\\right[}$."
+				]
+			},
+			"hint": "Exprime le discriminant en fonction de $m$, puis traduis la condition sur le nombre de solutions par une condition sur le signe de $\\Delta$."
+		},
+		{
+			"statement": "Pour quelles valeurs du réel $m$ l'équation $mx^2+{{eval:2*p}}x+1=0$ a-t-elle exactement une solution réelle ?\n\nÉcris l'ensemble de ces valeurs de $m$, entre accolades.\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ 0 ; {{eval:p^2}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:p^2}} \\}",
+							"message": "Pour $m=0$, l'équation devient ${{eval:2*p}}x+1=0$, du premier degré : elle a une seule solution. $m=0$ convient aussi.",
+							"label": "Cas m = 0 oublié"
+						},
+						{
+							"answer": "\\{ 0 ; {{eval:4*p^2}} \\}",
+							"message": "$\\Delta={{eval:4*p^2}}-4m=0$ donne $m={{eval:p^2}}$ (divise par $4$).",
+							"label": "Division par 4 oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $m=0$ : l'équation ${{eval:2*p}}x+1=0$ est du premier degré, elle a une seule solution $x=-\\dfrac{1}{ {{eval:2*p}} }$. Donc $m=0$ convient.",
+					"Si $m\\neq0$ : l'équation est du second degré, $\\Delta={{eval:4*p^2}}-4m$, et une seule solution $\\iff \\Delta=0 \\iff m={{eval:p^2}}$.",
+					"L'ensemble cherché est $\\textcolor{{{color:primary.0}}}{\\{ 0 ; {{eval:p^2}} \\}}$."
+				]
+			},
+			"hint": "Attention au cas où le coefficient de $x^2$ est nul : l'équation n'est alors plus du second degré."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² + 6x + m : m < 9",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;9["]
+		},
+		{
+			"description": "Sens",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\Delta = 36 - 4 m$ doit être strictement positif : cela donne $m < 9$."
+			},
+			"answers": ["]9;+\\infty["]
+		},
+		{
+			"description": "Oubli de /4",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\Delta = 36 - 4 m > 0$ donne $4 m < 36$ : divise aussi par $4$."
+			},
+			"answers": ["]-\\infty;36["]
+		},
+		{
+			"description": "Borne incluse",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour $m = 9$, $\\Delta = 0$ : une seule solution, la borne est exclue."
+			},
+			"answers": ["]-\\infty;9]"]
+		},
+		{
+			"description": "x² − 4x + m : {4}",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{4\\}"]
+		},
+		{
+			"description": "Oubli /4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\Delta = 16 - 4 m = 0$ donne $m = \\dfrac{16}{4}$."
+			},
+			"answers": ["\\{16\\}"]
+		},
+		{
+			"description": "Signe",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\Delta = 16 - 4 m = 0$ donne $4 m = 16$ : attention au signe."
+			},
+			"answers": ["\\{-4\\}"]
+		},
+		{
+			"description": "x² + mx + 9 : |m| > 6",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;-6[\\cup]6;+\\infty["]
+		},
+		{
+			"description": "Intérieur",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Entre $-6$ et $6$, $\\Delta < 0$ : aucune solution. $\\Delta = m^2 - 36$ est positif à l'extérieur de ses racines."
+			},
+			"answers": ["]-6;6["]
+		},
+		{
+			"description": "Négatives oubliées",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$m^2 > 36$ a aussi des solutions négatives : $m<-6$."
+			},
+			"answers": ["]6;+\\infty["]
+		},
+		{
+			"description": "Racines ±3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\Delta=m^2-4\\times9$ s'annule en $\\pm6$, pas en $\\pm3$."
+			},
+			"answers": ["]-\\infty;-3[\\cup]3;+\\infty["]
+		},
+		{
+			"description": "mx² + 4x + 1 : {0 ; 4}",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{0;4\\}"]
+		},
+		{
+			"description": "m = 0 oublié",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour $m = 0$, l'équation devient $4 x + 1 = 0$, du premier degré : elle a une seule solution. $m = 0$ convient aussi."
+			},
+			"answers": ["\\{4\\}"]
+		},
+		{
+			"description": "Oubli /4",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\Delta = 16 - 4 m = 0$ donne $m = 4$ (divise par $4$)."
+			},
+			"answers": ["\\{0;16\\}"]
+		}
+	]
+}

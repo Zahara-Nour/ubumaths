@@ -21,6 +21,8 @@ import type { ClassificationNode, ClassificationNodeKind } from '#lib/types/data
 export type TreeNode = Pick<ClassificationNode, 'id' | 'name' | 'parent_id' | 'position'> & {
 	/** `branch` | `notion` | `subnotion` ; large pour accepter une ligne lue telle quelle en base */
 	kind: string;
+	/** Traductions du nœud (`{"en": {"name": …}}`, ADR 0043) ; absent : non lues */
+	translations?: ClassificationNode['translations'];
 };
 
 /** Où se trouve un nœud rangeable : sa branche, sa notion, et sa sous-notion le cas échéant */

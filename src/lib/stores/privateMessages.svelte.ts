@@ -18,7 +18,7 @@ export interface PrivateMessage {
 	sender_avatar_url: string | null;
 	subject: string;
 	content: unknown; // TipTap JSON
-	plain_text: string;
+	plain_text: string | null;
 	sent_at: string;
 	read_at: string | null;
 	is_starred: boolean;
@@ -36,7 +36,7 @@ export interface SentMessage {
 	message_id: string;
 	subject: string;
 	content: unknown;
-	plain_text: string;
+	plain_text: string | null;
 	sent_at: string;
 	is_group_message: boolean;
 	recipient_count: number;
@@ -50,10 +50,11 @@ export interface SentMessage {
 	}>;
 }
 
+/** Une ligne de `get_allowed_recipients` : la personne est désignée par `user_id` */
 export interface MessageRecipient {
-	id: string;
 	user_id: string;
-	full_name: string;
+	/** Nom affiché (nom complet, sinon « prénom nom ») ; vide si le compte n'a ni l'un ni l'autre */
+	full_name: string | null;
 	avatar_url: string | null;
 	role: string;
 	relationship: string;
@@ -89,7 +90,7 @@ export interface MessageDetails {
 	sender_role: string;
 	subject: string;
 	content: unknown;
-	plain_text: string;
+	plain_text: string | null;
 	sent_at: string;
 	edited_at: string | null;
 	is_group_message: boolean;
@@ -118,6 +119,7 @@ export interface ThreadMessage {
 	parent_message_id: string | null;
 	level: number;
 	attachments: MessageAttachment[] | null;
+	recipients: Array<{ id: string; name: string | null }> | null;
 }
 
 class PrivateMessagesStore {

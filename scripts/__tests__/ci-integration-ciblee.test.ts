@@ -23,6 +23,9 @@ const MIGRATION_CONTENU = 'supabase/migrations/20261120130500_questions_x_conten
 const FIXTURE_CONTENU =
 	'tests/integration/fixtures/contenu-publie/20261120130500_questions_x_contenu.json';
 const TEST_CONTENU = 'tests/integration/migrations-contenu-publie.test.ts';
+const FIXTURE_RANGEMENT =
+	'tests/integration/fixtures/rangement-tags/20261120120749_questions_x_rangement_tags.json';
+const TEST_RANGEMENT = 'tests/integration/migrations-rangement-tags.test.ts';
 
 let racine: string;
 
@@ -161,6 +164,39 @@ describe('ci-integration-ciblee', () => {
 			FIXTURE_CONTENU,
 			'supabase/migrations/20261120130600_questions_y_contenu.sql'
 		);
+		expect(verdict()).toBe('fichiers=');
+	});
+
+	it('migration de rangement générée et sa fixture, sans test propre : le test qui rejoue les fixtures', () => {
+		pr(MIGRATION, FIXTURE_RANGEMENT, 'scripts/questions/6e-lot/01-a.json');
+		expect(verdict()).toBe(`fichiers=${TEST_RANGEMENT}`);
+	});
+
+	it('rangement généré et contenu dans la même PR : les deux tests qui rejouent les fixtures', () => {
+		pr(MIGRATION, FIXTURE_RANGEMENT, MIGRATION_CONTENU, FIXTURE_CONTENU);
+		expect(verdict()).toBe(`fichiers=${TEST_CONTENU} ${TEST_RANGEMENT}`);
+	});
+
+	it('fixture de rangement sans sa migration, ou au nom d’une autre : suite complète', () => {
+		pr(FIXTURE_RANGEMENT, TEST);
+		expect(verdict()).toBe('fichiers=');
+		depot();
+		pr('supabase/migrations/20261120120800_questions_y_rangement_tags.sql', FIXTURE_RANGEMENT);
+		expect(verdict()).toBe('fichiers=');
+	});
+
+	it('rangement généré avec sa fixture, plus un rangement écrit à la main sans test : suite complète', () => {
+		const aLaMain = 'supabase/migrations/20261120120800_questions_y_rangement_tags.sql';
+		pr(MIGRATION, FIXTURE_RANGEMENT, aLaMain);
+		expect(verdict()).toBe('fichiers=');
+		depot();
+		pr(MIGRATION, FIXTURE_RANGEMENT, aLaMain, TEST);
+		expect(verdict()).toBe(`fichiers=${TEST} ${TEST_RANGEMENT}`);
+	});
+
+	it('fixture de rangement existante modifiée : suite complète', () => {
+		depot(FIXTURE_RANGEMENT);
+		pr(MIGRATION, FIXTURE_RANGEMENT);
 		expect(verdict()).toBe('fichiers=');
 	});
 

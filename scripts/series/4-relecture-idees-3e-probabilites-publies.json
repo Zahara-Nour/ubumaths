@@ -1,0 +1,26 @@
+{
+	"id": "5425b075-f48e-4a7c-85c9-2175b99f2fcb",
+	"title": "Relecture — probabilités, 3 modèles publiés de 4e complétés",
+	"grade": "4",
+	"description": "Relecture dans /dev/modeles des 3 modèles publiés de 4e auxquels le chantier idees-3e-probabilites a ajouté des variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Probabilité d'un évènement",
+			"templateId": "e73b947f-b2c7-4003-97b3-32ec00ffdaf4",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Évènement contraire",
+			"templateId": "247fddd1-1467-46db-888a-0871b02617c5",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Deux épreuves",
+			"templateId": "b28ed4fa-8a9c-4aaa-986f-00da7fde2215",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

@@ -1,0 +1,497 @@
+{
+	"id": "f52b93c4-ba45-4bb1-8d4f-e9f34f413f65",
+	"title": "Dérivée d'une composée : √u, uⁿ, cos u, sin u",
+	"description": "Formule (v∘u)′ = (v′∘u) × u′ appliquée à √(x²+c), (x²+b)ⁿ, cos(ax+b), sin(ax²) (pièges : u′ oublié, exposant non diminué, signe de (cos)′)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{x}{\\sqrt{x^{2}+{{c}}}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{x^{2}+{{c}}}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\sqrt{u}$ avec $u(x)=x^{2}+{{c}}>0$, donc $f'=\\dfrac{u'}{2\\sqrt{u}}$.",
+					"$u'(x)=2x$, d'où $f'(x)=\\dfrac{2x}{2\\sqrt{x^{2}+{{c}}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{x}{\\sqrt{x^{2}+{{c}}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*n}}x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}{{b;+}}\\right)^{ {{n}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "3..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=u^{ {{n}} }$ avec $u(x)=x^{2}{{b;+}}$, donc $f'={{n}}u'u^{ {{eval:n-1}} }$.",
+					"$u'(x)=2x$, d'où $f'(x)={{n}}\\times2x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }=\\textcolor{{{color:primary.0}}}{{{eval:2*n}}x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-{{a}}\\sin\\left({{a}}x{{b;+}}\\right)"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left({{a}}x{{b;+}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(\\cos u)'=-u'\\sin u$ avec $u(x)={{a}}x{{b;+}}$ et $u'(x)={{a}}$.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{-{{a}}\\sin\\left({{a}}x{{b;+}}\\right)}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}x\\cos\\left({{if:a==1||{{a}}}}x^{2}\\right)"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin\\left({{if:a==1||{{a}}}}x^{2}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(\\sin u)'=u'\\cos u$ avec $u(x)={{if:a==1||{{a}}}}x^{2}$ et $u'(x)={{eval:2*a}}x$.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}x\\cos\\left({{if:a==1||{{a}}}}x^{2}\\right)}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{eval:a*x^3+b*x}}\\right)^{ {{n}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}\\left({{eval:3*a*x^2+b}}\\right)\\left({{eval:a*x^3+b*x}}\\right){{if:n>2|^{ {{eval:n-1}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}\\left({{eval:a*x^3+b*x}}\\right){{if:n>2|^{ {{eval:n-1}} }}}",
+							"message": "Tu as oublié de multiplier par $u'(x)$ : $(u^{n})'=n\\,u'\\,u^{n-1}$.",
+							"label": "u′ oublié"
+						},
+						{
+							"answer": "{{n}}\\left({{eval:3*a*x^2+b}}\\right)\\left({{eval:a*x^3+b*x}}\\right)^{ {{n}} }",
+							"message": "L'exposant diminue de $1$ : $(u^{n})'=n\\,u'\\,u^{n-1}$.",
+							"label": "Exposant non diminué"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=u^{ {{n}} }$ avec $u(x)={{eval:a*x^3+b*x}}$, donc $f'={{n}}\\,u'\\,u^{ {{eval:n-1}} }$.",
+					"$u'(x)={{eval:3*a*x^2+b}}$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{ {{n}}\\left({{eval:3*a*x^2+b}}\\right)\\left({{eval:a*x^3+b*x}}\\right){{if:n>2|^{ {{eval:n-1}} }}} }$."
+				]
+			},
+			"hint": "Pose $u(x)={{eval:a*x^3+b*x}}$, calcule $u'(x)$, puis applique la formule de la dérivée de $u^{n}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "al",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "-2|-1|1|2"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:al*k<0|-}}{{if:al*k==2*floor(al*k/2)|\\frac{{{if:abs(al*k)==2||{{eval:abs(al*k)/2}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}|\\frac{ {{eval:abs(al*k)}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{1}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}",
+							"message": "Tu as oublié de multiplier par $u'(x)$ : $(\\sqrt{u})'=\\dfrac{u'}{2\\sqrt{u}}$.",
+							"label": "u′ oublié"
+						},
+						{
+							"answer": "\\frac{ {{eval:al*k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}",
+							"message": "La dérivée de $\\sqrt{u}$ est $\\dfrac{u'}{2\\sqrt{u}}$ : tu as oublié le $2$ du dénominateur.",
+							"label": "2 oublié"
+						},
+						{
+							"answer": "\\frac{ {{al}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}",
+							"message": "La dérivée de $e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$ est ${{k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$ : le coefficient ${{k}}$ sort.",
+							"label": "Dérivée de e^(kx)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\sqrt{u}$ avec $u(x)={{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}$, donc $f'=\\dfrac{u'}{2\\sqrt{u}}$.",
+					"$u'(x)={{al}}\\times{{k;()}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}={{eval:al*k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$, d'où $f'(x)=\\dfrac{ {{eval:al*k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}=\\textcolor{{{color:primary.0}}}{{{if:al*k<0|-}}{{if:al*k==2*floor(al*k/2)|\\frac{{{if:abs(al*k)==2||{{eval:abs(al*k)/2}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}|\\frac{ {{eval:abs(al*k)}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}}}}$."
+				]
+			},
+			"hint": "Pose $u(x)$ égal à l'expression sous la racine, calcule $u'(x)$ (attention à la dérivée de $e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$), puis applique la formule de la dérivée de $\\sqrt{u}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{x}{\\sqrt{x^2+5}}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v0 : √(x²+5) → x/√(x²+5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{2x}{2\\sqrt{x^2+5}}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v0 : 2x/(2√…) non simplifiée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2\\sqrt{x^2+5}}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v0 : u′ oublié 1/(2√u)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\sqrt{2x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v0 : √(u′) (2x sous la racine)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6x(x^2-1)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "-1",
+				"n": "3"
+			},
+			"description": "v1 : (x²−1)³ → 6x(x²−1)²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3(x^2-1)^2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "-1",
+				"n": "3"
+			},
+			"description": "v1 : u′ oublié 3(x²−1)²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6x(x^2-1)^3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "-1",
+				"n": "3"
+			},
+			"description": "v1 : exposant non diminué",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-3\\sin(3x+1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v2 : cos(3x+1) → −3 sin(3x+1)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\sin(3x+1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v2 : signe oublié",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\sin(3x+1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v2 : u′ oublié",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4x\\cos(2x^2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v3 : sin(2x²) → 4x cos(2x²)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\cos(4x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v3 : cos(4x) (dérivée appliquée à l'intérieur)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\cos(2x^2)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v3 : u′ oublié",
+			"variationIndex": 3
+		},
+		{
+			"description": "F2a : (x³ − 2x)³",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3(3x^2-2)(x^3-2x)^2"]
+		},
+		{
+			"description": "F2a : facteurs dans un autre ordre",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3(x^3-2x)^2(3x^2-2)"]
+		},
+		{
+			"description": "F2a : (2x³ + x)², exposant 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2(6x^2+1)(2x^3+x)"]
+		},
+		{
+			"description": "F2a : u′ oublié",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de multiplier par $u'\\left( x \\right)$ : $(u^{n})'=n\\,u'\\,u^{n-1}$."
+			},
+			"answers": ["3(x^3-2x)^2"]
+		},
+		{
+			"description": "F2a : exposant non diminué",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3(3x^2-2)(x^3-2x)^3"]
+		},
+		{
+			"description": "F2b : √(2e^(−x) + 3)",
+			"variationIndex": 5,
+			"variables": {
+				"al": "2",
+				"k": "-1",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{e^{-x}}{\\sqrt{2e^{-x}+3}}"]
+		},
+		{
+			"description": "F2b : non simplifiée par 2 (½)",
+			"variationIndex": 5,
+			"variables": {
+				"al": "2",
+				"k": "-1",
+				"b": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["-\\frac{2e^{-x}}{2\\sqrt{2e^{-x}+3}}"]
+		},
+		{
+			"description": "F2b : √(3eˣ + 1), 3/(2√…)",
+			"variationIndex": 5,
+			"variables": {
+				"al": "3",
+				"k": "1",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3e^{x}}{2\\sqrt{3e^{x}+1}}"]
+		},
+		{
+			"description": "F2b : u′ oublié",
+			"variationIndex": 5,
+			"variables": {
+				"al": "2",
+				"k": "-1",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{1}{2\\sqrt{2e^{-x}+3}}"]
+		},
+		{
+			"description": "F2b : 2 oublié",
+			"variationIndex": 5,
+			"variables": {
+				"al": "3",
+				"k": "2",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{6e^{2x}}{\\sqrt{3e^{2x}+1}}"]
+		},
+		{
+			"description": "F2b : dérivée de e^(kx)",
+			"variationIndex": 5,
+			"variables": {
+				"al": "3",
+				"k": "2",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{3e^{2x}}{2\\sqrt{3e^{2x}+1}}"]
+		}
+	]
+}

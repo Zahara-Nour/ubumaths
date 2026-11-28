@@ -8,13 +8,14 @@
  * SECURITY:
  * - Requires teacher role
  * - Validates student_id as UUID and parent_email format
- * - Verifies teacher teaches the student
+ * - Vérifie les rôles (appelant prof ou admin, cible élève) ; mono-professeur :
+ *   aucune vérification de classe
  * - Limits to 5 emails per student (RGPD compliance)
  *
  * Flow:
  * 1. Validate input with Zod
  * 2. Verify teacher role
- * 3. Verify teacher-student relationship
+ * 3. Vérifier les rôles (appelant prof ou admin, cible élève)
  * 4. Fetch student info (name, grade)
  * 5. Create or update parental_consents record
  * 6. Send email via Brevo

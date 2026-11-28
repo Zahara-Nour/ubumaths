@@ -86,12 +86,14 @@ last_status="$state_dir/last-status"
 #   - src/ : fichiers ET dossiers. Un dossier change de date quand on y crée,
 #     supprime ou renomme un fichier — une suppression ne laisse aucun fichier
 #     « plus récent » ;
+#   - scripts/nuit/ : seul dossier de scripts/ lu par le tsconfig (défaut 5 du
+#     chantier `verifs-auto`) ;
 #   - la racine : toute config .ts/.js/.json importable par vite.config.ts,
 #     les tsconfig, package.json, le lockfile (dépendances mises à jour sans
 #     toucher package.json) et les .env (types de `$env`).
 # Voir scripts/__tests__/check-incremental-garde.test.ts.
 something_newer_than_marker() {
-	find src -newer "$marker" -print 2>/dev/null | head -1
+	find src scripts/nuit -newer "$marker" -print 2>/dev/null | head -1
 	find . -maxdepth 1 -type f \( -name '*.ts' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \
 		-o -name '*.json' -o -name 'pnpm-lock.yaml' -o -name '.env*' \) \
 		-newer "$marker" -print 2>/dev/null | head -1
@@ -109,6 +111,8 @@ fi
 # Timestamped BEFORE the run, so a file edited *during* the run still counts as
 # newer than the marker and is not silently swallowed by guard 3.
 touch "$state_dir/run-started"
+# Début du vrai passage, pour `pnpm durees` : un rejeu (garde 3) n'est pas une mesure.
+debut_durees=$(date +%s)
 
 # FRESH=1 → drop svelte-check's transpile cache (cures ghosts) and force a sync.
 if [ "${FRESH:-0}" = "1" ]; then
@@ -222,4 +226,8 @@ printf '%s\n' "$report"
 printf '%s\n' "$report" >"$last_output"
 echo "$status" >"$last_status"
 mv -f "$state_dir/run-started" "$marker"
+# Durée d'un passage vert, pour `pnpm durees` (ne peut pas faire échouer : cf. noter.sh).
+if [ "$status" -eq 0 ]; then
+	bash "$(dirname "${BASH_SOURCE[0]}")/durees/noter.sh" check-incremental "$debut_durees"
+fi
 exit "$status"

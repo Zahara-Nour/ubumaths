@@ -137,6 +137,16 @@ const INFINITY_EXPRESSIONS = [
 	'\\infty'
 ];
 
+/**
+ * Réponse d'une valeur ou d'une limite cachée : un infini passe en LaTeX (`-inf` →
+ * `-\infty`), que le juge et le corrigé lisent ; `inf` seul est `+\infty` (l'élève,
+ * lui, doit écrire le signe : Q2 du chantier `variation-limite-infinie`)
+ */
+function hiddenValueAnswer(expression: string): string {
+	if (!INFINITY_EXPRESSIONS.includes(expression)) return expression;
+	return expression.startsWith('-') ? '-\\infty' : '+\\infty';
+}
+
 /** Mot d'une flèche cachée dans une ligne `variation:` (`-2,2: ?flèche`) */
 const ARROW_WORDS = ['flèche', 'fleche'];
 
@@ -158,6 +168,8 @@ interface PendingCell {
 	content: string;
 	/** Flèche dont la réponse se lit sur les positions de la ligne (`?flèche`) */
 	derive?: boolean;
+	/** Limite cachée autour d'une marque (`||, ?-inf, +inf`) : son côté */
+	side?: LimitSide;
 }
 
 /**
@@ -776,14 +788,38 @@ function parseVariationRowEntries(
 				});
 				continue;
 			}
-			// Limite d'une asymptote cachée (`||, ?-inf, +inf`) : pas une case
+			// Limite cachée autour d'une marque (`||, ?-inf, +inf`) : une case par limite
 			const parts = value.split(',').map((p) => p.trim());
 			if (VARIATION_MARKERS.includes(parts[0]) && parts.slice(1).some((p) => p.startsWith('?'))) {
-				refuse(
-					lineNumber,
-					lines[i],
-					`on ne peut pas cacher une limite autour de « ${parts[0]} » : seules une valeur (?4, top) et une flèche (?flèche) se cachent`
-				);
+				// Seule la double barre porte des limites à l'écran et au PDF (phase 0) : une
+				// limite cachée autour de `|h|` ou `d` n'aurait pas de case
+				if (parts[0] !== '||') {
+					refuse(
+						lineNumber,
+						lines[i],
+						`une limite ne se cache qu'autour d'une double barre (||), pas autour de « ${parts[0]} »`
+					);
+					continue;
+				}
+				const read = readHiddenLimits(key, parts, (m) => refuse(lineNumber, lines[i], m));
+				if (!read) continue;
+				if (written.has(key)) {
+					refuse(lineNumber, lines[i], hiddenTwiceMessage(key));
+					continue;
+				}
+				written.add(key);
+				hiddenKeys.add(key);
+				values.set(key, read.value);
+				for (const limit of read.limits) {
+					hidden.push({
+						key,
+						kind: 'valeur',
+						answer: limit.answer,
+						side: limit.side,
+						line: lineNumber,
+						content: lines[i]
+					});
+				}
 				continue;
 			}
 			if (hiddenKeys.has(key)) {
@@ -860,19 +896,92 @@ function readHiddenVariationCell(
 		refuse(`valeur cachée : attendu ?valeur, position (par exemple ?4, top), et non « ?${rest} »`);
 		return null;
 	}
-	if (INFINITY_EXPRESSIONS.includes(parts[0])) {
-		refuse(`on ne peut pas cacher ${parts[0]} : un infini n'est pas une valeur à calculer`);
+	// Limite infinie (bord du tableau) : une valeur à trouver, comme une autre
+	return {
+		value: { expression: parts[0], position },
+		kind: 'valeur',
+		answer: hiddenValueAnswer(parts[0])
+	};
+}
+
+/**
+ * Lit les limites cachées autour d'une marque (`parts` = la valeur coupée aux
+ * virgules, marque en tête) ; seules les limites se cachent, jamais une hauteur ni
+ * un côté :
+ * - deux limites : `||, ?-inf, ?+inf` ou `||, ?-inf, bottom, +inf, top` ;
+ * - une limite : `||, left, ?-inf, bottom`.
+ * Un `?` sans limite derrière (`||, ?, +inf`) est la forme d'un énoncé masqué
+ * (évaluation notée) : case sans réponse, que la génération d'un modèle refuse.
+ *
+ * @returns la valeur lue (limites en clair) et les cases, gauche puis droite ;
+ *   null si refusée (le refus est déjà déclaré)
+ */
+function readHiddenLimits(
+	key: string,
+	parts: string[],
+	refuse: (message: string) => void
+): { value: VariationValue; limits: { side: LimitSide; answer: string }[] } | null {
+	const single = parseSide(parts[1].replace(/^\?/, '')) !== null;
+	// Rang des limites dans `parts`, et leur côté
+	const slots: [number, LimitSide][] = single
+		? [[2, parseSide(parts[1].replace(/^\?/, '')) ?? 'left']]
+		: parts.length >= 5
+			? [
+					[1, 'left'],
+					[3, 'right']
+				]
+			: [
+					[1, 'left'],
+					[2, 'right']
+				];
+	const limitRanks = new Set(slots.map(([rank]) => rank));
+	const misplaced = parts.findIndex(
+		(part, k) => k > 0 && part.startsWith('?') && !limitRanks.has(k)
+	);
+	if (misplaced !== -1) {
+		refuse(
+			`autour de « ${parts[0]} », seule une limite se cache (?-inf), pas « ${parts[misplaced]} »`
+		);
 		return null;
 	}
-	return { value: { expression: parts[0], position }, kind: 'valeur', answer: parts[0] };
+	const limits: { side: LimitSide; answer: string }[] = [];
+	const clear = [...parts];
+	for (const [rank, side] of slots) {
+		const part = parts[rank] ?? '';
+		if (!part.startsWith('?')) continue;
+		const expression = part.slice(1).trim();
+		clear[rank] = expression;
+		limits.push({ side, answer: hiddenValueAnswer(expression) });
+	}
+	// Énoncé masqué : limite inconnue, hauteur écrite (sinon elle se déduirait de rien)
+	const parsed = parseVariationEntry(key, clear.join(', '));
+	if (!parsed) {
+		refuse(
+			`limites autour de « ${parts[0]} » illisibles : écrire ||, ?-inf, +inf ou ||, ?-inf, bottom, +inf, top`
+		);
+		return null;
+	}
+	return { value: parsed[1], limits };
 }
 
 /** Hauteur d'une valeur pour lire une flèche : 1 en haut, -1 en bas, null sinon */
-function heightOf(value: VariationValue | undefined): 1 | -1 | null {
-	if (!value || value.marker) return null;
-	if (value.position === 'top' || value.position === 'limit-top') return 1;
-	if (value.position === 'bottom' || value.position === 'limit-bottom') return -1;
+function heightOf(value: VariationValue | undefined, side: LimitSide): 1 | -1 | null {
+	if (!value) return null;
+	const position = value.marker ? limitPositionOn(value, side) : value.position;
+	if (position === 'top' || position === 'limit-top') return 1;
+	if (position === 'bottom' || position === 'limit-bottom') return -1;
 	return null;
+}
+
+/**
+ * Hauteur de la limite d'une double barre du côté `side` (gauche : la flèche y arrive ;
+ * droite : elle en repart), comme la lit le tableau dessiné. Rien du côté vide d'une
+ * limite seule, rien pour une zone interdite ni une discontinuité (pas de flèche).
+ */
+function limitPositionOn(value: VariationValue, side: LimitSide): VariationPosition | null {
+	if (value.marker !== 'asymptote') return null;
+	if (value.limits) return value.limits[side === 'left' ? 0 : 1].position;
+	return value.limitSide === side ? value.position : null;
 }
 
 /**
@@ -884,8 +993,9 @@ function heightOf(value: VariationValue | undefined): 1 | -1 | null {
 function arrowAnswer(row: VariationRow, domain: DomainPoint[], key: string): '↗' | '↘' | null {
 	const filled = withImplicitEndpoints(row, domain);
 	const [from, to] = key.split(',');
-	const start = heightOf(filled.values.get(from));
-	const end = heightOf(filled.values.get(to));
+	// La flèche repart du côté droit de son départ, arrive du côté gauche de son arrivée
+	const start = heightOf(filled.values.get(from), 'right');
+	const end = heightOf(filled.values.get(to), 'left');
 	if (start === null || end === null || start === end) return null;
 	return end > start ? '↗' : '↘';
 }
@@ -956,23 +1066,31 @@ function buildHiddenCells(
 			}
 		}
 		for (const key of columnKeys) {
-			const cell = pending.find((p) => p.key === key);
-			if (!cell) continue;
-			let answer = cell.answer;
-			const row = rows[rowIndex];
-			if (cell.derive && row.type === 'variation') {
-				const arrow = arrowAnswer(row, domain, key);
-				if (arrow === null) {
-					refuse(
-						cell.line,
-						cell.content,
-						`pas de flèche à cacher sur « ${key} » : les deux valeurs doivent être l’une en haut, l’autre en bas (ni centrée, ni asymptote)`
-					);
+			// Limites autour d'une marque : deux cases sur la même clé, gauche puis droite
+			const atKey = pending
+				.filter((p) => p.key === key)
+				.sort((a, b) => Number(a.side === 'right') - Number(b.side === 'right'));
+			for (const cell of atKey) {
+				if (cell.side) {
+					push({ row: rowIndex, key, kind: cell.kind, answer: cell.answer, side: cell.side });
 					continue;
 				}
-				answer = arrow;
+				let answer = cell.answer;
+				const row = rows[rowIndex];
+				if (cell.derive && row.type === 'variation') {
+					const arrow = arrowAnswer(row, domain, key);
+					if (arrow === null) {
+						refuse(
+							cell.line,
+							cell.content,
+							`pas de flèche à cacher sur « ${key} » : les deux valeurs doivent être l’une en haut, l’autre en bas (ni centrée, ni sur le côté vide d’une double barre)`
+						);
+						continue;
+					}
+					answer = arrow;
+				}
+				push({ row: rowIndex, key, kind: cell.kind, answer });
 			}
-			push({ row: rowIndex, key, kind: cell.kind, answer });
 		}
 	}
 
@@ -1318,6 +1436,8 @@ export function findVariationsToFill(markdown: string): VariationToFill[] {
  * énoncé masqué ; mêmes bornes que `parseDomainPoint`
  */
 const HIDDEN_DOMAIN_MARK = /([:,]\s*[[\]()]?\s*)\?(?!\?)/g;
+/** Ligne d'une limite cachée autour d'une marque : `  3: ||, ?-inf, +inf` */
+const HIDDEN_LIMITS_ENTRY = /^(\s{2,}[^:]+:\s*)((?:\|\||\|h\||d)\s*,.*\?.*)$/;
 /** Ligne d'une cellule cachée : `  clé: ?valeur` */
 const HIDDEN_ENTRY = /^(\s{2,}[^:]+:\s*)\?(?!\?)\s*(.*)$/;
 
@@ -1331,12 +1451,66 @@ export function revealVariationBody(body: readonly string[]): string[] {
 	return body.flatMap((line) => {
 		if (CASE_LINE_REGEX.test(line)) return [];
 		if (DOMAIN_REGEX.test(line)) return [line.replace(HIDDEN_DOMAIN_MARK, '$1')];
+		const limits = HIDDEN_LIMITS_ENTRY.exec(line);
+		if (limits) return [`${limits[1]}${limits[2].replace(/,\s*\?(?!\?)\s*/g, ', ')}`];
 		const entry = HIDDEN_ENTRY.exec(line);
 		if (!entry) return [line];
 		const rest = entry[2].trim();
 		// Ni marque « rien », ni flèche cachée : la ligne n'a pas de cellule à écrire
 		return rest === 'rien' || ARROW_WORDS.includes(rest) ? [] : [`${entry[1]}${entry[2]}`];
 	});
+}
+
+/**
+ * Énoncé dont le seul tableau à compléter n'a qu'une case, une valeur ou une limite
+ * d'une ligne `variation:` (pas une valeur de x : les clés des lignes la diraient) :
+ * le même énoncé, ce tableau devenu ordinaire, la case écrite `text` (`\ldots`) à sa
+ * hauteur. Pour la question posée en QCM (`choice-from-errors.ts`), les choix suivent
+ * le tableau. null si l'énoncé n'a pas cette forme.
+ */
+export function withSingleCellShown(markdown: string, text: string): string | null {
+	const found = findVariationsToFill(markdown);
+	if (found.length !== 1) return null;
+	const [{ startIndex, body, closed, nested, node }] = found;
+	const cell = node?.cases?.length === 1 ? node.cases[0] : null;
+	if (!node || !cell || nested || !closed || cell.kind !== 'valeur' || cell.row === 'domain') {
+		return null;
+	}
+	const row = node.rows[cell.row];
+	const value = row.type === 'variation' ? row.values.get(cell.key) : undefined;
+	if (!value) return null;
+	let shown: string;
+	if (cell.side && value.marker && value.limits) {
+		const [left, right] = value.limits;
+		const limit = (l: LimitValue, side: LimitSide) =>
+			`${side === cell.side ? text : l.expression}, ${l.position}`;
+		shown = `${markerText(value.marker)}, ${limit(left, 'left')}, ${limit(right, 'right')}`;
+	} else if (cell.side && value.marker && value.limitSide) {
+		shown = `${markerText(value.marker)}, ${value.limitSide}, ${text}, ${value.position}`;
+	} else if (!cell.side && !value.marker) {
+		shown = `${text}, ${value.position}`;
+	} else {
+		return null;
+	}
+	const hiddenLine = body.findIndex(
+		(line) =>
+			(HIDDEN_ENTRY.test(line) || HIDDEN_LIMITS_ENTRY.test(line)) &&
+			line.split(':')[0].trim() === cell.key
+	);
+	if (hiddenLine === -1) return null;
+	const newBody = body.flatMap((line, k) => {
+		if (CASE_LINE_REGEX.test(line)) return [];
+		if (k !== hiddenLine) return [line];
+		return [`${/^\s*/.exec(line)![0]}${cell.key}: ${shown}`];
+	});
+	const lines = markdown.split('\n');
+	lines.splice(startIndex + 1, body.length, ...newBody);
+	return lines.join('\n');
+}
+
+/** La marque telle qu'elle s'écrit dans le bloc */
+function markerText(marker: VariationMarker): string {
+	return marker === 'asymptote' ? '||' : marker === 'forbidden' ? '|h|' : 'd';
 }
 
 /** L'énoncé a-t-il un tableau à compléter ? */
@@ -1451,12 +1625,32 @@ export function variationRowForDisplay(node: VariationTableNode, rowIndex: numbe
 	if (arrows.length === 0) return filled;
 
 	const values = new Map(filled.values);
-	for (const point of arrows.flatMap((cell) => cell.key.split(','))) {
-		const value = row.values.get(point);
-		if (value === undefined) values.delete(point);
-		else if (!value.marker) values.set(point, { ...value, position: 'center' });
+	// Chaque bout d'une flèche cachée, avec le côté qu'elle touche (une double barre a deux côtés)
+	const ends = arrows.flatMap((cell): [string, LimitSide][] => {
+		const [from, to] = cell.key.split(',');
+		return [
+			[from, 'right'],
+			[to, 'left']
+		];
+	});
+	for (const [point, side] of ends) {
+		const value = values.get(point);
+		if (row.values.get(point) === undefined) values.delete(point);
+		else if (value && !value.marker) values.set(point, { ...value, position: 'center' });
+		else if (value) values.set(point, centerLimit(value, side));
 	}
 	return { ...filled, values };
+}
+
+/** La double barre avec sa limite du côté `side` au milieu (copie : l'arbre reste juste) */
+function centerLimit(value: VariationValue, side: LimitSide): VariationValue {
+	if (value.limits) {
+		const k = side === 'left' ? 0 : 1;
+		const limits: [LimitValue, LimitValue] = [{ ...value.limits[0] }, { ...value.limits[1] }];
+		limits[k] = { ...limits[k], position: 'center' };
+		return { ...value, limits };
+	}
+	return value.limitSide === side ? { ...value, position: 'center' } : value;
 }
 
 /** Position opposée (haut ↔ bas), ou null pour une valeur centrée */

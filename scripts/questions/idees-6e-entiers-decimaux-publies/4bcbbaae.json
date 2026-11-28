@@ -1,0 +1,517 @@
+{
+	"id": "4bcbbaae-a01d-43c2-903c-1b365a438761",
+	"title": "Le nombre de dizaines, de centièmes…",
+	"description": "Distinguer le chiffre et le nombre de dizaines, centaines, milliers (entiers) ou de dixièmes, centièmes, millièmes (décimaux)",
+	"grades": ["6"],
+	"level": 6,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/10^k)}}"
+				}
+			],
+			"statement": "Quel est le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} dans ${{n}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..7"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:mod(n,10^k)"
+				}
+			],
+			"conditions": ["c-k>=2"],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} est un seul chiffre ; le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} les compte toutes : on garde tous les chiffres jusqu'à ce rang.",
+					"$${{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^k}}{{if:reste>0| + {{reste}}|}}$$",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} dans ${{n}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(N/10^(m-k))}}"
+				}
+			],
+			"statement": "Quel est le nombre de {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} dans ${{x}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..5"
+				},
+				{
+					"name": "N",
+					"expression": "digits:d"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N/10^m;d"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{m}}"
+				}
+			],
+			"conditions": ["mod(N,10)!=0", "N>=10^m"],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} est un seul chiffre ; le nombre de {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} les compte tous. Une unité vaut ${{eval:10^k}}$ {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}}.",
+					"On lit le nombre sans la virgule, jusqu'au rang des {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} : ${{x}}$ contient $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} dans ${{x}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:c+m"
+				},
+				{
+					"name": "N",
+					"expression": "digits:d"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N/10^m;d"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:(N-floor(N/10^(m+k))*10^(m+k))/10^m;d"
+				}
+			],
+			"conditions": [
+				"mod(N,10)!=0",
+				"c-k>=2",
+				"mod(floor(N/10^(m+k+1)),10)!=mod(floor(N/10^(m+k)),10)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(N/10^(m+k))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(floor(N/10^(m+k)),10)}}",
+							"message": "Tu as donné le chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} : le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} les compte {{if:k==3|tous|toutes}}, on garde tous les chiffres jusqu'à ce rang.",
+							"label": "Le chiffre seul"
+						},
+						{
+							"answer": "{{eval:floor(N/10^m)}}",
+							"message": "Tu as donné la partie entière, c'est le nombre d'unités : pour le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}}, on s'arrête au chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}}.",
+							"label": "La partie entière"
+						},
+						{
+							"answer": "{{eval:floor(N/10^(m+k+1))}}",
+							"message": "Tu t'es arrêté un chiffre trop tôt : c'est le nombre de {{if:k==1|centaines|{{if:k==2|milliers|dizaines de mille}}}}. On garde aussi le chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}}.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:floor(N/10^(m-k))}}",
+							"message": "Tu as compté les {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}}, qui sont après la virgule : les {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} sont avant la virgule.",
+							"label": "Dizaines lues comme dixièmes"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} est un seul chiffre ; le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} les compte {{if:k==3|tous|toutes}} : on garde tous les chiffres de la partie entière jusqu'au rang des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}}, et pas ceux d'après la virgule.",
+					"$${{x}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^k}} + {{reste}}$$",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} dans ${{x}}$."
+				]
+			},
+			"hint": "Le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} compte {{if:k==3|tous|toutes}} les {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} : garde tous les chiffres jusqu'au chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} compris. Les chiffres après la virgule ne comptent pas."
+		},
+		{
+			"statement": "Quel est le nombre de {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}} dans ${{n}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7..10"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s==0|3|{{if:s==1|4|6}}}}"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:mod(n,10^r)"
+				}
+			],
+			"conditions": ["c-r>=2", "mod(floor(n/10^(r+1)),10)!=mod(floor(n/10^r),10)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/10^r)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(floor(n/10^r),10)}}",
+							"message": "Tu as donné le chiffre des {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}} : le nombre de {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}} les compte {{if:s==1|toutes|tous}}, on garde tous les chiffres jusqu'à ce rang.",
+							"label": "Le chiffre seul"
+						},
+						{
+							"answer": "{{eval:floor(n/10^(r+1))}}",
+							"message": "Tu t'es arrêté un chiffre trop tôt : c'est le nombre de {{if:s==0|dizaines de mille|{{if:s==1|centaines de mille|dizaines de millions}}}}. On garde aussi le chiffre des {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}}.",
+							"label": "Un chiffre trop tôt"
+						},
+						{
+							"answer": "{{eval:floor(n/10^(r-1))}}",
+							"message": "Tu as gardé un chiffre de trop : c'est le nombre de {{if:s==0|centaines|{{if:s==1|milliers|centaines de mille}}}}. On s'arrête au chiffre des {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}}.",
+							"label": "Un chiffre de trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}} est un seul chiffre ; le nombre de {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}} les compte {{if:s==1|toutes|tous}} : on garde tous les chiffres jusqu'au rang des {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}}.",
+					"$${{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^r}}{{if:reste>0| + {{reste}}|}}$$",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}} dans ${{n}}$."
+				]
+			},
+			"hint": "Repère le chiffre des {{if:s==0|milliers|{{if:s==1|dizaines de mille|millions}}}}, puis garde tous les chiffres à sa gauche, lui compris."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["452"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5",
+				"k": "2",
+				"n": "45273",
+				"reste": "73"
+			},
+			"description": "45 273, centaines : 452",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5",
+				"k": "2",
+				"n": "45273",
+				"reste": "73"
+			},
+			"description": "Erreur : le chiffre des centaines (2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["453"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5",
+				"k": "2",
+				"n": "45273",
+				"reste": "73"
+			},
+			"description": "Erreur : arrondi (453)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["127"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"N": "127",
+				"d": "3",
+				"k": "2",
+				"m": "2",
+				"x": "1.27"
+			},
+			"description": "1,27, centièmes : 127",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"N": "127",
+				"d": "3",
+				"k": "2",
+				"m": "2",
+				"x": "1.27"
+			},
+			"description": "Erreur : le chiffre des centièmes (7)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"N": "127",
+				"d": "3",
+				"k": "2",
+				"m": "2",
+				"x": "1.27"
+			},
+			"description": "Erreur : la partie décimale seule (27)",
+			"variationIndex": 1
+		},
+		{
+			"description": "F1 v2 : 52 138,742, centaines : 521",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"N": "52138742",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["521"]
+		},
+		{
+			"description": "F1 v2 : le chiffre des centaines (1)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"N": "52138742",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le chiffre des centaines : le nombre de centaines les compte toutes, on garde tous les chiffres jusqu'à ce rang."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F1 v2 : la partie entière (52 138)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"N": "52138742",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la partie entière, c'est le nombre d'unités : pour le nombre de centaines, on s'arrête au chiffre des centaines."
+			},
+			"answers": ["52\\,138"]
+		},
+		{
+			"description": "F1 v2 : un chiffre trop tôt (52)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"N": "52138742",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es arrêté un chiffre trop tôt : c'est le nombre de milliers. On garde aussi le chiffre des centaines."
+			},
+			"answers": ["52"]
+		},
+		{
+			"description": "F1 v2 : centièmes au lieu de centaines (5 213 874)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"N": "52138742",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les centièmes, qui sont après la virgule : les centaines sont avant la virgule."
+			},
+			"answers": ["5\\,213\\,874"]
+		},
+		{
+			"description": "F1 v2 : 4 726,15, milliers : 4",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"m": "2",
+				"N": "472615",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["472"]
+		},
+		{
+			"description": "F1 v2 : 5 213 sans espace",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"m": "2",
+				"N": "5213874",
+				"k": "1"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["5213"]
+		},
+		{
+			"description": "F1 v2 : 52 138,74, dizaines : 5 213",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"m": "2",
+				"N": "5213874",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5\\,213"]
+		},
+		{
+			"description": "F1 v3 : 482 913 057, milliers : 482 913",
+			"variationIndex": 3,
+			"variables": {
+				"c": "9",
+				"n": "482913057",
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["482\\,913"]
+		},
+		{
+			"description": "F1 v3 : sans espace",
+			"variationIndex": 3,
+			"variables": {
+				"c": "9",
+				"n": "482913057",
+				"s": "0"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["482913"]
+		},
+		{
+			"description": "F1 v3 : le chiffre des milliers (3)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "9",
+				"n": "482913057",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le chiffre des milliers : le nombre de milliers les compte tous, on garde tous les chiffres jusqu'à ce rang."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F1 v3 : un chiffre trop tôt (48 291)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "9",
+				"n": "482913057",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es arrêté un chiffre trop tôt : c'est le nombre de dizaines de mille. On garde aussi le chiffre des milliers."
+			},
+			"answers": ["48\\,291"]
+		},
+		{
+			"description": "F1 v3 : un chiffre de trop (4 829 130)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "9",
+				"n": "482913057",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé un chiffre de trop : c'est le nombre de centaines. On s'arrête au chiffre des milliers."
+			},
+			"answers": ["4\\,829\\,130"]
+		},
+		{
+			"description": "F1 v3 : 3 805 271 946, millions : 3 805",
+			"variationIndex": 3,
+			"variables": {
+				"c": "10",
+				"n": "3805271946",
+				"s": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3\\,805"]
+		},
+		{
+			"description": "F1 v3 : 3 805 271 946, dizaines de mille : 380 527",
+			"variationIndex": 3,
+			"variables": {
+				"c": "10",
+				"n": "3805271946",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["380\\,527"]
+		}
+	]
+}

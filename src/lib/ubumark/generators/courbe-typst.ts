@@ -25,9 +25,7 @@ import {
 } from '../types/courbe';
 import { namedColorTable, namedColorTypst } from '#lib/theme/named-colors.ts';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
-import { solutionLine } from '../utils/courbe-tracer';
-import { solutionVector } from '../utils/courbe-vecteur';
-import { constructionTraces } from '../utils/courbe-combinaison';
+import { solvedOverlay } from '../utils/courbe-solution';
 
 // ============================================================================
 // CONFIGURATION
@@ -36,12 +34,6 @@ import { constructionTraces } from '../utils/courbe-combinaison';
 export interface CourbeTypstOptions {
 	/** Langue du document : séparateur décimal des graduations */
 	language?: string;
-	/**
-	 * Corrigé : les points à placer (`placer:`), la droite à tracer (`tracer:`)
-	 * et deux de ses nœuds, ou la flèche du vecteur à tracer, sont dessinés. Sans cette option (énoncé), le repère
-	 * reste vide : l'élève fait ses croix.
-	 */
-	solved?: boolean;
 }
 
 /** Largeur du cadre en cm ; une colonne de fiche fait ~8,7 cm. Partagée avec les diagrammes statistiques. */
@@ -312,49 +304,36 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		lines.push(`  content((${fmt(mx)}, ${fmt(my)}), text(size: 8pt, style: "italic")[${v.name}])`);
 	}
 
-	// Corrigé : les points attendus (jamais dans l'énoncé)
-	if (options.solved) {
-		for (const t of node.spec.placer ?? []) {
-			const color = TYPST_COLORS.vert;
+	// Corrigé (`solution: oui`) : la réponse attendue, en vert (jamais dans l'énoncé)
+	if (node.spec.solution) {
+		const color = TYPST_COLORS.vert;
+		const { marks, traces } = solvedOverlay(node.spec);
+		for (const t of marks.filter((m) => m.name !== '')) {
 			lines.push(`  // solution ${t.name}`);
 			lines.push(`  circle(${P(t)}, radius: 0.06, fill: ${color}, stroke: none)`);
-			if (t.name !== '') {
-				lines.push(
-					`  content((${fmt(Number(X(t.x)) + 0.08)}, ${fmt(Number(Y(t.y)) + 0.08)}), anchor: "south-west", text(size: 8pt, style: "italic", fill: ${color})[${t.name}])`
-				);
-			}
+			lines.push(
+				`  content((${fmt(Number(X(t.x)) + 0.08)}, ${fmt(Number(Y(t.y)) + 0.08)}), anchor: "south-west", text(size: 8pt, style: "italic", fill: ${color})[${t.name}])`
+			);
 		}
-		const vecteur = node.spec.vecteur;
-		const arrow = vecteur?.coords
-			? solutionVector(node.spec, vecteur.coords, null, vecteur.origin)
-			: null;
-		if (arrow) {
-			const color = TYPST_COLORS.vert;
-			for (const t of vecteur?.terms
-				? constructionTraces(node.spec, vecteur.terms, arrow.from)
-				: []) {
+		for (const t of traces) {
+			if (t.dashed) {
 				lines.push('  // construction');
 				const mark = t.arrow ? `, mark: (end: ">", fill: ${color})` : '';
 				lines.push(
 					`  line(${P(t.from)}, ${P(t.to)}, stroke: (paint: ${color}, thickness: 0.6pt, dash: "dashed")${mark})`
 				);
+			} else if (t.arrow) {
+				lines.push('  // solution vecteur');
+				lines.push(
+					`  line(${P(t.from)}, ${P(t.to)}, stroke: 1pt + ${color}, mark: (end: ">", fill: ${color}))`
+				);
+			} else {
+				lines.push('  // solution droite');
+				lines.push(`  line(${P(t.from)}, ${P(t.to)}, stroke: 1pt + ${color})`);
 			}
-			lines.push('  // solution vecteur');
-			lines.push(
-				`  line(${P(arrow.from)}, ${P(arrow.to)}, stroke: 1pt + ${color}, mark: (end: ">", fill: ${color}))`
-			);
 		}
-		const tracer = node.spec.tracer;
-		const solution = tracer ? solutionLine(node.spec, tracer.equation) : null;
-		if (solution) {
-			const color = TYPST_COLORS.vert;
-			lines.push('  // solution droite');
-			lines.push(
-				`  line(${P(solution.segment[0])}, ${P(solution.segment[1])}, stroke: 1pt + ${color})`
-			);
-			for (const p of solution.points) {
-				lines.push(`  circle(${P(p)}, radius: 0.06, fill: ${color}, stroke: none)`);
-			}
+		for (const p of marks.filter((m) => m.name === '')) {
+			lines.push(`  circle(${P(p)}, radius: 0.06, fill: ${color}, stroke: none)`);
 		}
 	}
 

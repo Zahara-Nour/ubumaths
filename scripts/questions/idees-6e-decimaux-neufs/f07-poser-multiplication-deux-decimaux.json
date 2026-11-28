@@ -1,0 +1,110 @@
+{
+	"id": "a29bf7c7-6ecc-4650-a731-a32fb896c9e4",
+	"title": "Poser la multiplication de deux nombres décimaux",
+	"description": "Multiplication posée de deux décimaux, trois décimales au produit : 3,46 × 2,7 ; 34,6 × 0,27 (pièges : virgule oubliée, virgule placée comme pour une addition)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{eval:T/10^(2-forme);d}} × {{eval:B/10^(1+forme);d}}\n```",
+			"variables": [
+				{
+					"name": "forme",
+					"expression": "0|1"
+				},
+				{
+					"name": "T",
+					"expression": "101..999"
+				},
+				{
+					"name": "B",
+					"expression": "12..99"
+				}
+			],
+			"conditions": ["mod(T,10) != 0", "mod(B,10) != 0", "mod(T*B,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose la multiplication comme avec des nombres entiers, sans s'occuper des virgules : ${{T}}\\times {{B}}={{eval:T*B}}$.",
+					"${{eval:T/10^(2-forme);d}}$ a ${{eval:2-forme}}$ chiffre{{if:forme==0|s|}} après la virgule, ${{eval:B/10^(1+forme);d}}$ en a ${{eval:1+forme}}$ : le produit en a $\\textcolor{{{color:primary.1}}}{3}$.",
+					"$${{eval:T/10^(2-forme);d}}\\times {{eval:B/10^(1+forme);d}}=\\textcolor{{{color:primary.0}}}{{{eval:T*B/1000;d}}}$$"
+				]
+			},
+			"hint": "Calcule d'abord comme si les nombres étaient entiers, puis compte les chiffres après la virgule dans les deux facteurs."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,46 × 2,7 = 9,342",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "0",
+				"T": "346",
+				"B": "27"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9,342"]
+		},
+		{
+			"description": "virgule oubliée : 9 342",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "0",
+				"T": "346",
+				"B": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["9\\,342"]
+		},
+		{
+			"description": "virgule comme pour une addition : 93,42",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "0",
+				"T": "346",
+				"B": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["93,42"]
+		},
+		{
+			"description": "34,6 × 0,27 = 9,342",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "1",
+				"T": "346",
+				"B": "27"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9,342"]
+		},
+		{
+			"description": "34,6 × 0,27 : une décimale seulement",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "1",
+				"T": "346",
+				"B": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["934,2"]
+		}
+	]
+}

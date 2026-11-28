@@ -9,7 +9,7 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { cleanup, render } from 'vitest-browser-svelte';
-import { userEvent } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '#lib/atelier/atelier.svelte.ts';
@@ -172,7 +172,12 @@ describe('une saisie forgée dans le stockage, rappelée puis validée', () => {
 // =============================================================================
 
 describe('le champ mathématique vide dit quoi y écrire', () => {
+	afterEach(async () => {
+		await page.viewport(1280, 900);
+	});
+
 	it('une consigne, comme le champ texte', async () => {
+		await page.viewport(1280, 900);
 		const { mathField } = await open('math', { ephemeral: true });
 
 		const field = await vi.waitFor(() => {
@@ -182,5 +187,18 @@ describe('le champ mathématique vide dit quoi y écrire', () => {
 
 		expect(field.placeholder).toContain('résoudre');
 		expect(field.placeholder).toContain('km');
+	});
+
+	it('au téléphone, une consigne courte, lisible en entier (écart E23)', async () => {
+		await page.viewport(390, 664);
+		const { mathField } = await open('math', { ephemeral: true });
+
+		const field = await vi.waitFor(() => {
+			expect(mathField()).toBeTruthy();
+			return mathField();
+		});
+
+		expect(field.placeholder).toContain('un calcul');
+		expect(field.placeholder).not.toContain('km');
 	});
 });

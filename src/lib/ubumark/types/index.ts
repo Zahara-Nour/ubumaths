@@ -223,6 +223,12 @@ export type { CalculNode, CalculIssue, CalculSpec } from './calcul';
 // ROBOT (bloc ```robot)
 export type { RobotNode, RobotIssue, RobotSpec, RobotScene, Instruction } from './robot';
 
+// LABYRINTHE (bloc ```labyrinthe)
+export type { LabyrintheNode, LabyrintheIssue, LabyrintheSpec, Regle } from './labyrinthe';
+
+// YOHAKU (bloc ```yohaku)
+export type { YohakuNode, YohakuIssue, YohakuSpec, YohakuCase, YohakuOperation } from './yohaku';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================

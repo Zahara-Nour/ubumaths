@@ -62,16 +62,20 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
    la validation ; consigner les décisions dans le journal.
 2. **Écrire** : script `docs/wip/questions/lot-<x>.py` (gabarit `lot-c.py`) → JSON de
    `scripts/questions/<niveau>-<lot>/` ; `testSpecs` justes ET erreurs typiques ; **erreurs prévues** des cases (réponse +
-   message à l'élève, `couvrir-un-niveau.md` § 5), proposées par le script, que le prof complète ;
+   message à l'élève, `couvrir-un-niveau.md` § 5), proposées par le script, que le prof complète,
+   trois par case visées (QCM possible) ; un **coup de pouce** par variation (`hint` ou
+   `hintFromFirstStep`, jamais la réponse) ; forme et réglages du modèle selon les faits vérifiés du même § ;
    `create-questions` en simulation tout vert ; essai en base **locale** (`.env.local` chargé) et
    modèles joués dans l'aperçu admin. PR des fichiers (revue : aucune, contenu), merge.
 3. **Prod** : `deploy:prod` si un bloc neuf l'exige (David seul) ; **David** lance
    `create-questions --publier` (brouillons) ; l'`id` de chaque modèle est écrit en tête de son
    fichier : commiter les fichiers. Un fichier ne porte ni `theme`, ni `domain`, ni `subdomain`
    (refusés, ADR 0035).
-4. **Migration nœud + tag** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son
-   test d'intégration, qui garde la mention `@migration-de-donnees` de son gabarit) : test rouge
-   sans la migration puis vert, `security-auditor`, CI verte,
+4. **Migration nœud + tag, générée** (doc, § 6) : champ `rangement` dans chaque fichier du lot
+   (`{ "noeud": "Branche > Notion > Sous-notion", "point": "6-115" }`), puis
+   `pnpm tsx scripts/questions/migration-rangement.ts --dir scripts/questions/<lot>` : la
+   migration et sa fixture sont écrites, **aucun test à écrire** (un refus refuse tout le lot).
+   PR de la migration, de sa fixture et des JSON seuls, `security-auditor`, CI verte,
    `pnpm check:migrations --pr <n>`, merge, `db:migrate` depuis le dépôt principal, vérification en prod.
 5. **Relecture dans `/dev/modeles`** (demandé le 2026-11-20 ; doc, § 8) : la vraie appli, modèles
    joués, blocs dessinés, réponses jugées. Donner à David l'adresse qui montre tout le lot :

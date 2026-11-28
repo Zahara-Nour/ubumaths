@@ -24,6 +24,7 @@
 		compassOpening
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
+	import { PIXELS_PER_UNIT } from '../constants';
 	import {
 		pointToSVG,
 		resolveScreenStyle,
@@ -31,6 +32,7 @@
 		rayToSVG
 	} from '#lib/geometry-core/rendering/svg-primitives.ts';
 	import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+	import { placeLabels } from '#lib/geometry-core/rendering/label-avoidance.ts';
 	import { isFreePoint } from '#lib/geometry-core/types/elements.ts';
 
 	interface Props {
@@ -61,7 +63,7 @@
 	// Default matches GeometryCanvas's defaults (center=0,0, pixelsPerUnit=40) so
 	// instruments/overlay are positioned correctly on first paint, before the
 	// callback fires.
-	const INITIAL_PPU = 40;
+	const INITIAL_PPU = PIXELS_PER_UNIT;
 	// svelte-ignore state_referenced_locally
 	let viewport = $state<Viewport>({
 		xMin: -width / (2 * INITIAL_PPU),
@@ -71,6 +73,15 @@
 	});
 	let pixelsPerUnit = $state(INITIAL_PPU);
 	let transformer = $derived(createTransformer(viewport, width, height));
+
+	// Places des noms sans chevauchement, les mêmes que celles de la figure
+	// (`avoidLabelOverlap` de GeometryCanvas) : le nom d'un point ou d'une
+	// droite qui apparaît en fondu s'écrit déjà là où il restera.
+	let labelPlacements = $derived.by(() => {
+		// figureVersion suffit : il change à chaque pas, pas à chaque image
+		void figureVersion;
+		return placeLabels(figure, transformer, { width, height });
+	});
 
 	function handleViewportChange(v: Viewport, ppu: number) {
 		viewport = v;
@@ -322,6 +333,7 @@
 		{showGrid}
 		{interactive}
 		{hiddenElementIds}
+		avoidLabelOverlap
 		externalVersion={figureVersion}
 		onViewportChange={handleViewportChange}
 	/>
@@ -490,9 +502,10 @@
 							/>
 						{/if}
 						{#if el && el.label}
+							{@const auto = el.labelOffset ? undefined : labelPlacements.get(id)}
 							<text
-								x={el.labelOffset?.dx ?? sty.pointSize + 4}
-								y={el.labelOffset?.dy ?? -(sty.pointSize + 2)}
+								x={auto ? auto.x - pt.cx : (el.labelOffset?.dx ?? sty.pointSize + 4)}
+								y={auto ? auto.y - pt.cy : (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
 								class="halo"
 								style:fill={sty.color}
 								stroke-width="3"
@@ -552,8 +565,9 @@
 						{@const ny = ldx / llen}
 						{@const sign = ny > 0 ? -1 : 1}
 						{@const offset = 10 + 5 * Math.abs(nx)}
-						{@const lx = mx + (el.labelOffset?.dx ?? sign * nx * offset)}
-						{@const ly = my + (el.labelOffset?.dy ?? sign * ny * offset)}
+						{@const auto = el.labelOffset ? undefined : labelPlacements.get(id)}
+						{@const lx = auto?.x ?? mx + (el.labelOffset?.dx ?? sign * nx * offset)}
+						{@const ly = auto?.y ?? my + (el.labelOffset?.dy ?? sign * ny * offset)}
 						<g transform="translate({lx}, {ly}) scale({lineLabelScale})">
 							<text
 								x={0}

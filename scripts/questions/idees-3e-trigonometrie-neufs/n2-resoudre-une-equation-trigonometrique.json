@@ -1,0 +1,504 @@
+{
+	"id": "4484919e-9328-4b84-9a3b-5b6ecede23ae",
+	"rangement": {
+		"noeud": "Géométrie > Trigonométrie du triangle rectangle",
+		"point": "3-061"
+	},
+	"title": "Résoudre une équation trigonométrique",
+	"description": "Sans figure : trouver une longueur dans cos(40°) = AC/4,2 ou cos(40°) = 4,2/AC, ou un angle dans cos B = 4,2/7,5 (cos, sin ou tan ; touche inverse, calculatrice en degrés)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On sait que ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ}) = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{eval:k;d}}}$, où ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est une longueur en centimètres. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, arrondie au dixième.\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "25..75"
+				},
+				{
+					"name": "kk",
+					"expression": "30..90"
+				},
+				{
+					"name": "k",
+					"expression": "eval:kk/10"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(f-1)*(f-2)/2*cos(b*\\pi/180) + (-f*(f-2))*sin(b*\\pi/180) + f*(f-1)/2*tan(b*\\pi/180)"
+				},
+				{
+					"name": "tr",
+					"expression": "eval:(f-1)*(f-2)/2*cos(b) + (-f*(f-2))*sin(b) + f*(f-1)/2*tan(b)"
+				}
+			],
+			"conditions": [
+				"abs(10*(k*t) - round(10*(k*t))) < 0.4",
+				"round(10*(k*t)) >= 1",
+				"round(10*(k*t)) != round(10*(k/t))",
+				"round(10*(k*t)) != round(10*(k*tr))",
+				"round(10*(k/t)) != round(10*(k*tr))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(k*t))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(k/t))/10;d}}",
+							"message": "La longueur ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est au **numérateur** : on multiplie par la valeur du {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}}, on ne divise pas.",
+							"label": "Division au lieu de multiplication"
+						},
+						{
+							"answer": "{{eval:round(10*(k*tr))/10;d}}",
+							"message": "Ta calculatrice est réglée en radians : règle-la en **degrés** avant de calculer avec un angle en degrés.",
+							"label": "Calculatrice en radians"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ : $${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{eval:k;d}} \\times {{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})$$",
+					"À la calculatrice, en degrés : $${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(k*t))/10;d}}~\\unit{cm}}$$ (arrondi au dixième)."
+				]
+			},
+			"hint": "Écris l'égalité des produits en croix, ou demande-toi : la longueur cherchée est-elle en haut ou en bas du quotient ? En haut, on multiplie ; en bas, on divise."
+		},
+		{
+			"statement": "On sait que ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ}) = \\dfrac{{{eval:k;d}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$, où ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est une longueur en centimètres. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, arrondie au dixième.\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "25..75"
+				},
+				{
+					"name": "kk",
+					"expression": "30..90"
+				},
+				{
+					"name": "k",
+					"expression": "eval:kk/10"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(f-1)*(f-2)/2*cos(b*\\pi/180) + (-f*(f-2))*sin(b*\\pi/180) + f*(f-1)/2*tan(b*\\pi/180)"
+				},
+				{
+					"name": "tr",
+					"expression": "eval:(f-1)*(f-2)/2*cos(b) + (-f*(f-2))*sin(b) + f*(f-1)/2*tan(b)"
+				}
+			],
+			"conditions": [
+				"abs(10*(k/t) - round(10*(k/t))) < 0.4",
+				"round(10*(k*t)) >= 1",
+				"round(10*(k/t)) != round(10*(k*t))",
+				"round(10*(k/t)) != round(10*(t/k))",
+				"round(10*(k/t)) != round(10*(k/tr))",
+				"round(10*(k*t)) != round(10*(t/k))",
+				"round(10*(k*t)) != round(10*(k/tr))",
+				"round(10*(t/k)) != round(10*(k/tr))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(k/t))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(k*t))/10;d}}",
+							"message": "La longueur ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est au **dénominateur** : on divise par la valeur du {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}}, on ne multiplie pas.",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "{{eval:round(10*(t/k))/10;d}}",
+							"message": "Tu as renversé le quotient : ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est égale à la longueur connue **divisée par** la valeur du {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}}.",
+							"label": "Quotient renversé"
+						},
+						{
+							"answer": "{{eval:round(10*(k/tr))/10;d}}",
+							"message": "Ta calculatrice est réglée en radians : règle-la en **degrés** avant de calculer avec un angle en degrés.",
+							"label": "Calculatrice en radians"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ : $${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = \\dfrac{{{eval:k;d}}}{{{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}({{b}}^{\\circ})}$$",
+					"À la calculatrice, en degrés : $${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(k/t))/10;d}}~\\unit{cm}}$$ (arrondi au dixième)."
+				]
+			},
+			"hint": "Écris l'égalité des produits en croix, ou demande-toi : la longueur cherchée est-elle en haut ou en bas du quotient ? En haut, on multiplie ; en bas, on divise."
+		},
+		{
+			"statement": "On sait que ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{eval:p;d}}}{{{eval:q;d}}}$. Calcule la mesure de l'angle $\\widehat{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$, arrondie au degré.\n\n$\\widehat{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} \\approx ?^{\\circ}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "pp",
+					"expression": "30..90"
+				},
+				{
+					"name": "qq",
+					"expression": "30..90"
+				},
+				{
+					"name": "p",
+					"expression": "eval:pp/10"
+				},
+				{
+					"name": "q",
+					"expression": "eval:qq/10"
+				},
+				{
+					"name": "ang",
+					"expression": "{{if:f==0|{{eval:acos(p/q)*180/\\pi}}|}}{{if:f==1|{{eval:asin(p/q)*180/\\pi}}|}}{{if:f==2|{{eval:atan(p/q)*180/\\pi}}|}}"
+				}
+			],
+			"conditions": [
+				"pp != qq",
+				"(f-2)*(pp-qq) >= 0",
+				"round(ang) >= 10",
+				"round(ang) <= 80",
+				"abs(1*(ang) - round(1*(ang))) < 0.4",
+				"round(ang) != 45",
+				"round(100*p/q) != round(100*ang*\\pi/180)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(ang)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*p/q)/100;d}}",
+							"message": "Tu as donné la valeur du {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}} de l'angle, pas l'angle : il faut encore la touche {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}}⁻¹ de la calculatrice.",
+							"label": "Quotient pris pour l'angle"
+						},
+						{
+							"answer": "{{if:f==2|{{eval:round(ang)}}|{{eval:90-round(ang)}}}}",
+							"message": "Tu as utilisé la touche {{if:f==0|sin⁻¹|cos⁻¹}} : l'égalité donne le {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}} de l'angle, il faut la touche {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}}⁻¹.",
+							"label": "Mauvaise touche inverse"
+						},
+						{
+							"answer": "{{eval:round(100*ang*\\pi/180)/100;d}}",
+							"message": "Ta calculatrice est réglée en radians : règle-la en **degrés** pour obtenir l'angle en degrés.",
+							"label": "Calculatrice en radians"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche l'angle dont le {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}} vaut $\\dfrac{{{eval:p;d}}}{{{eval:q;d}}}$ : c'est la touche ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}^{-1}$ de la calculatrice, en degrés.",
+					"$$\\widehat{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = {{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}^{-1}\\left(\\dfrac{{{eval:p;d}}}{{{eval:q;d}}}\\right) \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(ang)}}^{\\circ}}$$ (arrondi au degré)."
+				]
+			},
+			"hint": "L'égalité donne la valeur du {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}} de l'angle. Pour remonter à l'angle, utilise la touche inverse {{if:f==0|cos|}}{{if:f==1|sin|}}{{if:f==2|tan|}}⁻¹ (souvent `2nde` ou `shift`), en degrés."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : k*t ≈ 3{,}2",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"b": "40",
+				"kk": "42",
+				"k": "4.2",
+				"t": "0.766044443118978",
+				"tr": "-0.6669380616522619"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}2"]
+		},
+		{
+			"description": "v0 : non arrondi",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"b": "40",
+				"kk": "42",
+				"k": "4.2",
+				"t": "0.766044443118978",
+				"tr": "-0.6669380616522619"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3{,}217"]
+		},
+		{
+			"description": "v0 : Division au lieu de multiplication",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"b": "40",
+				"kk": "42",
+				"k": "4.2",
+				"t": "0.766044443118978",
+				"tr": "-0.6669380616522619"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur $AC$ est au **numérateur** : on multiplie par la valeur du cos, on ne divise pas."
+			},
+			"answers": ["5{,}5"]
+		},
+		{
+			"description": "v0 : Calculatrice en radians",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"b": "40",
+				"kk": "42",
+				"k": "4.2",
+				"t": "0.766044443118978",
+				"tr": "-0.6669380616522619"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta calculatrice est réglée en radians : règle-la en **degrés** avant de calculer avec un angle en degrés."
+			},
+			"answers": ["-2{,}8"]
+		},
+		{
+			"description": "v1 : k/t ≈ 9{,}7",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"b": "35",
+				"kk": "68",
+				"k": "6.8",
+				"t": "0.7002075382097097",
+				"tr": "0.47381472041445105"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9{,}7"]
+		},
+		{
+			"description": "v1 : non arrondi",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"b": "35",
+				"kk": "68",
+				"k": "6.8",
+				"t": "0.7002075382097097",
+				"tr": "0.47381472041445105"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["9{,}711"]
+		},
+		{
+			"description": "v1 : Multiplication au lieu de division",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"b": "35",
+				"kk": "68",
+				"k": "6.8",
+				"t": "0.7002075382097097",
+				"tr": "0.47381472041445105"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur $RT$ est au **dénominateur** : on divise par la valeur du tan, on ne multiplie pas."
+			},
+			"answers": ["4{,}8"]
+		},
+		{
+			"description": "v1 : Quotient renversé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"b": "35",
+				"kk": "68",
+				"k": "6.8",
+				"t": "0.7002075382097097",
+				"tr": "0.47381472041445105"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le quotient : $RT$ est égale à la longueur connue **divisée par** la valeur du tan."
+			},
+			"answers": ["0{,}1"]
+		},
+		{
+			"description": "v1 : Calculatrice en radians",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"b": "35",
+				"kk": "68",
+				"k": "6.8",
+				"t": "0.7002075382097097",
+				"tr": "0.47381472041445105"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta calculatrice est réglée en radians : règle-la en **degrés** avant de calculer avec un angle en degrés."
+			},
+			"answers": ["14{,}4"]
+		},
+		{
+			"description": "v1 sin : FG = 5,7 / sin 50°",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"f": "1",
+				"b": "50",
+				"kk": "57",
+				"k": "5.7",
+				"t": "0.766044443118978",
+				"tr": "-0.26237485370392877"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}4"]
+		},
+		{
+			"description": "v2 cos B = 4,2/7,5 : B ≈ 56°",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"pp": "42",
+				"qq": "75",
+				"p": "4.2",
+				"q": "7.5",
+				"ang": "55.94420225743209"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["56"]
+		},
+		{
+			"description": "v2 : quotient pris pour l'angle",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"pp": "42",
+				"qq": "75",
+				"p": "4.2",
+				"q": "7.5",
+				"ang": "55.94420225743209"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la valeur du cos de l'angle, pas l'angle : il faut encore la touche cos⁻¹ de la calculatrice."
+			},
+			"answers": ["0{,}56"]
+		},
+		{
+			"description": "v2 : sin⁻¹ au lieu de cos⁻¹",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"pp": "42",
+				"qq": "75",
+				"p": "4.2",
+				"q": "7.5",
+				"ang": "55.94420225743209"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé la touche sin⁻¹ : l'égalité donne le cos de l'angle, il faut la touche cos⁻¹."
+			},
+			"answers": ["34"]
+		},
+		{
+			"description": "v2 : radians",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"pp": "42",
+				"qq": "75",
+				"p": "4.2",
+				"q": "7.5",
+				"ang": "55.94420225743209"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta calculatrice est réglée en radians : règle-la en **degrés** pour obtenir l'angle en degrés."
+			},
+			"answers": ["0{,}98"]
+		},
+		{
+			"description": "v2 tan S = 8,1/4,7 : S ≈ 60°",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"pp": "81",
+				"qq": "47",
+				"p": "8.1",
+				"q": "4.7",
+				"ang": "59.8756820016388"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "v2 tan : non arrondi",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"pp": "81",
+				"qq": "47",
+				"p": "8.1",
+				"q": "4.7",
+				"ang": "59.8756820016388"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["59{,}9"]
+		}
+	]
+}

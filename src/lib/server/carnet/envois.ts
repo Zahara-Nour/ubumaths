@@ -24,7 +24,7 @@ import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
-import { endOfSchoolYear } from '#lib/server/journal-share-tokens.ts';
+import { schoolYearExpiry } from '#lib/server/school-year.ts';
 import { sendCarnetConfirmationEmail, sendCarnetLinkEmail } from '#lib/server/email/brevo.ts';
 import { CARNET_CONFIRM_DAYS } from '#lib/email-templates/carnet.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
@@ -113,6 +113,20 @@ async function studentFirstname(service: SB, studentId: string): Promise<string>
 		.maybeSingle();
 	if (error) logger.error('[profiles] prénom illisible', error);
 	return data?.firstname?.trim() || 'votre enfant';
+}
+
+/** Fin de l'année scolaire de l'école de l'élève : expiration de son lien. */
+async function studentLinkExpiry(service: SB, studentId: string): Promise<Date> {
+	const { data, error } = await service
+		.from('profiles')
+		.select('school_id')
+		.eq('id', studentId)
+		.maybeSingle();
+	if (error) {
+		logger.error('[profiles] école illisible', error);
+		throw new Error('Carnet illisible');
+	}
+	return schoolYearExpiry(service, data?.school_id ?? null);
 }
 
 /** Trace d'un courriel (C2, E6). Une trace perdue ne fait pas échouer l'envoi. */
@@ -231,12 +245,13 @@ export async function sendCarnetLink(
 	}
 	if (shared !== true) return 'not_issued';
 
+	const expiresAt = await studentLinkExpiry(service, contact.student_id);
 	const token = generateCarnetToken();
 	const tokenHash = hashCarnetToken(token);
 	const { data: issued, error: issueError } = await service.rpc('issue_parent_carnet_link', {
 		p_contact_id: contactId,
 		p_token_hash: tokenHash,
-		p_expires_at: endOfSchoolYear().toISOString()
+		p_expires_at: expiresAt.toISOString()
 	});
 	if (issueError) {
 		logger.error('[issue_parent_carnet_link]', issueError);
@@ -247,7 +262,8 @@ export async function sendCarnetLink(
 
 	const sent = await sendCarnetLinkEmail(contact.email, {
 		studentFirstname: await studentFirstname(service, contact.student_id),
-		token
+		token,
+		expiresAt
 	});
 	await logNotification(service, {
 		student_id: contact.student_id,

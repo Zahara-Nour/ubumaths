@@ -5,6 +5,7 @@ Les tests unitaires vivent dans `src/**/__tests__/` et `scripts/**/__tests__/` ;
 
 - `integration/` — suite d'intégration contre Supabase local (`pnpm test:integration`)
 - `helpers/` — clients réels et factory (`database/`), mocks (`supabase/`, `fixtures/`), helpers e2e
+- `ecarts/` — tests de preuve du registre des écarts, rouges tant que l'écart est vrai, hors CI (`pnpm ecarts rejouer`)
 - `fixtures/` — copies figées lues par des tests (`lexique/`, `relecture/`)
 - `seed-test-data.ts`, `cleanup-test-data.ts` — seed / nettoyage pour les e2e (à la main, `npx tsx`)
 

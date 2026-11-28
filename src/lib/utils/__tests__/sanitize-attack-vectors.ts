@@ -94,7 +94,7 @@ export const ATTACK_VECTORS: readonly AttackVector[] = [
 
 /**
  * Ce que l'app autorise VOLONTAIREMENT dans `sanitizeHtml` (contenu riche :
- * sorties HTML du carnet, énoncés, modèles de messages) : doit sortir intact.
+ * sorties HTML du carnet, énoncés) : doit sortir intact.
  */
 export const ALLOWED_RICH_CONTENT: readonly string[] = [
 	'<p><strong>Gras</strong> et <em>italique</em></p>',
@@ -205,7 +205,7 @@ export function describeTextesAccolades(sanitizers: readonly NamedSanitizer[]): 
  * Balises MathLive refusées (2026-11-08) : MathLive lit le texte d'un `math-field` comme du
  * LaTeX, et `\htmlStyle`, `\class`, `\cssId`, `\htmlData`, `\href` y posent style, classe,
  * identifiant, données ou lien. Aucun contenu passé par `sanitizeHtml` n'en a besoin (sorties
- * du carnet, modèles de messages) : la balise part, son texte reste, inerte.
+ * du carnet) : la balise part, son texte reste, inerte.
  */
 export const CHARGES_MATHLIVE: readonly string[] = [
 	'<math-field read-only="">\\htmlStyle{position:fixed;inset:0;background:url(https://evil.example/x.png)}{x}</math-field>',

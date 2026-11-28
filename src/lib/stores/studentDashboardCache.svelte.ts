@@ -3,9 +3,9 @@
  * ===============================
  *
  * Centralized caching system for student dashboard with 3 separate caches:
- * 1. Student Profile & Classes (2h TTL)
- * 2. Student Rewards (10min TTL + optimistic)
- * 3. Student Warnings (10min TTL, per period)
+ * 1. Student Rewards (10min TTL + optimistic)
+ * 2. Student Warnings (10min TTL, per period)
+ * 3. Student Buddy (10min TTL + optimistic)
  *
  * FEATURES:
  * - Singleton pattern (student sees only their own data)
@@ -30,10 +30,8 @@
  */
 
 import type {
-	StudentProfile,
 	StudentRewards,
 	StudentWarnings,
-	CachedProfile,
 	CachedRewards,
 	CachedWarnings,
 	CachedBuddy,
@@ -49,21 +47,6 @@ import { SvelteMap } from 'svelte/reactivity';
 // ============================================================================
 // VALEURS VIDES (rendues après un échec de lecture, jamais mises en cache)
 // ============================================================================
-
-function emptyProfile(): StudentProfile {
-	return {
-		id: '',
-		email: '',
-		firstname: '',
-		lastname: null,
-		full_name: null,
-		avatar_url: null,
-		grade: null,
-		is_test: false,
-		school_id: null,
-		classes: []
-	};
-}
 
 function emptyRewards(): StudentRewards {
 	return { gidouilles: 0, bonus: 0, vip_cards: {} };
@@ -86,17 +69,15 @@ function emptyWarnings(): StudentWarnings {
  * - Simpler API compared to TeacherDashboardCache
  *
  * CACHE STRATEGY:
- * 1. Profile Cache (2h TTL): Student info + class memberships
- *    - Long TTL because profile data rarely changes
- *    - Includes: name, email, avatar, classes enrolled in
- *
- * 2. Rewards Cache (10min TTL): Gidouilles + VIP cards
+ * 1. Rewards Cache (10min TTL): Gidouilles + VIP cards
  *    - Short TTL for frequently changing data
  *    - Supports optimistic updates for instant UI feedback
  *
- * 3. Warnings Cache (10min TTL, keyed by periodId): Behavioral warnings
+ * 2. Warnings Cache (10min TTL, keyed by periodId): Behavioral warnings
  *    - Separate cache per academic period
  *    - Map-based storage allows multiple periods to be cached
+ *
+ * 3. Buddy Cache (10min TTL): Palotin state, optimistic XP updates
  *
  * PERFORMANCE CHARACTERISTICS:
  * - Cache hit: <1ms (direct object access)
@@ -105,11 +86,11 @@ function emptyWarnings(): StudentWarnings {
  *
  * @example
  * // Auto-fetch pattern
- * const profile = await studentCache.getProfile();
+ * const rewards = await studentCache.getRewards();
  *
  * @example
  * // Sync getter for $derived
- * let profile = $derived(studentCache.getProfileSync());
+ * let rewards = $derived(studentCache.getRewardsSync());
  *
  * @example
  * // Optimistic update
@@ -118,13 +99,6 @@ function emptyWarnings(): StudentWarnings {
  * studentCache.invalidateRewards(); // Sync with server
  */
 export class StudentDashboardCache {
-	/**
-	 * Profile cache (singleton - student sees only their own data)
-	 * Uses Svelte 5 $state for automatic reactivity
-	 * @private
-	 */
-	private profileCache: CachedProfile | null = $state(null);
-
 	/**
 	 * Rewards cache (singleton - gidouilles + VIP cards)
 	 * Supports optimistic updates for instant UI feedback
@@ -146,13 +120,6 @@ export class StudentDashboardCache {
 	 * @private
 	 */
 	private buddyCache: CachedBuddy | null = $state(null);
-
-	/**
-	 * Profile cache TTL: 2 hours
-	 * Reasoning: Profile data (name, email, classes) changes infrequently
-	 * @private
-	 */
-	private readonly PROFILE_TTL = 2 * 60 * 60 * 1000; // 2 hours
 
 	/**
 	 * Rewards cache TTL: 10 minutes
@@ -191,6 +158,33 @@ export class StudentDashboardCache {
 	private readonly logger = createLogger('studentDashboardCache.svelte.ts', 'trace');
 
 	/**
+	 * Relecture à l'échéance (écart L43, comportement suivi par David le 2026-11-28) :
+	 * à la fin de sa durée de vie, une entrée déjà lue (récompenses, avertissements
+	 * d'une période) est relue toute seule. L'écran garde l'ancienne valeur jusqu'à
+	 * l'arrivée de la nouvelle. Un onglet caché ne relit pas : il relit quand
+	 * l'élève revient dessus. Navigateur seulement (le singleton existe aussi au
+	 * serveur, vide).
+	 * Clé : 'rewards' ou 'warnings:<periodId>'.
+	 * @private
+	 */
+	private refreshTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+	/** Nouvel essai après une relecture en échec : 1 minute. @private */
+	private readonly RETRY_DELAY = 60 * 1000;
+
+	/** Relectures en cours (même clé) : une seule à la fois. @private */
+	private refreshing = new Set<string>();
+
+	/** Écouteur du retour sur l'onglet, retiré par `destroy()`. @private */
+	private readonly onVisibilityChange = () => {
+		if (document.visibilityState === 'visible') this.refreshExpired();
+	};
+
+	constructor() {
+		if (browser) document.addEventListener('visibilitychange', this.onVisibilityChange);
+	}
+
+	/**
 	 * Conditional logging helper
 	 * Only logs if monitoring is enabled
 	 * @private
@@ -205,69 +199,11 @@ export class StudentDashboardCache {
 	// ========================================================================
 
 	/**
-	 * Get student profile with automatic cache management
-	 *
-	 * CACHE BEHAVIOR:
-	 * - Returns cached data if fresh (< 2h old)
-	 * - Auto-fetches from /api/student/profile if cache miss or expired
-	 * - Updates cache timestamp on successful fetch
-	 *
-	 * USAGE PATTERN:
-	 * ```typescript
-	 * // In async context (effect, event handler)
-	 * const profile = await studentCache.getProfile();
-	 * console.log(profile.classes); // Array of class memberships
-	 * ```
-	 *
-	 * PERFORMANCE:
-	 * - Cache hit: <1ms
-	 * - Cache miss: ~100-200ms (includes API roundtrip)
-	 *
-	 * ERROR HANDLING:
-	 * - Returns empty profile object on API failure (prevents crashes)
-	 * - Un échec n'est JAMAIS mis en cache : la dernière valeur connue (même
-	 *   expirée) est rendue si elle existe, et l'accès suivant refait la lecture
-	 * - Logs error to console for debugging
-	 *
-	 * @returns Promise resolving to student profile with class memberships
-	 * @throws Never throws - returns fallback profile on error
-	 */
-	async getProfile(): Promise<StudentProfile> {
-		const startTime = performance.now();
-		const cached = this.profileCache;
-		const now = Date.now();
-
-		// Return cached data if fresh
-		if (cached && now - cached.fetchedAt < this.PROFILE_TTL) {
-			const elapsed = (performance.now() - startTime).toFixed(2);
-			this.log('info', `Cache HIT: Student profile (${elapsed}ms)`);
-			return cached.profile;
-		}
-
-		const ttlExpired = cached ? 'TTL expired' : 'Not in cache';
-		this.log('info', `Cache MISS: Student profile (${ttlExpired}) - Fetching...`);
-
-		// Fetch from API
-		const profile = await this.fetchProfile();
-		if (profile === null) {
-			// Échec : rien n'est stocké, l'accès suivant refera la lecture.
-			// On rend la dernière valeur connue, même expirée, sinon un profil vide.
-			return cached?.profile ?? emptyProfile();
-		}
-		this.profileCache = { profile, fetchedAt: now };
-
-		const elapsed = (performance.now() - startTime).toFixed(2);
-		this.log('info', `Fetched student profile: ${profile.classes.length} classes (${elapsed}ms)`);
-		return profile;
-	}
-
-	/**
 	 * Get student rewards (gidouilles + VIP cards) with automatic cache management
 	 *
 	 * CACHE BEHAVIOR:
 	 * - Returns cached data if fresh (< 10min old)
 	 * - Auto-fetches from /api/student/rewards if cache miss or expired
-	 * - Shorter TTL than profile due to frequent updates
 	 *
 	 * USAGE PATTERN:
 	 * ```typescript
@@ -295,6 +231,11 @@ export class StudentDashboardCache {
 	 * - Cache hit: <1ms
 	 * - Cache miss: ~100-200ms
 	 *
+	 * ERROR HANDLING:
+	 * - Un échec n'est JAMAIS mis en cache : la dernière valeur connue (même
+	 *   expirée) est rendue si elle existe, sinon des récompenses vides, et
+	 *   l'accès suivant refait la lecture
+	 *
 	 * @returns Promise resolving to student rewards object
 	 * @throws Never throws - returns last known (or empty) rewards on error, never cached
 	 */
@@ -316,10 +257,12 @@ export class StudentDashboardCache {
 		// Fetch from API
 		const rewards = await this.fetchRewards();
 		if (rewards === null) {
-			// Échec : rien n'est stocké (voir getProfile)
+			// Échec : rien n'est stocké, l'accès suivant refera la lecture.
+			// On rend la dernière valeur connue, même expirée, sinon des récompenses vides.
 			return cached?.rewards ?? emptyRewards();
 		}
 		this.rewardsCache = { rewards, fetchedAt: now };
+		this.armRefresh('rewards', now + this.REWARDS_TTL);
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
 		this.log('info', `Fetched student rewards: ${rewards.gidouilles} gidouilles (${elapsed}ms)`);
@@ -377,10 +320,11 @@ export class StudentDashboardCache {
 		// Fetch from API
 		const warnings = await this.fetchWarnings(periodId);
 		if (warnings === null) {
-			// Échec : rien n'est stocké (voir getProfile)
+			// Échec : rien n'est stocké (voir getRewards)
 			return cached?.warnings ?? emptyWarnings();
 		}
 		this.warningsCache.set(periodId, { warnings, fetchedAt: now });
+		this.armRefresh(`warnings:${periodId}`, now + this.WARNINGS_TTL);
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
 		this.log(
@@ -395,90 +339,27 @@ export class StudentDashboardCache {
 	// ========================================================================
 
 	/**
-	 * Get student profile synchronously (for use in Svelte 5 $derived)
-	 *
-	 * WHY SYNC GETTERS:
-	 * Svelte 5's $derived cannot handle async operations. Use sync getters
-	 * to create reactive values that update when cache changes.
-	 *
-	 * CACHE BEHAVIOR:
-	 * - Returns cached data ONLY if fresh (< 2h old)
-	 * - Returns null if cache is empty or expired
-	 * - Does NOT auto-fetch (use async getter for that)
-	 *
-	 * USAGE PATTERN:
-	 * ```svelte
-	 * <script>
-	 *   // Reactive value that updates when cache changes
-	 *   let profile = $derived(studentCache.getProfileSync());
-	 *
-	 *   // Handle cache miss in effect
-	 *   $effect(() => {
-	 *     if (!profile) {
-	 *       studentCache.getProfile(); // Async fetch
-	 *     }
-	 *   });
-	 * </script>
-	 *
-	 * {#if profile}
-	 *   <p>Welcome, {profile.firstname}!</p>
-	 * {:else}
-	 *   <p>Loading...</p>
-	 * {/if}
-	 * ```
-	 *
-	 * REACTIVITY:
-	 * Because this.profileCache is $state, any changes trigger re-evaluation
-	 * of $derived expressions using this getter.
-	 *
-	 * @returns Student profile if cached and fresh, null otherwise
-	 */
-	getProfileSync(): StudentProfile | null {
-		const cached = this.profileCache;
-		const now = Date.now();
-
-		if (cached && now - cached.fetchedAt < this.PROFILE_TTL) {
-			return cached.profile;
-		}
-
-		return null;
-	}
-
-	/**
 	 * Get student rewards synchronously
-	 * Returns null if cache is empty or expired
+	 * Rend la dernière valeur connue, même arrivée à échéance (elle est alors en
+	 * cours de relecture, écart L43) ; null seulement si rien n'a été lu.
 	 * Use in $derived for reactive UI
 	 *
 	 * @returns Student rewards or null
 	 */
 	getRewardsSync(): StudentRewards | null {
-		const cached = this.rewardsCache;
-		const now = Date.now();
-
-		if (cached && now - cached.fetchedAt < this.REWARDS_TTL) {
-			return cached.rewards;
-		}
-
-		return null;
+		return this.rewardsCache?.rewards ?? null;
 	}
 
 	/**
 	 * Get student warnings synchronously
-	 * Returns null if cache is empty or expired
+	 * Dernière valeur connue, même arrivée à échéance (voir getRewardsSync)
 	 * Use in $derived for reactive UI
 	 *
 	 * @param periodId - The academic period ID
 	 * @returns Student warnings or null
 	 */
 	getWarningsSync(periodId: string): StudentWarnings | null {
-		const cached = this.warningsCache.get(periodId);
-		const now = Date.now();
-
-		if (cached && now - cached.fetchedAt < this.WARNINGS_TTL) {
-			return cached.warnings;
-		}
-
-		return null;
+		return this.warningsCache.get(periodId)?.warnings ?? null;
 	}
 
 	/**
@@ -516,14 +397,16 @@ export class StudentDashboardCache {
 		const currentGidouilles = cached.rewards.gidouilles;
 		const newGidouilles = Math.max(0, Math.round((currentGidouilles + delta) * 100) / 100);
 
-		// Update cache with new gidouilles value
+		// Update cache with new gidouilles value. L'échéance repart de maintenant :
+		// sinon le gain disparaîtrait à l'échéance de l'ancienne lecture (écart L44).
 		this.rewardsCache = {
-			...cached,
 			rewards: {
 				...cached.rewards,
 				gidouilles: newGidouilles
-			}
+			},
+			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 
 		this.log(
 			'trace',
@@ -546,14 +429,15 @@ export class StudentDashboardCache {
 		const currentBonus = cached.rewards.bonus ?? 0;
 		const newBonus = Math.max(0, currentBonus + delta);
 
-		// Update cache with new bonus value
+		// Update cache with new bonus value (échéance repartie, écart L44)
 		this.rewardsCache = {
-			...cached,
 			rewards: {
 				...cached.rewards,
 				bonus: newBonus
-			}
+			},
+			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 
 		this.log(
 			'trace',
@@ -573,14 +457,15 @@ export class StudentDashboardCache {
 		const cached = this.rewardsCache;
 		if (!cached) return;
 
-		// Update cache with new VIP cards
+		// Update cache with new VIP cards (échéance repartie, écart L44)
 		this.rewardsCache = {
-			...cached,
 			rewards: {
 				...cached.rewards,
 				vip_cards: vipCards
-			}
+			},
+			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 
 		this.log('trace', `[Cache] Optimistic VIP cards update`);
 	}
@@ -657,53 +542,6 @@ export class StudentDashboardCache {
 	// ========================================================================
 
 	/**
-	 * Hydrate profile cache from server-loaded data
-	 *
-	 * HYDRATION STRATEGY:
-	 * Instead of fetching data twice (server + client), we reuse data already
-	 * loaded by SvelteKit's load functions to populate the cache immediately.
-	 *
-	 * WORKFLOW:
-	 * 1. Server (+layout.server.ts): Fetch profile from database
-	 * 2. Server: Return profile in load function data
-	 * 3. Client (+layout.svelte): Call hydrateProfile() in $effect
-	 * 4. Result: Cache is populated instantly, no API call needed
-	 *
-	 * USAGE PATTERN:
-	 * ```typescript
-	 * // +layout.server.ts
-	 * export const load: LayoutServerLoad = async ({ locals }) => {
-	 *   const profile = await fetchStudentProfile(locals.user.id);
-	 *   return { studentProfile: profile };
-	 * };
-	 *
-	 * // +layout.svelte
-	 * import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
-	 * import { onMount } from 'svelte';
-	 *
-	 * let { data } = $props();
-	 *
-	 * onMount(() => {
-	 *   studentCache.hydrateProfile(data.studentProfile);
-	 * });
-	 * ```
-	 *
-	 * BENEFITS:
-	 * - Zero API calls on page load (data already fetched server-side)
-	 * - Instant cache availability
-	 * - Better performance vs. auto-fetch pattern
-	 *
-	 * @param profile - The student profile object with classes from server
-	 */
-	hydrateProfile(profile: StudentProfile): void {
-		this.profileCache = {
-			profile,
-			fetchedAt: Date.now()
-		};
-		this.log('trace', '[Cache] Hydrated profile cache');
-	}
-
-	/**
 	 * Hydrate rewards cache from server data
 	 * Use in +layout.server.ts to pre-populate cache
 	 *
@@ -714,6 +552,7 @@ export class StudentDashboardCache {
 			rewards,
 			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 		this.log('trace', '[Cache] Hydrated rewards cache');
 	}
 
@@ -729,6 +568,7 @@ export class StudentDashboardCache {
 			warnings,
 			fetchedAt: Date.now()
 		});
+		this.armRefresh(`warnings:${periodId}`, Date.now() + this.WARNINGS_TTL);
 		this.log('trace', `[Cache] Hydrated warnings cache for period ${periodId}`);
 	}
 
@@ -754,18 +594,11 @@ export class StudentDashboardCache {
 	// ========================================================================
 
 	/**
-	 * Invalidate profile cache
-	 */
-	invalidateProfile(): void {
-		this.profileCache = null;
-		this.log('trace', 'Cache invalidated: profile');
-	}
-
-	/**
 	 * Invalidate rewards cache
 	 */
 	invalidateRewards(): void {
 		this.rewardsCache = null;
+		this.disarmRefresh('rewards');
 		this.log('trace', 'Cache invalidated: rewards');
 	}
 
@@ -776,6 +609,7 @@ export class StudentDashboardCache {
 	 */
 	invalidateWarnings(periodId: string): void {
 		this.warningsCache.delete(periodId);
+		this.disarmRefresh(`warnings:${periodId}`);
 		this.log('trace', 'Cache invalidated: warnings for period:', periodId);
 	}
 
@@ -784,6 +618,9 @@ export class StudentDashboardCache {
 	 */
 	invalidateAllWarnings(): void {
 		this.warningsCache.clear();
+		for (const key of [...this.refreshTimers.keys()]) {
+			if (key.startsWith('warnings:')) this.disarmRefresh(key);
+		}
 		this.log('trace', 'Cache invalidated: all warnings');
 	}
 
@@ -799,35 +636,112 @@ export class StudentDashboardCache {
 	 * Clear all caches
 	 */
 	invalidateAll(): void {
-		this.profileCache = null;
 		this.rewardsCache = null;
 		this.buddyCache = null;
 		this.warningsCache.clear();
+		for (const key of [...this.refreshTimers.keys()]) this.disarmRefresh(key);
 		this.log('trace', 'Cache: All caches cleared');
+	}
+
+	/**
+	 * Arrête les relectures programmées et l'écoute de l'onglet (tests, instance jetée)
+	 */
+	destroy(): void {
+		for (const key of [...this.refreshTimers.keys()]) this.disarmRefresh(key);
+		if (browser) document.removeEventListener('visibilitychange', this.onVisibilityChange);
+	}
+
+	// ========================================================================
+	// RELECTURE À L'ÉCHÉANCE (écart L43)
+	// ========================================================================
+
+	/**
+	 * Programme la relecture d'une entrée à son échéance (remplace la précédente)
+	 * @private
+	 */
+	private armRefresh(key: string, expiresAt: number): void {
+		if (!browser) return;
+		this.disarmRefresh(key);
+		const delay = Math.max(0, expiresAt - Date.now());
+		this.refreshTimers.set(
+			key,
+			setTimeout(() => {
+				this.refreshTimers.delete(key);
+				// Onglet caché : la relecture attend le retour sur l'onglet
+				if (document.visibilityState === 'hidden') return;
+				void this.refresh(key);
+			}, delay)
+		);
+	}
+
+	/** @private */
+	private disarmRefresh(key: string): void {
+		const timer = this.refreshTimers.get(key);
+		if (timer !== undefined) clearTimeout(timer);
+		this.refreshTimers.delete(key);
+	}
+
+	/**
+	 * Retour sur l'onglet : relit les entrées arrivées à échéance pendant l'absence
+	 * @private
+	 */
+	private refreshExpired(): void {
+		const now = Date.now();
+		if (this.rewardsCache && now - this.rewardsCache.fetchedAt >= this.REWARDS_TTL) {
+			void this.refresh('rewards');
+		}
+		for (const [periodId, cached] of this.warningsCache) {
+			if (now - cached.fetchedAt >= this.WARNINGS_TTL) void this.refresh(`warnings:${periodId}`);
+		}
+	}
+
+	/**
+	 * Relit une entrée. Un échec ne touche pas au cache : l'écran garde l'ancienne
+	 * valeur, et un nouvel essai part dans une minute (onglet visible).
+	 * Le résultat n'est gardé que si l'entrée n'a pas changé pendant la lecture
+	 * (mise à jour optimiste, hydratation, lecture refaite, invalidation) : il ne doit
+	 * jamais écraser une valeur plus récente.
+	 * @private
+	 */
+	private async refresh(key: string): Promise<void> {
+		if (this.refreshing.has(key)) return;
+		this.refreshing.add(key);
+		try {
+			if (key === 'rewards') {
+				const before = this.rewardsCache;
+				if (!before) return; // invalidé entre-temps
+				const rewards = await this.fetchRewards();
+				if (this.rewardsCache !== before) return; // changé pendant la lecture
+				if (rewards === null) {
+					this.armRefresh(key, Date.now() + this.RETRY_DELAY);
+					return;
+				}
+				const now = Date.now();
+				this.rewardsCache = { rewards, fetchedAt: now };
+				this.armRefresh('rewards', now + this.REWARDS_TTL);
+			} else {
+				const periodId = key.slice('warnings:'.length);
+				const before = this.warningsCache.get(periodId);
+				if (!before) return;
+				const warnings = await this.fetchWarnings(periodId);
+				if (this.warningsCache.get(periodId) !== before) return;
+				if (warnings === null) {
+					this.armRefresh(key, Date.now() + this.RETRY_DELAY);
+					return;
+				}
+				const now = Date.now();
+				this.warningsCache.set(periodId, { warnings, fetchedAt: now });
+				this.armRefresh(key, now + this.WARNINGS_TTL);
+			}
+			this.log('trace', `[Cache] Relu à l'échéance : ${key}`);
+		} finally {
+			this.refreshing.delete(key);
+		}
 	}
 
 	// ========================================================================
 	// API FETCH METHODS
 	// ========================================================================
-
-	/**
-	 * Fetch student profile from API
-	 * Rend null en cas d'échec (réseau, HTTP), pour que l'appelant ne le stocke pas
-	 * @private
-	 */
-	private async fetchProfile(): Promise<StudentProfile | null> {
-		try {
-			const response = await fetch('/api/student/profile');
-			if (!response.ok) {
-				throw new Error(`Impossible de charger le profil : ${response.statusText}`);
-			}
-			const data = await response.json();
-			return data.profile;
-		} catch (error) {
-			console.error('[Cache] Error fetching student profile:', error);
-			return null;
-		}
-	}
 
 	/**
 	 * Fetch student rewards from API (null en cas d'échec)
@@ -876,14 +790,12 @@ export class StudentDashboardCache {
 	 * @returns Cache statistics object
 	 */
 	getCacheStats(): CacheStats {
-		const profileExists = this.profileCache !== null;
 		const rewardsExists = this.rewardsCache !== null;
 		const warningsCount = this.warningsCache.size;
-		const totalEntries = (profileExists ? 1 : 0) + (rewardsExists ? 1 : 0) + warningsCount;
+		const totalEntries = (rewardsExists ? 1 : 0) + warningsCount;
 
 		// Rough memory estimate (very approximate)
 		let memoryBytes = 0;
-		if (profileExists) memoryBytes += JSON.stringify(this.profileCache).length;
 		if (rewardsExists) memoryBytes += JSON.stringify(this.rewardsCache).length;
 		this.warningsCache.forEach((cached) => {
 			memoryBytes += JSON.stringify(cached).length;
@@ -893,7 +805,6 @@ export class StudentDashboardCache {
 		const memoryEstimate = memoryBytes < 1024 ? `${memoryBytes} bytes` : `${memoryKB} KB`;
 
 		return {
-			profile: profileExists,
 			rewards: rewardsExists,
 			warnings: warningsCount,
 			totalEntries,
@@ -915,7 +826,6 @@ export class StudentDashboardCache {
 		console.log('┌─────────────────────────────────────┐');
 		console.log('│   Student Dashboard Cache Stats    │');
 		console.log('├─────────────────────────────────────┤');
-		console.log(`│ Profile:    ${stats.profile ? '✓ cached' : '✗ empty'.padEnd(9)}             │`);
 		console.log(`│ Rewards:    ${stats.rewards ? '✓ cached' : '✗ empty'.padEnd(9)}             │`);
 		console.log(`│ Warnings:   ${String(stats.warnings).padEnd(9)} periods       │`);
 		console.log(`│ Total:      ${String(stats.totalEntries).padEnd(9)} entries       │`);

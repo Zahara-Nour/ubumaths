@@ -1,0 +1,562 @@
+{
+	"id": "8725107f-da05-4044-a574-0fa76af92500",
+	"rangement": {
+		"noeud": "Géométrie > Géométrie repérée > équations de droites",
+		"point": "2-322"
+	},
+	"title": "Déterminer une fonction affine par deux images",
+	"description": "Expression de f(x) à partir de deux images : f(0) et une autre, deux nombres consécutifs, deux nombres quelconques, deux images égales (pièges : quotient renversé, b oublié, image prise pour l'ordonnée à l'origine)",
+	"grades": ["3", "2"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$f$ est une fonction affine telle que $f(0)={{b}}$ et $f({{x0}})={{y0}}$.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "x0",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:a*x0+b"
+				}
+			],
+			"conditions": ["abs(y0)<=5", "y0!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x/a+b}}",
+							"message": "Le coefficient directeur, c'est la différence des images divisée par la différence des nombres de départ, pas l'inverse.",
+							"label": "Quotient renversé"
+						},
+						{
+							"answer": "{{eval:a*x}}",
+							"message": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f(x)=ax+b$.",
+							"label": "b oublié"
+						},
+						{
+							"answer": "{{eval:a*x+y0}}",
+							"message": "Tu as pris une image donnée pour l'ordonnée à l'origine : $b$ est l'image de $0$, calcule-le à partir de l'une des deux images.",
+							"label": "b = y₀ sans retrancher a·x₀"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(0)={{b}}$ : l'ordonnée à l'origine est $b=\\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"Le coefficient directeur :",
+					"$$a=\\dfrac{f({{x0}})-f(0)}{ {{x0}}-0 }=\\dfrac{ {{y0}}-{{eval:b;()}} }{ {{x0}} }=\\dfrac{ {{eval:y0-b}} }{ {{x0}} }=\\textcolor{{{color:primary.0}}}{{{a}}}$$",
+					"Donc $f(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x|}}{{if:a==-1|-x|}}{{if:a*a>1|{{a}}x|}}{{b;+}}}$."
+				]
+			},
+			"hint": "L'image de $0$ donne directement l'ordonnée à l'origine. Pour le coefficient directeur, divise la différence des images par la différence des nombres de départ."
+		},
+		{
+			"statement": "$f$ est une fonction affine telle que $f({{x1}})={{y1}}$ et $f({{x2}})={{y2}}$.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "x1",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+1"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:a*x1+b"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:a*x2+b"
+				}
+			],
+			"conditions": ["x2!=0", "abs(y1)<=5", "abs(y2)<=5", "y1!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x/a+y1-x1/a}}",
+							"message": "Le coefficient directeur, c'est la différence des images divisée par la différence des nombres de départ, pas l'inverse.",
+							"label": "Quotient renversé"
+						},
+						{
+							"answer": "{{eval:a*x}}",
+							"message": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f(x)=ax+b$.",
+							"label": "b oublié"
+						},
+						{
+							"answer": "{{eval:a*x+y1}}",
+							"message": "Tu as pris une image donnée pour l'ordonnée à l'origine : $b$ est l'image de $0$, calcule-le à partir de l'une des deux images.",
+							"label": "b = y₁ sans retrancher a·x₁"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur : les nombres de départ ne diffèrent que de $1$.",
+					"$$a=\\dfrac{f({{x2}})-f({{x1}})}{{{x2}}-{{eval:x1;()}}}=\\dfrac{{{y2}}-{{eval:y1;()}}}{{{x2}}-{{eval:x1;()}}}=\\dfrac{ {{eval:y2-y1}} }{ {{eval:x2-x1}} }=\\textcolor{{{color:primary.0}}}{{{a}}}$$",
+					"Puis $f({{x1}})={{y1}}$ : ${{a}}\\times{{eval:x1;()}}+b={{y1}}$, donc $b={{y1}}-{{eval:a*x1;()}}=\\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"Donc $f(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x|}}{{if:a==-1|-x|}}{{if:a*a>1|{{a}}x|}}{{b;+}}}$."
+				]
+			},
+			"hint": "Le coefficient directeur se calcule avec les deux images : différence des images divisée par la différence des nombres de départ. Puis cherche $b$ avec l'une des deux images."
+		},
+		{
+			"statement": "$f$ est une fonction affine telle que $f({{x1}})={{y1}}$ et $f({{x2}})={{y2}}$.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "x1",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+d"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:a*x1+b"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:a*x2+b"
+				}
+			],
+			"conditions": ["x2!=0", "abs(x2)<=5", "abs(y1)<=5", "abs(y2)<=5", "y1!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:d/(y2-y1)*x+y1-d/(y2-y1)*x1}}",
+							"message": "Le coefficient directeur, c'est la différence des images divisée par la différence des nombres de départ, pas l'inverse.",
+							"label": "Quotient renversé"
+						},
+						{
+							"answer": "{{eval:a*x}}",
+							"message": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f(x)=ax+b$.",
+							"label": "b oublié"
+						},
+						{
+							"answer": "{{eval:a*x+y1}}",
+							"message": "Tu as pris une image donnée pour l'ordonnée à l'origine : $b$ est l'image de $0$, calcule-le à partir de l'une des deux images.",
+							"label": "b = y₁ sans retrancher a·x₁"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur :",
+					"$$a=\\dfrac{f({{x2}})-f({{x1}})}{{{x2}}-{{eval:x1;()}}}=\\dfrac{{{y2}}-{{eval:y1;()}}}{{{x2}}-{{eval:x1;()}}}=\\dfrac{ {{eval:y2-y1}} }{ {{eval:x2-x1}} }=\\textcolor{{{color:primary.0}}}{{{a}}}$$",
+					"Puis $f({{x1}})={{y1}}$ : ${{a}}\\times{{eval:x1;()}}+b={{y1}}$, donc $b={{y1}}-{{eval:a*x1;()}}=\\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"Donc $f(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x|}}{{if:a==-1|-x|}}{{if:a*a>1|{{a}}x|}}{{b;+}}}$."
+				]
+			},
+			"hint": "Le coefficient directeur se calcule avec les deux images : différence des images divisée par la différence des nombres de départ. Puis cherche $b$ avec l'une des deux images."
+		},
+		{
+			"statement": "$f$ est une fonction affine telle que $f({{x1}})={{k}}$ et $f({{x2}})={{k}}$.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "x1",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+d"
+				}
+			],
+			"conditions": ["x2!=0", "abs(x2)<=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k*x}}",
+							"message": "Les deux images sont égales : le coefficient directeur est nul, la fonction est constante.",
+							"label": "k pris pour le coefficient directeur"
+						},
+						{
+							"answer": "0",
+							"message": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f(x)=ax+b$.",
+							"label": "b oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur :",
+					"$$a=\\dfrac{f({{x2}})-f({{x1}})}{ {{x2}}-{{eval:x1;()}} }=\\dfrac{ {{k}}-{{eval:k;()}} }{ {{d}} }=\\dfrac{0}{ {{d}} }=\\textcolor{{{color:primary.0}}}{0}$$",
+					"Donc $f(x)=0\\times x+b=b$, et $f({{x1}})={{k}}$ donne $b={{k}}$ : $f(x)=\\textcolor{{{color:primary.0}}}{{{k}}}$ (la fonction est constante)."
+				]
+			},
+			"hint": "Le coefficient directeur se calcule avec les deux images : différence des images divisée par la différence des nombres de départ. Puis cherche $b$ avec l'une des deux images."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : f(x) = −2x + 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"x0": "2",
+				"y0": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x+3"]
+		},
+		{
+			"description": "v0 : 3 − 2x juste aussi",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"x0": "2",
+				"y0": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3-2x"]
+		},
+		{
+			"description": "v0 : non réduite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"x0": "2",
+				"y0": "-1"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["-x-x+3"]
+		},
+		{
+			"description": "v0 : quotient renversé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"x0": "2",
+				"y0": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient directeur, c'est la différence des images divisée par la différence des nombres de départ, pas l'inverse."
+			},
+			"answers": ["-\\frac{1}{2}x+3"]
+		},
+		{
+			"description": "v0 : b oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"x0": "2",
+				"y0": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f\\left( x \\right) = a x + b$."
+			},
+			"answers": ["-2x"]
+		},
+		{
+			"description": "v0 : b = y0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"x0": "2",
+				"y0": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris une image donnée pour l'ordonnée à l'origine : $b$ est l'image de $0$, calcule-le à partir de l'une des deux images."
+			},
+			"answers": ["-2x-1"]
+		},
+		{
+			"description": "v1 : f(x) = 3x + 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"x1": "-3",
+				"x2": "-2",
+				"y1": "-4",
+				"y2": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3x+5"]
+		},
+		{
+			"description": "v1 : quotient renversé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"x1": "-3",
+				"x2": "-2",
+				"y1": "-4",
+				"y2": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient directeur, c'est la différence des images divisée par la différence des nombres de départ, pas l'inverse."
+			},
+			"answers": ["\\frac{1}{3}x-3"]
+		},
+		{
+			"description": "v1 : b oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"x1": "-3",
+				"x2": "-2",
+				"y1": "-4",
+				"y2": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f\\left( x \\right) = a x + b$."
+			},
+			"answers": ["3x"]
+		},
+		{
+			"description": "v1 : b = y1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"x1": "-3",
+				"x2": "-2",
+				"y1": "-4",
+				"y2": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris une image donnée pour l'ordonnée à l'origine : $b$ est l'image de $0$, calcule-le à partir de l'une des deux images."
+			},
+			"answers": ["3x-4"]
+		},
+		{
+			"description": "v1 : f(x) = −x + 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "2",
+				"x1": "1",
+				"x2": "2",
+				"y1": "1",
+				"y2": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-x+2"]
+		},
+		{
+			"description": "v2 : f(x) = −2x + 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"x1": "-1",
+				"d": "4",
+				"x2": "3",
+				"y1": "3",
+				"y2": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x+1"]
+		},
+		{
+			"description": "v2 : 1 − 2x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"x1": "-1",
+				"d": "4",
+				"x2": "3",
+				"y1": "3",
+				"y2": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1-2x"]
+		},
+		{
+			"description": "v2 : quotient renversé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"x1": "-1",
+				"d": "4",
+				"x2": "3",
+				"y1": "3",
+				"y2": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient directeur, c'est la différence des images divisée par la différence des nombres de départ, pas l'inverse."
+			},
+			"answers": ["-\\frac{1}{2}x+\\frac{5}{2}"]
+		},
+		{
+			"description": "v2 : b oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"x1": "-1",
+				"d": "4",
+				"x2": "3",
+				"y1": "3",
+				"y2": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f\\left( x \\right) = a x + b$."
+			},
+			"answers": ["-2x"]
+		},
+		{
+			"description": "v2 : b = y1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"x1": "-1",
+				"d": "4",
+				"x2": "3",
+				"y1": "3",
+				"y2": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris une image donnée pour l'ordonnée à l'origine : $b$ est l'image de $0$, calcule-le à partir de l'une des deux images."
+			},
+			"answers": ["-2x+3"]
+		},
+		{
+			"description": "v3 : f(x) = −4",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-4",
+				"x1": "-2",
+				"d": "3",
+				"x2": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4"]
+		},
+		{
+			"description": "v3 : kx",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-4",
+				"x1": "-2",
+				"d": "3",
+				"x2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux images sont égales : le coefficient directeur est nul, la fonction est constante."
+			},
+			"answers": ["-4x"]
+		},
+		{
+			"description": "v3 : b oublié",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-4",
+				"x1": "-2",
+				"d": "3",
+				"x2": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié l'ordonnée à l'origine : une fonction affine s'écrit $f\\left( x \\right) = a x + b$."
+			},
+			"answers": ["0"]
+		}
+	]
+}

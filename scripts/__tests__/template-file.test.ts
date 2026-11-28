@@ -12,6 +12,15 @@ describe('readTemplateFile', () => {
 		expect(readTemplateFile(brut, 'a.json')).toEqual({ ok: true, template: brut });
 	});
 
+	it('met le champ « rangement » à part : il n’est pas un champ du modèle', () => {
+		const rangement = { noeud: 'Analyse > Dérivation', point: '1SPE-135' };
+		expect(readTemplateFile({ title: 'Dériver', rangement }, 'a.json')).toEqual({
+			ok: true,
+			template: { title: 'Dériver' },
+			rangement
+		});
+	});
+
 	it('refuse le champ « points », abandonné', () => {
 		const resultat = readTemplateFile({ title: 'Dériver', points: ['1SPE-135'] }, 'a.json');
 		expect(resultat).toEqual({

@@ -414,6 +414,12 @@ export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema
 	.strict();
 
 /**
+ * Version d'une ligne de fiche (PUT /api/worksheets/[id]/exercises/[exerciseId]/version,
+ * ADR 0044 point 6)
+ */
+export const setLineVersionSchema = z.object({ exercise_version_id: uuidSchema }).strict();
+
+/**
  * Schema for reordering exercises (PUT /api/worksheets/[id]/exercises)
  */
 export const reorderExercisesSchema = z.object({
@@ -722,6 +728,15 @@ const timestampSchema = z
 	.string()
 	.refine((val) => !isNaN(Date.parse(val)), { message: 'Date invalide' });
 
+/**
+ * Traductions d'une ligne lue en base (fiche, section, exercice de la fiche).
+ * Sans cette clé, le schéma la retirait en silence : le PDF anglais de la page
+ * imprimait les titres de section en français et les éditeurs affichaient un
+ * anglais vide. Souple exprès : la base borne déjà la forme, et un écart ne doit
+ * pas rendre toute la fiche illisible.
+ */
+const storedTranslationsSchema = z.record(z.string(), z.unknown()).nullable().optional();
+
 export const worksheetResponseSchema = z.object({
 	id: z.string().uuid(),
 	title: z.string(),
@@ -744,6 +759,7 @@ export const worksheetResponseSchema = z.object({
 	custom_title: z.boolean().optional(),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),
+	translations: storedTranslationsSchema,
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -758,6 +774,7 @@ export const worksheetSectionResponseSchema = z.object({
 	instructions: z.string().nullable(),
 	position: z.number().int(),
 	points_total: z.number().int().nullable(),
+	translations: storedTranslationsSchema,
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -769,12 +786,15 @@ export const worksheetExerciseResponseSchema = z.object({
 	id: z.string().uuid(),
 	worksheet_id: z.string().uuid(),
 	exercise_id: z.string().uuid(),
+	/** Version de l'exercice choisie par la fiche (ADR 0044) ; sans la clé, le schéma la retire */
+	exercise_version_id: z.string().uuid().optional(),
 	section_id: z.string().uuid().nullable(),
 	position: z.number().int(),
 	points: z.number().int().nullable(),
 	variant_mode: variantModeSchema,
 	variant_config: z.record(z.string(), z.unknown()),
 	custom_instructions: z.string().nullable(),
+	translations: storedTranslationsSchema,
 	is_essential: z.boolean(),
 	/** Lignes des cadres ; sans cette clé, le schéma la retire en silence */
 	answer_frame_lines: answerFrameLinesSchema.optional(),
@@ -801,7 +821,9 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 			generic_functions: z.array(z.string()).nullable().optional(),
 			// Thème : décide du sens de `AB` dans le PDF (Q-J). Même piège que
 			// ci-dessus : sans la clé, le schéma la retire en silence.
-			topic: z.string().nullable().optional()
+			topic: z.string().nullable().optional(),
+			// Titre traduit : sans la clé, le PDF anglais imprime le titre français
+			translations: storedTranslationsSchema
 		})
 		.nullable()
 		.optional()
@@ -833,6 +855,10 @@ export const worksheetClassificationViewSchema = z.object({
 	name: z.string(),
 	kind: z.string().optional(),
 	branch: z.string().nullable().optional(),
+	// Noms anglais (ADR 0043) : le PDF anglais les imprime ; sans ces clés, le schéma les retire
+	// 400 : la base borne à 200 caractères, Zod compte en unités UTF-16 (emoji = 2)
+	name_en: z.string().max(400).nullable().optional(),
+	branch_en: z.string().max(400).nullable().optional(),
 	position: z.number().int()
 });
 

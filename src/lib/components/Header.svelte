@@ -9,12 +9,10 @@
   - user: Verified user from server (safe to display)
   - supabase: Supabase client for making authenticated requests
 
-  UI BEHAVIOR:
-  1. When logged OUT: Shows "Login" button
-  2. When logged IN: Shows user avatar with popup menu containing:
-     - User email
-     - Dashboard link
-     - Logout button
+  AFFICHAGE :
+  1. Déconnecté : bouton de connexion
+  2. Connecté : l'avatar est un lien direct vers /dashboard (Mon cabinet), sans menu ;
+     sur mobile, le menu latéral a une section « Compte » (Mon cabinet + déconnexion)
 
   REACTIVITY:
   - Props automatically update when auth state changes
@@ -26,14 +24,11 @@
   - Session and user have been authenticated via getUser()
   - Safe to trust and display to the user
 
-  LOGOUT FLOW:
-  1. POST /auth/logout (src/lib/utils/auth.ts): server-side signOut(), and the admin
-     elevation cookie is revoked and cleared
-  2. Call invalidate('supabase:auth') to trigger server re-verification
-  3. Navigate to home page
-  4. The invalidate triggers the reactive chain:
-     - +layout.ts re-runs → +layout.server.ts re-runs → safeGetSession() → returns null
-     - Updated props flow to this component → Login button appears
+  DÉCONNEXION (submitLogoutForm, src/lib/utils/auth.ts) :
+  1. Efface les données de travail du localStorage (tablette partagée, T17)
+  2. Soumet un vrai formulaire POST /auth/logout : signOut() côté serveur, cookie
+     d'élévation admin révoqué, puis redirection
+  3. Le navigateur recharge la page avec la nouvelle session : pas d'invalidate()
 -->
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
@@ -45,13 +40,9 @@
 	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '#lib/types/database-helpers.ts';
-	import type { LucideIcon } from '@lucide/svelte';
+	import { PUBLIC_NAV_ITEMS, type NavItem } from '#lib/navigation/public-nav-items.ts';
 	import {
 		Menu,
-		FlaskConical,
-		Zap,
-		Newspaper,
-		KeyRound,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -60,15 +51,7 @@
 		Minus,
 		Plus,
 		Maximize,
-		Minimize,
-		Home,
-		Gamepad2,
-		Terminal,
-		Turtle,
-		Blocks,
-		Calculator,
-		PenTool,
-		Laugh
+		Minimize
 	} from '@lucide/svelte';
 	import gidouille from '#lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
@@ -104,50 +87,13 @@
 		};
 	});
 
-	// Navigation item type
-	type NavItem = { label: string; href: string; icon: LucideIcon; roles?: string[] };
-
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
 	let {
 		title = 'Chiphre',
 		user = null,
 		profile = null,
-		sidebarItems = [
-			{ label: 'Accueil', href: '/', icon: Home },
-			// D14 (décision de David, 2026-10-12) : les deux pages publiques les plus vivantes
-			{ label: 'Automaths', href: '/automaths', icon: Zap },
-			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
-			{
-				label: 'Python',
-				href: '/python',
-				icon: Terminal,
-				roles: ['student', 'teacher']
-			},
-			// La Tortue (chantier blockly, PR 3) : publique, aucune donnée serveur
-			{ label: 'La Tortue', href: '/tortue', icon: Turtle },
-			// Programmes de calcul (chantier blockly) : publique, aucune donnée serveur
-			{ label: 'Programmes de calcul', href: '/programmes-de-calcul', icon: Blocks },
-			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : ni l'atelier, ni Automaths, ni le Shtam ne lisent de
-			// donnée serveur réservée, ils sont donc ouverts, y compris hors connexion.
-			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore).
-			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
-			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
-			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
-			{ label: 'Le Shtam', href: '/shtam', icon: Newspaper },
-			{
-				label: 'Whiteboard',
-				href: '/whiteboard',
-				icon: PenTool,
-				roles: ['teacher']
-			},
-			{
-				label: 'Zygomatics',
-				href: '/presques-evaluations',
-				icon: Laugh
-			}
-		]
+		sidebarItems = PUBLIC_NAV_ITEMS
 	}: {
 		title?: string;
 		user?: User | null; // Verified user from server

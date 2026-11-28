@@ -1,0 +1,184 @@
+{
+	"id": "7974722d-6328-4388-a4fd-418cc0e25600",
+	"title": "Espérance de aX + bY : linéarité",
+	"description": "E(aX + bY) = aE(X) + bE(Y)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*u+b*w}}"
+				}
+			],
+			"statement": "Deux variables aléatoires $X$ et $Y$ vérifient $E(X)={{u}}$ et $E(Y)={{w}}$.\n\nCalcule $E({{a}}X+{{b}}Y)$.\n\n$E({{a}}X+{{b}}Y)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "w",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité de l'espérance (vraie même si $X$ et $Y$ ne sont pas indépendantes) : $E(aX+bY)=aE(X)+bE(Y)$.",
+					"$E({{a}}X+{{b}}Y)={{a}}\\times{{u;()}}+{{b}}\\times{{w;()}}=\\textcolor{{{color:primary.0}}}{{{eval:a*u+b*w}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un exercice comporte deux questions $Q_1$ et $Q_2$, chacune notée $0$ ou $1$ point. On choisit un candidat au hasard ; on note $A$ l'événement « il réussit $Q_1$ » et $B$ l'événement « il réussit $Q_2$ ». L'arbre ci-dessous décrit la situation.\n\n```probtree\nA:{{eval:a/10;d}}\n  B:{{eval:b/10;d}}\n  \\overline{B}:{{eval:1-b/10;d}}\n\\overline{A}:{{eval:1-a/10;d}}\n  B:{{eval:c/10;d}}\n  \\overline{B}:{{eval:1-c/10;d}}\n```\n\nOn note $X_1$ et $X_2$ les notes du candidat aux deux questions, et $X=X_1+X_2$ sa note à l'exercice. Les variables $X_1$ et $X_2$ ne sont **pas** indépendantes.\n\nCalcule $E(X)$. Réponds par un nombre décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10+(a*b+(10-a)*c)/100}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a/10+b/10}}",
+							"message": "$P_A(B)$ est la probabilité de réussir $Q_2$ **sachant** que $Q_1$ est réussie. $E(X_2)=P(B)$ se calcule avec les probabilités totales.",
+							"label": "P_A(B) au lieu de P(B)"
+						},
+						{
+							"answer": "{{eval:2*a*b/100}}",
+							"message": "Ce nombre compte seulement les candidats qui réussissent les deux questions. $E(X)=E(X_1)+E(X_2)$, même sans indépendance.",
+							"label": "Seulement les deux réussies"
+						},
+						{
+							"answer": "{{eval:a/10*(a*b+(10-a)*c)/100}}",
+							"message": "L'espérance d'une **somme** est la somme des espérances : $E(X)=E(X_1)+E(X_2)$, pas un produit.",
+							"label": "Produit au lieu de somme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X_1$ suit la loi de Bernoulli de paramètre $P(A)$ : $E(X_1)=P(A)={{eval:a/10;d}}$. De même, $E(X_2)=P(B)$.",
+					"Probabilités totales : $P(B)=P(A)P_A(B)+P(\\overline{A})P_{\\overline{A}}(B)={{eval:a/10;d}}\\times{{eval:b/10;d}}+{{eval:1-a/10;d}}\\times{{eval:c/10;d}}={{eval:(a*b+(10-a)*c)/100;d}}$.",
+					"La linéarité de l'espérance vaut **même sans indépendance** : $E(X)=E(X_1)+E(X_2)={{eval:a/10;d}}+{{eval:(a*b+(10-a)*c)/100;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:a/10+(a*b+(10-a)*c)/100;d}} }$."
+				]
+			},
+			"hint": "Que vaut l'espérance d'une note qui vaut $1$ ou $0$ ? La linéarité a-t-elle besoin de l'indépendance ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"w": "-1"
+			},
+			"description": "v0 : E(2X + 3Y), 4 et −1 → 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"w": "-1"
+			},
+			"description": "v0 : a + b oubliés : 3",
+			"variationIndex": 0
+		},
+		{
+			"description": "F5 : P(A) = 0,6, P_A(B) = 0,7, P_Ā(B) = 0,2 → 0,6 + 0,5 = 1,1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,1"]
+		},
+		{
+			"description": "F5 : P_A(B) au lieu de P(B) → 1,3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$P_A \\left( B \\right)$ est la probabilité de réussir $Q_2$ **sachant** que $Q_1$ est réussie. $E \\left( X_2 \\right) = P \\left( B \\right)$ se calcule avec les probabilités totales."
+			},
+			"answers": ["1,3"]
+		},
+		{
+			"description": "F5 : 2 P(A ∩ B) = 0,84",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,84"]
+		},
+		{
+			"description": "F5 : produit 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,3"]
+		}
+	]
+}

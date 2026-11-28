@@ -30,9 +30,8 @@
 	import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 	// List numbering
-	import { listNumberingStore } from '#lib/stores/listNumbering.svelte.ts';
 	import { getMaxEnumerateDepth } from '#lib/ubumark/utils/list-depth.ts';
-	import type { SchemeId, ListNumberingConfig } from '#lib/types/list-numbering.ts';
+	import { DEFAULT_CONFIG, type SchemeId } from '#lib/types/list-numbering.ts';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -67,6 +66,8 @@
 	import TrousEtiquettes from './nodes/TrousEtiquettes.svelte';
 	import TortueProgramme from './nodes/TortueProgramme.svelte';
 	import RobotCode from './nodes/RobotCode.svelte';
+	import Labyrinthe from './nodes/Labyrinthe.svelte';
+	import Yohaku from './nodes/Yohaku.svelte';
 	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
@@ -85,7 +86,7 @@
 	} from './restricted-rendering';
 	import type { ContentLocale } from '#lib/types/locale.ts';
 	import type { GradeCode } from '#lib/types/grades.ts';
-	import { lexiconRuntime, loadLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
 	import { provideLexicon, readLexicon } from './lexicon-context';
 	import { provideInternalLinks, type InternalLinkReader } from './internal-link-context';
 
@@ -108,8 +109,6 @@
 		onInputSubmit?: (index: number) => void;
 		/** Whether inputs are disabled (e.g., after submission) */
 		inputsDisabled?: boolean;
-		/** Override list numbering config for this render (uses global store by default) */
-		listNumberingOverride?: Partial<ListNumberingConfig>;
 		/** Callback when a hashtag is clicked */
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
@@ -175,7 +174,6 @@
 		onInputChange,
 		onInputSubmit,
 		inputsDisabled = false,
-		listNumberingOverride,
 		onHashtagClick,
 		onMentionClick,
 		genericFunctions,
@@ -288,11 +286,8 @@
 	 * Uses auto-detection when scheme is 'auto', otherwise uses the specified scheme.
 	 */
 	const effectiveListScheme = $derived.by<SchemeId | null>(() => {
-		// Get config (override takes precedence over store)
-		const config = {
-			...listNumberingStore.config,
-			...listNumberingOverride
-		};
+		// Réglage unique pour tous : DEFAULT_CONFIG (plus de réglage admin, V120)
+		const config = DEFAULT_CONFIG;
 
 		// If scheme is explicitly set (not auto), use it
 		if (config.scheme !== 'auto') {
@@ -309,7 +304,8 @@
 </script>
 
 {#if mode === 'rendered' || mode === 'both'}
-	<div class="markdown-content {className}" class:has-margin-notes={hasMarginNotes}>
+	<!-- `lang` : un lecteur d'écran lit le contenu, formules comprises, dans sa langue -->
+	<div class="markdown-content {className}" class:has-margin-notes={hasMarginNotes} lang={locale}>
 		{#if ast}
 			<!-- Key includes genericFunctions to force re-render when it changes -->
 			{#each ast.children as node, i (`${i}-${genericFunctions?.names?.length ?? 0}`)}
@@ -439,6 +435,10 @@
 					<CalculProgramme {node} />
 				{:else if node.type === 'robot'}
 					<RobotCode {node} />
+				{:else if node.type === 'labyrinthe'}
+					<Labyrinthe {node} />
+				{:else if node.type === 'yohaku'}
+					<Yohaku {node} />
 				{/if}
 			{/each}
 		{:else}

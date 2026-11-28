@@ -229,21 +229,33 @@ function unitLine(line: LineKind): boolean {
 /**
  * Ce que devient un mot FINI (décision 4), ou `null` : rien ne change. Un mot
  * de commande seulement en tête ; un petit mot seulement dans une commande
- * (« sur » aussi après le `=` d'une fonction) ; une unité seulement après
+ * (« sur », « pour » aussi après le `=` d'une fonction) ; une unité seulement après
  * « nombre + espace », jamais dans une commande ni une définition de fonction.
  */
 export function finishedWordLatex(
 	found: WordAtCaret,
 	line: LineKind,
-	words: readonly CommandWord[]
+	words: readonly CommandWord[],
+	lineLatex = ''
 ): string | null {
 	const { word, place } = found;
 	const text = String.raw`\text{${word}}`;
 	if (place === 'start' && found.atoms > 1) return findCommand(words, word) ? text : null;
 	if (line === 'command') return isSmallWord(word) ? text : null;
-	if (line === 'function-definition') return normalized(word) === 'sur' ? text : null;
+	if (line === 'function-definition')
+		return definitionWord(normalized(word), lineLatex) ? text : null;
 	const unit = place === 'after-number' && unitLine(line) && (word === 'min' || isUnit(word));
 	return unit ? String.raw`\mathrm{${word}}` : null;
+}
+
+/**
+ * Les mots d'une définition de fonction : « sur », « pour » (chantier
+ * fonctions-domaines) ; « ou », « et » seulement après « pour », dans la
+ * condition — `f(t) = et` reste e·t.
+ */
+function definitionWord(word: string, lineLatex: string): boolean {
+	if (word === 'sur' || word === 'pour') return true;
+	return (word === 'ou' || word === 'et') && /\\text\{\s*pour\s*\}/.test(lineLatex);
 }
 
 /**

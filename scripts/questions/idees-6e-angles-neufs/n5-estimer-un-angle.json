@@ -1,0 +1,278 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Angles > mesure en degrés",
+		"point": "6-169"
+	},
+	"title": "Estimer un angle sans rapporteur",
+	"description": "Estimer à 10° près la mesure d'un angle dessiné, sans instrument, en le comparant à l'angle droit et à sa moitié ; pièges : angle aigu pris pour obtus (180 − a)",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "**Sans rapporteur**, estime la mesure de l'angle $\\widehat{AOB}$. Une estimation à $10^\\circ$ près est acceptée.\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle AOB marqué d'un arc, sans mesure ni rapporteur.\n---\nO = point(0, 0, etiquette=\"bas\")\nA = point(O, longueur=4.2, angle={{t}}, etiquette=\"bas\")\nB = point(O, longueur=4.2, angle={{eval:{{t}}+a}}, etiquette=\"haut\")\ndemidroite(O, A)\ndemidroite(O, B)\nangle(A, O, B, couleur=\"rouge\")\n```\n\n$\\widehat{AOB} \\approx ?^\\circ$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..8"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*r"
+				},
+				{
+					"name": "t",
+					"expression": "0..15"
+				}
+			],
+			"conditions": ["a!=90"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"precision": {
+						"type": "tolerance",
+						"tolerance": 10,
+						"mode": "absolute"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180-a}}",
+							"message": "Ton angle est-il **aigu** (plus petit qu'un angle droit) ou **obtus** (plus grand) ? Compare-le d'abord à un coin de feuille.",
+							"label": "Aigu pris pour obtus"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Compare à l'angle droit ($90^\\circ$) : l'angle est {{if:a<90|**aigu**, plus petit qu'un angle droit|**obtus**, plus grand qu'un angle droit}}.",
+					"{{if:a<45|Il est plus petit que la moitié d'un angle droit ($45^\\circ$).|{{if:a<90|Il est plus grand que la moitié d'un angle droit ($45^\\circ$).|{{if:a<135|Il dépasse l'angle droit de moins d'une moitié d'angle droit.|Il est presque plat ($180^\\circ$).}}}}}}",
+					"Il mesure $\\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$ : une réponse entre ${{eval:a-10}}^\\circ$ et ${{eval:a+10}}^\\circ$ est juste."
+				]
+			},
+			"hint": "Compare l'angle à un angle droit (un coin de feuille), puis à la moitié d'un angle droit."
+		},
+		{
+			"statement": "**Sans rapporteur**, estime la mesure de l'angle $\\widehat{AOB}$. Une estimation à $10^\\circ$ près est acceptée.\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle AOB marqué d'un arc, sans mesure ni rapporteur.\n---\nO = point(0, 0, etiquette=\"bas\")\nA = point(O, longueur=4.2, angle={{t}}, etiquette=\"bas\")\nB = point(O, longueur=4.2, angle={{eval:{{t}}+a}}, etiquette=\"haut\")\ndemidroite(O, A)\ndemidroite(O, B)\nangle(A, O, B, couleur=\"rouge\")\n```\n\n$\\widehat{AOB} \\approx ?^\\circ$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "10..16"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*r"
+				},
+				{
+					"name": "t",
+					"expression": "0..15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"precision": {
+						"type": "tolerance",
+						"tolerance": 10,
+						"mode": "absolute"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180-a}}",
+							"message": "Ton angle est-il **aigu** (plus petit qu'un angle droit) ou **obtus** (plus grand) ? Compare-le d'abord à un coin de feuille.",
+							"label": "Obtus pris pour aigu"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Compare à l'angle droit ($90^\\circ$) : l'angle est {{if:a<90|**aigu**, plus petit qu'un angle droit|**obtus**, plus grand qu'un angle droit}}.",
+					"{{if:a<45|Il est plus petit que la moitié d'un angle droit ($45^\\circ$).|{{if:a<90|Il est plus grand que la moitié d'un angle droit ($45^\\circ$).|{{if:a<135|Il dépasse l'angle droit de moins d'une moitié d'angle droit.|Il est presque plat ($180^\\circ$).}}}}}}",
+					"Il mesure $\\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$ : une réponse entre ${{eval:a-10}}^\\circ$ et ${{eval:a+10}}^\\circ$ est juste."
+				]
+			},
+			"hint": "Compare l'angle à un angle droit (un coin de feuille), puis à la moitié d'un angle droit."
+		},
+		{
+			"statement": "**Sans rapporteur**, estime la mesure de l'angle $\\widehat{AOB}$. Une estimation à $10^\\circ$ près est acceptée.\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle AOB marqué d'un arc, sans mesure ni rapporteur.\n---\nO = point(0, 0, etiquette=\"bas\")\nA = point(O, longueur=4.2, angle={{t}}, etiquette=\"bas\")\nB = point(O, longueur=4.2, angle={{eval:{{t}}+a}}, etiquette=\"haut\")\ndemidroite(O, A)\ndemidroite(O, B)\nangle(A, O, B, couleur=\"rouge\")\n```\n\n$\\widehat{AOB} \\approx ?^\\circ$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..16"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*r"
+				},
+				{
+					"name": "t",
+					"expression": "20..340"
+				}
+			],
+			"conditions": ["a!=90", "abs(a-90)>=30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"precision": {
+						"type": "tolerance",
+						"tolerance": 10,
+						"mode": "absolute"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180-a}}",
+							"message": "Ton angle est-il **aigu** (plus petit qu'un angle droit) ou **obtus** (plus grand) ? Compare-le d'abord à un coin de feuille.",
+							"label": "Aigu et obtus confondus"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Compare à l'angle droit ($90^\\circ$) : l'angle est {{if:a<90|**aigu**, plus petit qu'un angle droit|**obtus**, plus grand qu'un angle droit}}.",
+					"{{if:a<45|Il est plus petit que la moitié d'un angle droit ($45^\\circ$).|{{if:a<90|Il est plus grand que la moitié d'un angle droit ($45^\\circ$).|{{if:a<135|Il dépasse l'angle droit de moins d'une moitié d'angle droit.|Il est presque plat ($180^\\circ$).}}}}}}",
+					"Il mesure $\\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$ : une réponse entre ${{eval:a-10}}^\\circ$ et ${{eval:a+10}}^\\circ$ est juste."
+				]
+			},
+			"hint": "Compare l'angle à un angle droit (un coin de feuille), puis à la moitié d'un angle droit."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "60 exact",
+			"variationIndex": 0,
+			"variables": {
+				"r": "6",
+				"a": "60",
+				"t": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "Estimation 55",
+			"variationIndex": 0,
+			"variables": {
+				"r": "6",
+				"a": "60",
+				"t": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["55"]
+		},
+		{
+			"description": "Estimation 68",
+			"variationIndex": 0,
+			"variables": {
+				"r": "6",
+				"a": "60",
+				"t": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["68"]
+		},
+		{
+			"description": "Trop loin : 45",
+			"variationIndex": 0,
+			"variables": {
+				"r": "6",
+				"a": "60",
+				"t": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["45"]
+		},
+		{
+			"description": "Aigu pris pour obtus : 120",
+			"variationIndex": 0,
+			"variables": {
+				"r": "6",
+				"a": "60",
+				"t": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton angle est-il **aigu** (plus petit qu'un angle droit) ou **obtus** (plus grand) ? Compare-le d'abord à un coin de feuille."
+			},
+			"answers": ["120"]
+		},
+		{
+			"description": "130 exact",
+			"variationIndex": 1,
+			"variables": {
+				"r": "13",
+				"a": "130",
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["130"]
+		},
+		{
+			"description": "Estimation 135",
+			"variationIndex": 1,
+			"variables": {
+				"r": "13",
+				"a": "130",
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["135"]
+		},
+		{
+			"description": "Obtus pris pour aigu : 50",
+			"variationIndex": 1,
+			"variables": {
+				"r": "13",
+				"a": "130",
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton angle est-il **aigu** (plus petit qu'un angle droit) ou **obtus** (plus grand) ? Compare-le d'abord à un coin de feuille."
+			},
+			"answers": ["50"]
+		},
+		{
+			"description": "Tourné : 150 estimé 145",
+			"variationIndex": 2,
+			"variables": {
+				"r": "15",
+				"a": "150",
+				"t": "200"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["145"]
+		},
+		{
+			"description": "Tourné : 30 pris pour 150",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3",
+				"a": "30",
+				"t": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton angle est-il **aigu** (plus petit qu'un angle droit) ou **obtus** (plus grand) ? Compare-le d'abord à un coin de feuille."
+			},
+			"answers": ["150"]
+		}
+	]
+}

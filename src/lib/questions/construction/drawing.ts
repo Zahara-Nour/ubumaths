@@ -54,6 +54,8 @@ import {
 	bissectriceCorrections,
 	isLineCheck,
 	lineCodages,
+	throughLineCorrections,
+	type ThroughLineCorrection,
 	lineSolution,
 	type BissectriceCorrection,
 	type LineCodage
@@ -68,6 +70,7 @@ import {
 	triangleSolution,
 	type TriangleCorrection
 } from './triangle';
+import { copyCorrection, copySolution, isCopyCheck } from './triangle-copy';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { measureCorrection } from './measure';
 import { segmentMeasureCorrection, segmentMeasureRuler } from './segment-measure';
@@ -301,20 +304,26 @@ export function flipRuler(drawing: Drawing): Drawing {
 	};
 }
 
+/** Ce que mène la règle posée : le segment, le compas (PR 3) ou le point marqué (outil n° 38) */
+export type RulerShape = 'segment' | 'cercle' | 'point';
+
 /** Réglages de l'écran pour décaler le bout le long de la règle */
 export interface RulerOptions {
 	/** Longueur de la règle, en cm (`rulerLengthOf`) */
 	rulerLength: number;
 	window?: FigureWindow | null;
-	/** Sans trait le long de la règle, ‹ › en tracent un : segment (défaut) ou cercle (compas, PR 3) */
-	shape?: 'segment' | 'cercle';
+	/**
+	 * Sans trait le long de la règle, ‹ › en tracent un : segment (défaut), cercle
+	 * (compas, PR 3) ou point marqué sur une graduation (outil n° 38, le milieu)
+	 */
+	shape?: RulerShape;
 }
 
 /**
  * Le dernier objet est-il un segment le long de la règle posée (un bout à son 0,
  * l'autre sur une graduation), ou un cercle piqué au 0, ouvert sur une
- * graduation (PR 3 ; `end` = 2 : son point d'ouverture) ? Rend la graduation et
- * le bout qui la porte
+ * graduation (PR 3 ; `end` = 2 : son point d'ouverture), ou un point marqué sur
+ * une graduation (outil n° 38 ; `end` = 2) ? Rend la graduation et le bout qui la porte
  */
 function lastAlongRuler(
 	drawing: Drawing,
@@ -323,6 +332,10 @@ function lastAlongRuler(
 ): { mm: number; end: 1 | 2 } | null {
 	const last = drawing.objects.at(-1);
 	const atZero = (x: number, y: number) => x === ruler.ox && y === ruler.oy;
+	if (last?.kind === 'point') {
+		const mm = rulerGraduationOf({ x: last.x, y: last.y }, ruler, rulerLength);
+		return mm === null || mm === 0 ? null : { mm, end: 2 };
+	}
 	if (last?.kind === 'cercle') {
 		if (!atZero(last.cx, last.cy)) return null;
 		const mm = rulerGraduationOf({ x: last.x, y: last.y }, ruler, rulerLength);
@@ -360,6 +373,10 @@ export function nudgeRulerEnd(drawing: Drawing, delta: number, options: RulerOpt
 		if (mm === along.mm) return drawing;
 		const p = rulerGraduation(ruler, mm);
 		const previous = drawing.objects.at(-1);
+		if (previous?.kind === 'point') {
+			const moved = { ...previous, x: p.x, y: p.y };
+			return { ...drawing, objects: [...drawing.objects.slice(0, -1), moved] };
+		}
 		if (previous?.kind === 'cercle') {
 			const turned = { ...previous, x: p.x, y: p.y };
 			return { ...drawing, objects: [...drawing.objects.slice(0, -1), turned] };
@@ -370,6 +387,7 @@ export function nudgeRulerEnd(drawing: Drawing, delta: number, options: RulerOpt
 		return { ...drawing, objects: [...drawing.objects.slice(0, -1), moved] };
 	}
 	const p = rulerGraduation(ruler, clamp(delta));
+	if (options.shape === 'point') return withObject(drawing, { kind: 'point', x: p.x, y: p.y });
 	if (options.shape === 'cercle') {
 		return withObject(drawing, { kind: 'cercle', cx: ruler.ox, cy: ruler.oy, x: p.x, y: p.y });
 	}
@@ -538,7 +556,11 @@ export function solutionLines(
 		}
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
-		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
+		if (check.kind === 'triangle') {
+			return isCopyCheck(check)
+				? copySolution(check, points, shapes)
+				: triangleSolution(check, points, shapes, drawn);
+		}
 		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
 		if (check.kind === 'segment') return segmentLengthSolution(check, points, shapes, drawn);
 		if (isRuledPolygonCheck(check)) return ruledPolygonSolution(check, points, shapes, drawn);
@@ -570,6 +592,18 @@ export function solutionBissectrices(
 	return bissectriceCorrections(checks.filter(isLineCheck), points);
 }
 
+/**
+ * Perpendiculaire ou parallèle par un point (outil n° 40) : angles droits codés,
+ * perpendiculaire intermédiaire de la parallèle en trait fin
+ */
+export function solutionThroughLines(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes?: FigureShapes
+): ThroughLineCorrection[] {
+	return throughLineCorrections(checks.filter(isLineCheck), points, shapes);
+}
+
 /** Les cercles à construire (lot 3b) : le cercle, son centre, deux médiatrices */
 export function solutionCircles(
 	checks: readonly ConstructionCheck[],
@@ -594,6 +628,7 @@ export function solutionTriangle(
 	const diagonal = checks.find(isDiagonalRectangleCheck);
 	if (diagonal) return diagonalRectangleCorrection(diagonal, points, shapes, drawn);
 	const check = checks.find((c) => c.kind === 'triangle');
+	if (check && isCopyCheck(check)) return copyCorrection();
 	return check ? triangleCorrection(check, points, shapes, drawn) : null;
 }
 

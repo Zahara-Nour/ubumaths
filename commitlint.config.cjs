@@ -29,13 +29,17 @@
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS, lu par commitlint
 const { regleNomInterdit } = require('./scripts/noms-interdits.cjs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS, lu par commitlint
+const { regleMentionOutil } = require('./scripts/mentions-outil.cjs');
 
 module.exports = {
 	extends: ['@commitlint/config-conventional'],
-	// Règle locale : aucun nom interdit dans un message (scripts/noms-interdits.cjs)
-	plugins: [{ rules: { 'nom-interdit': regleNomInterdit } }],
+	// Règles locales : aucun nom interdit dans un message (scripts/noms-interdits.cjs),
+	// aucune signature ni lien de l'outil d'écriture (scripts/mentions-outil.cjs)
+	plugins: [{ rules: { 'nom-interdit': regleNomInterdit, 'mention-outil': regleMentionOutil } }],
 	rules: {
 		'nom-interdit': [2, 'always'],
+		'mention-outil': [2, 'always'],
 		'type-enum': [
 			2,
 			'always',

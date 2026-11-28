@@ -1,0 +1,420 @@
+{
+	"id": "a2ae7206-64c7-4c16-bd37-92f43fe5d60b",
+	"title": "Fraction décimale et écriture décimale",
+	"description": "Passer d'une fraction décimale (dénominateur 10, 100 ou 1 000) à l'écriture décimale et inversement : numérateur ou dénominateur manquant, fraction → décimal, somme a + b/100 + c/100 (pièges : un zéro de trop, virgule gardée au numérateur, dénominateurs additionnés, retenue oubliée)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète l'égalité.\n\n{{if:cache==0|$${{eval:N/10^p;d}}=\\dfrac{?}{ {{D}} }$$|$${{eval:N/10^p;d}}=\\dfrac{ {{N}} }{?}$$}}",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "N",
+					"expression": "101..999"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "cache",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["mod(N,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:cache==0|{{N}}|{{D}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:cache==0|{{eval:N*10}}|{{eval:D*10}}}}",
+							"message": "Tu as mis un zéro de trop : ${{eval:N/10^p;d}}$ a ${{p}}$ chiffre{{if:p>1|s|}} après la virgule, il faut ${{p}}$ zéro{{if:p>1|s|}} au dénominateur.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{if:cache==0|{{eval:N/10^p;d}}|{{eval:D/10}}}}",
+							"message": "{{if:cache==0|Le numérateur d'une fraction décimale est un nombre entier : combien de {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} y a-t-il dans ${{eval:N/10^p;d}}$ ?|Il manque un zéro : ${{eval:N/10^p;d}}$ a ${{p}}$ chiffre{{if:p>1|s|}} après la virgule, il faut ${{p}}$ zéro{{if:p>1|s|}} au dénominateur.}}",
+							"label": "Virgule gardée ou zéro manquant"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:N/10^p;d}}$ a ${{p}}$ chiffre{{if:p>1|s|}} après la virgule : c'est ${{N}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+					"$${{eval:N/10^p;d}}=\\dfrac{ {{if:cache==0|\\textcolor{{{color:primary.0}}}{ {{N}} }|{{N}}}} }{ {{if:cache==1|\\textcolor{{{color:primary.0}}}{ {{D}} }|{{D}}}} }$$"
+				]
+			},
+			"hint": "Compte les chiffres après la virgule : un chiffre, ce sont des dixièmes ; deux, des centièmes ; trois, des millièmes."
+		},
+		{
+			"statement": "Écris ce nombre en écriture décimale.\n\n$$\\dfrac{ {{N}} }{ {{D}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "N",
+					"expression": "101..999"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10^p"
+				}
+			],
+			"conditions": ["mod(N,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N/10^p;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N/10^(p+1);d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : diviser par ${{D}}$, c'est décaler la virgule de ${{p}}$ rang{{if:p>1|s|}} vers la gauche.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:N/10^(p-1);d}}",
+							"message": "Tu n'as pas décalé la virgule assez loin : diviser par ${{D}}$, c'est décaler la virgule de ${{p}}$ rang{{if:p>1|s|}} vers la gauche.",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{ {{N}} }{ {{D}} }$, c'est ${{N}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} : le chiffre des unités de ${{N}}$ devient le chiffre des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+					"$$\\dfrac{ {{N}} }{ {{D}} }=\\textcolor{{{color:primary.0}}}{{{eval:N/10^p;d}}}$$"
+				]
+			},
+			"hint": "Diviser par ${{D}}$, c'est décaler la virgule vers la gauche d'autant de rangs que ${{D}}$ a de zéros."
+		},
+		{
+			"statement": "Écris ce nombre en écriture décimale.\n\n$${{a}}+\\dfrac{ {{b}} }{ {{D}} }+\\dfrac{ {{c}} }{ {{D}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["b + c > 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+(b+c)/D;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+b/10+c/100;d}}",
+							"message": "Tu as écrit ${{b}}$ et ${{c}}$ l'un après l'autre : ce sont deux nombres de {{if:p==1|dixièmes|centièmes}}, il faut les additionner.",
+							"label": "Chiffres juxtaposés"
+						},
+						{
+							"answer": "{{eval:a+(b+c)/(2*D);d}}",
+							"message": "Tu as additionné les dénominateurs : ${{b}}$ {{if:p==1|dixièmes|centièmes}} et ${{c}}$ {{if:p==1|dixièmes|centièmes}}, cela fait ${{eval:b+c}}$ {{if:p==1|dixièmes|centièmes}}.",
+							"label": "Dénominateurs additionnés"
+						},
+						{
+							"answer": "{{eval:a+mod(b+c,10)/D;d}}",
+							"message": "Tu as oublié la retenue : ${{eval:b+c}}$ {{if:p==1|dixièmes|centièmes}}, c'est $1$ {{if:p==1|unité|dixième}} et ${{eval:mod(b+c,10)}}$ {{if:p==1|dixièmes|centièmes}}.",
+							"label": "Retenue oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{ {{b}} }{ {{D}} }+\\dfrac{ {{c}} }{ {{D}} }=\\dfrac{ {{eval:b+c}} }{ {{D}} }$ : ${{eval:b+c}}$ {{if:p==1|dixièmes|centièmes}}, c'est $1$ {{if:p==1|unité|dixième}} et ${{eval:mod(b+c,10)}}$ {{if:p==1|dixièmes|centièmes}}.",
+					"$${{a}}+\\dfrac{ {{b}} }{ {{D}} }+\\dfrac{ {{c}} }{ {{D}} }={{a}}+\\dfrac{ {{eval:b+c}} }{ {{D}} }=\\textcolor{{{color:primary.0}}}{{{eval:a+(b+c)/D;d}}}$$"
+				]
+			},
+			"hint": "Additionne d'abord les deux fractions : elles ont le même dénominateur. Pense à la retenue : $10$ {{if:p==1|dixièmes|centièmes}} font $1$ {{if:p==1|unité|dixième}}."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 12,8 = …/10",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"N": "128",
+				"cache": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["128"]
+		},
+		{
+			"description": "a : un zéro de trop",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"N": "128",
+				"cache": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis un zéro de trop : $12.8$ a $1$ chiffre après la virgule, il faut $1$ zéro au dénominateur."
+			},
+			"answers": ["1280"]
+		},
+		{
+			"description": "a : virgule gardée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"N": "128",
+				"cache": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le numérateur d'une fraction décimale est un nombre entier : combien de dixièmes y a-t-il dans $12.8$ ?"
+			},
+			"answers": ["12,8"]
+		},
+		{
+			"description": "a : 1,28 = 128/…",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"N": "128",
+				"cache": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "a : 0,347 = 347/… (1 000 espacé)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"N": "347",
+				"cache": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "a : 1 000 sans espace",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"N": "347",
+				"cache": "1"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["1000"]
+		},
+		{
+			"description": "a : dénominateur, un zéro de trop",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"N": "128",
+				"cache": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis un zéro de trop : $1.28$ a $2$ chiffres après la virgule, il faut $2$ zéros au dénominateur."
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "a : dénominateur, un zéro manquant",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"N": "128",
+				"cache": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque un zéro : $1.28$ a $2$ chiffres après la virgule, il faut $2$ zéros au dénominateur."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "b : 128/100 = 1,28",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"N": "128"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,28"]
+		},
+		{
+			"description": "b : 128/100, point décimal",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"N": "128"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1.28"]
+		},
+		{
+			"description": "b : un rang de trop",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"N": "128"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de $2$ rangs vers la gauche."
+			},
+			"answers": ["0,128"]
+		},
+		{
+			"description": "b : un rang de moins",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"N": "128"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de $2$ rangs vers la gauche."
+			},
+			"answers": ["12,8"]
+		},
+		{
+			"description": "b : 347/1 000 = 0,347",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"N": "347"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,347"]
+		},
+		{
+			"description": "c : 8 + 5/100 + 7/100 = 8,12",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"a": "8",
+				"b": "5",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8,12"]
+		},
+		{
+			"description": "c : juxtaposés",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"a": "8",
+				"b": "5",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $5$ et $7$ l'un après l'autre : ce sont deux nombres de centièmes, il faut les additionner."
+			},
+			"answers": ["8,57"]
+		},
+		{
+			"description": "c : dénominateurs additionnés",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"a": "8",
+				"b": "5",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les dénominateurs : $5$ centièmes et $7$ centièmes, cela fait $12$ centièmes."
+			},
+			"answers": ["8,06"]
+		},
+		{
+			"description": "c : retenue oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"a": "8",
+				"b": "5",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la retenue : $12$ centièmes, c'est $1$ dixième et $2$ centièmes."
+			},
+			"answers": ["8,02"]
+		},
+		{
+			"description": "c : 8 + 5/10 + 7/10 = 9,2",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"a": "8",
+				"b": "5",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9,2"]
+		},
+		{
+			"description": "c : dixièmes, retenue oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"a": "8",
+				"b": "5",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la retenue : $12$ dixièmes, c'est $1$ unité et $2$ dixièmes."
+			},
+			"answers": ["8,2"]
+		}
+	]
+}

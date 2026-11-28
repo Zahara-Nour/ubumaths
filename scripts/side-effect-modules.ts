@@ -29,10 +29,6 @@
  * (commentés).
  */
 export const MODULES_WITH_SIDE_EFFECTS: ReadonlySet<string> = new Set([
-	'constructions/instruments/compass.ts',
-	'constructions/instruments/index.ts',
-	'constructions/instruments/pencil.ts',
-	'constructions/instruments/ruler.ts',
 	'exercises/typst/exercise-typst-generator.ts',
 	'geometry-core/dsl/builtins.ts',
 	'mathAST/cli/cli.ts',
@@ -52,7 +48,12 @@ export const MODULES_WITH_SIDE_EFFECTS: ReadonlySet<string> = new Set([
 	'zod-locale.ts',
 	// Effet caché dans un initialiseur : `Blockly.Theme.defineTheme` enregistre
 	// le thème « chiphre » auprès de Blockly.
-	'shared/blockly/config.ts'
+	'shared/blockly/config.ts',
+	// Effet caché dans un initialiseur : à leur création, ces réglages s'appliquent à la
+	// page (thème, `--font-scale`, lecture facilitée) ; importés nus par `routes/+layout.svelte`.
+	'stores/easyReading.svelte.ts',
+	'stores/fontSize.svelte.ts',
+	'stores/theme.svelte.ts'
 ]);
 
 const SRC_LIB_TS = /[\\/]src[\\/]lib[\\/](.+\.ts)$/;

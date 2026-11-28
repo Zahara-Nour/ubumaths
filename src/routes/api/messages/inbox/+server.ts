@@ -19,11 +19,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
+		// Paramètre absent : `get` rend null, que le schéma refuse ; undefined
+		// laisse jouer ses défauts (boîte de réception, 50 messages, tous dossiers).
 		const validation = inboxMessagesQuerySchema.safeParse({
-			status: url.searchParams.get('status'),
-			folderId: url.searchParams.get('folderId'),
-			limit: url.searchParams.get('limit'),
-			offset: url.searchParams.get('offset')
+			status: url.searchParams.get('status') ?? undefined,
+			folderId: url.searchParams.get('folderId') ?? undefined,
+			limit: url.searchParams.get('limit') ?? undefined,
+			offset: url.searchParams.get('offset') ?? undefined
 		});
 
 		if (!validation.success) {

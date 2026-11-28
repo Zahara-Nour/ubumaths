@@ -1,0 +1,483 @@
+{
+	"id": "aaa16821-b175-45c9-9085-84b879d77ae6",
+	"title": "Espace : aire et volume en repère",
+	"description": "Aire d'un triangle rectangle (orthogonalité vérifiée par le produit scalaire), volume d'un tétraèdre trirectangle (pièges : division par 2 oubliée, 1/3 oublié)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 180,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt((u1^2+u2^2+u3^2)*(w1^2+w2^2+w3^2))/2}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{eval:ax+u1}}\\,;\\,{{eval:ay+u2}}\\,;\\,{{eval:az+u3}})$ et $C({{eval:ax+w1}}\\,;\\,{{eval:ay+w2}}\\,;\\,{{eval:az+w3}})$.\n\nMontre que le triangle $ABC$ est rectangle en $A$, puis calcule son aire (valeur exacte).\n\nAire : $?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:r*(1-sel)*u2}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:r*((sel-1)*u1+sel*u3)}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:-r*sel*u2}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2)+abs(w3) > 0"],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{u1}}\\times{{eval:w1;()}}+{{eval:u2;()}}\\times{{eval:w2;()}}+{{eval:u3;()}}\\times{{eval:w3;()}}=0$ : les vecteurs sont orthogonaux, le triangle est rectangle en $A$.",
+					"$AB=\\sqrt{{{eval:u1^2+u2^2+u3^2}}}$ et $AC=\\sqrt{{{eval:w1^2+w2^2+w3^2}}}$, donc l'aire vaut $\\dfrac{AB\\times AC}{2}=\\dfrac{\\sqrt{{{eval:(u1^2+u2^2+u3^2)*(w1^2+w2^2+w3^2)}}}}{2}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt((u1^2+u2^2+u3^2)*(w1^2+w2^2+w3^2))/2}} }$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*c/6}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $D({{dx}}\\,;\\,{{dy}}\\,;\\,{{dz}})$, $A({{eval:dx+a}}\\,;\\,{{dy}}\\,;\\,{{dz}})$, $B({{dx}}\\,;\\,{{eval:dy+b}}\\,;\\,{{dz}})$ et $C({{dx}}\\,;\\,{{dy}}\\,;\\,{{eval:dz+c}})$.\n\nCalcule le volume du tétraèdre $DABC$.\n\nVolume : $?$",
+			"variables": [
+				{
+					"name": "dx",
+					"expression": "-3..3"
+				},
+				{
+					"name": "dy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "dz",
+					"expression": "-3..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{DA}\\begin{pmatrix}{{a}}\\\\0\\\\0\\end{pmatrix}$, $\\overrightarrow{DB}\\begin{pmatrix}0\\\\{{b}}\\\\0\\end{pmatrix}$, $\\overrightarrow{DC}\\begin{pmatrix}0\\\\0\\\\{{c}}\\end{pmatrix}$ : leurs produits scalaires deux à deux sont nuls, ces trois vecteurs sont orthogonaux deux à deux.",
+					"Le triangle $DAB$ est rectangle en $D$, d'aire $\\dfrac{DA\\times DB}{2}=\\dfrac{{{a}}\\times{{b}}}{2}$ ; la droite $(DC)$ est orthogonale à deux droites sécantes du plan $(DAB)$, donc à ce plan : $DC={{c}}$ est la hauteur.",
+					"$V=\\dfrac{1}{3}\\times\\text{aire de la base}\\times\\text{hauteur}=\\dfrac{1}{3}\\times\\dfrac{{{a}}\\times{{b}}}{2}\\times{{c}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*b*c/6}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$, $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$ et $D({{dx}}\\,;\\,{{dy}}\\,;\\,{{dz}})$.\n\nOn admet que le triangle $ABC$ est rectangle en $A$ et que le plan $(ABC)$ a pour équation ${{if:n1==0||{{if:n1<0|-|{{if:eb0==1|+|}}}}{{if:ea0==1||{{ea0}}}}x}}{{if:n2==0||{{if:n2<0|-|{{if:eb1==1|+|}}}}{{if:ea1==1||{{ea1}}}}y}}{{if:n3==0||{{if:n3<0|-|{{if:eb2==1|+|}}}}{{if:ea2==1||{{ea2}}}}z}}{{if:dd==0||{{if:dd<0|-|{{if:eb3==1|+|}}}}{{if:ea3==1|1|{{ea3}}}}}}=0$.\n\nCalcule le volume du tétraèdre $ABCD$ (valeur exacte).\n\nVolume : $?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ay",
+					"expression": "-2..2"
+				},
+				{
+					"name": "az",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-1..1"
+				},
+				{
+					"name": "u3",
+					"expression": "-1..1"
+				},
+				{
+					"name": "r",
+					"expression": "1"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:r*(1-sel)*u2}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:r*((sel-1)*u1+sel*u3)}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:-r*sel*u2}}"
+				},
+				{
+					"name": "c1",
+					"expression": "{{eval:u2*w3-u3*w2}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:u3*w1-u1*w3}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:u1*w2-u2*w1}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:c1/g}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:c2/g}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:c3/g}}"
+				},
+				{
+					"name": "al",
+					"expression": "0..1"
+				},
+				{
+					"name": "h",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(n1*ax+n2*ay+n3*az)}}"
+				},
+				{
+					"name": "nu",
+					"expression": "{{eval:u1^2+u2^2+u3^2}}"
+				},
+				{
+					"name": "nw",
+					"expression": "{{eval:w1^2+w2^2+w3^2}}"
+				},
+				{
+					"name": "nn",
+					"expression": "{{eval:n1^2+n2^2+n3^2}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+u1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+u2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+u3}}"
+				},
+				{
+					"name": "cx",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "cz",
+					"expression": "{{eval:az+w3}}"
+				},
+				{
+					"name": "dx",
+					"expression": "{{eval:ax+al*u1+h*n1}}"
+				},
+				{
+					"name": "dy",
+					"expression": "{{eval:ay+al*u2+h*n2}}"
+				},
+				{
+					"name": "dz",
+					"expression": "{{eval:az+al*u3+h*n3}}"
+				},
+				{
+					"name": "ea0",
+					"expression": "{{eval:abs(n1)}}"
+				},
+				{
+					"name": "eb0",
+					"expression": "{{eval:min(0,1)}}"
+				},
+				{
+					"name": "ea1",
+					"expression": "{{eval:abs(n2)}}"
+				},
+				{
+					"name": "eb1",
+					"expression": "{{eval:min(min(abs(n1),1),1)}}"
+				},
+				{
+					"name": "ea2",
+					"expression": "{{eval:abs(n3)}}"
+				},
+				{
+					"name": "eb2",
+					"expression": "{{eval:min(min(abs(n1),1)+min(abs(n2),1),1)}}"
+				},
+				{
+					"name": "ea3",
+					"expression": "{{eval:abs(dd)}}"
+				},
+				{
+					"name": "eb3",
+					"expression": "{{eval:min(min(abs(n1),1)+min(abs(n2),1)+min(abs(n3),1),1)}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2)+abs(w3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(h)*nu*nw/(6*g)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:abs(h)*nu*nw/(2*g)}}",
+							"message": "Le volume d'un tétraèdre est $\\dfrac{1}{3}\\times\\text{aire de la base}\\times\\text{hauteur}$ : n'oublie pas le $\\dfrac{1}{3}$.",
+							"label": "1/3 oublié"
+						},
+						{
+							"answer": "{{eval:abs(h)*nu*nw/(3*g)}}",
+							"message": "L'aire d'un triangle rectangle est $\\dfrac{AB\\times AC}{2}$ : n'oublie pas de diviser par $2$.",
+							"label": "Aire sans le 1/2"
+						},
+						{
+							"answer": "{{eval:sqrt(nu*nw)/6*h^2*nn}}",
+							"message": "Tu as pris le carré de la distance de $D$ au plan : la hauteur est cette distance elle-même.",
+							"label": "Distance au carré"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire de la base : $AB={{eval:sqrt(nu)}}$, $AC={{eval:sqrt(nw)}}$, donc $\\mathcal{A}=\\dfrac{AB\\times AC}{2}={{eval:sqrt(nu*nw)/2}}$.",
+					"Hauteur : la distance de $D$ au plan $(ABC)$, $\\dfrac{\\lvert {{n1}}\\times{{dx;()}}+{{n2;()}}\\times{{dy;()}}+{{n3;()}}\\times{{dz;()}}{{dd;+}}\\rvert}{ {{eval:sqrt(nn)}} }={{eval:abs(h)*sqrt(nn)}}$.",
+					"$V=\\dfrac{1}{3}\\times\\mathcal{A}\\times h=\\dfrac{1}{3}\\times{{eval:sqrt(nu*nw)/2}}\\times{{eval:abs(h)*sqrt(nn)}}=\\textcolor{{{color:primary.0}}}{ {{eval:abs(h)*nu*nw/(6*g)}} }$."
+				]
+			},
+			"hint": "Le volume vaut $\\dfrac{1}{3}\\times\\text{aire de }ABC\\times\\text{hauteur}$, et la hauteur est la distance de $D$ au plan $(ABC)$ : utilise son équation."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{\\sqrt{30}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "1",
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"sel": "0"
+			},
+			"description": "v0 : √6 × √5 / 2 = √30/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\sqrt{30}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "1",
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"sel": "0"
+			},
+			"description": "v0 : division par 2 oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"dx": "1",
+				"dy": "-1",
+				"dz": "0"
+			},
+			"description": "v1 : 2×3×4/6 = 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"dx": "1",
+				"dy": "-1",
+				"dz": "0"
+			},
+			"description": "v1 : 1/3 oublié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"dx": "1",
+				"dy": "-1",
+				"dz": "0"
+			},
+			"description": "v1 : produit seul",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "5",
+				"dx": "0",
+				"dy": "0",
+				"dz": "0"
+			},
+			"description": "v1 : 1×1×5/6",
+			"variationIndex": 1
+		},
+		{
+			"description": "V = 2/3",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "1",
+				"u3": "0",
+				"r": "1",
+				"sel": "0",
+				"al": "0",
+				"h": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "1/3 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "1",
+				"u3": "0",
+				"r": "1",
+				"sel": "0",
+				"al": "0",
+				"h": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le volume d'un tétraèdre est $\\dfrac{1}{3}\\times\\text{aire de la base}\\times\\text{hauteur}$ : n'oublie pas le $\\dfrac{1}{3}$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "aire sans le 1/2",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "1",
+				"u3": "0",
+				"r": "1",
+				"sel": "0",
+				"al": "0",
+				"h": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire d'un triangle rectangle est $\\dfrac{AB\\times AC}{2}$ : n'oublie pas de diviser par $2$."
+			},
+			"answers": ["\\frac{4}{3}"]
+		}
+	]
+}

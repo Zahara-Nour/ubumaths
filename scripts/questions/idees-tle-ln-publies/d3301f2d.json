@@ -1,0 +1,588 @@
+{
+	"id": "d3301f2d-6293-4766-a789-d432cb11b489",
+	"title": "Résoudre une équation avec ln",
+	"description": "ln x = a, ln(ax + b) = c, 2 ln x = ln a ; valeur exacte (pièges : domaine x > 0 oublié, signe)",
+	"grades": ["T_SPE", "T_COMP"],
+	"level": 2,
+	"delay": 60,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{a}} }"
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $\\ln x={{a}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln x={{a}}\\iff x=e^{ {{a}} }$ (on compose par l'exponentielle).",
+					"$x=\\textcolor{{{color:primary.0}}}{e^{ {{a}} }}$, qui appartient bien à $\\left]0\\,;+\\infty\\right[$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{if:c==1|e|e^{ {{c}} }}}{{eval:-b;+}}}{ {{a}} }"
+				}
+			],
+			"statement": "Résous l'équation $\\ln\\left({{a}}x{{b;+}}\\right)={{c}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln\\left({{a}}x{{b;+}}\\right)={{c}}\\iff {{a}}x{{b;+}}={{if:c==1|e|e^{ {{c}} }}}$ (et alors ${{a}}x{{b;+}}>0$ : la solution est dans le domaine).",
+					"$x=\\textcolor{{{color:primary.0}}}{\\dfrac{{{if:c==1|e|e^{ {{c}} }}}{{eval:-b;+}}}{ {{a}} }}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{a}} }"
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $2\\ln x=\\ln {{a}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2\\ln x=\\ln\\left(x^{2}\\right)$, donc l'équation équivaut à $x^{2}={{a}}$, soit $x=\\sqrt{ {{a}} }$ ou $x=-\\sqrt{ {{a}} }$.",
+					"Seule la solution positive est dans le domaine $\\left]0\\,;+\\infty\\right[$ : $x=\\textcolor{{{color:primary.0}}}{\\sqrt{ {{a}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{a}}^{x}={{b}}$. Donne la valeur exacte.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|10"
+				},
+				{
+					"name": "b",
+					"expression": "3..50"
+				},
+				{
+					"name": "r",
+					"expression": "eval:ln(b)/ln(a)"
+				}
+			],
+			"conditions": ["abs(r-round(r)) > 0.001"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{\\ln {{b}}}{\\ln {{a}}}",
+					"expectedErrors": [
+						{
+							"answer": "\\ln\\left(\\dfrac{ {{b}} }{ {{a}} }\\right)",
+							"message": "$\\ln\\left({{a}}^{x}\\right)=x\\ln {{a}}$ : on divise par $\\ln {{a}}$, on ne divise pas ${{b}}$ par ${{a}}$.",
+							"label": "ln(b/a)"
+						},
+						{
+							"answer": "\\dfrac{ {{b}} }{ {{a}} }",
+							"message": "${{a}}^{x}$ n'est pas ${{a}}x$ : applique $\\ln$ aux deux membres.",
+							"label": "b/a"
+						},
+						{
+							"answer": "\\ln {{b}}-\\ln {{a}}",
+							"message": "$x\\ln {{a}}=\\ln {{b}}$ : on divise par $\\ln {{a}}$, on ne le soustrait pas.",
+							"label": "ln b − ln a"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs ; $\\ln$ est strictement croissante : ${{a}}^{x}={{b}}\\iff\\ln\\left({{a}}^{x}\\right)=\\ln {{b}}$.",
+					"$\\ln\\left({{a}}^{x}\\right)=x\\ln {{a}}$, et $\\ln {{a}}>0$ : $x=\\textcolor{{{color:primary.0}}}{\\dfrac{\\ln {{b}}}{\\ln {{a}}}}$."
+				]
+			},
+			"hint": "Applique $\\ln$ aux deux membres : que vaut $\\ln\\left({{a}}^{x}\\right)$ ?"
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$, sans calculatrice, l'équation ${{eval:m^u}}^{x}={{eval:m^v}}$. Donne la valeur exacte, simplifiée.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "u",
+					"expression": "2..4"
+				},
+				{
+					"name": "v",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["v/u != round(v/u)", "m^v <= 3125", "m^u <= 625"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v/u}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:u/v}}",
+							"message": "$x\\ln {{eval:m^u}}=\\ln {{eval:m^v}}$ : $x$ est le quotient $\\dfrac{\\ln {{eval:m^v}}}{\\ln {{eval:m^u}}}$, pas son inverse.",
+							"label": "Inverse"
+						},
+						{
+							"answer": "{{eval:m^v/m^u}}",
+							"message": "On ne divise pas ${{eval:m^v}}$ par ${{eval:m^u}}$ : écris les deux nombres comme des puissances de ${{m}}$.",
+							"label": "b/a"
+						},
+						{
+							"answer": "{{eval:v-u}}",
+							"message": "$\\left({{m}}^{ {{u}} }\\right)^{x}={{m}}^{ {{u}}x}$ : les exposants se multiplient, ${{u}}x={{v}}$.",
+							"label": "Différence des exposants"
+						}
+					],
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:m^u}}={{m}}^{ {{u}} }$ et ${{eval:m^v}}={{m}}^{ {{v}} }$ : l'équation s'écrit ${{m}}^{ {{u}}x}={{m}}^{ {{v}} }$.",
+					"En appliquant $\\ln$ : ${{u}}x\\ln {{m}}={{v}}\\ln {{m}}$, donc ${{u}}x={{v}}$ et $x=\\textcolor{{{color:primary.0}}}{ {{eval:v/u}} }$."
+				]
+			},
+			"hint": "Écris les deux nombres comme des puissances d'un même entier."
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\ln\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}\\right)=\\ln\\left({{if:c==1||{{if:c==-1|-|{{c}}}}}}x{{d;+}}\\right)$. Donne l'ensemble $S$ des solutions ($\\emptyset$ s'il n'y en a pas).\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "-9..9"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:(d-b)/(a-c)"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a*(d-b)/(a-c)+b"
+				}
+			],
+			"conditions": ["a != c", "b != d", "v != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:v>0|\\left\\{ {{x0}} \\right\\}|\\emptyset}}",
+					"answerKind": "intervalles",
+					"expectedErrors": [
+						{
+							"answer": "\\left\\{ {{x0}} \\right\\}",
+							"message": "Pour $x={{x0}}$, ${{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}$ vaut ${{v}}$ : il n'est pas strictement positif, $\\ln$ n'y est pas défini. Vérifie toujours le domaine.",
+							"label": "Solution hors du domaine"
+						},
+						{
+							"answer": "\\left\\{ {{eval:-x0}} \\right\\}",
+							"message": "${{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}={{if:c==1||{{if:c==-1|-|{{c}}}}}}x{{d;+}}\\iff {{eval:a-c}}x={{eval:d-b}}$ : vérifie le signe.",
+							"label": "Signe"
+						},
+						{
+							"answer": "\\emptyset",
+							"message": "Pour $x={{x0}}$, les deux expressions valent ${{v}}>0$ : c'est bien une solution.",
+							"label": "Solution rejetée à tort"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est strictement croissante : $\\ln A=\\ln B\\iff A=B$, à condition que $A>0$ et $B>0$.",
+					"${{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}={{if:c==1||{{if:c==-1|-|{{c}}}}}}x{{d;+}}\\iff {{eval:a-c}}x={{eval:d-b}}\\iff x={{x0}}$.",
+					"Pour $x={{x0}}$, les deux expressions valent ${{v}}$, {{if:v>0|strictement positif : $x={{x0}}$ convient|qui n'est pas strictement positif : $x={{x0}}$ ne convient pas}}.",
+					"$S=\\textcolor{{{color:primary.0}}}{ {{if:v>0|\\left\\{ {{x0}} \\right\\}|\\emptyset}} }$."
+				]
+			},
+			"hint": "$\\ln A=\\ln B$ équivaut à $A=B$… mais seulement si $A$ et $B$ sont strictement positifs."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["e^3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v0 : ln x = 3 → e³",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\ln 3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v0 : ln 3 (fonction inversée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3e"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v0 : 3e (produit)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{-2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : ln x = −2 → e⁻²",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{e^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : 1/e² pour e⁻² : même forme (décision du 2026-10-04)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{e^3-1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"description": "v1 : ln(2x+1) = 3 → (e³−1)/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"description": "v1 : e^c oublié → (3−1)/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\ln 3-1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"description": "v1 : ln(2x+1) = 3 → ln 3 …",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "v2 : 2 ln x = ln 5 → √5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "v2 : domaine oublié −√5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "v2 : 5/2 (division par 2 sous le ln)",
+			"variationIndex": 2
+		},
+		{
+			"description": "F3a : 2ˣ = 9",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"r": "3.1699"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\ln9}{\\ln2}"]
+		},
+		{
+			"description": "F3a : ln(9)/ln(2) avec parenthèses",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"r": "3.1699"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\ln(9)}{\\ln(2)}"]
+		},
+		{
+			"description": "F3a : 2 ln 3 / ln 2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"r": "3.1699"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{2\\ln3}{\\ln2}"]
+		},
+		{
+			"description": "F3a : ln(b/a)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"r": "3.1699"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\ln\\left(\\frac{9}{2}\\right)"]
+		},
+		{
+			"description": "F3a : b/a",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"r": "3.1699"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{9}{2}"]
+		},
+		{
+			"description": "F3a : ln b − ln a",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"r": "3.1699"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\ln9-\\ln2"]
+		},
+		{
+			"description": "F3b : 4ˣ = 8",
+			"variationIndex": 4,
+			"variables": {
+				"m": "2",
+				"u": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{2}"]
+		},
+		{
+			"description": "F3b : 1,5",
+			"variationIndex": 4,
+			"variables": {
+				"m": "2",
+				"u": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1.5"]
+		},
+		{
+			"description": "F3b : inverse",
+			"variationIndex": 4,
+			"variables": {
+				"m": "2",
+				"u": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "F3b : b/a",
+			"variationIndex": 4,
+			"variables": {
+				"m": "2",
+				"u": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F3b : différence des exposants",
+			"variationIndex": 4,
+			"variables": {
+				"m": "3",
+				"u": "3",
+				"v": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-1"]
+		},
+		{
+			"description": "F5 : ln(3x − 1) = ln(x + 5) → {3}",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "1",
+				"d": "5",
+				"x0": "3",
+				"v": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\left\\{3\\right\\}"]
+		},
+		{
+			"description": "F5 : rejetée à tort",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "1",
+				"d": "5",
+				"x0": "3",
+				"v": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\emptyset"]
+		},
+		{
+			"description": "F5 : signe",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "1",
+				"d": "5",
+				"x0": "3",
+				"v": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\left\\{-3\\right\\}"]
+		},
+		{
+			"description": "F5 : ln(2x + 1) = ln(x − 3) → ∅",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"x0": "-4",
+				"v": "-7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\emptyset"]
+		},
+		{
+			"description": "F5 : solution hors du domaine gardée",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"x0": "-4",
+				"v": "-7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\left\\{-4\\right\\}"]
+		}
+	]
+}

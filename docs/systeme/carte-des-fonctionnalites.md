@@ -86,7 +86,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 | **La forme de la réponse est corrigée**, pas seulement sa valeur | 5 statuts `correct · unoptimal_form · bad_form · incorrect · empty`, crédit partiel (`src/lib/questions/types.ts:1034`) ; forme exigée ([questions.md](questions.md))                      |
 | **Étapes expliquées en français**, selon le niveau               | `src/lib/mathAST/pedagogical-*/` ; dans l'Atelier, `solve-steps.ts`, `derive-steps.ts`, `simplify-steps.ts`                                                                                |
 | **Correction concise puis détaillée**, écran et papier           | `src/lib/questions/correction-detail.ts`, [ADR 0017](../adr/0017-correction-concise-et-detaillee.md)                                                                                       |
-| **Mots cliquables** : un mot de l'énoncé ouvre sa définition     | niveau du lecteur (`src/lib/lexicon/reader-grade.ts`) ; éteints en évaluation notée (`src/lib/components/markdown/lexicon-context.ts:9`)                                                   |
+| **Mots cliquables** : un mot de l'énoncé ouvre sa définition     | niveau du lecteur (`src/lib/dictionary/reader-grade.ts`) ; éteints en évaluation notée (`src/lib/components/markdown/lexicon-context.ts:9`)                                                |
 | **Atelier et Cabinet Noir sans compte, sans envoi de données**   | `src/routes/(public)/atelier/+page.svelte:6` ; `src/lib/ciphers/` 100 % client ([univers-chiphre.md](univers-chiphre.md))                                                                  |
 | **PDF compilés dans le navigateur**                              | Typst en WASM ([fiches-et-pdf.md](fiches-et-pdf.md))                                                                                                                                       |
 | **Base de données à Paris**, fonctions en région Paris           | Supabase `eu-west-3` (`src/routes/(public)/legal/mentions-legales/+page.svelte:53`), Vercel `cdg1` (adaptateur dans `vite.config.ts`) — [ADR 0003](../adr/0003-donnees-hebergees-en-ue.md) |
@@ -273,11 +273,8 @@ débord) ; `src/routes/(public)/royaume/[ville]/__tests__/` (404, clic sur un li
 
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (chantier K19 ; V15 corrigé par le Tour du
-Royaume, D19 par la chandelle qui se pose au bout d'une minute ; V14, C16, C17, D12-D15 corrigés le
-2026-10-12) :
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde
-  Automaths et le Shtam, les plus vivants).
-- Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
-  teintés (D17), pas de lien d'évitement (D18).
+### Points non vérifiés
+
+- Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde Automaths et le Shtam, les plus vivants).

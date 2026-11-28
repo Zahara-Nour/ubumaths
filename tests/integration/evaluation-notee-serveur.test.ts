@@ -154,6 +154,8 @@ async function createEvaluation(
 		deadline?: string | null;
 		status?: 'draft' | 'published';
 		items?: Json;
+		/** V72 : sans mélange par défaut, pour que les tests lisent l'ordre de la série */
+		shuffle_questions?: boolean;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service
@@ -176,6 +178,7 @@ async function createEvaluation(
 			max_attempts: settings.max_attempts ?? null,
 			deadline: settings.deadline ?? null,
 			status: settings.status ?? 'published',
+			shuffle_questions: settings.shuffle_questions ?? false,
 			created_by: teacher.id
 		})
 		.select('id')
@@ -938,6 +941,52 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
 			});
 			expect(result.grade).toBe(20);
+		});
+	});
+
+	describe('V72 : « Mélanger l’ordre des questions »', () => {
+		// Graines : un compteur (tirages distincts) ; mélange : toujours 0, donc
+		// FILL, FILL, QCM → QCM, FILL, FILL (i = 2) → FILL, QCM, FILL (i = 1)
+		function drawsWithFixedShuffle(): (max: number) => number {
+			let seed = 1;
+			return (max) => (max >= 1000 ? seed++ : 0);
+		}
+
+		async function templateOrder(attemptId: string): Promise<string[]> {
+			const { data, error } = await service
+				.from('evaluation_attempt_questions')
+				.select('position, template_id')
+				.eq('test_session_id', attemptId)
+				.order('position');
+			if (error) throw new Error(error.message);
+			return (data ?? []).map((row) => row.template_id);
+		}
+
+		it('case cochée : l’ordre tiré est rangé, la reprise le garde', async () => {
+			const { assignmentId } = await createEvaluation({ shuffle_questions: true });
+			const pupil = await person('student');
+			const { error } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: pupil.id, status: 'active' });
+			expect(error, 'décor : inscription').toBeNull();
+
+			const attempt = await start(pupil, assignmentId, { randomInt: drawsWithFixedShuffle() });
+			expect(await templateOrder(attempt.attemptId)).toEqual([FILL_ID, QCM_ID, FILL_ID]);
+
+			const resumed = await start(pupil, assignmentId);
+			expect(resumed.questions).toEqual(attempt.questions);
+		});
+
+		it('case décochée : l’ordre de la série', async () => {
+			const { assignmentId } = await createEvaluation({ shuffle_questions: false });
+			const pupil = await person('student');
+			const { error } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: pupil.id, status: 'active' });
+			expect(error, 'décor : inscription').toBeNull();
+
+			const attempt = await start(pupil, assignmentId, { randomInt: drawsWithFixedShuffle() });
+			expect(await templateOrder(attempt.attemptId)).toEqual([FILL_ID, FILL_ID, QCM_ID]);
 		});
 	});
 

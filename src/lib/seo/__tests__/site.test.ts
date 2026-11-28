@@ -77,6 +77,20 @@ describe('toPlainText', () => {
 	it('retire le gras et les autres marques', () => {
 		expect(toPlainText('Un **grand** ~a^2~ et $\\sqrt{2}$')).toBe('Un grand a^2 et √2');
 	});
+
+	it('écrit une fraction a/b (infobulle d’un point du programme, V122)', () => {
+		expect(toPlainText('Calculer $\\frac{a}{b}$ et $\\dfrac{1}{3}$')).toBe('Calculer a/b et 1/3');
+	});
+
+	it('fractions imbriquées, racines, fractions sans accolades : jamais le mot « frac »', () => {
+		expect(toPlainText('$\\frac{\\sqrt{2}}{2}$')).toBe('√2/2');
+		expect(toPlainText('$\\frac{\\frac{1}{2}}{3}$')).toBe('(1/2)/3');
+		expect(toPlainText('$\\frac12$')).toBe('1/2');
+	});
+
+	it('numérateur ou dénominateur composé : entre parenthèses', () => {
+		expect(toPlainText('$\\frac{x+1}{x-1}$')).toBe('(x+1)/(x-1)');
+	});
 });
 
 describe('SITE_LOGO', () => {

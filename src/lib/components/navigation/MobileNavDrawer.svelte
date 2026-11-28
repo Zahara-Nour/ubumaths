@@ -17,6 +17,8 @@
 		icon: LucideIcon;
 		roles?: string[];
 		badge?: number;
+		/** Ce que compte la pastille, lu par les lecteurs d'écran. */
+		badgeLabel?: string;
 		/** Footer items render after a separator at the bottom of the drawer. */
 		footer?: boolean;
 		/** When true, the item triggers onLogout instead of navigating. */
@@ -87,7 +89,8 @@
 			<span
 				class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground"
 			>
-				{item.badge > 99 ? '99+' : item.badge}
+				<span aria-hidden="true">{item.badge > 99 ? '99+' : item.badge}</span>
+				{#if item.badgeLabel}<span class="sr-only">{item.badgeLabel}</span>{/if}
 			</span>
 		{/if}
 	</a>
@@ -99,7 +102,12 @@
 			<Sheet.Title class="text-lg font-semibold">Navigation</Sheet.Title>
 		</Sheet.Header>
 
-		<nav class="flex flex-1 flex-col py-2" aria-label="Navigation principale">
+		<!-- La liste défile seule (`min-h-0` : sans lui un enfant flex ne rétrécit pas sous son contenu) ;
+		     l'en-tête et « Préférences » restent à l'écran -->
+		<nav
+			class="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-2"
+			aria-label="Navigation principale"
+		>
 			{#each mainItems as item (item.href)}
 				{@render itemLink(item)}
 			{/each}
@@ -124,7 +132,7 @@
 		</nav>
 
 		{#if showSettings}
-			<div class="border-t border-border px-4 py-3">
+			<div class="shrink-0 border-t border-border px-4 py-3">
 				<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Préférences</p>
 				<div class="flex items-center justify-between gap-4">
 					<button

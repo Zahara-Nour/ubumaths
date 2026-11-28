@@ -1,0 +1,234 @@
+{
+	"id": "85afd455-84a0-4caa-82c0-36840b19a219",
+	"title": "Déterminer la raison d'une suite géométrique",
+	"description": "À partir de deux termes consécutifs, ou de deux termes à deux rangs d'écart (signe de la raison donné)",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"statement": "Détermine la raison de cette suite géométrique.\n\n$u_{ {{p}} }={{c}}$ et $u_{ {{eval:p+1}} }={{eval:c*(q)}}$\n\nLa raison est $?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux termes sont consécutifs : on passe de $u_{ {{p}} }$ à $u_{ {{eval:p+1}} }$ en multipliant par la raison $q$, donc $q=\\dfrac{u_{ {{eval:p+1}} }}{u_{ {{p}} }}$.",
+					"$q=\\dfrac{ {{eval:c*(q)}} }{ {{c}} }={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-q}}",
+							"message": "$q^2={{eval:q^2}}$ a deux solutions : l'énoncé dit que la raison est {{if:q<0|négative|positive}}.",
+							"label": "Mauvais signe"
+						},
+						{
+							"answer": "{{eval:q^2}}",
+							"message": "Le quotient $\\dfrac{u_{ {{eval:p+2}} }}{u_{ {{p}} }}$ vaut $q^2$ : il reste à trouver $q$.",
+							"label": "q² au lieu de q"
+						},
+						{
+							"answer": "{{eval:(c*q^2-c)/2}}",
+							"message": "La suite est géométrique : on passe d'un terme au suivant en multipliant, pas en ajoutant.",
+							"label": "Raison arithmétique"
+						}
+					]
+				}
+			],
+			"statement": "$(u_n)$ est une suite géométrique de raison {{if:q<0|négative|positive}}, avec $u_{ {{p}} }={{c}}$ et $u_{ {{eval:p+2}} }={{eval:c*q^2}}$.\n\nDétermine la raison.\n\nLa raison est $?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..12"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On passe de $u_{ {{p}} }$ à $u_{ {{eval:p+2}} }$ en multipliant deux fois par $q$ : $u_{ {{eval:p+2}} }=u_{ {{p}} }\\times q^2$, donc $q^2=\\dfrac{ {{eval:c*q^2}} }{ {{c}} }={{eval:q^2}}$.",
+					"$q^2={{eval:q^2}}$ donne $q={{eval:abs(q)}}$ ou $q=-{{eval:abs(q)}}$. La raison est {{if:q<0|négative|positive}} : $q=\\textcolor{{{color:primary.0}}}{{{q}}}$."
+				]
+			},
+			"hint": "Pour passer de $u_{ {{p}} }$ à $u_{ {{eval:p+2}} }$, on multiplie deux fois par la raison $q$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "u_3=4, u_4=12 → 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "-5",
+				"p": "10",
+				"q": "-4"
+			},
+			"description": "u_10=−5, u_11=20 → −4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "différence (raison arithmétique) 12−4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "quotient inversé 4/12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "-5",
+				"p": "10",
+				"q": "-4"
+			},
+			"description": "signe oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{12}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "quotient non simplifié 12/4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "3",
+				"c": "2",
+				"q": "-3"
+			},
+			"description": "u_3 = 2, u_5 = 18, q < 0 : −3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "5",
+				"c": "-4",
+				"q": "2"
+			},
+			"description": "u_5 = −4, u_7 = −16, q > 0 : 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$q^2 = 9$ a deux solutions : l'énoncé dit que la raison est négative."
+			},
+			"variables": {
+				"p": "3",
+				"c": "2",
+				"q": "-3"
+			},
+			"description": "mauvais signe",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le quotient $\\dfrac{u_{ 5 }}{u_{ 3 }}$ vaut $q^2$ : il reste à trouver $q$."
+			},
+			"variables": {
+				"p": "3",
+				"c": "2",
+				"q": "-3"
+			},
+			"description": "q² au lieu de q",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La suite est géométrique : on passe d'un terme au suivant en multipliant, pas en ajoutant."
+			},
+			"variables": {
+				"p": "3",
+				"c": "2",
+				"q": "-3"
+			},
+			"description": "(18 − 2)/2",
+			"variationIndex": 1
+		}
+	]
+}

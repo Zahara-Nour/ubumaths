@@ -23,6 +23,7 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchTagNamesForResources } from '#lib/server/resource-tags.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 const logger = createServerLogger('(public)/presques-evaluations/+page.server');
 
@@ -82,8 +83,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return {
 			...evaluation,
 			tags: tagsByEvaluation.get(evaluation.id) ?? [],
-			publicUrl: urlData?.publicUrl ?? null,
-			downloadUrl: downloadData?.publicUrl ?? null
+			publicUrl: urlData?.publicUrl ? toBrowserAddress(urlData.publicUrl) : null,
+			downloadUrl: downloadData?.publicUrl ? toBrowserAddress(downloadData.publicUrl) : null
 		};
 	});
 

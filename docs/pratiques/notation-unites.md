@@ -98,6 +98,10 @@ vaut 1/8 d'octet ; aucun sous-multiple (`mo` n'est pas une unité). `Ko`, l'écr
 élèves, est accepté pour le `ko` (2026-10-18) ; la réponse garde l'écriture tapée. Liste complète :
 `src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une unité.
 
+Euro dans un `{{eval:…}}` (2026-11-26) : un prix à une décimale s'écrit avec deux (`(37/10)[€]` →
+3,70 €), un prix entier reste entier (12 €) ; un réglage `;aN`, `;pN`, `;dN` l'emporte. Détail et
+autres arrondis : [ubumark.md](../systeme/ubumark.md) (« Décimales et arrondis »).
+
 ### Opérateurs
 
 | Écriture            | Sens     | Affichage                        |
@@ -210,7 +214,8 @@ L'élève ne tape jamais `\unit` : dans un blanc **à unité** (`blank.unit.expe
 
 - Dans un blanc **sans** unité, rien ne change : `5km` reste le produit 5·k·m.
 - Une grandeur incompatible est refusée avec un message (« Cette unité ne mesure pas la bonne grandeur… ») : c'est le garde-fou de `m s` / `ms`. Messages : `src/lib/questions/units/feedback.ts`.
-- **Clavier virtuel** : onglet « Unités » (touches de la grandeur attendue, `src/lib/questions/units/keyboard-units.ts`) ; une touche insère la forme affichée (`\mathrm{km}`), relue par la même normalisation — pas de macro `\unit`.
+- **Clavier virtuel** : onglet « Unités » (touches de la grandeur attendue, `src/lib/questions/units/keyboard-units.ts`) ; une touche insère la forme affichée (`\mathrm{km}`), relue par la même normalisation — pas de macro `\unit`. Les touches se déduisent de la réponse attendue, aussi écrite en syntaxe maison (`66[min]`, `28[mm]`, durée `{1[h]}{6[min]}` : `houseQuantityToLatex`), donc une durée propose `s`, `min`, `h`.
+- **Nombre mal écrit devant l'unité** (`36, mm`, `,036 m`) : le nombre est relu (`malformedNumberQuantity`, lecture seule) pour juger la valeur. Valeur juste → message de forme (`bad_form`) ; valeur fausse → faux, comme la même saisie bien écrite ; unité illisible (`36, xyz`) → « Unité inconnue ».
 - La correction lit les unités avec la même règle que ce document (`parseUnitExpression` délègue à mathAST) ; exposants Unicode (`m²`) admis en réponse.
 
 ## 4. Défauts connus, non corrigés

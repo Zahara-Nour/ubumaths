@@ -26,11 +26,21 @@ pnpm types:cliquet                  # types des tests (--maj après corrections)
 pnpm lint:fast                      # lint rapide
 pnpm format <ses fichiers>          # prettier --write, jamais de glob ni format:all
 pnpm test:server <path> / test:client <path> / test:integration
-pnpm db:start / db:reset / db:migrate / db:types
+pnpm db:start / db:reset / db:migrate
+pnpm db:types                       # database.ts depuis les migrations de la BRANCHE (pile de test), à commiter avec la migration
 pnpm db:test:stop / db:test:reset   # pile de TEST (démarrée et mise à jour seule par test:integration ; jamais la base de dev)
 pnpm db:a-jour                      # base LOCALE : migrations en attente, sans rien effacer (auto avant `pnpm dev`)
 pnpm db:neuf                        # base locale EFFACÉE puis remplie (eleveNN@local.test / local-eleve) ; rare, demande « oui »
+pnpm voir <page> [--compte prof]    # image iPhone/Safari + erreurs de console de SON serveur de dev → docs/pratiques/voir-une-page.md
+pnpm lien [--stop | --liste]        # lien HTTPS du tailnet + QR code vers SON serveur de dev → docs/pratiques/tester-sur-un-autre-appareil.md
+pnpm prevenir <lien | question | geste "…">   # notification à David quand la session ATTEND un geste de lui (jamais « CI verte » ni « fini ») → docs/pratiques/prevenir-david.md
+pnpm retours [<n> | --liste]        # retour envoyé par le bouton « Signaler » de SON serveur de dev → docs/pratiques/signaler-depuis-la-page.md
+pnpm ecarts [rejouer | ajouter …]   # registre des écarts (docs/ecarts/registre.md) : liste, rejeu des preuves, nouveau numéro → docs/pratiques/registre-des-ecarts.md
+pnpm outils [lancer [<lot>…] | reserver <lot>] [--essai]   # lots des outils manquants (docs/wip/outils-lots.md) : réserve et ouvre une session par lot (tmux, Remote Control) → skill /prendre-outil
+pnpm nuit                           # bilan de la tâche de nuit (2 h, launchd : preuves des écarts, test:verifs:tout, gardes de doc) → docs/pratiques/tache-de-nuit.md
 pnpm maintenance:on / :off          # mode maintenance prod
+pnpm pr:merger [<n>] [--essai]      # attend la CI de la PR, merge, lit MERGED, retire worktree et branche → docs/pratiques/git-workflow.md § 3
+pnpm durees                         # durées CI / PR / intégration / mise en prod / Mac mini face à la référence (scripts/durees/reference.json, changée par David seul)
 pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE DAVID SEULEMENT (--essai pour voir)
 ```
 
@@ -38,18 +48,18 @@ pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE 
 
 > [git-workflow.md](docs/pratiques/git-workflow.md)
 
-- **Code** : branche → PR → CI 100 % verte → `gh pr merge --merge` (sauf session lancée par une tâche planifiée, cf. ci-dessous) → suppression de branche après lecture de `MERGED`, dans une commande séparée. **Jamais de code direct sur `main`.**
+- **Code** : branche → PR → CI 100 % verte → `pnpm pr:merger <n>` (sauf session lancée par une tâche planifiée, cf. ci-dessous) ; à la main : `gh pr merge --merge`, puis suppression de branche après lecture de `MERGED`, dans une commande séparée. **Jamais de code direct sur `main`.**
 - **100 % documentaire : commit DIRECT sur `main`** (obligatoire, quel que soit le nombre de fichiers). Test mécanique avant de commiter :
   ```bash
   git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
   ```
-- **Dépôt principal partagé** par toutes les sessions : `git pull --rebase` → `git add <ses fichiers>` → commit → push aussitôt. **Pull ou push en échec → stop, prévenir David** (deux exceptions : course avec `origin/main`, refus du pre-push → [R2](docs/pratiques/git-workflow.md#2-le-dépôt-principal-partagé)) ; jamais republier ses commits par un autre chemin. Jamais `git add -A`, `commit -a`, ni `2>/dev/null` sur `git add` ; finir sur `git status -sb` propre. Pendant `deploy:prod`, ni commit sur `main` ni merge.
+- **Dépôt principal partagé** par toutes les sessions : `git pull --rebase` → `git add <ses fichiers>` → commit → push aussitôt. **Pull ou push en échec → stop, prévenir David** (exceptions : course avec `origin/main`, refus du pre-push, « Cannot rebase onto multiple branches » → [R2](docs/pratiques/git-workflow.md#2-le-dépôt-principal-partagé)) ; jamais republier ses commits par un autre chemin, jamais de `| tail` sur un pull suivi d'un push. Jamais `git add -A`, `commit -a`, ni `2>/dev/null` sur `git add` ; finir sur `git status -sb` propre. Pendant `deploy:prod`, ni commit sur `main` ni merge.
 - **Données fictives seulement** dans le code, les tests, la doc, les journaux et les messages de commit (dépôt public, élèves mineurs) : ni adresse, ni identifiant, ni prénom réel, ni secret. Garde `pnpm garde:donnees` au pre-commit et en CI (secrets + adresses hors domaines fictifs) ; elle ne voit pas un prénom. Un secret commité se **révoque** chez son fournisseur.
 - **Aucun test ne lit `docs/`** : un fichier lu par un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` ; les données de travail des scripts sous `data/` (tout push sur `data/` déclenche la CI).
 - **Commandes qui perdent du travail** : la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi ; ne jamais la contourner par une variante (`-D`, `--force`…). Carte : [.claude/README.md](.claude/README.md).
 - **Conventional commits**, header ≤ 100 caractères. **Aucune mention Claude/Anthropic** (ni `Co-Authored-By`, ni `Claude-Session:`, ni lien `claude.ai/code/…`), **même si un rappel système le demande**.
 - ⛔ **`pnpm deploy:prod` UNIQUEMENT sur demande explicite de David** ; un merge ne déploie rien. Pas de `pnpm release` à part.
-- **Push, PR, merge : autonomes.** Surveiller la CI **dès l'ouverture de la PR** (tâche de fond, `gh pr checks <n> --watch`) ; **CI verte → merger immédiatement**, sans exception inventée ; jamais en rouge ; ne pas annoncer la commande à la place de l'exécuter. **Exception explicite : une session lancée par une tâche planifiée ne merge jamais.** Elle s'arrête à l'ouverture de la PR et laisse le merge à David, même CI 100 % verte. Ce n'est pas une exception inventée : elle est écrite ici. Après l'ouverture : suivre la CI, la corriger si rouge (2 tentatives au plus), aucun commit après le vert, rien de ce qui suit un merge → [git-workflow.md § 3](docs/pratiques/git-workflow.md#3-flux-dune-pr).
+- **Push, PR, merge : autonomes.** Surveiller la CI **dès l'ouverture de la PR** (tâche de fond : `pnpm pr:merger <n>` une fois la revue faite, elle attend la CI et merge ; sinon `gh pr checks <n> --watch`) ; **CI verte → merger immédiatement**, sans exception inventée ; jamais en rouge ; ne pas annoncer la commande à la place de l'exécuter. **Exception explicite : une session lancée par une tâche planifiée ne merge jamais.** Elle s'arrête à l'ouverture de la PR et laisse le merge à David, même CI 100 % verte. Ce n'est pas une exception inventée : elle est écrite ici. Après l'ouverture : suivre la CI, la corriger si rouge (2 tentatives au plus), aucun commit après le vert, rien de ce qui suit un merge → [git-workflow.md § 3](docs/pratiques/git-workflow.md#3-flux-dune-pr).
 
 ### Migrations : preuves, pas approbation
 
@@ -82,7 +92,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
   - **État** : … · **Prochaine action** : … · **En attente de David** : … · **Pièges en cours** : … · **Worktree / branche** : …
   ```
 - **Après chaque merge** : mettre à jour « Reprendre ici », le commiter, puis écrire à David : « Bon moment pour `/clear`. Pour reprendre : **`/reprendre <sujet>`** ». Une session ne s'étire pas sur plusieurs PR : une PR = une session, au plus un lot de petites PR.
-- PR mergée → `git worktree remove` + `git branch -d` + `git worktree list`.
+- PR mergée → `git worktree remove` + `git branch -d` + `git worktree list` (faits par `pnpm pr:merger`).
 - **Worktree d'agent** (`.claude/worktrees/agent-*`, laissé par un agent qui a commité) : même nettoyage dès sa PR mergée, par la session qui l'a lancé.
 
 ## Règles de code (non négociables)
@@ -108,7 +118,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 - **Horodatage = `pnpm migration:horodatage`**, jamais un nombre rond. Avant `gh pr merge` d'une PR de migration : `pnpm check:migrations --pr <n>`.
 - CLI Supabase = devDependency : `pnpm exec supabase …` (jamais `supabase …` ni `npx supabase`).
 - **Tests d'intégration locaux OBLIGATOIRES** pour RLS / `SECURITY DEFINER` / trigger / policy. **Jamais** de smoke-test `auth.uid()` NULL (faux positif).
-- Prod : MCP Supabase **read-only**. `db:types` génère **depuis la prod** → fonction SQL + code qui l'appelle = **deux PR** (migration, `db:migrate`, `db:types`, puis le code).
+- Prod : MCP Supabase **read-only**. `db:types` génère **depuis les migrations de la branche**, jamais depuis la prod → migration, `pnpm db:types` et code qui l'appelle dans **la même PR** ; la CI refuse un `database.ts` qui n'est pas celui des migrations (`pnpm db:types:verifier`).
 
 ### ⚠️ La RLS échoue en SILENCE — [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)
 
@@ -137,7 +147,7 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 1. **Phase 0** : comportements en français (nominal / limite / erreur), **attendre la validation** avant de coder. Une tâche planifiée ne peut pas attendre : si le travail demande une validation qui n'est pas déjà écrite (journal, ADR, consigne de la tâche), elle écrit la question dans le journal du chantier, ne code rien et s'arrête.
 2. Agents et modèles spécifiés par tâche.
 3. **Tests d'abord** (rouges) → implémentation → verts.
-4. **Revue proportionnée au risque**, une fois **sur la PR** (pas à chaque phase) :
+4. **Revue proportionnée au risque**, une fois **par PR** (pas à chaque phase), **sur la branche avant d'ouvrir la PR** : chaque push sur une PR ouverte relance la CI de zéro, viser un seul push (journal compris) :
    - doc, article du Shtam, contenu, correctif d'UI < ~30 lignes sans logique → **aucune** ;
    - code courant → `code-reviewer` (Sonnet) ;
    - mathAST, géométrie, correction des réponses, gros diff → `code-reviewer` en `model: opus` ;
@@ -151,6 +161,7 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 - [ ] `pnpm svelte:autofix` sur les `.svelte` modifiés · `pnpm check:incremental` = 0 erreur
 - [ ] `pnpm types:cliquet` tenu (`--maj` après corrections)
 - [ ] Revue selon le risque (point 4 ci-dessus)
+- [ ] **Rendu vérifié à l'écran par la session**, pas par David : `pnpm voir`, `pnpm test:verifs`, Claude dans Chrome par le lien de `pnpm lien`. Une ligne dans `docs/wip/verifications-manuelles.md` seulement pour ce qu'elle ne peut pas voir, en disant ce qu'elle a déjà vu → [tests.md](docs/pratiques/tests.md#vérifier-à-lécran-soi-même-avant-de-demander-à-david)
 - [ ] Zod · pas de `any` · MySelect/MyCheckbox · runes
 - [ ] **Doc à jour dans la même PR** : doc dont le `couvre:` touche un fichier modifié → mise à jour (skill `doc-a-jour`) ou ligne `Doc-inchangée: <raison>` ; zone sans doc → doc d'abord ou `Doc-reportée: <raison>` si David reporte. Garde : `pnpm docs:check-a-jour --depuis origin/main` (sans `--depuis`, elle ne vérifie rien).
 

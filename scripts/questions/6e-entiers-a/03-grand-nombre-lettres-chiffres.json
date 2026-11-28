@@ -1,0 +1,484 @@
+{
+	"id": "e76ab26f-60f2-4fd6-b045-1be72afd9154",
+	"title": "Écrire un grand nombre en lettres et en chiffres",
+	"description": "Nombres jusqu'à 999 999 999, orthographe de 1990 : compléter l'écriture en lettres avec des étiquettes, écrire en chiffres un nombre écrit en lettres, choisir la bonne orthographe (pièges : zéros oubliés, quatre-vingt(s), cent(s), mille invariable)",
+	"grades": ["CM2", "6"],
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète l'écriture en lettres de ce nombre avec les étiquettes.\n\n```trous\n{{if:k==0|$2\\,080$ s'écrit [deux]-[mille]-[quatre]-[vingts].|{{if:k==1|$7\\,300$ s'écrit [sept]-[mille]-[trois]-[cents].|{{if:k==2|$15\\,081$ s'écrit [quinze]-[mille]-[quatre]-[vingt]-[un].|{{if:k==3|$80\\,000$ s'écrit [quatre]-[vingt]-[mille].|{{if:k==4|$203\\,081$ s'écrit [deux]-[cent]-[trois]-[mille]-[quatre]-[vingt]-[un].|{{if:k==5|$300\\,900$ s'écrit [trois]-[cent]-[mille]-[neuf]-[cents].|{{if:k==6|$521\\,400$ s'écrit [cinq]-[cent]-[vingt]-[et]-[un]-[mille]-[quatre]-[cents].|{{if:k==7|$1\\,200\\,000$ s'écrit [un]-[million]-[deux]-[cent]-[mille].|{{if:k==8|$3\\,040\\,500$ s'écrit [trois]-[millions]-[quarante]-[mille]-[cinq]-[cents].|{{if:k==9|$12\\,000\\,080$ s'écrit [douze]-[millions]-[quatre]-[vingts].|{{if:k==10|$500\\,001$ s'écrit [cinq]-[cent]-[mille]-[un].|$4\\,091$ s'écrit [quatre]-[mille]-[quatre]-[vingt]-[onze].}}}}}}}}}}}}}}}}}}}}}}\n{{if:k==0|intrus: milles ; vingt ; cents|{{if:k==1|intrus: milles ; cent ; vingts|{{if:k==2|intrus: milles ; vingts ; cents|{{if:k==3|intrus: vingts ; milles ; cents|{{if:k==4|intrus: cents ; milles ; vingts|{{if:k==5|intrus: milles ; vingts ; et|{{if:k==6|intrus: vingts ; milles|{{if:k==7|intrus: millions ; cents ; milles|{{if:k==8|intrus: million ; milles ; cent|{{if:k==9|intrus: million ; vingt ; milles|{{if:k==10|intrus: cents ; milles ; vingts|intrus: milles ; vingts ; cents}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..11"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**La règle.** Tous les mots sont reliés par des traits d'union ; « mille » ne prend jamais de s ; « vingt » et « cent » prennent un s seulement quand ils sont multipliés et terminent le nombre (quatre-vingts, deux-cents, mais quatre-vingt-un, deux-cent-mille) ; « et » s'écrit seulement dans 21, 31, 41, 51, 61 et 71.",
+					"On écrit : **{{if:k==0|deux-mille-quatre-vingts|{{if:k==1|sept-mille-trois-cents|{{if:k==2|quinze-mille-quatre-vingt-un|{{if:k==3|quatre-vingt-mille|{{if:k==4|deux-cent-trois-mille-quatre-vingt-un|{{if:k==5|trois-cent-mille-neuf-cents|{{if:k==6|cinq-cent-vingt-et-un-mille-quatre-cents|{{if:k==7|un-million-deux-cent-mille|{{if:k==8|trois-millions-quarante-mille-cinq-cents|{{if:k==9|douze-millions-quatre-vingts|{{if:k==10|cinq-cent-mille-un|quatre-mille-quatre-vingt-onze}}}}}}}}}}}}}}}}}}}}}}**."
+				]
+			},
+			"hint": "« vingt » et « cent » ne prennent un s que s'ils sont multipliés et terminent le nombre ; « mille » ne prend jamais de s ; tous les mots sont reliés par des traits d'union."
+		},
+		{
+			"statement": "Écris ce nombre en chiffres.\n\n**{{if:k==0|deux-mille-quatre-vingts|{{if:k==1|quinze-mille-quatre-vingt-un|{{if:k==2|quarante-mille-deux-cent-soixante-et-onze|{{if:k==3|quatre-vingt-mille|{{if:k==4|deux-cent-trois-mille-quatre-vingt-un|{{if:k==5|trois-cent-mille-neuf-cents|{{if:k==6|cinq-cent-vingt-et-un-mille-quatre-cents|{{if:k==7|six-cent-quatre-vingt-mille-quatre-vingt-quinze|{{if:k==8|un-million-deux-cent-mille|{{if:k==9|trois-millions-quarante-mille-cinq-cents|{{if:k==10|douze-millions-quatre-vingts|{{if:k==11|quarante-cinq-millions-trois-cent-mille-vingt-et-un|{{if:k==12|sept-millions-quatre-vingt-un-mille-deux-cents|{{if:k==13|deux-cent-trois-millions-soixante-mille-sept|{{if:k==14|neuf-cent-soixante-et-onze-millions-quatre-cents|{{if:k==15|soixante-millions-soixante-dix-mille-quatre-vingts|{{if:k==16|cinq-cent-mille-un|{{if:k==17|quatre-mille-quatre-vingt-onze|{{if:k==18|cent-millions-deux-cent-mille-trois-cents|huit-millions-dix-sept-mille-six}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}**\n\nEn chiffres : $?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..19"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2080*(1-min(abs(k-0),1))+15081*(1-min(abs(k-1),1))+40271*(1-min(abs(k-2),1))+80000*(1-min(abs(k-3),1))+203081*(1-min(abs(k-4),1))+300900*(1-min(abs(k-5),1))+521400*(1-min(abs(k-6),1))+680095*(1-min(abs(k-7),1))+1200000*(1-min(abs(k-8),1))+3040500*(1-min(abs(k-9),1))+12000080*(1-min(abs(k-10),1))+45300021*(1-min(abs(k-11),1))+7081200*(1-min(abs(k-12),1))+203060007*(1-min(abs(k-13),1))+971000400*(1-min(abs(k-14),1))+60070080*(1-min(abs(k-15),1))+500001*(1-min(abs(k-16),1))+4091*(1-min(abs(k-17),1))+100200300*(1-min(abs(k-18),1))+8017006*(1-min(abs(k-19),1))"
+				},
+				{
+					"name": "z1",
+					"expression": "eval:280*(1-min(abs(k-0),1))+1581*(1-min(abs(k-1),1))+40271*(1-min(abs(k-2),1))+80000*(1-min(abs(k-3),1))+20381*(1-min(abs(k-4),1))+300900*(1-min(abs(k-5),1))+521400*(1-min(abs(k-6),1))+68095*(1-min(abs(k-7),1))+1200000*(1-min(abs(k-8),1))+340500*(1-min(abs(k-9),1))+1200080*(1-min(abs(k-10),1))+4530021*(1-min(abs(k-11),1))+781200*(1-min(abs(k-12),1))+203607*(1-min(abs(k-13),1))+971000400*(1-min(abs(k-14),1))+607080*(1-min(abs(k-15),1))+5001*(1-min(abs(k-16),1))+491*(1-min(abs(k-17),1))+100200300*(1-min(abs(k-18),1))+8176*(1-min(abs(k-19),1))"
+				},
+				{
+					"name": "z2",
+					"expression": "eval:2080*(1-min(abs(k-0),1))+15081*(1-min(abs(k-1),1))+40271*(1-min(abs(k-2),1))+80000*(1-min(abs(k-3),1))+23081*(1-min(abs(k-4),1))+300900*(1-min(abs(k-5),1))+521400*(1-min(abs(k-6),1))+680095*(1-min(abs(k-7),1))+1200000*(1-min(abs(k-8),1))+3040500*(1-min(abs(k-9),1))+12000080*(1-min(abs(k-10),1))+45300021*(1-min(abs(k-11),1))+7081200*(1-min(abs(k-12),1))+23060007*(1-min(abs(k-13),1))+971000400*(1-min(abs(k-14),1))+60070080*(1-min(abs(k-15),1))+500001*(1-min(abs(k-16),1))+4091*(1-min(abs(k-17),1))+100200300*(1-min(abs(k-18),1))+8017006*(1-min(abs(k-19),1))"
+				},
+				{
+					"name": "q",
+					"expression": "eval:2420*(1-min(abs(k-0),1))+15421*(1-min(abs(k-1),1))+40271*(1-min(abs(k-2),1))+420000*(1-min(abs(k-3),1))+203421*(1-min(abs(k-4),1))+300900*(1-min(abs(k-5),1))+521400*(1-min(abs(k-6),1))+680435*(1-min(abs(k-7),1))+1200000*(1-min(abs(k-8),1))+3040500*(1-min(abs(k-9),1))+12000420*(1-min(abs(k-10),1))+45300021*(1-min(abs(k-11),1))+7421200*(1-min(abs(k-12),1))+203060007*(1-min(abs(k-13),1))+971000400*(1-min(abs(k-14),1))+60070420*(1-min(abs(k-15),1))+500001*(1-min(abs(k-16),1))+4431*(1-min(abs(k-17),1))+100200300*(1-min(abs(k-18),1))+8017006*(1-min(abs(k-19),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{z1}}",
+							"message": "Chaque tranche après la première s'écrit avec trois chiffres : il manque des zéros.",
+							"label": "Tranche écrite sans ses zéros"
+						},
+						{
+							"answer": "{{z2}}",
+							"message": "Tu as oublié un zéro : quand les dizaines ne sont pas dites, on écrit $0$ à leur place.",
+							"label": "Zéro des dizaines oublié"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "« quatre-vingt » ne se lit pas $4$ puis $20$ : c'est $4 \\times 20 = 80$.",
+							"label": "« quatre-vingt » lu 4 puis 20"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit le nombre tranche par tranche, de gauche à droite : {{if:k==0|$2$ mille, puis $080$|{{if:k==1|$15$ mille, puis $081$|{{if:k==2|$40$ mille, puis $271$|{{if:k==3|$80$ mille, puis $000$|{{if:k==4|$203$ mille, puis $081$|{{if:k==5|$300$ mille, puis $900$|{{if:k==6|$521$ mille, puis $400$|{{if:k==7|$680$ mille, puis $095$|{{if:k==8|$1$ million, puis $200$ mille, puis $000$|{{if:k==9|$3$ millions, puis $040$ mille, puis $500$|{{if:k==10|$12$ millions, puis $000$ (pas de mille), puis $080$|{{if:k==11|$45$ millions, puis $300$ mille, puis $021$|{{if:k==12|$7$ millions, puis $081$ mille, puis $200$|{{if:k==13|$203$ millions, puis $060$ mille, puis $007$|{{if:k==14|$971$ millions, puis $000$ (pas de mille), puis $400$|{{if:k==15|$60$ millions, puis $070$ mille, puis $080$|{{if:k==16|$500$ mille, puis $001$|{{if:k==17|$4$ mille, puis $091$|{{if:k==18|$100$ millions, puis $200$ mille, puis $300$|$8$ millions, puis $017$ mille, puis $006$}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}.",
+					"Chaque tranche après la première s'écrit avec trois chiffres : un rang qui n'est pas dit s'écrit $0$.",
+					"En chiffres : $\\textcolor{{{color:primary.0}}}{{{if:k==0|2\\,080|{{if:k==1|15\\,081|{{if:k==2|40\\,271|{{if:k==3|80\\,000|{{if:k==4|203\\,081|{{if:k==5|300\\,900|{{if:k==6|521\\,400|{{if:k==7|680\\,095|{{if:k==8|1\\,200\\,000|{{if:k==9|3\\,040\\,500|{{if:k==10|12\\,000\\,080|{{if:k==11|45\\,300\\,021|{{if:k==12|7\\,081\\,200|{{if:k==13|203\\,060\\,007|{{if:k==14|971\\,000\\,400|{{if:k==15|60\\,070\\,080|{{if:k==16|500\\,001|{{if:k==17|4\\,091|{{if:k==18|100\\,200\\,300|8\\,017\\,006}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$."
+				]
+			},
+			"hint": "Lis le nombre tranche par tranche : d'abord les millions, puis les milliers, puis le reste. Chaque tranche, sauf la première, s'écrit avec trois chiffres."
+		},
+		{
+			"statement": "Quelle est la bonne écriture en lettres de ${{if:k==0|2\\,080|{{if:k==1|7\\,300|{{if:k==2|15\\,081|{{if:k==3|80\\,000|{{if:k==4|203\\,081|{{if:k==5|300\\,900|{{if:k==6|521\\,400|{{if:k==7|680\\,095|{{if:k==8|1\\,200\\,000|{{if:k==9|3\\,040\\,500|{{if:k==10|9\\,400\\,000|{{if:k==11|4\\,091|{{if:k==12|500\\,001|7\\,081\\,200}}}}}}}}}}}}}}}}}}}}}}}}}}$ ?\n\n```choix\n- {{if:k==0|deux-mille-quatre-vingts|{{if:k==1|sept-mille-trois-cents|{{if:k==2|quinze-mille-quatre-vingt-un|{{if:k==3|quatre-vingt-mille|{{if:k==4|deux-cent-trois-mille-quatre-vingt-un|{{if:k==5|trois-cent-mille-neuf-cents|{{if:k==6|cinq-cent-vingt-et-un-mille-quatre-cents|{{if:k==7|six-cent-quatre-vingt-mille-quatre-vingt-quinze|{{if:k==8|un-million-deux-cent-mille|{{if:k==9|trois-millions-quarante-mille-cinq-cents|{{if:k==10|neuf-millions-quatre-cent-mille|{{if:k==11|quatre-mille-quatre-vingt-onze|{{if:k==12|cinq-cent-mille-un|sept-millions-quatre-vingt-un-mille-deux-cents}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==0|deux-mille-quatre-vingt|{{if:k==1|sept-mille-trois-cent|{{if:k==2|quinze-mille-quatre-vingts-un|{{if:k==3|quatre-vingts-mille|{{if:k==4|deux-cents-trois-mille-quatre-vingt-un|{{if:k==5|trois-cents-mille-neuf-cents|{{if:k==6|cinq-cents-vingt-et-un-mille-quatre-cents|{{if:k==7|six-cents-quatre-vingt-mille-quatre-vingt-quinze|{{if:k==8|un-million-deux-cents-mille|{{if:k==9|trois-millions-quarante-mille-cinq-cent|{{if:k==10|neuf-millions-quatre-cents-mille|{{if:k==11|quatre-mille-quatre-vingts-onze|{{if:k==12|cinq-cents-mille-un|sept-millions-quatre-vingts-un-mille-deux-cents}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==0|deux-milles-quatre-vingts|{{if:k==1|sept-milles-trois-cents|{{if:k==2|quinze-milles-quatre-vingt-un|{{if:k==3|quatre-vingt-milles|{{if:k==4|deux-cent-trois-milles-quatre-vingt-un|{{if:k==5|trois-cent-milles-neuf-cents|{{if:k==6|cinq-cent-vingt-et-un-milles-quatre-cents|{{if:k==7|six-cent-quatre-vingt-milles-quatre-vingt-quinze|{{if:k==8|un-million-deux-cent-milles|{{if:k==9|trois-million-quarante-mille-cinq-cents|{{if:k==10|neuf-million-quatre-cent-mille|{{if:k==11|quatre-milles-quatre-vingt-onze|{{if:k==12|cinq-cent-milles-un|sept-million-quatre-vingt-un-mille-deux-cents}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==0|deux-milles-quatre-vingt|{{if:k==1|sept-milles-trois-cent|{{if:k==2|quinze-mille-quatre-vingt-et-un|{{if:k==3|quatre-vingts-milles|{{if:k==4|deux-cent-trois-mille-quatre-vingt-et-un|{{if:k==5|trois-cents-milles-neuf-cents|{{if:k==6|cinq-cent-vingt-un-mille-quatre-cents|{{if:k==7|six-cents-quatre-vingt-milles-quatre-vingt-quinze|{{if:k==8|un-million-deux-cents-milles|{{if:k==9|trois-millions-quarante-milles-cinq-cent|{{if:k==10|neuf-millions-quatre-cents-milles|{{if:k==11|quatre-milles-quatre-vingts-onze|{{if:k==12|cinq-cent-mille-et-un|sept-millions-quatre-vingt-et-un-mille-deux-cents}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..13"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** Tous les mots sont reliés par des traits d'union ; « mille » ne prend jamais de s ; « vingt » et « cent » prennent un s seulement quand ils sont multipliés et terminent le nombre (quatre-vingts, deux-cents, mais quatre-vingt-un, deux-cent-mille) ; « et » s'écrit seulement dans 21, 31, 41, 51, 61 et 71.",
+					"La bonne écriture est donc **{{if:k==0|deux-mille-quatre-vingts|{{if:k==1|sept-mille-trois-cents|{{if:k==2|quinze-mille-quatre-vingt-un|{{if:k==3|quatre-vingt-mille|{{if:k==4|deux-cent-trois-mille-quatre-vingt-un|{{if:k==5|trois-cent-mille-neuf-cents|{{if:k==6|cinq-cent-vingt-et-un-mille-quatre-cents|{{if:k==7|six-cent-quatre-vingt-mille-quatre-vingt-quinze|{{if:k==8|un-million-deux-cent-mille|{{if:k==9|trois-millions-quarante-mille-cinq-cents|{{if:k==10|neuf-millions-quatre-cent-mille|{{if:k==11|quatre-mille-quatre-vingt-onze|{{if:k==12|cinq-cent-mille-un|sept-millions-quatre-vingt-un-mille-deux-cents}}}}}}}}}}}}}}}}}}}}}}}}}}**."
+				]
+			},
+			"hint": "« vingt » et « cent » ne prennent un s que s'ils sont multipliés et terminent le nombre ; « mille » ne prend jamais de s ; tous les mots sont reliés par des traits d'union."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "deux-mille-quatre-vingts",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "5", "1", "2"]
+		},
+		{
+			"description": "Erreur : quatre-vingt sans s en fin",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6", "5", "1", "3"]
+		},
+		{
+			"description": "Erreur : milles",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6", "0", "1", "2"]
+		},
+		{
+			"description": "quatre-vingt-mille",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1"]
+		},
+		{
+			"description": "Erreur : quatre-vingts-mille",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5", "0", "1"]
+		},
+		{
+			"description": "Erreur : quatre-vingt-milles",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5", "4", "2"]
+		},
+		{
+			"description": "cinq-cent-vingt-et-un-mille-quatre-cents",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9", "7", "8", "6", "1", "4", "5", "2"]
+		},
+		{
+			"description": "Erreur : quatre-cent sans s en fin",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["9", "7", "8", "6", "1", "4", "5", "7"]
+		},
+		{
+			"description": "deux-cent-trois-mille-quatre-vingt-un = 203 081",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["203\\,081"]
+		},
+		{
+			"description": "203081 sans espace",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["203081"]
+		},
+		{
+			"description": "Erreur prévue : 20 381 (tranche sans zéro)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque tranche après la première s'écrit avec trois chiffres : il manque des zéros."
+			},
+			"answers": ["20\\,381"]
+		},
+		{
+			"description": "Erreur prévue : 23 081 (zéro des dizaines)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié un zéro : quand les dizaines ne sont pas dites, on écrit $0$ à leur place."
+			},
+			"answers": ["23\\,081"]
+		},
+		{
+			"description": "Erreur prévue : 203 421 (quatre-vingt lu 4 20)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« quatre-vingt » ne se lit pas $4$ puis $20$ : c'est $4 \\times 20 = 80$."
+			},
+			"answers": ["203\\,421"]
+		},
+		{
+			"description": "deux-mille-quatre-vingts = 2 080",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\,080"]
+		},
+		{
+			"description": "Erreur prévue : 280",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque tranche après la première s'écrit avec trois chiffres : il manque des zéros."
+			},
+			"answers": ["280"]
+		},
+		{
+			"description": "Erreur prévue : 2 420",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« quatre-vingt » ne se lit pas $4$ puis $20$ : c'est $4 \\times 20 = 80$."
+			},
+			"answers": ["2\\,420"]
+		},
+		{
+			"description": "deux-cent-trois-millions-soixante-mille-sept = 203 060 007",
+			"variationIndex": 1,
+			"variables": {
+				"k": "13"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["203\\,060\\,007"]
+		},
+		{
+			"description": "Erreur prévue : 203 607",
+			"variationIndex": 1,
+			"variables": {
+				"k": "13"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque tranche après la première s'écrit avec trois chiffres : il manque des zéros."
+			},
+			"answers": ["203\\,607"]
+		},
+		{
+			"description": "Erreur prévue : 23 060 007",
+			"variationIndex": 1,
+			"variables": {
+				"k": "13"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié un zéro : quand les dizaines ne sont pas dites, on écrit $0$ à leur place."
+			},
+			"answers": ["23\\,060\\,007"]
+		},
+		{
+			"description": "quatre-vingt-mille = 80 000",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["80\\,000"]
+		},
+		{
+			"description": "Erreur : 8 000",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["8\\,000"]
+		},
+		{
+			"description": "deux-mille-quatre-vingts",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : deux-mille-quatre-vingt",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : deux-milles-quatre-vingts",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : deux-milles-quatre-vingt",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "quatre-vingt-mille",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : quatre-vingts-mille",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : quatre-vingt-milles",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : quatre-vingts-milles",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "cinq-cent-vingt-et-un-mille-quatre-cents",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : cinq-cents-vingt-et-un-mille-quatre-cents",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : cinq-cent-vingt-et-un-milles-quatre-cents",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : cinq-cent-vingt-un-mille-quatre-cents",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

@@ -22,7 +22,7 @@ Pas pour : implémenter un endpoint une fois le schéma fixé (`backend-develope
 2. Écrire les **tests d'intégration d'abord** (vrais clients authentifiés, `tests/integration/`), puis la migration `supabase/migrations/<timestamp>_<description>.sql`, **additive**, rollback en commentaire.
 3. Prouver que les tests **échouent sans la migration** et passent avec.
 4. Faire passer `security-auditor`.
-5. Après merge : `pnpm db:migrate`, puis `pnpm db:types` (+ commit) ; seulement alors le code qui appelle une nouvelle RPC (deuxième PR).
+5. Dans la même PR : `pnpm db:types` (régénère `database.ts` depuis les migrations de la branche, à commiter), puis le code qui appelle une nouvelle RPC. Après merge : `pnpm db:migrate`.
 
 ## Invariants critiques
 

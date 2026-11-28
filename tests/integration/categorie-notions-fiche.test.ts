@@ -52,6 +52,7 @@ const COURSE_TOKEN = `catfichecours${Date.now().toString(36)}abcdefghijk`.slice(
 interface SharedClassification {
 	node_id: string;
 	name: string;
+	translations?: unknown;
 	kind: string;
 	position: number;
 }
@@ -451,8 +452,15 @@ describe('liens de partage : catégorie et notions de la fiche citée', () => {
 		expect(shared).not.toBeNull();
 		expect(shared?.category).toBe('review');
 		expect(shared?.classifications).toEqual([
-			{ node_id: derivationId, name: `${RUN} Dérivation`, kind: 'notion', position: 0 },
-			{ node_id: suitesId, name: `${RUN} Suites`, kind: 'notion', position: 1 }
+			{
+				node_id: derivationId,
+				name: `${RUN} Dérivation`,
+				// Noms anglais du nœud (ADR 0043) : aucun ici
+				translations: {},
+				kind: 'notion',
+				position: 0
+			},
+			{ node_id: suitesId, name: `${RUN} Suites`, translations: {}, kind: 'notion', position: 1 }
 		]);
 	});
 

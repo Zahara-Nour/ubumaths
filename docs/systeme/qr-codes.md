@@ -139,6 +139,9 @@ la mise en page : [fiches-et-pdf.md](fiches-et-pdf.md).
 
 ## Écarts connus
 
-- Pas de QR pour l'Atelier : décision de David, seulement vers un atelier sauvegardé et public, qui
-  n'existe pas encore. Pas encore de bouton QR sur les fiches (le QR automatique dans l'en-tête des
-  PDF, choix (a), n'est pas retenu à ce jour).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Pas de QR pour l'Atelier : décision de David, seulement vers un atelier sauvegardé et public, qui n'existe pas encore.
+- Pas de bouton QR sur les fiches : le QR automatique dans l'en-tête des PDF (choix (a)) n'est pas retenu à ce jour.

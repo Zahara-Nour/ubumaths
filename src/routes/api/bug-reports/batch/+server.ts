@@ -9,6 +9,7 @@
  */
 
 import { error } from '@sveltejs/kit';
+import { deleteBugReportWithScreenshot } from '#lib/server/bug-report-screenshots.ts';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { TablesUpdate } from '#lib/types/database.ts';
@@ -114,19 +115,18 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 	for (const reportId of reportIds) {
 		try {
-			// Même règle que pour la mise à jour : zéro ligne = échec pour cet identifiant.
-			const { data: deletedRows, error: deleteError } = await locals.supabase
-				.from('bug_reports')
-				.delete()
-				.eq('id', reportId)
-				.select('id');
+			// Même règle que pour la mise à jour : zéro ligne = échec pour cet
+			// identifiant. La capture d'écran part avec le rapport (écart T25).
+			const outcome = await deleteBugReportWithScreenshot(locals.supabase, reportId);
 
-			if (deleteError) {
-				failed.push({ id: reportId, reason: 'Erreur de suppression' });
-			} else if (!deletedRows || deletedRows.length === 0) {
+			if (outcome === 'deleted') {
+				deleted.push(reportId);
+			} else if (outcome === 'screenshot_failed') {
+				failed.push({ id: reportId, reason: 'La capture n’a pas pu être effacée' });
+			} else if (outcome === 'not_found') {
 				failed.push({ id: reportId, reason: 'Rapport introuvable ou non supprimable' });
 			} else {
-				deleted.push(reportId);
+				failed.push({ id: reportId, reason: 'Erreur de suppression' });
 			}
 		} catch {
 			failed.push({ id: reportId, reason: 'Erreur inattendue' });

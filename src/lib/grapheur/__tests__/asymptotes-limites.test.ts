@@ -324,3 +324,20 @@ describe('limites horizontales : le symbolique en renfort', () => {
 		expect(analyze('3')).toEqual([]);
 	});
 });
+
+describe('limite lente en +∞ (L61)', () => {
+	it('(ln x)²/√x a une asymptote horizontale y = 0 à droite seulement', () => {
+		const parsed = parseFunction('\\frac{\\ln(x)^{2}}{\\sqrt{x}}');
+		if (!parsed.ast) throw new Error('illisible');
+		const wide = { xMin: -580, xMax: 600, yMin: -130, yMax: 480 };
+		const found = analyzeFunction(
+			cachedEvaluator(parsed.ast),
+			wide,
+			'f',
+			buildAnalysisAST(parsed.ast)
+		).horizontalAsymptotes;
+
+		expect(found.map((a) => a.direction)).toEqual(['right']);
+		expect(found[0].y).toBeCloseTo(0, 6);
+	});
+});

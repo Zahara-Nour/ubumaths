@@ -264,57 +264,57 @@ describe('liste de copie (après audit)', () => {
 describe('lireSchema', () => {
 	const texte = [
 		'export type Database = {',
-		'  graphql_public: {',
-		'    Tables: {',
-		'      [_ in never]: never',
-		'    }',
-		'  }',
-		'  public: {',
-		'    Tables: {',
-		'      fiches: {',
-		'        Row: {',
-		'          id: string',
-		'        }',
-		'        Relationships: [',
-		'          {',
-		'            foreignKeyName: "fiches_classe_fkey"',
-		'            columns: ["classe_id"]',
-		'            isOneToOne: false',
-		'            referencedRelation: "classes"',
-		'            referencedColumns: ["id"]',
-		'          },',
-		'          {',
-		'            foreignKeyName: "fiches_classe_fkey"',
-		'            columns: ["classe_id"]',
-		'            isOneToOne: false',
-		'            referencedRelation: "bilan"',
-		'            referencedColumns: ["id"]',
-		'          },',
-		'          {',
-		'            foreignKeyName: "fiches_section_fkey"',
-		'            columns: ["section_id", "chapitre_id"]',
-		'            isOneToOne: false',
-		'            referencedRelation: "sections"',
-		'            referencedColumns: ["id", "chapitre_id"]',
-		'          },',
-		'        ]',
-		'      }',
-		'      classes: {',
-		'        Row: {',
-		'          id: string',
-		'        }',
-		'        Relationships: []',
-		'      }',
-		'    }',
-		'    Views: {',
-		'      bilan: {',
-		'        Row: {',
-		'          id: string',
-		'        }',
-		'      }',
-		'    }',
-		'  }',
-		'}'
+		'\tgraphql_public: {',
+		'\t\tTables: {',
+		'\t\t\t[_ in never]: never;',
+		'\t\t};',
+		'\t};',
+		'\tpublic: {',
+		'\t\tTables: {',
+		'\t\t\tfiches: {',
+		'\t\t\t\tRow: {',
+		'\t\t\t\t\tid: string;',
+		'\t\t\t\t};',
+		'\t\t\t\tRelationships: [',
+		'\t\t\t\t\t{',
+		"\t\t\t\t\t\tforeignKeyName: 'fiches_classe_fkey';",
+		"\t\t\t\t\t\tcolumns: ['classe_id'];",
+		'\t\t\t\t\t\tisOneToOne: false;',
+		"\t\t\t\t\t\treferencedRelation: 'classes';",
+		"\t\t\t\t\t\treferencedColumns: ['id'];",
+		'\t\t\t\t\t},',
+		'\t\t\t\t\t{',
+		"\t\t\t\t\t\tforeignKeyName: 'fiches_classe_fkey';",
+		"\t\t\t\t\t\tcolumns: ['classe_id'];",
+		'\t\t\t\t\t\tisOneToOne: false;',
+		"\t\t\t\t\t\treferencedRelation: 'bilan';",
+		"\t\t\t\t\t\treferencedColumns: ['id'];",
+		'\t\t\t\t\t},',
+		'\t\t\t\t\t{',
+		"\t\t\t\t\t\tforeignKeyName: 'fiches_section_fkey';",
+		"\t\t\t\t\t\tcolumns: ['section_id', 'chapitre_id'];",
+		'\t\t\t\t\t\tisOneToOne: false;',
+		"\t\t\t\t\t\treferencedRelation: 'sections';",
+		"\t\t\t\t\t\treferencedColumns: ['id', 'chapitre_id'];",
+		'\t\t\t\t\t}',
+		'\t\t\t\t];',
+		'\t\t\t};',
+		'\t\t\tclasses: {',
+		'\t\t\t\tRow: {',
+		'\t\t\t\t\tid: string;',
+		'\t\t\t\t};',
+		'\t\t\t\tRelationships: [];',
+		'\t\t\t};',
+		'\t\t};',
+		'\t\tViews: {',
+		'\t\t\tbilan: {',
+		'\t\t\t\tRow: {',
+		'\t\t\t\t\tid: string;',
+		'\t\t\t\t};',
+		'\t\t\t};',
+		'\t\t};',
+		'\t};',
+		'};'
 	].join('\n');
 
 	it('rend les tables du schéma public avec leurs liens, lien composé compris', () => {
@@ -338,7 +338,7 @@ describe('lireSchema', () => {
 });
 
 describe('classement de toutes les tables (copier, inventer, jamais)', () => {
-	// Le schéma tel que `pnpm db:types` l'a lu en prod.
+	// Le schéma tel que `pnpm db:types` l'a généré depuis les migrations du dépôt.
 	const { tables: schema, vues } = lireSchema(readFileSync('src/lib/types/database.ts', 'utf8'));
 	const familles = { COPIE, INVENTE, JAMAIS };
 
@@ -391,11 +391,6 @@ describe('classement de toutes les tables (copier, inventer, jamais)', () => {
 		for (const t of ['dictionary_entries', 'question_template_reviews', 'worksheet_styles']) {
 			expect(COPIE).toContain(t);
 		}
-	});
-
-	it('les modèles de messages ne sont pas copiés : la prod n’en a pas, ceux de la base locale restent', () => {
-		expect(COPIE).not.toContain('message_templates');
-		expect(COPIE).not.toContain('message_template_versions');
 	});
 
 	it('après audit : ce qui peut porter un élève sans que les gardes le voient n’est pas copié', () => {

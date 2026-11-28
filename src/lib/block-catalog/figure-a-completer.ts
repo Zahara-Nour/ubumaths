@@ -230,7 +230,7 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				'segment(D, E)'
 			),
 			explanation:
-				'L’élève reçoit le compas et le report. Il prend l’écartement [DE] au report et le pique en O. Rayon pris au compas à l’œil : « Ton compas est ouvert à l’œil : prends l’écartement DE avec le Report » ; autre longueur reportée : « Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur DE ».'
+				'L’élève reçoit le compas et le report. Il prend l’écartement [DE] au report et le pique en O. Rayon pris au compas à l’œil, ou autre longueur reportée : « Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur DE ».'
 		},
 		{
 			title: 'Construire un triangle de trois longueurs données',

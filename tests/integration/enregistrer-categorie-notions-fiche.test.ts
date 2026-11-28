@@ -132,7 +132,8 @@ async function stored(id: string): Promise<Stored> {
 
 /**
  * Ce que fait la route PUT : préparer (lecture, règle, titre composé), puis
- * appliquer (notions en trop retirées, fiche mise à jour, notions écrites).
+ * appliquer en une transaction (notions en trop retirées, fiche mise à jour,
+ * notions écrites).
  * Rend le message d'erreur 400, ou null.
  */
 async function save(
@@ -156,15 +157,8 @@ async function save(
 		...(request.type ? { type: request.type } : {}),
 		...plan.update
 	};
-	await applyClassification(teacherClient, id, plan, async () => {
-		const { data, error } = await teacherClient
-			.from('worksheets')
-			.update(update)
-			.eq('id', id)
-			.select('id');
-		if (error) throw new Error(`mise à jour refusée : ${error.code} ${error.message}`);
-		expect(data).toHaveLength(1);
-	});
+	const saved = await applyClassification(teacherClient, id, plan, update);
+	expect(saved.id).toBe(id);
 	return null;
 }
 
@@ -406,6 +400,8 @@ describe('lecture', () => {
 				name: `${RUN} Dérivation`,
 				kind: 'notion',
 				branch: `${RUN} Analyse`,
+				name_en: null,
+				branch_en: null,
 				position: 0
 			},
 			{
@@ -413,9 +409,35 @@ describe('lecture', () => {
 				name: `${RUN} Suites`,
 				kind: 'notion',
 				branch: `${RUN} branche`,
+				name_en: null,
+				branch_en: null,
 				position: 1
 			}
 		]);
+	});
+
+	it('les noms anglais de la notion et de sa branche, pour le PDF anglais (ADR 0043)', async () => {
+		const id = await worksheet('worksheet', 'review', [derivationId, suitesId]);
+		const translated = (name: string) => JSON.stringify({ en: { name } });
+		await sql('update public.classification_nodes set translations = $1 where id = $2', [
+			translated('Derivatives'),
+			derivationId
+		]);
+		await sql('update public.classification_nodes set translations = $1 where id = $2', [
+			translated('Calculus'),
+			analyseId
+		]);
+		try {
+			expect(await loadWorksheetClassifications(teacherClient, id)).toMatchObject([
+				{ node_id: derivationId, name_en: 'Derivatives', branch_en: 'Calculus' },
+				{ node_id: suitesId, name_en: null, branch_en: null }
+			]);
+		} finally {
+			await sql(
+				`update public.classification_nodes set translations = '{}' where id = any($1::uuid[])`,
+				[[derivationId, analyseId]]
+			);
+		}
 	});
 
 	it('une notion renommée : le titre composé se remet à jour au prochain enregistrement', async () => {

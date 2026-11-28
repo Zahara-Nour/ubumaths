@@ -30,6 +30,8 @@ import {
 } from '../carnet';
 
 const JETON = 'J'.repeat(43);
+/** Fin d'année d'une école fictive, à 23:59:59 UTC : le jour reste le 15 juillet à Paris. */
+const FIN = new Date('2027-07-15T23:59:59Z');
 
 describe('courriel de confirmation', () => {
 	const data = { studentFirstname: 'Léa', teacherName: 'Prof Fictif', token: JETON };
@@ -59,8 +61,16 @@ describe('courriel de confirmation', () => {
 });
 
 describe('courriel du lien', () => {
+	it("dit jusqu'à quand le lien vaut : la fin de l'année de l'école", () => {
+		const data = { studentFirstname: 'Léa', token: JETON, expiresAt: FIN };
+		for (const body of [getCarnetLinkEmailText(data), getCarnetLinkEmailHtml(data)]) {
+			expect(body).toContain("reste valable jusqu'au 15 juillet 2027.");
+			expect(body).not.toContain('31 août');
+		}
+	});
+
 	it('lien du carnet et chemin « lien perdu »', () => {
-		const data = { studentFirstname: 'Léa', token: JETON };
+		const data = { studentFirstname: 'Léa', token: JETON, expiresAt: FIN };
 		for (const body of [getCarnetLinkEmailText(data), getCarnetLinkEmailHtml(data)]) {
 			expect(body).toContain(`https://www.chiph.re/carnet/${JETON}`);
 			expect(body).toContain('https://www.chiph.re/carnet/lien-perdu');
@@ -68,7 +78,7 @@ describe('courriel du lien', () => {
 	});
 
 	it("« lien perdu » dit quand s'en servir : plus tard, sans ce courriel", () => {
-		const data = { studentFirstname: 'Léa', token: JETON };
+		const data = { studentFirstname: 'Léa', token: JETON, expiresAt: FIN };
 		const text = getCarnetLinkEmailText(data);
 		const html = getCarnetLinkEmailHtml(data);
 		expect(text).toContain('Gardez ce courriel. Si vous ne le retrouvez plus un jour,');

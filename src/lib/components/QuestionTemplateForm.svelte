@@ -123,6 +123,7 @@
 	} from '#lib/questions/calculus/calculus-editor.ts';
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
+	import { DEFAULT_IMPOSSIBLE_LABEL } from '#lib/questions/impossible-answer.ts';
 	import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
 	import {
 		assumptionsToRows,
@@ -205,7 +206,7 @@
 
 	async function loadJsonEditor() {
 		if (!loadedComponents.jsonEditor) {
-			const module = await import('#lib/constructions/components/JsonEditor.svelte');
+			const module = await import('#lib/components/JsonEditor.svelte');
 			JsonEditorComponent = module.default;
 			loadedComponents.jsonEditor = true;
 		}
@@ -361,6 +362,13 @@
 		initialTemplate?.shared?.blankDefaults?.vectorMode === 'colineaire'
 	);
 	let sharedBlankMatrix = $state(initialTemplate?.shared?.blankDefaults?.answerKind === 'matrice');
+	// Bouton « impossible » d'une case ordinaire (la réponse peut ne pas exister)
+	let sharedBlankImpossible = $state(
+		initialTemplate?.shared?.blankDefaults?.impossibleLabel !== undefined
+	);
+	let sharedBlankImpossibleLabel = $state(
+		initialTemplate?.shared?.blankDefaults?.impossibleLabel ?? DEFAULT_IMPOSSIBLE_LABEL
+	);
 	// Primitive, solution d'équation différentielle : nature et champs de la case
 	let sharedBlankCalculus = $state(calculusEditorState(initialTemplate?.shared?.blankDefaults));
 	let sharedValidationRulesJson = $state(
@@ -764,6 +772,9 @@
 			const calculus = calculusBlankDefaults(sharedBlankCalculus);
 			if (calculus) Object.assign(blankDefaults, calculus);
 		}
+		// Case ordinaire seulement (aucune nature de réponse)
+		if (!blankDefaults.answerKind && sharedBlankImpossible && sharedBlankImpossibleLabel.trim())
+			blankDefaults.impossibleLabel = sharedBlankImpossibleLabel.trim();
 		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
 		try {
 			const rules = JSON.parse(sharedValidationRulesJson);
@@ -918,6 +929,9 @@
 		sharedBlankVector = t.shared?.blankDefaults?.answerKind === 'vecteur';
 		sharedBlankVectorCollinear = t.shared?.blankDefaults?.vectorMode === 'colineaire';
 		sharedBlankMatrix = t.shared?.blankDefaults?.answerKind === 'matrice';
+		sharedBlankImpossible = t.shared?.blankDefaults?.impossibleLabel !== undefined;
+		sharedBlankImpossibleLabel =
+			t.shared?.blankDefaults?.impossibleLabel ?? DEFAULT_IMPOSSIBLE_LABEL;
 		sharedBlankCalculus = calculusEditorState(t.shared?.blankDefaults);
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
@@ -1667,6 +1681,8 @@
 			bind:sharedBlankVector
 			bind:sharedBlankVectorCollinear
 			bind:sharedBlankMatrix
+			bind:sharedBlankImpossible
+			bind:sharedBlankImpossibleLabel
 			bind:sharedBlankCalculus
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson
