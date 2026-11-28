@@ -81,6 +81,7 @@ import { rewriteReciprocalTrig } from './reciprocal-trig';
 import { evaluatePiecewiseLimit } from './piecewise';
 import {
 	limitByGeneralizedDegree,
+	limitByExponentialDecay,
 	involvesFractionalPower,
 	exactConstantNode,
 	exactConstantRational
@@ -1369,6 +1370,62 @@ function evaluateLimitExactForm(
 		);
 	}
 
+	// Stratégie 7.6 (L77) : exposants de x entiers écrits autrement qu'en entier
+	// positif — x^{-1} = 1/x, x^{4/2} = x² —, réécrits partout dans
+	// l'expression : x^{-1} sin x en 0 devient sin(x)·(1/x), x^{4/2} en −∞
+	// devient x². En dernier recours, comme 7.5 : rien de ce qui aboutissait
+	// ne change d'écriture.
+	const integerPowers = tryWrittenIntegerPowers(expression, varName, approachPoint, dir, options);
+	if (integerPowers !== null) {
+		const { result, rewritten } = integerPowers;
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			rewritten,
+			'summarized',
+			approachPoint,
+			'Écriture des puissances : x^{-n} = 1/x^n'
+		);
+		return createResult(
+			result.value,
+			varName,
+			approachPoint,
+			dir,
+			result.status,
+			indeterminateForm,
+			'composition',
+			recorder,
+			opts,
+			result.error,
+			result.noLimitReason
+		);
+	}
+
+	// Stratégie 7.7 (L77) : croissance comparée en ±∞, R·e^u avec u → −∞
+	// comme une puissance de x (x³e^{−x²+x}, x²e^{−√x}) : 0, exact.
+	const decay = limitByExponentialDecay(expression, varName, approachPoint);
+	if (decay !== null) {
+		recorder.recordStepByRule(
+			'infinity-analysis',
+			expression,
+			decay,
+			'summarized',
+			approachPoint,
+			'Croissance comparée : l’exponentielle l’emporte sur les puissances'
+		);
+		return createResult(
+			decay,
+			varName,
+			approachPoint,
+			dir,
+			'exact',
+			indeterminateForm,
+			'infinity-analysis',
+			recorder,
+			opts
+		);
+	}
+
 	// Seule une valeur approchée a été trouvée : rendue comme telle, jamais 'exact'
 	if (approximateValue !== null) {
 		return createResult(
@@ -2460,6 +2517,55 @@ function tryNegativePowerAsReciprocal(
 		exponent.n === -1n ? expr.base : power(expr.base, number((-exponent.n).toString())),
 		'fraction'
 	);
+	nestedRewrites++;
+	try {
+		const result = evaluateLimit(rewritten, varName, approach, dir, options);
+		const concluded =
+			(result.status === 'exact' || result.status === 'infinite') && result.value !== null;
+		return concluded || result.status === 'does-not-exist' ? { result, rewritten } : null;
+	} finally {
+		nestedRewrites--;
+	}
+}
+
+/**
+ * x^r, r un entier ÉCRIT autrement qu'en entier positif (−1, 4/2), x la
+ * variable elle-même : x^{−n} → 1/xⁿ, x^{4/2} → x². Identités exactes,
+ * domaine compris (r est entier). `null` si rien n'est réécrit. Une autre
+ * base reste telle quelle : (sin x / x)^{−1} en +∞ n'a pas de limite, et
+ * 1/(sin x / x) y rendait −∞.
+ */
+function rewriteWrittenIntegerPowers(expr: MathNode, varName: string): MathNode | null {
+	let changed = false;
+	const rewritten = mapNode(expr, (node) => {
+		if (!isSuperscript(node) || isNumber(node.superscript)) return node;
+		const base = isDelimiter(node.base) ? node.base.content : node.base;
+		if (!isVariable(base) || base.name !== varName) return node;
+		const exponent = exactConstantRational(node.superscript);
+		if (exponent === null || exponent.d !== 1n || exponent.n === 0n) return node;
+		const magnitude = exponent.n < 0n ? -exponent.n : exponent.n;
+		const raised = magnitude === 1n ? base : power(base, number(magnitude.toString()));
+		changed = true;
+		return exponent.n < 0n ? divide(number('1'), raised, 'fraction') : raised;
+	});
+	return changed ? rewritten : null;
+}
+
+/**
+ * Limite de l'expression aux puissances entières réécrites
+ * (`rewriteWrittenIntegerPowers`), ou null si rien n'est réécrit ou si elle
+ * ne conclut pas.
+ */
+function tryWrittenIntegerPowers(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { result: LimitResult; rewritten: MathNode } | null {
+	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
+	const rewritten = rewriteWrittenIntegerPowers(expr, varName);
+	if (rewritten === null) return null;
 	nestedRewrites++;
 	try {
 		const result = evaluateLimit(rewritten, varName, approach, dir, options);
