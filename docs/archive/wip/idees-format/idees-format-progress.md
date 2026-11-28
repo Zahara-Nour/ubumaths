@@ -6,19 +6,17 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3319._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : #3319 mergée (passes 1 et 2, 66 fiches). Ses 5 migrations de contenu
-  (`20261128151748` à `…151803`) sont les SEULES en attente en prod ; `db:migrate` refusé à la
-  session (écriture en prod = David).
-- **Prochaine action** : après le `db:migrate` de David → `migration-contenu.ts --dir` sur les 5
-  dossiers = 52 « inchangé » ; puis deux séries de relecture (≤ 50) dans `/dev/modeles`
-  (`scripts/series/creer-serie.ts`), David les publie ; lire les verdicts « À revoir ».
-- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal. Ensuite : 7 fiches à
-  outil (n° 75, 76, 77, 79) ; **n° 78 déjà livré** (4075445c98) → lot `arrondi-court` à retirer.
-- **Pièges** : diff trop gros pour `pr:merger` (> 20 000 lignes) → merge à la main ; rejeu
-  `checkTemplate` ne sait pas rejouer une erreur prévue « impossible ».
-- **Worktree / branche** : aucun (retirés après #3319).
+- **État** : clos. Les cinq idées sont en prod (tirage sans doublon, variations choisies, erreurs
+  prévues, QCM depuis les erreurs prévues, coup de pouce), doc dans `docs/systeme/` (`questions.md`,
+  `srs.md`, `evaluations.md`, `analytique-prof.md`). Revue du lot « nombres et calculs » de Seconde
+  en prod (#3319), relecture validée par David.
+- **Prochaine action** : aucune. Les fiches qui attendent un outil sont nommées dans
+  `outils-manquants.md` (n° 75, 76, 77, 79, 80) : page à cocher
+  https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af. Plus tard : a-06-0 (droite à deux morceaux),
+  n-f17 (n° 49). Futur chantier : révision espacée en saisie (§ Idée 4).
+- **Worktree / branche** : aucun.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -562,3 +560,14 @@ zooms « lire » et « encadrer » justes, labyrinthe des multiples, case « pas
   outil (a-05-2 n° 79 ; b-04-1, b-10-1, c1-03-1, c1-07-0 n° 75 ; b-12-1 n° 76 ; c2-07-0 n° 77).
 - Vérification à l'écran laissée à la série : décimaux des corrigés de 3b0a04c0 v3, a692569a v3, v5
   (valeurs `;d` : virgule posée au rendu ?).
+
+### Relecture (2026-11-28)
+
+`migration-contenu.ts` après le `db:migrate` de David : 52 « inchangé ». Séries de relecture
+`scripts/series/2-relecture-revue-forme-nombres.json` (36) et `…-publies.json` (16), publiées par
+David ; relecture validée en bloc (« je valide la relecture »). Outil n° 78 trouvé déjà livré
+(« zéros utiles », 4075445c98) : lot `arrondi-court` retiré d'`outils-lots.md`.
+
+## Historique
+
+- 2026-11-28 : chantier clos par David (« go » à la clôture), journal archivé.
