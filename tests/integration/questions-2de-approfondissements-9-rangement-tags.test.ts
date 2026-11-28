@@ -3,7 +3,7 @@
  * carrée) : nœud et tag des 2 modèles, réemploi de 64f54fc1 (Supabase local requis)
  * =====================================================================================================
  *
- * Migration `20261109180421_questions_2de_approfondissements_9_rangement_tags` : les brouillons
+ * Migration `20261128162908_questions_2de_approfondissements_9_rangement_tags` : les brouillons
  * 8009fb19 et 4014a007, créés le 2026-11-09 par scripts/create-questions.ts (sans nœud ni tag), vont
  * sur une sous-notion existante et reçoivent leur seul point ; le modèle publié de 1re spé 64f54fc1
  * passe à {1_SPE, 2} et reçoit 2-323.
@@ -43,7 +43,7 @@ interface Etat {
 // ============================================================================
 
 const MIGRATION =
-	'supabase/migrations/20261109180421_questions_2de_approfondissements_9_rangement_tags.sql';
+	'supabase/migrations/20261128162908_questions_2de_approfondissements_9_rangement_tags.sql';
 const REEMPLOI = '64f54fc1-1222-4795-bcb9-305262667688';
 const PARABOLE = 'Géométrie > Géométrie repérée > parabole';
 /** Les modèles : identifiants de la prod, nœud et points attendus après la migration (« niveau§code »). */
