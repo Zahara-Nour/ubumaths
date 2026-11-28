@@ -11,8 +11,8 @@ status: en cours
 _Mis à jour le 2026-11-28, PR « masque instantané » en cours._
 
 - **État** : #3284 mergée (L56, M35–M38 ; V76 prêt en lot `v76`). Branche `fix/ecarts-constructions-masque` : `masque(…)`/`montre(…)` seuls sur leur ligne = 0 ms ; fin de frise = dernier pas, même de 0 ms (le carré finit par 7 `masque`). Les 44 arcs partent en **6** temps (12, 4, 7, 7, 7, 7 : les 6 suites de `@cacher` de l'auteur ; « 3 temps » était un mauvais compte). Vu en local dans Chrome : pas 344/344, aucun arc.
-- **Prochaine action** : sauvegarde `scripts/constructions-prod/avant-v76.json` à commiter dans la PR, puis PR, CI, merge.
-- **En attente de David** : la simulation `--cible prod` (lecture de la prod refusée à la session par le classifieur) ; après merge, `--publier` puis `pnpm deploy:prod`.
+- **Prochaine action** : PR, CI, merge (sauvegarde `avant-v76.json` commitée : simulation lancée par David le 2026-11-28, script de prod = source du lot).
+- **En attente de David** : après merge, `pnpm constructions:reecrire --lot v76 --cible prod --publier` (depuis `main` à jour) puis `pnpm deploy:prod`.
 - **Pièges en cours** : `--publier` exige `avant-v76.json` là où il est lancé ; clore le lot (registre, archive) seulement après l'écriture en prod. V139 (étiquettes `_p…`) hors lots.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-constructions-masque` · `fix/ecarts-constructions-masque` (serveur de dev 5177).
 
