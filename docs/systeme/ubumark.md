@@ -1651,7 +1651,7 @@ des plans (second tour de places `POINT_NAME_FAR`, comme avec des droites). Écr
 Nom accessible : « plan (BDE) », « plan P égal à (ACG) », jamais une position relative.
 
 **Segments donnés et angles droits codés** (outil n° 72 de [outils-manquants](../wip/outils-manquants.md),
-chantier [solide-segments](../wip/solide-segments-progress.md), `solide-segments.test.ts`) — polyèdres seulement,
+chantier [solide-segments](../archive/wip/solide-segments-progress.md), `solide-segments.test.ts`) — polyèdres seulement,
 sommets nommés exigés, ni `section:` ni `tracer:` dans le même bloc. `segments: [EG], [AG]`
 (`SolideSpec.segments`, type `SolideSegment` : `from`, `to`, indices de deux points, sommets puis points
 déclarés ; crochets facultatifs) et `angles-droits: AEG` (`SolideSpec.rightAngles`, type `SolideRightAngle` :

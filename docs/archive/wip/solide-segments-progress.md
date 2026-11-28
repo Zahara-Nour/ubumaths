@@ -2,14 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3264 (mergée). Chantier clos, journal archivé._
 
-- **État** : `segments:` et `angles-droits:` du bloc ` ```solide ` codés, testés
-  (`solide-segments.test.ts`), doc `docs/systeme/ubumark.md` et catalogue à jour ; rendu vu à l'écran
-  (cube [HF] / [DF], pyramide [SO] / [OA]). · **Prochaine action** : revue, PR, merge, puis passer le
-  n° 72 dans « Livré » d'`outils-manquants.md` et prévenir `idees-3e-espace` (F1). · **En attente de
-  David** : rien. · **Pièges en cours** : diagonale [AG] d'un cube = sur l'arête [FG] en cavalière (voir
-  plus bas). · **Worktree / branche** : `../ubumaths-wt-solide-segments`, `feat/solide-segments`.
+- **État** : `segments:` et `angles-droits:` du bloc ` ```solide ` mergés (#3264) ; pas en prod sans
+  `deploy:prod` demandé par David. · **Prochaine action** : aucune ici ; F1 (`idees-3e-espace`) peut
+  s'écrire, avec la diagonale [DF]. · **En attente de David** : rien. · **Pièges** : diagonale [AG] d'un
+  cube sur l'arête [FG] en cavalière (plus bas). · **Worktree / branche** : retirés.
 
 ## Phase 0 (tranchée par David le 2026-11-28 : « je te suis »)
 

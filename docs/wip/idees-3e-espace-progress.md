@@ -38,6 +38,7 @@ case, `testSpecs` sur chaque variation.
   diagonale du cube prise comme celle de la face (7,1) ; addition des longueurs (10).
 - **Coup de pouce** : « Repère un triangle rectangle dont la longueur cherchée est l'hypoténuse. »
 - Dépend de **Q1** (tracer la diagonale dans le dessin).
+- **Outil livré** (n° 72, #3264, 2026-11-28) : `segments:` et `angles-droits:` du bloc ` ```solide `. Diagonale du cube : **[DF]** et triangle DHF (`angles-droits: DHF`), jamais [AG] (en cavalière, son dessin se couche sur l'arête [FG]). v5 (cylindre) : pas de segment possible, sans figure tracée ou retirée (phase 0 de l'outil). v7 : `points: O centre ABCD`, `segments: [SO], [OA]`, `angles-droits: SOA`.
 
 ### F2 — Rayon d'une sphère depuis une section (3G44 cas 8) · recommandation : **variation de 7bb95104**
 
