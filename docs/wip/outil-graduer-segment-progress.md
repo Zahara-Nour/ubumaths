@@ -5,8 +5,9 @@
 _Mis à jour le 2026-11-28, avant la première PR._
 
 - **État** : lot réservé (c825324f80) ; outil 61 vérifié manquant. Phase 0 validée par David le
-  2026-11-28 (recommandations de Q1-Q4). Implémentation en cours.
-- **Prochaine action** : tests rouges → code → verts, rendu vérifié, PR.
+  2026-11-28 (recommandations de Q1-Q4). Code, tests, revue (opus) faits ; rendu vu (WebKit,
+  iPhone). PR ouverte.
+- **Prochaine action** : CI verte → merge → outil 61 au § 4 d'`outils-manquants.md`, clore le lot.
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-outil-graduer-segment` · `feat/outil-graduer-segment`.
@@ -58,3 +59,18 @@ Questions :
 **Décision de David (2026-11-28)** : « je valide tes recos ». Q1 nombre de parts (− / +) ; Q2
 graduations fausses, point juste à sa valeur (10/6 = 5/3) ; Q3 une case pour les graduations plus
 une par point ; Q4 `unite: 6 cm` au PDF dans cette PR.
+
+### Implémentation (2026-11-28)
+
+- `graduer: d` (2 à 12) et `unite: 6 cm` dans ` ```line ` ; calcul pur `utils/number-line-graduer.ts`,
+  écran `NumberLineGraduer.svelte` (réutilise `NumberLinePlacer`). Doc : `docs/systeme/ubumark.md`
+  « Droite à graduer ».
+- Choix faits en cours de route (à montrer à David) : élève resté à 1 part → « Tu n'as pas partagé
+  l'unité ; il fallait la partager en 3 parts. » ; case des parts vide tant que − / + n'est pas
+  touché (Valider grisé) ; boutons nommés « Une part de plus / de moins » ; refus en plus :
+  `zoom:`, `unite:` sur `log`, plus de 500 graduations à 12 parts.
+- Revue opus : `unite:` débordait d'une colonne de fiche (droite jamais réduite) → réduite
+  seulement si la colonne est trop étroite ; borne des 500 graduations comptée à 12 parts ; test
+  du geste sur l'énoncé masqué ajouté.
+- Rendu vu : `/aide-ecriture/blocs/droite-graduee`, WebKit iPhone : 0-1-2 seuls, 3 parts tracées,
+  A posé sur 5/3, passer à 4 parts retire A.

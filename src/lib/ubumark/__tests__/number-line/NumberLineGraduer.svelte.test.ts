@@ -15,7 +15,8 @@ import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
 import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
 import { NL_LAYOUT } from '#lib/ubumark/utils/number-line-render.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
-import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { resolvedMarkdown, templateMarkdown } from '#lib/ubumark/index.ts';
+import { maskGestureAnswers } from '#lib/questions/masked-statement.ts';
 import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 let mains: HTMLElement[] = [];
@@ -281,6 +282,43 @@ describe('FillBlanksInput — droite à graduer', () => {
 			}
 		});
 		const root = screen.container;
+		await userEvent.click(button(root, MORE));
+		await userEvent.click(button(root, MORE));
+		await expect.poll(() => values[0]).toBe('3');
+		tapAt(root, 5 / 3);
+		await expect.poll(() => values[1]).toBe('\\frac{5}{3}');
+	});
+
+	it('énoncé masqué (celui que reçoit le navigateur) : le geste marche, rien ne fuit', async () => {
+		const generated = generateInstance(
+			{
+				id: 'test-graduer-masque',
+				title: 'Graduer',
+				status: 'draft',
+				variations: [
+					{
+						statement: templateMarkdown(
+							['Place A.', '', '```line', ...LINE, 'graduer: 3', 'placer: A=5/3', '```'].join('\n')
+						)
+					}
+				],
+				grades: ['6'],
+				level: 1
+			} as QuestionTemplate,
+			42
+		);
+		if (!generated.success) throw new Error(generated.errors.join(' ; '));
+		const statement = resolvedMarkdown(maskGestureAnswers(generated.instance.statement));
+		expect(statement).toContain('graduer: ?');
+		expect(statement).not.toContain('5/3');
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: { statement, blanks: generated.instance.blanks ?? [], values, validationResults: [] }
+		});
+		const root = screen.container;
+		// Avant tout geste : la fraction attendue n'est nulle part dans la page
+		expect(root.innerHTML).not.toMatch(/5\/3|\\frac\{5\}\{3\}|5⁄3/);
 		await userEvent.click(button(root, MORE));
 		await userEvent.click(button(root, MORE));
 		await expect.poll(() => values[0]).toBe('3');

@@ -93,6 +93,12 @@ describe('parseur : graduer:', () => {
 		);
 	});
 
+	it('borne comptée à 12 parts (l’élève peut y monter) : graduer: 2 de 0 à 200 → refusé', () => {
+		expect(messages('start: 0', 'end: 200', 'step: 1', 'graduer: 2')).toMatch(
+			/graduer.*graduations/
+		);
+	});
+
 	it('graduer: ? (énoncé envoyé) : nombre de parts inconnu, geste gardé', () => {
 		const node = nodeOf(...LINE, 'graduer: ?', 'placer: A=?');
 		expect(node.graduer).toEqual({ parts: null });
@@ -205,10 +211,10 @@ describe('PDF : unite: et graduer:', () => {
 			.split('\n')
 			.filter((line) => line.trim().startsWith('line(')).length;
 
-	it('unite: 6 cm → droite de 12 cm, jamais réduite', () => {
+	it('unite: 6 cm → droite de 12 cm, réduite seulement si la colonne est trop étroite', () => {
 		const typst = generateNumberLineTypst(nodeOf(...LINE, 'unite: 6 cm'));
 		expect(typst).toContain('line((0, 0), (12, 0))');
-		expect(typst).not.toContain('scale(');
+		expect(typst).toContain('calc.min(1, size.width');
 	});
 
 	it('unite: 3 cm de 0 à 2 → 6 cm', () => {

@@ -153,7 +153,7 @@ export const numberLineEntry: BlockCatalogEntry = {
 					values: 'une longueur en cm (unite: 6 cm)',
 					defaultValue: 'droite de 12 cm, réduite à la colonne',
 					description:
-						'La longueur réelle d’un intervalle de step sur le PDF : la droite n’est alors jamais réduite. 17 cm au plus en tout. Sans effet à l’écran ; utile pour graduer au guide-âne ou mesurer à la règle.'
+						'La longueur réelle d’un intervalle de step sur le PDF : elle n’est réduite que si la colonne est trop étroite (fiche en deux colonnes : longueur alors fausse). 17 cm au plus en tout. Sans effet à l’écran ; utile pour graduer au guide-âne ou mesurer à la règle.'
 				}
 			]
 		}

@@ -13,7 +13,7 @@
  * - Linear and logarithmic scales
  * - LaTeX → Typst math conversion for labels
  * - `unite: 6 cm` (outil n° 61) : un intervalle de `step` mesure vraiment 6 cm, droite
- *   jamais réduite ; droite à graduer (`graduer:`) : seules les graduations de `step`,
+ *   réduite seulement si la colonne est trop étroite ; droite à graduer (`graduer:`) : seules les graduations de `step`,
  *   l'élève partage au guide-âne
  * - Zooms (outil n° 54) : droites agrandies, chacune `ZOOM_GAP` cm sous la précédente,
  *   reliées par deux pointillés ; les points sur toutes les droites où ils tombent
@@ -141,10 +141,8 @@ export function generateNumberLineTypst(
 		});
 
 		const body = parts.join('\n');
-		// À sa vraie longueur (le parseur la borne à la page) : jamais réduite
-		if (unitCm !== undefined) {
-			return `#import "@preview/cetz:0.3.0"\n\n#cetz.canvas({\n${body}\n})`;
-		}
+		// `unite:` aussi : vraie longueur quand elle tient, réduite dans une colonne trop étroite
+		// (12 cm dans une colonne de 8,7 cm débordaient sur la voisine).
 		// Échelle AJUSTÉE, comme l'arbre de probabilités : 12 cm de droite débordaient d'une
 		// colonne de fiche (~8,7 cm) sur la voisine. `layout` donne la largeur disponible,
 		// `measure` celle de la droite ; on ne réduit que si elle dépasse (jamais

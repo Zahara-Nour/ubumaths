@@ -574,10 +574,11 @@ function parseGraduer(
 		});
 		return null;
 	}
-	const ticks = Math.round(((line.endNum - line.startNum) / line.stepNum) * parts) + 1;
+	// L’élève peut monter jusqu’à MAX_PARTS : la borne vaut pour ce cas-là
+	const ticks = Math.round(((line.endNum - line.startNum) / line.stepNum) * MAX_PARTS) + 1;
 	if (ticks > MAX_GRADUATIONS) {
 		errors.push({
-			message: `${shown} — ${ticks} graduations une fois partagée, ${MAX_GRADUATIONS} au plus (augmenter step)`
+			message: `${shown} — ${ticks} graduations si l’élève partage en ${MAX_PARTS}, ${MAX_GRADUATIONS} au plus (augmenter step)`
 		});
 		return null;
 	}

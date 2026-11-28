@@ -646,7 +646,7 @@ parts. »), « Tu as placé A sur 4/3. », « Tu n'as pas placé A. », puis la 
 parts, points). Masqué dans l'énoncé envoyé : `graduer: ?` (et `placer: A=?`). Série d'automatismes :
 refusée (non prise en charge). PDF : aucune graduation intermédiaire (l'enfant partage au
 guide-âne) ; `unite: 6 cm` (toute droite, pas seulement à graduer) donne la vraie longueur d'un
-intervalle de `step`, droite jamais réduite (`unitCm`) ; refusé si illisible, sur échelle `log`, ou
+intervalle de `step` (`unitCm`), droite réduite seulement si la colonne est trop étroite (une colonne de fiche, ~8,7 cm) ; refusé si illisible, sur échelle `log`, ou
 au-delà de 17 cm en tout.
 
 **Largeur réelle** (toutes les droites graduées, écran seulement) — `number-line-largeur.test.ts`,

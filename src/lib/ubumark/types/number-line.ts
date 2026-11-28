@@ -224,7 +224,7 @@ export interface NumberLineNode extends BaseNode {
 	graduer?: NumberLineGraduer;
 	/**
 	 * PDF (`unite: 6 cm`) : longueur réelle d'un intervalle de `step`, en cm ; la
-	 * droite n'est alors jamais réduite à la colonne. Sans effet à l'écran.
+	 * droite n'est réduite que si la colonne est trop étroite. Sans effet à l'écran.
 	 */
 	unitCm?: number;
 	/**
