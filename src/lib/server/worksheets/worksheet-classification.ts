@@ -6,8 +6,9 @@
  * 1. `prepareClassification` lit ce qu'il faut, vérifie les notions (connues,
  *    sans doublon) et compose le titre ; rien n'est écrit, un refus rend un
  *    message ;
- * 2. `applyClassification` écrit : notions retirées, PUIS fiche mise à jour
- *    (catégorie, type), PUIS notions écrites. Une fiche a autant de notions
+ * 2. `applyClassification` écrit, en une transaction (fonction SQL aux droits de
+ *    l'appelant, L86) : notions retirées, PUIS fiche mise à jour (catégorie,
+ *    type), PUIS notions écrites. Une fiche a autant de notions
  *    qu'on veut, quels que soient son type et sa catégorie (ADR 0041, amendé
  *    le 2026-11-19 : la garde « une seule notion » de la base est retirée).
  *
@@ -18,7 +19,7 @@
  * amendé le 2026-11-20) : la branche se lit dans l'arbre, lisible de tous.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, TablesUpdate } from '#lib/types/database.ts';
+import type { Database, Tables, TablesUpdate } from '#lib/types/database.ts';
 import {
 	WORKSHEET_TYPES,
 	type WorksheetClassificationView,
@@ -305,52 +306,36 @@ export async function prepareClassification(
 	return { ok: true, update, notions: request.notions ?? null, current };
 }
 
+/** Colonnes de la fiche que la classification écrit (avec ses notions, d'un coup) */
+export type ClassificationFields = Pick<
+	TablesUpdate<'worksheets'>,
+	'type' | 'category' | 'custom_title' | 'title'
+>;
+
 /**
- * Écrit : notions retirées, fiche mise à jour (`updateWorksheet`, par la route), notions
- * écrites avec leur position. Chaque écriture est vérifiée (la RLS échoue en
- * silence).
+ * Écrit en UNE transaction (`save_worksheet_classification`, L86) : notions retirées,
+ * fiche mise à jour (`fields`), notions écrites avec leur position. Droits de
+ * l'appelant : la RLS de la fiche et de ses notions s'applique comme avant ; un refus,
+ * même silencieux, lève une exception côté base et annule tout.
  *
- * @throws si une écriture échoue ou ne touche pas les lignes attendues
+ * @returns la fiche telle qu'enregistrée
+ * @throws si l'écriture échoue : rien n'a changé
  */
 export async function applyClassification(
 	supabase: SB,
 	worksheetId: string,
 	plan: Extract<ClassificationPlan, { ok: true }>,
-	updateWorksheet: () => Promise<void>
-): Promise<void> {
-	const target = plan.notions;
-
-	if (target) {
-		const removed = plan.current.filter((id) => !target.includes(id));
-		if (removed.length > 0) {
-			const { data, error } = await supabase
-				.from('worksheet_classifications')
-				.delete()
-				.eq('worksheet_id', worksheetId)
-				.in('node_id', removed)
-				.select('node_id');
-			if (error || data?.length !== removed.length) {
-				throw new Error(`notions non retirées : ${error?.message ?? 'refus silencieux'}`);
-			}
-		}
+	fields: ClassificationFields
+): Promise<Tables<'worksheets'>> {
+	const { data, error } = await supabase
+		.rpc('save_worksheet_classification', {
+			p_worksheet_id: worksheetId,
+			p_fields: fields,
+			...(plan.notions !== null && { p_notions: plan.notions })
+		})
+		.single();
+	if (error || !data) {
+		throw new Error(`classification non enregistrée : ${error?.message ?? 'fiche illisible'}`);
 	}
-
-	await updateWorksheet();
-
-	if (target && target.length > 0) {
-		const { data, error } = await supabase
-			.from('worksheet_classifications')
-			.upsert(
-				target.map((nodeId, position) => ({
-					worksheet_id: worksheetId,
-					node_id: nodeId,
-					position
-				})),
-				{ onConflict: 'worksheet_id,node_id' }
-			)
-			.select('node_id');
-		if (error || data?.length !== target.length) {
-			throw new Error(`notions non écrites : ${error?.message ?? 'refus silencieux'}`);
-		}
-	}
+	return data;
 }

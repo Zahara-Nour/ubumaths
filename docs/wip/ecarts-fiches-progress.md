@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3267._
+_Mis à jour le 2026-11-28, PR 2 ouverte (revues faites)._
 
-- **État** : PR 1 mergée (#3267) : L85, T23, L111, L9, V111, V108 + M44 faits et barrés au registre. Restent **V109** et **L86**, tranchés par David (§ Questions). T38 et L140 (relevés par `security-auditor`, zone du lot) sont dans « Hors lots » d'`ecarts-lots.md`, pas dans ce lot.
-- **Prochaine action** : PR 2, nouveau worktree `../ubumaths-wt-ecarts-fiches` (branche `fix/ecarts-fiches-2` depuis `origin/main`). V109 : horloge à régler et barre à construire dans une série d'automatismes (aujourd'hui refusées par `buildSerie`, « 0 case(s) dans l'énoncé ») : même mécanisme que V108, clé `solution: oui` sur ```horloge et sur le diagramme en barres (parseur, écran, PDF en vert), puis réécriture dans `serie-automatismes.ts`. L86 : question d'accès tranchée (droits de l'appelant, accès inchangé) ; fonction SQL qui écrit notions et fiche d'un coup, tests d'intégration rouges d'abord, `security-auditor`, migration additive avec rollback en commentaire.
+- **État** : PR 2 codée sur `fix/ecarts-fiches-2` : V109 (`solution: oui` sur `horloge et `barres, série d'automatismes) et L86 (fonction SQL `save_worksheet_classification`, migration `20261128003004`). Tests verts, intégration vérifiée rouge sans la migration, PDF compilé et regardé. Les deux écarts sont barrés au registre (preuve de L86 réécrite : elle attrapait aussi la lecture des notions).
+- **Prochaine action** : CI de la PR 2, merge ; puis `db:migrate` depuis `main` (migration additive ; 4 conditions réunies : accès tranché, intégration rouge sans la migration, `security-auditor` sans bloquant, rollback écrit) après `migration list --linked` (aucune autre en attente).
 - **En attente de David** : rien.
-- **Pièges en cours** : preuve de M44 sous bash (glob). Tests de preuve : `ECARTS_PREUVES=1 npx vitest run --project ecarts …`. Capture d'un rendu Svelte : `page.screenshot({ element })` dans un test jetable, image dans `__screenshots__/` à déplacer dans `.captures/`.
-- **Worktree / branche** : aucun (retirés par `pr:merger` après #3267).
+- **Pièges en cours** : un script tsx hors du dépôt doit être en `.mts` (top-level await du logger). Tests de preuve : `ECARTS_PREUVES=1 npx vitest run --project ecarts …`.
+- **Worktree / branche** : `../ubumaths-wt-ecarts-fiches`, `fix/ecarts-fiches-2`.
 
 ## Écarts du lot
 
@@ -31,6 +31,10 @@ V108, V109, V111 (visibles, phase 0) · L9, L85, L86, L111 (latents) · T23 (RGP
 **Tranché par David le 2026-11-28 (« d'accord » sur les recommandations)** : (1) V108 + M44 : flèche verte, pointillés de construction gardés, dessin `solved` appelé (pas supprimé) ; (2) V109 : aiguilles et barre en vert ; (3) V111 : nom anglais de la branche s'il existe, sinon « Worksheet » ; (4) L86 : fonction SQL aux droits de l'appelant, accès inchangé ; (5) L9 : STIX retirée du témoin (décision du 2026-11-03 remplacée).
 
 ## Historique
+
+- 2026-11-28 : revues de la PR 2. `security-auditor` (Opus) : aucun bloquant, accès inchangé (policies vérifiées en prod) ; test ajouté : élève qui lit la fiche sans pouvoir retirer ses notions. `code-reviewer` (Opus) : aucun bloquant ; message de la route rendu juste (« la fiche et ses notions »), constante remise avant les fonctions.
+
+- 2026-11-28 : PR 2. V109 : clé `solution: oui` sur `horloge (aiguilles attendues en vert, à la taille de l'horloge à placer) et `barres (barres à construire en vert, `spec.solvedBars` ; échelle à choisir → l'axe juste, `adaptedScale`) ; écran, PDF, `findHorlogesToPlace` / `findBarsToPlace` sautent ces blocs ; série : `horlogesARegler`, `barresAConstruire` (énoncé sans `case:`, corrigé + `solution: oui`). Relevé en prod : 4 modèles publiés à horloge à régler, 7 à barres à construire (dont 4 à échelle à choisir). L86 : `save_worksheet_classification` (security invoker, une transaction, refus RLS vérifiés en base) ; route et `applyClassification` passent par elle.
 
 - 2026-11-28 : #3267 mergée (PR 1). Conflit avec `main` sur `ubumark.md` (L89 d'une autre session) résolu en gardant les deux.
 

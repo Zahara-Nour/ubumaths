@@ -106,7 +106,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
-| Algèbre                            | 6N4   | 9         | libre                |                             |
+| Algèbre                            | 6N4   | 9         | prise (2026-11-28)   | `idees-6e-algebre`          |
 | Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
 | Longueurs                          | 6M1   | 16        | publiée (2026-11-28) | `idees-6e-longueurs`        |
 | Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |

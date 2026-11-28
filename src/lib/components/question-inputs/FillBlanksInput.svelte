@@ -1621,7 +1621,8 @@
 				<HeadingNode level={node.level} children={node.children} />
 			{:else if node.type === 'table' && tableHasBlanks(node, blanksCapitalPairs())}
 				<!-- `relative` : les éléments en position absolue des champs MathLive (libellés
-				     pour lecteur d'écran) restent dans le cadre défilant, sinon la page déborde -->
+				     pour lecteur d'écran) restent dans le cadre défilant, sinon la page déborde ;
+				     `table-with-blanks` : cellules resserrées au téléphone (style plus bas) -->
 				<TableNode
 					header={node.header}
 					rows={node.rows}
@@ -1630,7 +1631,7 @@
 					cross={node.cross}
 					{genericFunctions}
 					customCell={blankCell}
-					class="relative"
+					class="table-with-blanks relative"
 				/>
 			{:else}
 				<!-- Blocs sans trou (courbe, tableau, code, liste…) : rendus tels quels -->
@@ -1725,6 +1726,27 @@
 	/* Cellule étroite : sans le bouton de menu (le clic droit l'ouvre toujours) */
 	:global(.table-blank-cell math-field::part(menu-toggle)) {
 		display: none;
+	}
+
+	/* Tableau à cases sur écran étroit (outil n° 57) : cellules et cases resserrées, comme
+	   le tableau de variations à compléter (5 colonnes de 5e tiennent dans un iPhone) */
+	@media (max-width: 30rem) {
+		:global(.table-with-blanks :is(th, td)) {
+			padding-inline: 0.25em;
+		}
+
+		:global(.table-blank-cell math-field) {
+			padding: 2px;
+			margin: 0;
+		}
+	}
+
+	/* Écran tactile : pas de bouton clavier dans la case — la toucher ouvre le clavier,
+	   « Fermer le clavier » (MathKeyboardClose) le referme. Gagne 60 px par case. */
+	@media (pointer: coarse) {
+		:global(.table-blank-cell math-field::part(virtual-keyboard-toggle)) {
+			display: none;
+		}
 	}
 
 	.helper-text {
