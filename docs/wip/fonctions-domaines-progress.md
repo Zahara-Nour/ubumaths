@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3304._
 
-- **État** : code, tests (unitaires + `e2e/verifs/atelier-intervalle-pour.spec.ts`, 5 navigateurs) et doc (`docs/systeme/atelier.md`) faits ; revue `code-reviewer` (Sonnet) faite, findings 1 (message) et 2 (modèle) corrigés.
-- **Prochaine action** : PR, CI, merge ; puis archiver ce journal (la doc durable est dans `docs/systeme/atelier.md`).
+- **État** : `f(x) = x pour x > 2` livré (#3304 mergée, pas encore en prod) ; worktree retiré.
+- **Prochaine action** : selon la réponse de David ci-dessous ; sinon archiver ce journal (doc durable dans `docs/systeme/atelier.md`).
 - **En attente de David** : `pour x > k` (paramètre, comme `sur [k;5]`) est refusé — à accepter ? (demande de toucher `parseStudentDomain`, branche des conditions).
-- **Pièges en cours** : dans la carte, MathLive colle « pour » comme « sur » (`xpour2<x<4` affiché en italique tant que le champ n'est pas relu) — comportement d'avant, non traité.
-- **Worktree / branche** : `../ubumaths-wt-fonctions-domaines` · `feat/fonctions-domaines`.
+- **Pièges en cours** : dans la carte, MathLive colle « pour » comme « sur » (`xpour2<x<4` en italique tant que le champ n'est pas relu) — comportement d'avant, non traité.
+- **Worktree / branche** : aucun (à recréer depuis `origin/main` si suite).
 
 ## Demande
 
