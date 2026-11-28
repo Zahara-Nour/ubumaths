@@ -42,6 +42,7 @@ import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
 import { findLabyrinthesAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import { findYohakusARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { findPythonsAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
 import { findRangersToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
 import { findAssociersToPlace } from '#lib/ubumark/parser/associer-parser.ts';
 import { findTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
@@ -235,7 +236,7 @@ export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 export const EMPTY_SIGN_TABLE_TEXT = "Tu n'as rien rempli dans le tableau.";
 /** Droite à placer laissée vide (aucun point) */
 export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
-/** Programme tortue ou de calcul laissé vide (aucun bloc) */
+/** Programme tortue, de calcul ou Python laissé vide (aucun bloc, aucun code) */
 export const EMPTY_PROGRAM_TEXT = "Tu n'as écrit aucun programme.";
 /** Robot à produire laissé vide (aucune instruction) */
 export const EMPTY_CODE_TEXT = "Tu n'as écrit aucun code.";
@@ -246,7 +247,7 @@ export const EMPTY_GRID_TEXT = "Tu n'as rien écrit dans la grille.";
 /** Texte d'une case de ce genre laissée vide : rien posé, placé, colorié ou rempli */
 function emptyBuildText(kind: BuildKind, source: string): string {
 	if (kind === 'partage') return NOTHING_COLORED;
-	if (kind === 'tortue' || kind === 'calcul') return EMPTY_PROGRAM_TEXT;
+	if (kind === 'tortue' || kind === 'calcul' || kind === 'python') return EMPTY_PROGRAM_TEXT;
 	if (kind === 'robot') return EMPTY_CODE_TEXT;
 	if (kind === 'labyrinthe') return EMPTY_PATH_TEXT;
 	if (kind === 'yohaku') return EMPTY_GRID_TEXT;
@@ -390,7 +391,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
 		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const })),
 		...findLabyrinthesAParcourir(statement).map((b) => ({ ...b, kind: 'labyrinthe' as const })),
-		...findYohakusARemplir(statement).map((b) => ({ ...b, kind: 'yohaku' as const }))
+		...findYohakusARemplir(statement).map((b) => ({ ...b, kind: 'yohaku' as const })),
+		...findPythonsAEcrire(statement).map((b) => ({ ...b, kind: 'python' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -790,7 +792,8 @@ function buildLines(
 			build.kind === 'calcul' ||
 			build.kind === 'robot' ||
 			build.kind === 'labyrinthe' ||
-			build.kind === 'yohaku') && {
+			build.kind === 'yohaku' ||
+			build.kind === 'python') && {
 			expected: [view.expected]
 		})
 	};

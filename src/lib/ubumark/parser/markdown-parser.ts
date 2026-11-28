@@ -114,6 +114,12 @@ import {
 	parseCalculContent,
 	isCalculBlockStart
 } from './calcul-parser';
+import {
+	findPythonAEcrireBlocks,
+	parsePythonAEcrire,
+	parsePythonAEcrireContent,
+	isPythonAEcrireBlockStart
+} from './python-a-ecrire-parser';
 import { findRobotBlocks, parseRobot, parseRobotContent, isRobotBlockStart } from './robot-parser';
 import {
 	findLabyrintheBlocks,
@@ -556,6 +562,7 @@ function parseBlocks(
 	const robotBlocks = findRobotBlocks(lines);
 	const labyrintheBlocks = findLabyrintheBlocks(lines);
 	const yohakuBlocks = findYohakuBlocks(lines);
+	const pythonAEcrireBlocks = findPythonAEcrireBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
@@ -592,6 +599,11 @@ function parseBlocks(
 		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
 		{ ranges: labyrintheBlocks, parse: parseLabyrinthe, language: 'labyrinthe' },
 		{ ranges: yohakuBlocks, parse: parseYohaku, language: 'yohaku' },
+		{
+			ranges: pythonAEcrireBlocks,
+			parse: parsePythonAEcrire,
+			language: 'python-a-ecrire'
+		},
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
@@ -671,6 +683,7 @@ function parseBlocks(
 			...robotBlocks,
 			...labyrintheBlocks,
 			...yohakuBlocks,
+			...pythonAEcrireBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
@@ -700,6 +713,7 @@ function parseBlocks(
 			...findRobotBlocks(originalLines),
 			...findLabyrintheBlocks(originalLines),
 			...findYohakuBlocks(originalLines),
+			...findPythonAEcrireBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
@@ -1902,6 +1916,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'yohaku'
 	},
 	{
+		is: isPythonAEcrireBlockStart,
+		find: findPythonAEcrireBlocks,
+		parse: parsePythonAEcrire,
+		language: 'python-a-ecrire'
+	},
+	{
 		is: isPartageBlockStart,
 		find: findPartageBlocks,
 		parse: parsePartage,
@@ -2186,6 +2206,10 @@ function parseContentWithCodeBlocks(
 			// Labyrinthe dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
 			// case (bloc en retrait), l'élève n'y répond pas
 			blocks.push(parseLabyrintheContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'python-a-ecrire') {
+			// Programme Python dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
+			// case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parsePythonAEcrireContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'yohaku') {
 			// Grille yohaku dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
 			// case (bloc en retrait), l'élève n'y répond pas

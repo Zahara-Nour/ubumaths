@@ -55,6 +55,7 @@ import {
 	parseTortueContent
 } from '#lib/ubumark/parser/tortue-parser.ts';
 import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { findPythonsAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
 import {
 	findYohakusARemplir,
 	parseYohakuContent,
@@ -761,6 +762,9 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		...leaks('trous', own(findTrousToPlace(statement)), (block) => !trousHasFilledHole(block.body)),
 		// Grille yohaku : la solution de l'auteur est la réponse, où qu'il soit
 		...leaks('yohaku', findYohakusARemplir(statement), yohakuMasked),
+		// Programme Python : jamais masqué, la solution de l'auteur juge dans le navigateur ; le
+		// bloc n'entre pas dans une évaluation (Q1), cette garde l'écarte s'il y arrivait
+		...leaks('python', findPythonsAEcrire(statement), () => false),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
 		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),

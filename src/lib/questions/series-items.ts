@@ -14,6 +14,7 @@
 
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 import { excludeCourseCards as withoutCourseCards } from '#lib/questions/course-card.ts';
+import { excludePythonCases as withoutPythonCases } from '#lib/questions/python/python-case.ts';
 import type { GenerationResult, QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 import {
 	drawLineQuestions,
@@ -32,6 +33,11 @@ import { createRandomSource } from '#lib/utils/random.ts';
 interface BuildOptions {
 	/** Course aux nombres, évaluation : pas de carte de cours */
 	excludeCourseCards?: boolean;
+	/**
+	 * Évaluation notée (corrigée par le serveur) : pas de modèle à case Python, jugée dans le
+	 * navigateur seulement (outil 49, Q1)
+	 */
+	excludePythonCases?: boolean;
 	/** Injectable pour les tests */
 	generate?: (template: QuestionTemplate, seed: number) => GenerationResult;
 	/** Graine d'une LIGNE (d'où sortent celles de ses questions) ; injectable */
@@ -99,7 +105,10 @@ export function drawSeriesQuestions(
 ): SeriesDraw[] {
 	const nextSeed = options.nextSeed ?? randomSeed;
 	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
-	const available = options.excludeCourseCards ? withoutCourseCards([...templates]) : templates;
+	const withoutCards = options.excludeCourseCards ? withoutCourseCards([...templates]) : templates;
+	const available = options.excludePythonCases
+		? withoutPythonCases([...withoutCards])
+		: withoutCards;
 	const byId = new Map(available.map((template) => [template.id, template]));
 	const onGenerationFailure =
 		options.onGenerationFailure ??

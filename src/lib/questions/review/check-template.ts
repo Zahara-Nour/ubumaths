@@ -36,6 +36,7 @@ import { requiredFormVerdict } from '#lib/questions/required-form-validator.ts';
 import { readingOf } from '#lib/questions/formula-reading.ts';
 import type { QuestionInstance } from '#lib/questions/types.ts';
 import { isBlankValueCorrect, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
+import { hasPythonCase } from '#lib/questions/python/python-case.ts';
 import { expectedErrorOf } from '#lib/questions/expected-errors.ts';
 import {
 	findUnparenthesizedNegatives,
@@ -390,7 +391,10 @@ export function checkTemplate(
 	// Une carte de cours n'a pas de réponse : pas de spec exigée (ni tolérée)
 	const courseCard = isCourseCard(template);
 	if (courseCard && specs.length > 0) reasons.push('une carte de cours ne porte pas de spec');
-	if (!courseCard && specs.length === 0) reasons.push('aucune spec de test');
+	// Case Python : le programme ne tourne que dans le navigateur, une spec ne pourrait pas le
+	// juger ici (outil 49) ; pas exigée, le modèle est vérifié par ses tirages
+	if (!courseCard && !hasPythonCase(template) && specs.length === 0)
+		reasons.push('aucune spec de test');
 	// Chaque variation doit prouver qu'une bonne réponse est acceptée
 	const uncovered = template.variations
 		.map((_, index) => index)

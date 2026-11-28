@@ -577,6 +577,7 @@ export type { CalculNode } from './calcul';
 export type { RobotNode } from './robot';
 export type { LabyrintheNode } from './labyrinthe';
 export type { YohakuNode } from './yohaku';
+export type { PythonAEcrireNode } from './python-a-ecrire';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
@@ -604,6 +605,7 @@ import type { CalculNode } from './calcul';
 import type { RobotNode } from './robot';
 import type { LabyrintheNode } from './labyrinthe';
 import type { YohakuNode } from './yohaku';
+import type { PythonAEcrireNode } from './python-a-ecrire';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
@@ -644,6 +646,7 @@ export type BlockNode =
 	| RobotNode
 	| LabyrintheNode
 	| YohakuNode
+	| PythonAEcrireNode
 	| PartageNode
 	| EspaceNode
 	| OperationNode

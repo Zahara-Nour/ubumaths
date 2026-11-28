@@ -229,6 +229,14 @@ export type { LabyrintheNode, LabyrintheIssue, LabyrintheSpec, Regle } from './l
 // YOHAKU (bloc ```yohaku)
 export type { YohakuNode, YohakuIssue, YohakuSpec, YohakuCase, YohakuOperation } from './yohaku';
 
+// PYTHON À ÉCRIRE (bloc ```python-a-ecrire)
+export type {
+	PythonAEcrireNode,
+	PythonAEcrireIssue,
+	PythonAEcrireSpec,
+	PythonExigence
+} from './python-a-ecrire';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================

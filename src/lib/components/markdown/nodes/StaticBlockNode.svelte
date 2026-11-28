@@ -45,6 +45,7 @@
 	import RobotCode from './RobotCode.svelte';
 	import Labyrinthe from './Labyrinthe.svelte';
 	import Yohaku from './Yohaku.svelte';
+	import PythonAEcrire from './PythonAEcrire.svelte';
 	import CalculProgramme from './CalculProgramme.svelte';
 
 	interface Props {
@@ -134,4 +135,6 @@
 	<Labyrinthe {node} />
 {:else if node.type === 'yohaku'}
 	<Yohaku {node} />
+{:else if node.type === 'python-a-ecrire'}
+	<PythonAEcrire {node} />
 {/if}

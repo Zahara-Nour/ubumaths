@@ -91,6 +91,7 @@
 	import Labyrinthe from '#lib/components/markdown/nodes/Labyrinthe.svelte';
 	import Yohaku from '#lib/components/markdown/nodes/Yohaku.svelte';
 	import CalculProgramme from '#lib/components/markdown/nodes/CalculProgramme.svelte';
+	import PythonCaseInput from './PythonCaseInput.svelte';
 	import PartageColorier from '#lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '#lib/components/markdown/nodes/CubesGeste.svelte';
 	import PatronGeste from '#lib/components/markdown/nodes/PatronGeste.svelte';
@@ -255,6 +256,7 @@
 		if (node.type === 'robot') return node.caseIndex !== undefined;
 		if (node.type === 'labyrinthe') return node.caseIndex !== undefined;
 		if (node.type === 'yohaku') return node.caseIndex !== undefined;
+		if (node.type === 'python-a-ecrire') return node.caseIndex !== undefined;
 		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
 	}
@@ -634,7 +636,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus]:not([read-only]), [data-calcul-focus]:not(:disabled), [data-graduer-focus]:not(:disabled), math-field[data-resolution-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus]:not([read-only]), [data-calcul-focus]:not(:disabled), [data-python-case] .cm-content, [data-graduer-focus]:not(:disabled), math-field[data-resolution-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -1448,6 +1450,35 @@
 									disabled: flashMode || effectiveDisabled,
 									onChange: (value) => handleInputChange(caseIndex, value)
 								}}
+							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'python-a-ecrire' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Programme Python : l'élève écrit sa fonction ; « Valider » la fait tourner avant de juger -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la solution de l'auteur en bloc de code -->
+					<BuildAnswer
+						kind="python"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<!-- Autre question, autre bloc : l'éditeur est recréé avec son départ -->
+						{#key node.source}
+							<PythonCaseInput
+								spec={node.spec}
+								expected={flashMode ? undefined : expected}
+								value={state?.value ?? ''}
+								isCorrect={flashMode ? null : (state?.isCorrect ?? null)}
+								disabled={flashMode || effectiveDisabled}
+								onChange={(value) => handleInputChange(caseIndex, value)}
 							/>
 						{/key}
 					</div>
