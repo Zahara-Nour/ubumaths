@@ -5,7 +5,7 @@ qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèl
 
 - **Pause levée (David, 2026-11-22)** : on prend de nouvelles rubriques sans attendre la fin de la
   vérification du lot « nombres et calculs » de Seconde. Chaque lot neuf applique les critères
-  d'[idées de format](idees-format-exercices.md) (coup de pouce, erreurs prévues).
+  d'[idées de format](../archive/wip/idees-format/idees-format-exercices.md) (coup de pouce, erreurs prévues).
 - **Réserver** : `git pull --rebase`, modifier la ligne, commit direct sur `main`, push aussitôt. Si
   le push est refusé : pull, relire, et changer de ligne si elle a été prise entre-temps.
 - **États** : libre → prise (sujet, date) → phase 0 → écrite → en prod → publiée.

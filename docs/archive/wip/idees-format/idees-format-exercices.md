@@ -1,8 +1,8 @@
 # Idées à reprendre du format d'exercices de l'autre plateforme
 
 _Relevé du 2026-11-21. Copie lue : `extern/banque-exercices/` (hors dépôt, lecture seule, rien copié).
-Chez nous : `src/lib/questions/`, [questions.md](../systeme/questions.md),
-[ubumark.md](../systeme/ubumark.md), [couvrir-un-niveau.md § 3 bis](../pratiques/couvrir-un-niveau.md)._
+Chez nous : `src/lib/questions/`, [questions.md](../../../systeme/questions.md),
+[ubumark.md](../../../systeme/ubumark.md), [couvrir-un-niveau.md § 3 bis](../../../pratiques/couvrir-un-niveau.md)._
 
 ## En bref
 
