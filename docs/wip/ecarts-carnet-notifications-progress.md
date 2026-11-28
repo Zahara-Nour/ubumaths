@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture de la première PR._
+_Mis à jour le 2026-11-28, après #3333._
 
-- **État** : PR 1 ouverte (V107, L79, L80, L81, L82, L83 ; migration `20261128163026_…`). Revue `code-reviewer` + `security-auditor` faites, sans bloquant ; les trois portes de L82 et l'insertion directe de L83 ajoutées sur l'audit, preuves rouges sans la migration, vertes avec.
-- **Prochaine action** : CI verte → `pnpm pr:merger <n>` ; puis `db:migrate` depuis le dépôt principal **seulement** avec le « oui » explicite de David à la question d'accès (sinon le lui redemander). Ensuite L78 (webhook Brevo) en PR 2, avec sa phase 0.
-- **En attente de David** : « oui » explicite à la question d'accès de L82 / L83 / L79 (rien ne s'ouvre ; le prof perd des écritures abusives ; élève archivé refusé).
-- **Pièges en cours** : `add_warning` sans appelant : ne pas le retirer ici. `db:migrate` pousse toutes les migrations en attente : `migration list --linked` avant.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-carnet-notifications` · `fix/ecarts-carnet-notifications` · serveur de dev sur 5177.
+- **État** : #3333 mergée (V107, L79, L80, L81, L82, L83). Migration `20261128163026_avertissement_adhesion_active_compteur_lien_parent.sql` sur `main`, **pas encore jouée en prod**. Reste L78. Worktree et branche retirés.
+- **Prochaine action** : (1) avec le « oui » de David : `pnpm exec supabase migration list --linked` (une seule en attente, la nôtre, sinon stop) puis `pnpm db:migrate` depuis le dépôt principal ; (2) L78 en PR 2 : nouveau worktree `../ubumaths-wt-ecarts-carnet-notifications` depuis `origin/main`, phase 0 du webhook Brevo (adresse invalide → statut `invalid`, ce que voit le prof ; l'écran sait déjà l'afficher), gestes de David : déclarer l'adresse dans Brevo, secret dans Vercel.
+- **En attente de David** : « oui » explicite à la question d'accès (personne ne lit rien de plus ; le prof perd l'avertissement hors adhésion active et la notification nominative à un élève parti ; élève archivé refusé).
+- **Pièges en cours** : la migration est mergée : le `db:migrate` d'une autre session la jouerait aussi. `add_warning` sans appelant : sa suppression est une décision à part. L'empreinte de la policy des notifications est figée dans `tests/integration/anon-preparation.test.ts`.
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Écarts du lot
 
@@ -31,6 +31,7 @@ _Mis à jour le 2026-11-28, à l'ouverture de la première PR._
 ## Historique
 
 - 2026-11-28 : lot pris, chantier ouvert.
+- 2026-11-28 : #3333 mergée (empreinte de la policy des notifications mise à jour dans `anon-preparation.test.ts` après la première CI).
 - 2026-11-28 : audit de sécurité : preuves de `add_warnings_bulk`, de l'insertion directe et de l'élève archivé ajoutées ; policy des notifications (L83) dans la migration.
 - 2026-11-28 : migration L82 + L79 écrite, preuves vertes ; revue de code sans bloquant.
 - 2026-11-28 : V107 (phase 0 validée), L83, L80, L81 corrigés ; L82, L79 attendent la question d'accès ; L78 = webhook Brevo.
