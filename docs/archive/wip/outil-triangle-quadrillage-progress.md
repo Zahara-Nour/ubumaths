@@ -1,25 +1,26 @@
 ---
 title: Outil 47 — triangle quelconque à reproduire sur quadrillage
 date: 2026-11-28
-status: phase 0 validée le 2026-11-28, code en cours
+status: clos le 2026-11-28 (#3289)
 ---
 
 # Chantier `outil-triangle-quadrillage`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, après #3289._
 
-- **État** : outil 47 codé, revue faite, ses 4 points traités (point 1 : message validé par David).
-- **Prochaine action** : gardes, `git merge origin/main`, push, PR, `pnpm pr:merger`.
+- **État** : lot clos. Outil 47 livré par #3289 (mergée), passé au § 4 « Livré » d'`outils-manquants.md` ;
+  journal archivé.
+- **Prochaine action** : aucune. Les modèles qui s'en servent (CE1-072 triangle quelconque) restent aux
+  sessions « questions ».
 - **En attente de David** : rien.
-- **Pièges en cours** : même module que le lot `equerre-uni` → `git merge origin/main` avant la PR.
-- **Worktree / branche** : `../ubumaths-wt-outil-triangle-quadrillage`, `feat/outil-triangle-quadrillage`.
+- **Worktree / branche** : retirés par `pnpm pr:merger`.
 
 ## Lot
 
-Un seul outil : n° 47 d'[outils-manquants.md](outils-manquants.md) (CE1-072 ; CP, CE2 sur quadrillage).
-Origine : [`questions-ce1`](../archive/wip/questions-ce1-progress.md) § 20.
+Un seul outil : n° 47 d'[outils-manquants.md](../../wip/outils-manquants.md) (CE1-072 ; CP, CE2 sur quadrillage).
+Origine : [`questions-ce1`](questions-ce1-progress.md) § 20.
 
 ## 1. Phase 0 (2026-11-28)
 
