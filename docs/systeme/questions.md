@@ -539,7 +539,9 @@ Escalier à construire (``courbe, `construire N` sur la ligne d'une suite récur
    `escalier k=2 ; u0=0 ; marge=0.09 ; f=sqrt(2*(x)+3)` (`staircaseExpected`, `build-answer.ts`) ; juge à part aux deux
    mêmes endroits (`isStaircaseTermCorrect`, `utils/courbe-construire.ts`) : juste si |x_k − f(x_{k−1})| ≤ marge, soit
    3 % de la largeur de la fenêtre, **jugé depuis le terme précédent de l'élève** (u₀ pour le premier) : une erreur ne
-   coûte qu'une case (décision de David, 2026-11-28). Correction (`BuildAnswer`, `staircaseMistake`) : une phrase par
+   coûte qu'une case (décision de David, 2026-11-28). Quand toutes les cases de la question sont connues
+   (`validateGradedBlanks`, `detailGradedBlanks`), chaque case d'un repère est jugée sur la chaîne de sa **dernière**
+   case (`staircaseChains`) : une réponse forgée dont les chaînes ne se prolongent pas ne fait pas tout juste. Correction (`BuildAnswer`, `staircaseMistake`) : une phrase par
    terme faux, et le vrai escalier en vert (`solutionCobweb`). PDF : repère sans escalier ; `solution: oui` : escalier vert.
    Cercle trigonométrique à placer (``trig, `placer: M = 2*pi/3 ; N = -pi/4`) : une case par point,
 `type: 'text'`, réponse attendue = la mesure principale du point en LaTeX (`\frac{2\pi}{3}`,
