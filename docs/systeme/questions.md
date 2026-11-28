@@ -1003,7 +1003,18 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    jusqu'à A, la parallèle en deux équerres : `isSupported` le reconnaît depuis le lot 2b), A ou B invisible, ou médiatrice
    qui n'a pas 2 unités dans la fenêtre (`mediatriceSupportError`, aussi pour `milieu(A, B)` : l'élève y
    croise deux cercles de même rayon, quel qu'il soit ; avant le lot 9, les cercles de rayon AB devaient
-   s'y couper). Une `droite` ne se mêle à aucune autre
+   s'y couper). Médiatrice et milieu à la règle graduée (outil n° 38, papier uni, `regle` dans `outils:` ;
+   médiatrice : `droite, regle, point, equerre`, milieu : `regle, point`) : l'élève pose la règle sur [AB],
+   son 0 en A ou en B, marque le milieu au Point (aimanté aux graduations du mm, ‹ › le déplacent d'un
+   millimètre, `nudgeRulerEnd` forme `point`), puis trace à l'équerre par ce point. Le juge lit la palette
+   (`FigureShapes.tools`, rempli par `positions-setup.ts`) : avec la règle et une médiatrice ou un milieu
+   vérifié, `constructionOf` reçoit `rulerLength` et un point posé sur une graduation d'une règle bien posée
+   (0 sur un point construit, bord vers un point construit ou le long d'un trait droit construit par ce 0)
+   est construit ; partout ailleurs, une règle posée reste une réponse forgée. Milieu posé à l'œil (point
+   posé sur (AB), ni point de départ ni sur une graduation) : « Ton milieu est placé à l'œil : pose la règle
+   sur [AB] et marque-le sur une graduation. » (`midpointEyeballedFeedback`). Erreur de l'auteur : [AB] qui
+   ne mesure pas un nombre pair de millimètres ou plus long que la règle (`rulerMidpointError`). Une
+   `droite` ne se mêle à aucune autre
    vérification, et sa palette ne prend que règle, équerre, compas, report (parseur : un point ou un segment
    tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage, et le report sur papier uni (lot 9 : il garde l'écartement des deux cercles égaux ; `LINE_GRID_TOOLS` sur quadrillage, où `outils: report` est refusé)
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
