@@ -1,22 +1,16 @@
 ---
 title: Spec d'un modèle à case Python qui a aussi une case ordinaire
 date: 2026-11-28
-status: relu, PR ouverte
+status: clos (#3326, 2026-11-28)
 ---
 
 # Chantier `python-spec`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR._
+_Mis à jour le 2026-11-28, après #3326._
 
-- **État** : règle et remplissage d'office codés et commités sur la branche, tests verts
-  (`python/__tests__/python-spec.test.ts`), `check:incremental` 0 erreur, cliquet tenu, garde de doc OK.
-- **Prochaine action** : relecture faite (rien de bloquant, JSDoc replacé, limites documentées) ;
-  PR ouverte, `pnpm pr:merger <n>`, puis archiver ce journal.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-python-spec` · `feat/python-spec`.
+- **État** : chantier clos, #3326 mergée, journal archivé. Rien à reprendre.
 
 ## Décision (David, 2026-11-28)
 
