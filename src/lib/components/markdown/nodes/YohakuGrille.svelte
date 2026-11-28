@@ -31,6 +31,7 @@
 	import MathField from '#lib/components/MathField.svelte';
 	import type { MathfieldElement } from 'mathlive';
 	import type { YohakuOperation } from '#lib/ubumark/types/yohaku.ts';
+	import { splitLatexAtBreaks } from '#lib/utils/latex-break-points.ts';
 
 	interface Props {
 		operation: YohakuOperation;
@@ -66,6 +67,10 @@
 	const SIGNES = { somme: '+', produit: '×' } as const;
 	const NOMS = ['première', 'deuxième'];
 
+	// Un total trop large pour un téléphone se coupe après un `+` (comme les étapes à ranger)
+	const morceauxLignes = $derived(lignes.map(splitLatexAtBreaks));
+	const morceauxColonnes = $derived(colonnes.map(splitLatexAtBreaks));
+
 	const etat = $derived(verdict === true ? 'juste' : verdict === false ? 'faux' : 'neutre');
 </script>
 
@@ -96,17 +101,24 @@
 			data-yohaku-total="ligne-{l}"
 			aria-label="Total de la {NOMS[l]} ligne"
 		>
-			<math-span>{lignes[l]}</math-span>
+			<span class="yohaku-formule"
+				>{#each morceauxLignes[l] as morceau, i (i)}{#if i > 0}<wbr />{/if}<math-span
+						>{morceau}</math-span
+					>{/each}</span
+			>
 		</div>
 	{/each}
-	{#each colonnes as total, c (c)}
+	{#each morceauxColonnes as morceaux, c (c)}
 		<div
 			class="yohaku-total yohaku-total-colonne"
 			class:yohaku-faux={colonnesFausses.includes(c)}
 			data-yohaku-total="colonne-{c}"
 			aria-label="Total de la {NOMS[c]} colonne"
 		>
-			<math-span>{total}</math-span>
+			<span class="yohaku-formule"
+				>{#each morceaux as morceau, i (i)}{#if i > 0}<wbr />{/if}<math-span>{morceau}</math-span
+					>{/each}</span
+			>
 		</div>
 	{/each}
 </div>
@@ -160,11 +172,27 @@
 		text-align: center;
 	}
 
+	/* Case étroite : sans le bouton de menu (le clic droit l'ouvre toujours), comme les cases
+	   d'un tableau à compléter */
+	.yohaku-case :global(math-field::part(menu-toggle)) {
+		display: none;
+	}
+
+	/* Écran tactile : pas de bouton clavier dans la case, la toucher ouvre le clavier et
+	   « Fermer le clavier » le referme ; sinon le bouton cachait la formule tapée */
+	@media (pointer: coarse) {
+		.yohaku-case :global(math-field::part(virtual-keyboard-toggle)) {
+			display: none;
+		}
+	}
+
 	.yohaku-total {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0.25rem 0.5rem;
+		padding: 0.25rem 0.4rem;
+		font-size: 0.9rem;
+		text-align: center;
 		color: var(--color-foreground);
 	}
 
@@ -175,6 +203,12 @@
 
 	.yohaku-total-colonne {
 		border-top: 3px solid var(--color-foreground);
+	}
+
+	/* math-span est en ligne par défaut : sa largeur ne compterait pas dans celle de la colonne */
+	.yohaku :global(math-span) {
+		display: inline-block;
+		line-height: 1;
 	}
 
 	.yohaku-faux {
