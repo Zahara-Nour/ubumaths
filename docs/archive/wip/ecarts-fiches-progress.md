@@ -1,20 +1,17 @@
 ---
 title: Lot d'écarts « fiches » (PDF et Typst)
 date: 2026-11-28
-status: en cours
+status: clos
 ---
 
 # Lot d'écarts « fiches »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3275._
+_Mis à jour le 2026-11-28 : chantier clos._
 
-- **État** : lot terminé. Les 9 écarts (V108, V109, V111, L9, L85, L86, L111, T23, M44) sont faits et barrés au registre. Migration `20261128003004` (`save_worksheet_classification`) poussée en prod et vérifiée (security invoker, pas d'accès anon).
-- **Prochaine action** : clore le chantier (versement : journal archivé, lot marqué fini dans `docs/wip/ecarts-lots.md`), sur go de David.
-- **En attente de David** : le go de clôture.
-- **Pièges en cours** : une attente « fin de `deploy:prod` » par `pgrep -f "scripts/deploy-prod.sh"` se trouve elle-même et ne finit jamais : attendre sur le numéro de processus, ou laisser `pr:merger` attendre le verrou.
-- **Worktree / branche** : aucun (retirés par `pr:merger` après #3275).
+- **État** : clos. 9 écarts faits et barrés (#3267, #3275) ; migration `20261128003004` en prod ; lot marqué « fait » dans `docs/wip/ecarts-lots.md` ; journal archivé.
+- **Prochaine action** : aucune.
 
 ## Écarts du lot
 
@@ -31,6 +28,8 @@ V108, V109, V111 (visibles, phase 0) · L9, L85, L86, L111 (latents) · T23 (RGP
 **Tranché par David le 2026-11-28 (« d'accord » sur les recommandations)** : (1) V108 + M44 : flèche verte, pointillés de construction gardés, dessin `solved` appelé (pas supprimé) ; (2) V109 : aiguilles et barre en vert ; (3) V111 : nom anglais de la branche s'il existe, sinon « Worksheet » ; (4) L86 : fonction SQL aux droits de l'appelant, accès inchangé ; (5) L9 : STIX retirée du témoin (décision du 2026-11-03 remplacée).
 
 ## Historique
+
+- 2026-11-28 : clôture sur go de David : lot marqué fait, journal archivé.
 
 - 2026-11-28 : #3275 mergée (PR 2 : V109, L86), après un `deploy:prod` qui tenait le verrou ; `db:migrate` de `20261128003004` (seule migration en attente), fonction vérifiée en prod.
 
