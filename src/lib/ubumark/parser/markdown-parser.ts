@@ -91,6 +91,12 @@ import {
 } from './number-line-parser';
 import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
+	findEngrenagesBlocks,
+	parseEngrenages,
+	parseEngrenagesContent,
+	isEngrenagesBlockStart
+} from './engrenages-parser';
+import {
 	findScratchBlocks,
 	parseScratch,
 	parseScratchContent,
@@ -556,6 +562,7 @@ function parseBlocks(
 	const robotBlocks = findRobotBlocks(lines);
 	const labyrintheBlocks = findLabyrintheBlocks(lines);
 	const yohakuBlocks = findYohakuBlocks(lines);
+	const engrenagesBlocks = findEngrenagesBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
@@ -592,6 +599,7 @@ function parseBlocks(
 		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
 		{ ranges: labyrintheBlocks, parse: parseLabyrinthe, language: 'labyrinthe' },
 		{ ranges: yohakuBlocks, parse: parseYohaku, language: 'yohaku' },
+		{ ranges: engrenagesBlocks, parse: parseEngrenages, language: 'engrenages' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
@@ -671,6 +679,7 @@ function parseBlocks(
 			...robotBlocks,
 			...labyrintheBlocks,
 			...yohakuBlocks,
+			...engrenagesBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
@@ -700,6 +709,7 @@ function parseBlocks(
 			...findRobotBlocks(originalLines),
 			...findLabyrintheBlocks(originalLines),
 			...findYohakuBlocks(originalLines),
+			...findEngrenagesBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
@@ -1860,6 +1870,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'qr'
 	},
 	{
+		is: isEngrenagesBlockStart,
+		find: findEngrenagesBlocks,
+		parse: parseEngrenages,
+		language: 'engrenages'
+	},
+	{
 		is: isScratchBlockStart,
 		find: findScratchBlocks,
 		parse: parseScratch,
@@ -2167,6 +2183,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'qr') {
 			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'engrenages') {
+			// Engrenages dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseEngrenagesContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));

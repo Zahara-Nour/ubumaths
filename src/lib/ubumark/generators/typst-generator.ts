@@ -70,6 +70,7 @@ import { associerItemHasBlock } from '../parser/associer-parser';
 import type { TrousNode } from '../types/trous';
 import { displayedTrousLabels, TROUS_RESERVE_COLUMNS } from '../utils/trous';
 import { generateQrTypst } from './qr-typst';
+import { generateEngrenagesTypst } from './engrenages-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generateTortueTypst } from './tortue-typst';
@@ -538,6 +539,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'qr':
 			return generateQrTypst(node);
+		case 'engrenages':
+			// Engrenages : la figure à l'arrêt (l'animation est réservée au corrigé à l'écran)
+			return generateEngrenagesTypst(node);
 		case 'scratch':
 			return generateScratchTypst(node);
 		case 'horloge':
